@@ -7,18 +7,22 @@ export default function Auth() {
   const { authorize, clearSession, user, getCredentials } = useAuth0();
 
   useEffect(() => {
-    getCredentials('openid profile email').then((res) => {
-      if (res && res.accessToken) {
-        axios
-          .get('http://10.0.2.2:3000/api/private', { headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${res.accessToken}` } })
-          .then((res) => {
-            console.log(res.status, res.data);
-          })
-          .catch((err) => {
-            console.log(err);
-          });
-      }
-    });
+    console.log(user);
+
+    if (user) {
+      getCredentials('openid profile email').then((res) => {
+        if (res && res.accessToken) {
+          axios
+            .get('http://10.0.2.2:3000/api/private', { headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${res.accessToken}` } })
+            .then((res) => {
+              console.log(res.status, res.data);
+            })
+            .catch((err) => {
+              console.log(err);
+            });
+        }
+      });
+    }
   }, [user]);
 
   const login = async () => {
