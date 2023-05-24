@@ -5,14 +5,13 @@
  * @flow
  */
 
-import React, {Component, useEffect, useState} from 'react';
-import {Button, SafeAreaView, StyleSheet, Text, View} from 'react-native';
-import {NavigationContainer} from '@react-navigation/native';
-import {createNativeStackNavigator} from '@react-navigation/native-stack';
-import {useAuth0, Auth0Provider} from 'react-native-auth0';
-import {Config} from 'react-native-config';
+import React, { useEffect, useState } from 'react';
+import { SafeAreaView, Text } from 'react-native';
+import { NavigationContainer } from '@react-navigation/native';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import { Auth0Provider } from 'react-native-auth0';
+import { Config } from 'react-native-config';
 import Auth from './src/pages/Auth';
-import Profile from './src/pages/Profile';
 
 const Stack = createNativeStackNavigator();
 
@@ -42,21 +41,11 @@ const App = () => {
     <Auth0Provider domain={domain} clientId={clientId}>
       <NavigationContainer>
         <Stack.Navigator initialRouteName='Auth'>
-          <Stack.Screen name="Auth" component={Auth} />
-          <Stack.Screen name="Profile" component={Profile} />
+          <Stack.Screen name='Auth' component={Auth} />
         </Stack.Navigator>
       </NavigationContainer>
     </Auth0Provider>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#F5FCFF',
-  },
-});
 
 export default App;
