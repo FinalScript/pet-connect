@@ -4,8 +4,7 @@
     "version": "1.0.0",
     "license": "MIT",
     "scripts": {
-        "start": "ts-node app.ts",
-        "dev": "nodemon app.ts"
+        "start": "nodemon app.ts"
     },
     "dependencies": {
         "@babel/cli": "^7.15.7",
