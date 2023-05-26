@@ -12,6 +12,17 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { Auth0Provider } from 'react-native-auth0';
 import { Config } from 'react-native-config';
 import Auth from './src/pages/Auth';
+import PetCreation from './src/pages/PetCreation';
+import { setCustomText } from 'react-native-global-props';
+
+const customTextProps = {
+  style: {
+    fontFamily: 'Itim-Regular',
+    color:'red'
+  },
+};
+
+setCustomText(customTextProps);;
 
 const Stack = createNativeStackNavigator();
 
@@ -40,8 +51,9 @@ const App = () => {
   return (
     <Auth0Provider domain={domain} clientId={clientId}>
       <NavigationContainer>
-        <Stack.Navigator initialRouteName='Auth'>
+        <Stack.Navigator initialRouteName='Pet Creation' screenOptions={{ headerShown: false }}>
           <Stack.Screen name='Auth' component={Auth} />
+          <Stack.Screen name='Pet Creation' component={PetCreation} />
         </Stack.Navigator>
       </NavigationContainer>
     </Auth0Provider>

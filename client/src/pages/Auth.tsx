@@ -7,13 +7,21 @@ export default function Auth() {
   const { authorize, clearSession, user, getCredentials } = useAuth0();
 
   useEffect(() => {
-    console.log(user);
-
     if (user) {
-      getCredentials('openid profile email').then((res) => {
-        if (res && res.accessToken) {
+      sendRequest();
+    }
+  }, [user]);
+
+  const sendRequest = () => {
+    if (user) {
+      getCredentials('openid profile email').then(async (auth) => {
+        if (auth && auth.accessToken) {
           axios
-            .get('http://10.0.2.2:3000/api/private', { headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${res.accessToken}` } })
+            .post(
+              'http://10.0.2.2:3000/api/private/owner/signup',
+              { name: user.name, username: user.nickname },
+              { headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${auth.accessToken}` } }
+            )
             .then((res) => {
               console.log(res.status, res.data);
             })
@@ -23,10 +31,12 @@ export default function Auth() {
         }
       });
     }
-  }, [user]);
+  };
 
   const login = async () => {
-    authorize({ scope: 'openid profile email', audience: 'https://pet-app.com/api/v2' });
+    authorize({ scope: 'openid profile email', audience: 'https://pet-app.com/api/v2' }).then(() => {
+      console.log(user);
+    });
   };
 
   const logout = async () => {
@@ -45,6 +55,11 @@ export default function Auth() {
       {!loggedIn && <Text>You are not logged in</Text>}
 
       <Button onPress={loggedIn ? logout : login} title={loggedIn ? 'Log Out' : 'Log In'} />
+      {loggedIn && (
+        <View className='mt-5'>
+          <Button onPress={sendRequest} title={'Send Request'} />
+        </View>
+      )}
     </View>
   );
 }

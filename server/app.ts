@@ -6,11 +6,13 @@ import { connectToDB, sequelize } from './src/db/connection';
 import { Owner } from './src/models/Owner';
 import { Pet } from './src/models/Pet';
 import type { ErrorRequestHandler } from 'express';
+import { OwnerRouter } from './src/routes/OwnerRoute';
 dotenv.config();
 
 const app = express();
 
 app.use(express.urlencoded({ extended: true }));
+app.use(express.json());
 app.use(cors({ origin: true, credentials: true }));
 
 // Authorization middleware. When used, the Access Token must
@@ -37,12 +39,7 @@ app.get('/api/public', (req, res) => {
 });
 
 // This route needs authentication
-app.use('/api/private', checkJwt, (req, res) => {
-  console.log(req.auth.payload.sub);
-  res.json({
-    message: 'Hello from a private endpoint! You need to be authenticated to see this.',
-  });
-});
+app.use('/api/private/owner', checkJwt, OwnerRouter);
 
 app.use(jwtErrorHandler);
 
