@@ -13,18 +13,17 @@ import { Auth0Provider } from 'react-native-auth0';
 import { Config } from 'react-native-config';
 import Auth from './src/pages/Auth';
 import PetCreation from './src/pages/PetCreation';
-import { setCustomText } from 'react-native-global-props';
+import AccountCreation from './src/pages/AccountCreation';
+import Home from './src/pages/Home';
 
-const customTextProps = {
-  style: {
-    fontFamily: 'Itim-Regular',
-    color:'red'
-  },
+export type RootStackParamList = {
+  Home: undefined;
+  Auth: undefined;
+  'Pet Creation': undefined;
+  'Account Creation': undefined;
 };
 
-setCustomText(customTextProps);;
-
-const Stack = createNativeStackNavigator();
+const Stack = createNativeStackNavigator<RootStackParamList>();
 
 const App = () => {
   const [domain, setDomain] = useState<string>();
@@ -51,9 +50,11 @@ const App = () => {
   return (
     <Auth0Provider domain={domain} clientId={clientId}>
       <NavigationContainer>
-        <Stack.Navigator initialRouteName='Pet Creation' screenOptions={{ headerShown: false }}>
+        <Stack.Navigator initialRouteName='Auth' screenOptions={{ headerShown: false, headerBackVisible: false }}>
+          <Stack.Screen name='Home' component={Home} />
           <Stack.Screen name='Auth' component={Auth} />
           <Stack.Screen name='Pet Creation' component={PetCreation} />
+          <Stack.Screen name='Account Creation' component={AccountCreation} />
         </Stack.Navigator>
       </NavigationContainer>
     </Auth0Provider>

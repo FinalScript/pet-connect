@@ -1,5 +1,5 @@
 import express from 'express';
-import { createOwner, getOwner } from '../controllers/OwnerController';
+import { createOwner, getOwner, getOwnerByUsername } from '../controllers/OwnerController';
 import { Owner } from '../models/Owner';
 
 const router = express.Router();
@@ -17,6 +17,25 @@ router.get('/', async (req, res) => {
   }
 
   res.status(404).send();
+});
+
+router.post('/validateusername', async (req, res) => {
+  const { username } = req.body;
+
+  console.log(username)
+  if (!username) {
+    res.status(400).send('Please provide username');
+    return;
+  }
+
+  const owner = await getOwnerByUsername(username);
+
+  if (owner) {
+    res.status(409).send('Username exists');
+    return;
+  }
+
+  res.status(200).send("Username available");
 });
 
 router.post('/signup', async (req, res) => {

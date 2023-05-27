@@ -2,8 +2,76 @@
   "migIndex": 1,
   "data": [
     {
+      "path": "assets/fonts/BalooChettan2-Bold.ttf",
+      "sha1": "042135f3020bd16db7d48dc572dad2c75dc05632"
+    },
+    {
+      "path": "assets/fonts/BalooChettan2-ExtraBold.ttf",
+      "sha1": "50cda77732c318d99ebbaefe3c5bbda81daa86ef"
+    },
+    {
+      "path": "assets/fonts/BalooChettan2-Medium.ttf",
+      "sha1": "dcf66ccf0f97ea80a5963e0d00f673dfd354ffc4"
+    },
+    {
+      "path": "assets/fonts/BalooChettan2-Regular.ttf",
+      "sha1": "083dcb72dab168434b0e7fd42d265648eaef54ed"
+    },
+    {
+      "path": "assets/fonts/BalooChettan2-SemiBold.ttf",
+      "sha1": "7f494a9dc377e07976267ed9d3ee3dcd826c3ecb"
+    },
+    {
       "path": "assets/fonts/Itim-Regular.ttf",
       "sha1": "f294b5fb73204a652fe38101ff21556505d0af83"
+    },
+    {
+      "path": "assets/fonts/Mali-Bold.ttf",
+      "sha1": "7747f0561ebdece05d59a2f0d8bc02158081f9ec"
+    },
+    {
+      "path": "assets/fonts/Mali-BoldItalic.ttf",
+      "sha1": "99e20cf54af8b46c2e02e80ebf7e1eb3b3695d5a"
+    },
+    {
+      "path": "assets/fonts/Mali-ExtraLight.ttf",
+      "sha1": "29c5aba6a05de7f103a44d98e317807793f03257"
+    },
+    {
+      "path": "assets/fonts/Mali-ExtraLightItalic.ttf",
+      "sha1": "bfa07e4c5014f4f4f69e8a6aabace9771fc59d61"
+    },
+    {
+      "path": "assets/fonts/Mali-Italic.ttf",
+      "sha1": "4838500bcc9bffb757acaef57fe9bc44a43536d4"
+    },
+    {
+      "path": "assets/fonts/Mali-Light.ttf",
+      "sha1": "ac9b3ee336a0431543be07ce638d97517db4dec5"
+    },
+    {
+      "path": "assets/fonts/Mali-LightItalic.ttf",
+      "sha1": "ce189b5cf6206814839d21b134824accd919664a"
+    },
+    {
+      "path": "assets/fonts/Mali-Medium.ttf",
+      "sha1": "fccbc3d3e42556c0ce0b2489eb6533b19634c220"
+    },
+    {
+      "path": "assets/fonts/Mali-MediumItalic.ttf",
+      "sha1": "85ecb713b52cdc57c761c2a53562bead3fffdcb0"
+    },
+    {
+      "path": "assets/fonts/Mali-Regular.ttf",
+      "sha1": "0e85eca27ecd6e547f5e24d2748c54dfed20a63b"
+    },
+    {
+      "path": "assets/fonts/Mali-SemiBold.ttf",
+      "sha1": "df49ada1add3f3ece70ae9a6f39dda5737b2076b"
+    },
+    {
+      "path": "assets/fonts/Mali-SemiBoldItalic.ttf",
+      "sha1": "e3b754f84cf0702c46d0b20e32a05fd712d402c1"
     }
   ]
 }

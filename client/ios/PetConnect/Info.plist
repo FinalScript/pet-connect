@@ -49,10 +49,27 @@
 		</dict>
 	</dict>
 	<key>NSLocationWhenInUseUsageDescription</key>
-	<string></string>
+	<string/>
 	<key>UIAppFonts</key>
 	<array>
 		<string>Itim-Regular.ttf</string>
+		<string>Mali-Bold.ttf</string>
+		<string>Mali-BoldItalic.ttf</string>
+		<string>Mali-ExtraLight.ttf</string>
+		<string>Mali-ExtraLightItalic.ttf</string>
+		<string>Mali-Italic.ttf</string>
+		<string>Mali-Light.ttf</string>
+		<string>Mali-LightItalic.ttf</string>
+		<string>Mali-Medium.ttf</string>
+		<string>Mali-MediumItalic.ttf</string>
+		<string>Mali-Regular.ttf</string>
+		<string>Mali-SemiBold.ttf</string>
+		<string>Mali-SemiBoldItalic.ttf</string>
+		<string>BalooChettan2-Bold.ttf</string>
+		<string>BalooChettan2-ExtraBold.ttf</string>
+		<string>BalooChettan2-Medium.ttf</string>
+		<string>BalooChettan2-Regular.ttf</string>
+		<string>BalooChettan2-SemiBold.ttf</string>
 	</array>
 	<key>UILaunchStoryboardName</key>
 	<string>LaunchScreen</string>
