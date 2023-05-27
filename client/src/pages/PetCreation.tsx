@@ -1,10 +1,8 @@
 import React, { useState } from 'react';
-import { View, Image, TouchableWithoutFeedback, Button } from 'react-native';
+import { View, Image, TouchableWithoutFeedback, TouchableHighlight, TouchableOpacity, Button } from 'react-native';
 import { styled } from 'nativewind';
-import { TouchableHighlight, TouchableOpacity } from 'react-native-gesture-handler';
 import Text from '../components/Text';
-
-const StyledButton = styled(Button);
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 const petTypes = [
   { type: 'Dog', img: require('../../assets/img/dog.png') },
@@ -22,11 +20,11 @@ export default function PetCreation() {
   const [shuffle, setShuffle] = useState(0);
 
   return (
-    <View className='bg-[#fde1da] h-screen p-5 flex flex-col justify-between'>
-      <View className='mt-10'>
+    <SafeAreaView className='bg-[#fde1da] h-screen p-5 flex flex-col justify-between'>
+      <View>
         <Text className='text-[#232323] font-semibold text-3xl'>Let your pet come sit on my lap... oh yeah</Text>
 
-        <View className='mt-14 flex flex-wrap flex-row justify-center'>
+        <View className='mt-14 -mx-5 flex flex-wrap flex-row justify-center'>
           {petTypes.slice(shuffle, shuffle + 4).map((pet) => {
             return (
               <TouchableWithoutFeedback
@@ -37,10 +35,10 @@ export default function PetCreation() {
                 <View
                   className={
                     (selectedPetType === pet.type ? 'border-[#FFBA93]' : 'border-transparent') +
-                    ' mb-5 mx-2.5 p-5 bg-[#fff4f3] border-4 shadow-md shadow-[#e47167] w-40 h-40 rounded-3xl flex items-center'
+                    ' mb-5 mx-2.5 p-5 bg-[#fff4f3] border-[5px] shadow-md shadow-[#e47167a2] w-36 h-36 rounded-3xl flex items-center'
                   }>
                   <Image className='flex w-full h-[80%] aspect-square opacity-70' source={pet.img} />
-                  <Text className='mt-2 text-lg'>{pet.type}</Text>
+                  <Text className='mt-1 text-lg text-[#232323]'>{pet.type}</Text>
                 </View>
               </TouchableWithoutFeedback>
             );
@@ -64,16 +62,18 @@ export default function PetCreation() {
       </View>
 
       <View className='mb-5 mx-2 flex flex-row justify-between items-center'>
-        <TouchableWithoutFeedback>
-          <Text className='text-xl text-[#c07c4e]'>Skip</Text>
-        </TouchableWithoutFeedback>
+        <TouchableOpacity>
+          <View className='px-6 py-1 rounded-3xl'>
+            <Text className='text-xl text-[#c07c4e]'>Skip</Text>
+          </View>
+        </TouchableOpacity>
 
         <TouchableOpacity>
-          <View className='bg-[#FFBA93] px-6 py-2 rounded-3xl'>
-            <Text className='text-2xl text-black'>Next</Text>
+          <View className='bg-[#FFBA93] px-6 py-1 rounded-3xl  flex flex-row justify-center items-center'>
+            <Text className='text-xl text-black leading-none text-center'>Next</Text>
           </View>
         </TouchableOpacity>
       </View>
-    </View>
+    </SafeAreaView>
   );
 }
