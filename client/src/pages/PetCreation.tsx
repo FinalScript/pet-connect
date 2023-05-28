@@ -85,20 +85,20 @@ export default function PetCreation() {
 
         <View className='mt-10 flex flex-row justify-center'>
           <TouchableOpacity onPress={moreOptionsOnPress}>
-            <Text className='text-[#505050] text-xl'>See more options...</Text>
+            <Text className='text-[#505050] text-xl p-2'>See more options...</Text>
           </TouchableOpacity>
         </View>
       </View>
 
       <View className='mb-5 mx-2 flex flex-row justify-between items-center'>
         <TouchableOpacity onPress={skipOnPress} activeOpacity={0.6}>
-          <View className='px-6 py-1 rounded-3xl'>
+          <View className='px-6 py-2 rounded-3xl'>
             <Text className='text-xl text-[#c07c4e]'>Skip</Text>
           </View>
         </TouchableOpacity>
 
         <TouchableOpacity onPress={nextOnPress} activeOpacity={0.6}>
-          <View className='bg-[#FFBA93] px-6 py-1 rounded-3xl  flex flex-row justify-center items-center'>
+          <View className='bg-[#FFBA93] px-6 py-2 rounded-3xl  flex flex-row justify-center items-center'>
             <Text className='text-xl text-black'>Next</Text>
           </View>
         </TouchableOpacity>
