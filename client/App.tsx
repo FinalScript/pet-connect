@@ -6,7 +6,7 @@
  */
 
 import React, { useEffect, useState } from 'react';
-import { SafeAreaView, Text } from 'react-native';
+import { SafeAreaView, Text, Platform } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { Auth0Provider } from 'react-native-auth0';
@@ -15,6 +15,7 @@ import Auth from './src/pages/Auth';
 import PetCreation from './src/pages/PetCreation';
 import AccountCreation from './src/pages/AccountCreation';
 import Home from './src/pages/Home';
+import { setApiBaseUrl } from './src/api';
 
 export type RootStackParamList = {
   Home: undefined;
@@ -36,6 +37,10 @@ const App = () => {
 
     if (Config.AUTH0_CLIENT_ID) {
       setClientId(Config.AUTH0_CLIENT_ID);
+    }
+
+    if (Platform.OS === 'ios') {
+      setApiBaseUrl('http://localhost:3000');
     }
   }, []);
 
