@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
-import { View, TouchableOpacity } from 'react-native';
+import { View, TouchableOpacity, ActivityIndicator, TouchableHighlight } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Text from '../components/Text';
 import { TextInput } from 'react-native-gesture-handler';
@@ -9,11 +9,7 @@ import { signup } from '../api';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../../App';
-
-const options: HapticOptions = {
-  enableVibrateFallback: true,
-  ignoreAndroidSystemSettings: false,
-};
+import { options } from '../utils/hapticFeedbackOptions';
 
 type NavigationProp = NativeStackNavigationProp<RootStackParamList, 'Account Creation'>;
 
@@ -22,25 +18,37 @@ export default function AccountCreation() {
   const [username, setUsername] = useState<string>();
   const [isUsernameValid, setIsUsernameValid] = useState(false);
   const [name, setName] = useState<string>();
+  const nameRef = useRef<TextInput>(null);
   const [focus, setFocus] = useState({ username: false, name: false });
+  const [isLoading, setIsLoading] = useState(false);
 
   const nextOnPress = useCallback(() => {
     if (isUsernameValid && username) {
-      signup({ username: username.toLowerCase(), name })
-        .then((res) => {
-          console.log(res.status, res.data);
+      trigger(HapticFeedbackTypes.impactMedium, options);
+      setIsLoading(true);
 
-          if (res.status === 200) {
-            navigation.replace('Pet Creation');
-          }
-        })
-        .catch((err) => {
-          console.log(err);
-        });
+      setTimeout(() => {
+        signup({ username: username.toLowerCase(), name })
+          .then((res) => {
+            console.log(res.status, res.data);
+
+            if (res.status === 200) {
+              navigation.replace('Pet Creation');
+            }
+          })
+          .catch((err) => {
+            console.log(err);
+          })
+          .finally(() => {
+            setIsLoading(false);
+          });
+      }, 1500);
     }
-
-    trigger(HapticFeedbackTypes.impactMedium, options);
   }, [isUsernameValid, username, name]);
+
+  const focusNameInput = () => {
+    nameRef.current?.focus();
+  };
 
   return (
     <SafeAreaView className='bg-[#fde1da] h-screen p-5 flex flex-col justify-between'>
@@ -49,7 +57,7 @@ export default function AccountCreation() {
 
         <View className='mt-10 mx-5'>
           <View>
-            <UsernameInput value={username} setValue={setUsername} isValid={isUsernameValid} setIsValid={setIsUsernameValid} />
+            <UsernameInput value={username} setValue={setUsername} isValid={isUsernameValid} setIsValid={setIsUsernameValid} focusNext={focusNameInput} />
             <View>
               <Text>- No spaces</Text>
               <Text>- Dashes, underscores, and periods allowed</Text>
@@ -59,9 +67,10 @@ export default function AccountCreation() {
           <View className='mt-5'>
             <Text className='mb-2 pl-4 text-xl font-bold text-[#000000bb]'>Name</Text>
             <TextInput
+              ref={nameRef}
               className={
                 (focus.name === true ? 'border-[#FFBA93]' : 'border-transparent') +
-                ' bg-[#fff4f3] border-[5px] shadow-md shadow-[#e47167a2] rounded-3xl px-5 py-3 text-lg'
+                ' bg-[#fff4f3] border-[5px] shadow-md shadow-[#e47167a2] rounded-3xl h-16 px-5 pb-3 text-lg'
               }
               value={name}
               onChangeText={setName}
@@ -84,13 +93,25 @@ export default function AccountCreation() {
         </View>
       </View>
 
-      <View className='mb-5 mx-2 flex flex-row justify-end items-center'>
-        <TouchableOpacity onPress={nextOnPress}>
-          <View className='bg-[#FFBA93] px-6 py-1 rounded-3xl  flex flex-row justify-center items-center'>
-            <Text className='text-xl font-semibold text-black'>Next</Text>
-          </View>
-        </TouchableOpacity>
-      </View>
+      {isUsernameValid && (
+        <View className='mb-5 mx-2 flex flex-row justify-end items-center'>
+          <TouchableHighlight
+            className='bg-[#FFBA93] transition-all rounded-3xl shadow-md shadow-[#e47167a2]'
+            underlayColor={'#c59071'}
+            onPress={nextOnPress}
+            disabled={isLoading}>
+            {isLoading ? (
+              <View className='p-1'>
+                <ActivityIndicator size='large' color={'#e47167a2'} />
+              </View>
+            ) : (
+              <View className='px-6 py-1 flex flex-row justify-center items-center'>
+                <Text className='text-xl font-semibold text-black'>Next</Text>
+              </View>
+            )}
+          </TouchableHighlight>
+        </View>
+      )}
     </SafeAreaView>
   );
 }

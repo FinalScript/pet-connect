@@ -6,11 +6,7 @@ import { trigger, HapticOptions, HapticFeedbackTypes } from 'react-native-haptic
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../../App';
-
-const options: HapticOptions = {
-  enableVibrateFallback: true,
-  ignoreAndroidSystemSettings: false,
-};
+import { options } from '../utils/hapticFeedbackOptions';
 
 const petTypes = [
   { type: 'Dog', img: require('../../assets/img/dog.png') },

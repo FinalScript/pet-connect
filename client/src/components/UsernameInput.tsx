@@ -10,9 +10,10 @@ interface Props {
   setIsValid: React.Dispatch<React.SetStateAction<boolean>>;
   isValid: boolean;
   className?: string | undefined;
+  focusNext: Function;
 }
 
-export default function UsernameInput({ className, value, setValue, isValid, setIsValid }: Props) {
+export default function UsernameInput({ className, value, setValue, isValid, setIsValid, focusNext }: Props) {
   const [inFocus, setInFocus] = useState(false);
   const [isError, setIsError] = useState(false);
   const [message, setMessage] = useState('');
@@ -67,11 +68,12 @@ export default function UsernameInput({ className, value, setValue, isValid, set
             setMessage('Username Available');
           }
         })
-        .catch((err) => {
-          setIsValid(false);
-          setIsError(true);
-          setMessage('Username Taken');
-          console.log(err);
+        .catch((error) => {
+          if (error.response && error.response.status === 409) {
+            setIsValid(false);
+            setIsError(true);
+            setMessage('Username Taken');
+          }
         });
     }, 2000),
     []
@@ -88,7 +90,7 @@ export default function UsernameInput({ className, value, setValue, isValid, set
         <TextInput
           className={
             (isValid ? 'border-[#6cc594]' : isError ? 'border-[#e2514c]' : inFocus ? 'border-[#FFBA93]' : 'border-transparent') +
-            ' bg-[#fff4f3] border-[5px] shadow-md shadow-[#e47167a2] w-full rounded-3xl px-5 py-3 text-lg'
+            ' bg-[#fff4f3] border-[5px] shadow-md shadow-[#e47167a2] w-full rounded-3xl h-16 px-5 pb-3 text-lg'
           }
           value={value}
           onChangeText={onChange}
@@ -98,6 +100,9 @@ export default function UsernameInput({ className, value, setValue, isValid, set
           autoCapitalize={'none'}
           maxLength={30}
           placeholder='Enter your username'
+          onSubmitEditing={() => {
+            focusNext();
+          }}
         />
         <View className={messageStyles() + ' rounded-b-xl px-3 pb-1 text-sm text-[#000000bb]'}>
           <Text className='text-sm text-[#000000bb]'>{message}</Text>
