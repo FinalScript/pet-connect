@@ -1,6 +1,5 @@
 import React, { useCallback, useState } from 'react';
 import { View, Image, TouchableWithoutFeedback, TouchableHighlight, TouchableOpacity, Button } from 'react-native';
-import { styled } from 'nativewind';
 import Text from '../components/Text';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { trigger, HapticOptions, HapticFeedbackTypes } from 'react-native-haptic-feedback';

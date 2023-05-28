@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
-import { View, SafeAreaView, TouchableOpacity } from 'react-native';
+import { View, TouchableOpacity } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import Text from '../components/Text';
 import { TextInput } from 'react-native-gesture-handler';
 import { HapticFeedbackTypes, HapticOptions, trigger } from 'react-native-haptic-feedback';
@@ -46,7 +47,7 @@ export default function AccountCreation() {
       <View>
         <Text className='text-[#232323] font-semibold text-3xl'>We need more details about you to finish up your account!</Text>
 
-        <View className='mt-10'>
+        <View className='mt-10 mx-5'>
           <View>
             <UsernameInput value={username} setValue={setUsername} isValid={isUsernameValid} setIsValid={setIsUsernameValid} />
             <View>
