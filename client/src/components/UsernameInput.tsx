@@ -29,7 +29,7 @@ export default function UsernameInput({ className, value, setValue, isValid, set
     setIsValid(false);
     setMessage('');
     setIsError(false);
-    setValue(text.toLowerCase());
+    setValue(text);
   }, []);
 
   const validateUsername = useCallback((text: string) => {

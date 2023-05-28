@@ -25,7 +25,7 @@ export default function AccountCreation() {
 
   const nextOnPress = useCallback(() => {
     if (isUsernameValid && username) {
-      signup({ username, name })
+      signup({ username: username.toLowerCase(), name })
         .then((res) => {
           console.log(res.status, res.data);
 
@@ -39,7 +39,7 @@ export default function AccountCreation() {
     }
 
     trigger(HapticFeedbackTypes.impactMedium, options);
-  }, [isUsernameValid, username]);
+  }, [isUsernameValid, username, name]);
 
   return (
     <SafeAreaView className='bg-[#fde1da] h-screen p-5 flex flex-col justify-between'>
