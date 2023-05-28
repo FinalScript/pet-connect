@@ -106,7 +106,7 @@ export default function UsernameInput({ className, value, setValue, isValid, set
           blurOnSubmit={false}
         />
         <View className={messageStyles() + ' rounded-b-xl px-3 pb-1 text-sm text-[#000000bb]'}>
-          <Text className='text-sm text-[#000000bb]'>{message}</Text>
+          <Text className='text-xs text-[#000000bb]'>{message}</Text>
         </View>
       </View>
     </View>
