@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-let api = axios.create({ baseURL: 'http://10.0.2.2:3000' });
+let api = axios.create({ baseURL: 'http://10.0.0.76:3000' });
 
 export const setApiBaseUrl = (url: string) => {
   api.defaults.baseURL = url;

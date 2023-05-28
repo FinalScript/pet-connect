@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
-import { View, TouchableOpacity, ActivityIndicator, TouchableHighlight } from 'react-native';
+import { View, ScrollView, ActivityIndicator, TouchableHighlight, KeyboardAvoidingView, Platform } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Text from '../components/Text';
 import { TextInput } from 'react-native-gesture-handler';
@@ -51,26 +51,26 @@ export default function AccountCreation() {
   };
 
   return (
-    <SafeAreaView className='bg-[#fde1da] h-screen p-5 flex flex-col justify-between'>
+    <SafeAreaView className='bg-[#fde1da] h-full p-5 flex flex-col justify-between'>
       <View>
-        <Text className='text-[#232323] font-semibold text-3xl'>We need more details about you to finish up your account!</Text>
+        <Text className='text-[#232323] font-semibold text-2xl'>We need more details about you to finish up your account!</Text>
 
-        <View className='mt-10 mx-5'>
+        <View className='mt-5 px-2'>
           <View>
             <UsernameInput value={username} setValue={setUsername} isValid={isUsernameValid} setIsValid={setIsUsernameValid} focusNext={focusNameInput} />
             <View>
-              <Text>- No spaces</Text>
-              <Text>- Dashes, underscores, and periods allowed</Text>
+              <Text className='text-xs pl-3'>- No spaces</Text>
+              <Text className='text-xs pl-3'>- Dashes, underscores, and periods allowed</Text>
             </View>
           </View>
 
           <View className='mt-5'>
-            <Text className='mb-2 pl-4 text-xl font-bold text-[#000000bb]'>Name</Text>
+            <Text className='mb-2 pl-4 text-lg font-bold text-[#000000bb]'>Name</Text>
             <TextInput
               ref={nameRef}
               className={
                 (focus.name === true ? 'border-[#FFBA93]' : 'border-transparent') +
-                ' bg-[#fff4f3] border-[5px] shadow-md shadow-[#e47167a2] rounded-3xl h-16 px-5 pb-3 text-lg'
+                ' bg-[#fff4f3] border-[5px] shadow-md shadow-[#e47167a2] rounded-3xl h-14 px-5 pb-2 text-md'
               }
               value={name}
               onChangeText={setName}

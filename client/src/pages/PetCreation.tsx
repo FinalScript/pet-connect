@@ -53,7 +53,7 @@ export default function PetCreation() {
   }, []);
 
   return (
-    <SafeAreaView className='bg-[#fde1da] h-screen p-5 flex flex-col justify-between'>
+    <SafeAreaView className='bg-[#fde1da] h-full p-5 flex flex-col justify-between'>
       <View>
         <Text className='text-[#232323] font-semibold text-3xl'>Time to build your pet's profile! Start by selecting the pet type.</Text>
 
