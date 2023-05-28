@@ -61,7 +61,7 @@ export default function AccountCreation() {
             <TextInput
               className={
                 (focus.name === true ? 'border-[#FFBA93]' : 'border-transparent') +
-                ' bg-[#fff4f3] border-[5px] shadow-md shadow-[#e47167a2] rounded-3xl px-5 text-lg'
+                ' bg-[#fff4f3] border-[5px] shadow-md shadow-[#e47167a2] rounded-3xl px-5 py-3 text-lg'
               }
               value={name}
               onChangeText={setName}

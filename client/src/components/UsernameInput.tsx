@@ -88,7 +88,7 @@ export default function UsernameInput({ className, value, setValue, isValid, set
         <TextInput
           className={
             (isValid ? 'border-[#6cc594]' : isError ? 'border-[#e2514c]' : inFocus ? 'border-[#FFBA93]' : 'border-transparent') +
-            ' bg-[#fff4f3] border-[5px] shadow-md shadow-[#e47167a2] w-full rounded-3xl px-5 text-lg'
+            ' bg-[#fff4f3] border-[5px] shadow-md shadow-[#e47167a2] w-full rounded-3xl px-5 py-3 text-lg'
           }
           value={value}
           onChangeText={onChange}
@@ -99,7 +99,9 @@ export default function UsernameInput({ className, value, setValue, isValid, set
           maxLength={30}
           placeholder='Enter your username'
         />
-        <Text className={messageStyles() + ' rounded-b-xl px-3 pb-1 text-sm text-[#000000bb]'}>{message}</Text>
+        <View className={messageStyles() + ' rounded-b-xl px-3 pb-1 text-sm text-[#000000bb]'}>
+          <Text className='text-sm text-[#000000bb]'>{message}</Text>
+        </View>
       </View>
     </View>
   );
