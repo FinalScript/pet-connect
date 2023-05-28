@@ -96,7 +96,6 @@ export default function UsernameInput({ className, value, setValue, isValid, set
           onBlur={onBlur}
           autoCorrect={false}
           autoCapitalize={'none'}
-          keyboardType={'visible-password'}
           maxLength={30}
           placeholder='Enter your username'
         />
