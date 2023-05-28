@@ -28,6 +28,7 @@
 		CCA57DBFAEA74B7EA4FCCB13 /* Mali-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = FEA8CF577F4047B7A07DDA10 /* Mali-Regular.ttf */; };
 		D85586E8AEC04DFABAFE134C /* BalooChettan2-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = CE9B88D232004A13A80D7EAA /* BalooChettan2-Regular.ttf */; };
 		D8CBBCFD4E6646BA84B67BAB /* Mali-SemiBoldItalic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 532E083E956E4B3AB73892E9 /* Mali-SemiBoldItalic.ttf */; };
+		DD6305292A2311E40022E7DA /* libRNReactNativeHapticFeedback.a in Frameworks */ = {isa = PBXBuildFile; fileRef = DD6305282A2311E40022E7DA /* libRNReactNativeHapticFeedback.a */; };
 		E5BCA0B5C19242AC92CE3F30 /* Itim-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 527C6DD0CF054233ACAEB6CA /* Itim-Regular.ttf */; };
 		E867F29E2FA2475DBA64F1FA /* Mali-Italic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 60B8EC2D478548A3BAB1C607 /* Mali-Italic.ttf */; };
 		FF1FE0A0CA514F64A9985B59 /* Mali-LightItalic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 2B57CEE874434CF08D6071F9 /* Mali-LightItalic.ttf */; };
@@ -48,7 +49,7 @@
 		00E356EE1AD99517003FC87E /* PetConnectTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = PetConnectTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		00E356F11AD99517003FC87E /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		00E356F21AD99517003FC87E /* PetConnectTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = PetConnectTests.m; sourceTree = "<group>"; };
-		04AB17F0E7A24ABE90B81928 /* Mali-Light.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "Mali-Light.ttf"; path = "../assets/fonts/Mali-Light.ttf"; sourceTree = "<group>"; };
+		04AB17F0E7A24ABE90B81928 /* Mali-Light.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Mali-Light.ttf"; path = "../assets/fonts/Mali-Light.ttf"; sourceTree = "<group>"; };
 		13B07F961A680F5B00A75B9A /* PetConnect.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = PetConnect.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		13B07FAF1A68108700A75B9A /* AppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AppDelegate.h; path = PetConnect/AppDelegate.h; sourceTree = "<group>"; };
 		13B07FB01A68108700A75B9A /* AppDelegate.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = AppDelegate.mm; path = PetConnect/AppDelegate.mm; sourceTree = "<group>"; };
@@ -56,30 +57,32 @@
 		13B07FB61A68108700A75B9A /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Info.plist; path = PetConnect/Info.plist; sourceTree = "<group>"; };
 		13B07FB71A68108700A75B9A /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = main.m; path = PetConnect/main.m; sourceTree = "<group>"; };
 		19F6CBCC0A4E27FBF8BF4A61 /* libPods-PetConnect-PetConnectTests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-PetConnect-PetConnectTests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
-		1C57ED85434149CDA7348ECA /* Mali-Bold.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "Mali-Bold.ttf"; path = "../assets/fonts/Mali-Bold.ttf"; sourceTree = "<group>"; };
-		29290B54055E4DC9AA9E859D /* BalooChettan2-SemiBold.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "BalooChettan2-SemiBold.ttf"; path = "../assets/fonts/BalooChettan2-SemiBold.ttf"; sourceTree = "<group>"; };
-		2B57CEE874434CF08D6071F9 /* Mali-LightItalic.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "Mali-LightItalic.ttf"; path = "../assets/fonts/Mali-LightItalic.ttf"; sourceTree = "<group>"; };
-		300B792BA1EA404CA7D76D01 /* BalooChettan2-Bold.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "BalooChettan2-Bold.ttf"; path = "../assets/fonts/BalooChettan2-Bold.ttf"; sourceTree = "<group>"; };
-		322C76F3D2604DD7AB5BADCF /* Mali-ExtraLightItalic.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "Mali-ExtraLightItalic.ttf"; path = "../assets/fonts/Mali-ExtraLightItalic.ttf"; sourceTree = "<group>"; };
+		1C57ED85434149CDA7348ECA /* Mali-Bold.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Mali-Bold.ttf"; path = "../assets/fonts/Mali-Bold.ttf"; sourceTree = "<group>"; };
+		29290B54055E4DC9AA9E859D /* BalooChettan2-SemiBold.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "BalooChettan2-SemiBold.ttf"; path = "../assets/fonts/BalooChettan2-SemiBold.ttf"; sourceTree = "<group>"; };
+		2B57CEE874434CF08D6071F9 /* Mali-LightItalic.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Mali-LightItalic.ttf"; path = "../assets/fonts/Mali-LightItalic.ttf"; sourceTree = "<group>"; };
+		300B792BA1EA404CA7D76D01 /* BalooChettan2-Bold.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "BalooChettan2-Bold.ttf"; path = "../assets/fonts/BalooChettan2-Bold.ttf"; sourceTree = "<group>"; };
+		322C76F3D2604DD7AB5BADCF /* Mali-ExtraLightItalic.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Mali-ExtraLightItalic.ttf"; path = "../assets/fonts/Mali-ExtraLightItalic.ttf"; sourceTree = "<group>"; };
 		3B4392A12AC88292D35C810B /* Pods-PetConnect.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-PetConnect.debug.xcconfig"; path = "Target Support Files/Pods-PetConnect/Pods-PetConnect.debug.xcconfig"; sourceTree = "<group>"; };
 		527C6DD0CF054233ACAEB6CA /* Itim-Regular.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Itim-Regular.ttf"; path = "../assets/fonts/Itim-Regular.ttf"; sourceTree = "<group>"; };
-		532E083E956E4B3AB73892E9 /* Mali-SemiBoldItalic.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "Mali-SemiBoldItalic.ttf"; path = "../assets/fonts/Mali-SemiBoldItalic.ttf"; sourceTree = "<group>"; };
+		532E083E956E4B3AB73892E9 /* Mali-SemiBoldItalic.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Mali-SemiBoldItalic.ttf"; path = "../assets/fonts/Mali-SemiBoldItalic.ttf"; sourceTree = "<group>"; };
 		5709B34CF0A7D63546082F79 /* Pods-PetConnect.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-PetConnect.release.xcconfig"; path = "Target Support Files/Pods-PetConnect/Pods-PetConnect.release.xcconfig"; sourceTree = "<group>"; };
 		5B7EB9410499542E8C5724F5 /* Pods-PetConnect-PetConnectTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-PetConnect-PetConnectTests.debug.xcconfig"; path = "Target Support Files/Pods-PetConnect-PetConnectTests/Pods-PetConnect-PetConnectTests.debug.xcconfig"; sourceTree = "<group>"; };
 		5DCACB8F33CDC322A6C60F78 /* libPods-PetConnect.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-PetConnect.a"; sourceTree = BUILT_PRODUCTS_DIR; };
-		60B8EC2D478548A3BAB1C607 /* Mali-Italic.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "Mali-Italic.ttf"; path = "../assets/fonts/Mali-Italic.ttf"; sourceTree = "<group>"; };
-		65F11644265E4CD99C4A0348 /* Mali-SemiBold.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "Mali-SemiBold.ttf"; path = "../assets/fonts/Mali-SemiBold.ttf"; sourceTree = "<group>"; };
-		773CDFB81EAB4AB399722C44 /* BalooChettan2-ExtraBold.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "BalooChettan2-ExtraBold.ttf"; path = "../assets/fonts/BalooChettan2-ExtraBold.ttf"; sourceTree = "<group>"; };
+		60B8EC2D478548A3BAB1C607 /* Mali-Italic.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Mali-Italic.ttf"; path = "../assets/fonts/Mali-Italic.ttf"; sourceTree = "<group>"; };
+		65F11644265E4CD99C4A0348 /* Mali-SemiBold.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Mali-SemiBold.ttf"; path = "../assets/fonts/Mali-SemiBold.ttf"; sourceTree = "<group>"; };
+		773CDFB81EAB4AB399722C44 /* BalooChettan2-ExtraBold.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "BalooChettan2-ExtraBold.ttf"; path = "../assets/fonts/BalooChettan2-ExtraBold.ttf"; sourceTree = "<group>"; };
 		81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = LaunchScreen.storyboard; path = PetConnect/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		89C6BE57DB24E9ADA2F236DE /* Pods-PetConnect-PetConnectTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-PetConnect-PetConnectTests.release.xcconfig"; path = "Target Support Files/Pods-PetConnect-PetConnectTests/Pods-PetConnect-PetConnectTests.release.xcconfig"; sourceTree = "<group>"; };
-		9DA7AFC59B62484DACD7748E /* BalooChettan2-Medium.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "BalooChettan2-Medium.ttf"; path = "../assets/fonts/BalooChettan2-Medium.ttf"; sourceTree = "<group>"; };
-		A049C07CEFBC42328D3EC6E8 /* Mali-Medium.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "Mali-Medium.ttf"; path = "../assets/fonts/Mali-Medium.ttf"; sourceTree = "<group>"; };
-		AD5D40620FB342CC964A97E3 /* Mali-BoldItalic.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "Mali-BoldItalic.ttf"; path = "../assets/fonts/Mali-BoldItalic.ttf"; sourceTree = "<group>"; };
-		CE9B88D232004A13A80D7EAA /* BalooChettan2-Regular.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "BalooChettan2-Regular.ttf"; path = "../assets/fonts/BalooChettan2-Regular.ttf"; sourceTree = "<group>"; };
-		DB77A657F4BF4A0E8C1A700D /* Mali-ExtraLight.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "Mali-ExtraLight.ttf"; path = "../assets/fonts/Mali-ExtraLight.ttf"; sourceTree = "<group>"; };
-		EC30FD85C795433EA3422BC8 /* Mali-MediumItalic.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "Mali-MediumItalic.ttf"; path = "../assets/fonts/Mali-MediumItalic.ttf"; sourceTree = "<group>"; };
+		9DA7AFC59B62484DACD7748E /* BalooChettan2-Medium.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "BalooChettan2-Medium.ttf"; path = "../assets/fonts/BalooChettan2-Medium.ttf"; sourceTree = "<group>"; };
+		A049C07CEFBC42328D3EC6E8 /* Mali-Medium.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Mali-Medium.ttf"; path = "../assets/fonts/Mali-Medium.ttf"; sourceTree = "<group>"; };
+		AD5D40620FB342CC964A97E3 /* Mali-BoldItalic.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Mali-BoldItalic.ttf"; path = "../assets/fonts/Mali-BoldItalic.ttf"; sourceTree = "<group>"; };
+		CE9B88D232004A13A80D7EAA /* BalooChettan2-Regular.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "BalooChettan2-Regular.ttf"; path = "../assets/fonts/BalooChettan2-Regular.ttf"; sourceTree = "<group>"; };
+		DB77A657F4BF4A0E8C1A700D /* Mali-ExtraLight.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Mali-ExtraLight.ttf"; path = "../assets/fonts/Mali-ExtraLight.ttf"; sourceTree = "<group>"; };
+		DD6305252A230F750022E7DA /* RNReactNativeHapticFeedback.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RNReactNativeHapticFeedback.xcodeproj; path = "../node_modules/react-native-haptic-feedback/ios/RNReactNativeHapticFeedback.xcodeproj"; sourceTree = "<group>"; };
+		DD6305282A2311E40022E7DA /* libRNReactNativeHapticFeedback.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; path = libRNReactNativeHapticFeedback.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		EC30FD85C795433EA3422BC8 /* Mali-MediumItalic.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Mali-MediumItalic.ttf"; path = "../assets/fonts/Mali-MediumItalic.ttf"; sourceTree = "<group>"; };
 		ED297162215061F000B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
-		FEA8CF577F4047B7A07DDA10 /* Mali-Regular.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "Mali-Regular.ttf"; path = "../assets/fonts/Mali-Regular.ttf"; sourceTree = "<group>"; };
+		FEA8CF577F4047B7A07DDA10 /* Mali-Regular.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Mali-Regular.ttf"; path = "../assets/fonts/Mali-Regular.ttf"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -95,6 +98,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				DD6305292A2311E40022E7DA /* libRNReactNativeHapticFeedback.a in Frameworks */,
 				0C80B921A6F3F58F76C31292 /* libPods-PetConnect.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -160,6 +164,7 @@
 		2D16E6871FA4F8E400B85C8A /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				DD6305282A2311E40022E7DA /* libRNReactNativeHapticFeedback.a */,
 				ED297162215061F000B7C4FE /* JavaScriptCore.framework */,
 				5DCACB8F33CDC322A6C60F78 /* libPods-PetConnect.a */,
 				19F6CBCC0A4E27FBF8BF4A61 /* libPods-PetConnect-PetConnectTests.a */,
@@ -170,6 +175,7 @@
 		832341AE1AAA6A7D00B99B32 /* Libraries */ = {
 			isa = PBXGroup;
 			children = (
+				DD6305252A230F750022E7DA /* RNReactNativeHapticFeedback.xcodeproj */,
 			);
 			name = Libraries;
 			sourceTree = "<group>";
@@ -208,6 +214,11 @@
 				89C6BE57DB24E9ADA2F236DE /* Pods-PetConnect-PetConnectTests.release.xcconfig */,
 			);
 			path = Pods;
+			sourceTree = "<group>";
+		};
+		DD6305262A230F750022E7DA /* Products */ = {
+			isa = PBXGroup;
+			name = Products;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -284,6 +295,12 @@
 			mainGroup = 83CBB9F61A601CBA00E9B192;
 			productRefGroup = 83CBBA001A601CBA00E9B192 /* Products */;
 			projectDirPath = "";
+			projectReferences = (
+				{
+					ProductGroup = DD6305262A230F750022E7DA /* Products */;
+					ProjectRef = DD6305252A230F750022E7DA /* RNReactNativeHapticFeedback.xcodeproj */;
+				},
+			);
 			projectRoot = "";
 			targets = (
 				13B07F861A680F5B00A75B9A /* PetConnect */,

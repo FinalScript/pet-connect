@@ -50,7 +50,7 @@ const App = () => {
   return (
     <Auth0Provider domain={domain} clientId={clientId}>
       <NavigationContainer>
-        <Stack.Navigator initialRouteName='Pet Creation' screenOptions={{ headerShown: false, headerBackVisible: false }}>
+        <Stack.Navigator initialRouteName='Auth' screenOptions={{ headerShown: false, headerBackVisible: false }}>
           <Stack.Screen name='Home' component={Home} />
           <Stack.Screen name='Auth' component={Auth} />
           <Stack.Screen name='Pet Creation' component={PetCreation} />
