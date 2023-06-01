@@ -1,12 +1,7 @@
 import request from 'supertest';
-import { getTestToken } from './generateToken';
 const baseURL = 'http://localhost:3000/api/private/pet/';
 
-let TEST_TOKEN = '';
-
-beforeAll(async () => {
-  TEST_TOKEN = `Bearer ${await getTestToken()}`;
-});
+const TEST_TOKEN = 'Bearer ' + process.env.API_TEST_TOKEN;
 
 describe('GET / without access token', () => {
   it('should return 401', async () => {
@@ -26,7 +21,7 @@ describe('GET / with access token but no "id"', () => {
 
 describe('POST /create without name', () => {
   it('should return 400', async () => {
-    const response = await request(baseURL).post('/signup').set('Authorization', TEST_TOKEN).send({ type: 'DOG' });
+    const response = await request(baseURL).post('/create').set('Authorization', TEST_TOKEN).send({ type: 'DOG' });
     expect(response.statusCode).toBe(400);
     expect(response.body.message).toBe('Name missing');
   });
@@ -34,7 +29,7 @@ describe('POST /create without name', () => {
 
 describe('POST /create without type', () => {
   it('should return 400', async () => {
-    const response = await request(baseURL).post('/signup').set('Authorization', TEST_TOKEN).send({ name: 'Max' });
+    const response = await request(baseURL).post('/create').set('Authorization', TEST_TOKEN).send({ name: 'Max' });
     expect(response.statusCode).toBe(400);
     expect(response.body.message).toBe('Type missing');
   });
@@ -42,7 +37,7 @@ describe('POST /create without type', () => {
 
 describe('POST /create with valid name and type', () => {
   it('should return 200', async () => {
-    const response = await request(baseURL).post('/signup').set('Authorization', TEST_TOKEN).send({ name: 'Max', type: 'DOG' });
+    const response = await request(baseURL).post('/create').set('Authorization', TEST_TOKEN).send({ name: 'Max', type: 'DOG' });
     expect(response.statusCode).toBe(200);
   });
 });
