@@ -24,18 +24,18 @@ router.post('/validateusername', async (req, res) => {
 
   console.log(username);
   if (!username) {
-    res.status(400).send('Please provide username');
+    res.status(400).send({ message: 'Please provide username' });
     return;
   }
 
   const owner = await getOwnerByUsername(username);
 
   if (owner) {
-    res.status(409).send('Username exists');
+    res.status(409).send({ message: 'Username exists' });
     return;
   }
 
-  res.status(200).send('Username available');
+  res.status(200).send({ message: 'Username available' });
 });
 
 router.post('/signup', async (req, res) => {
@@ -53,7 +53,7 @@ router.post('/signup', async (req, res) => {
     newUser = await createOwner({ authId, username, name, location });
   } catch (e) {
     console.error(e);
-    res.status(e.status).send(e.message);
+    res.status(e.status).send({ message: e.message });
     return;
   }
 
@@ -62,5 +62,5 @@ router.post('/signup', async (req, res) => {
     return;
   }
 
-  res.status(500).send('Error creating account');
+  res.status(500).send({ message: 'Error creating account' });
 });
