@@ -16,13 +16,13 @@ router.get('/', async (req, res) => {
     return;
   }
 
-  res.status(404).send();
+  res.status(404).send({ message: 'Account not found' });
 });
 
 router.post('/validateusername', async (req, res) => {
   const { username } = req.body;
 
-  console.log(username)
+  console.log(username);
   if (!username) {
     res.status(400).send('Please provide username');
     return;
@@ -35,7 +35,7 @@ router.post('/validateusername', async (req, res) => {
     return;
   }
 
-  res.status(200).send("Username available");
+  res.status(200).send('Username available');
 });
 
 router.post('/signup', async (req, res) => {
@@ -43,7 +43,7 @@ router.post('/signup', async (req, res) => {
   const { name, username, location } = req.body;
 
   if (!username) {
-    res.status(400).send('Username missing');
+    res.status(400).send({ message: 'Username missing' });
     return;
   }
 
