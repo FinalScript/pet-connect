@@ -102,15 +102,10 @@ export default function AccountCreation() {
             underlayColor={'#c59071'}
             onPress={nextOnPress}
             disabled={isLoading}>
-            {isLoading ? (
-              <View className='p-1'>
-                <ActivityIndicator size='large' color={'#e47167a2'} />
-              </View>
-            ) : (
-              <View className='px-6 py-1 flex flex-row justify-center items-center'>
-                <Text className='text-xl font-semibold text-black'>Next</Text>
-              </View>
-            )}
+            <View className='px-5 py-1 flex flex-row justify-center items-center'>
+              {isLoading && <ActivityIndicator className='mr-2 -ml-2' size='small' color={'#321411'} />}
+              <Text className='text-xl font-semibold text-black'>Next</Text>
+            </View>
           </TouchableHighlight>
         </View>
       )}
