@@ -2,6 +2,7 @@ import express from 'express';
 import { getOwner } from '../controllers/OwnerController';
 import { createPet } from '../controllers/PetController';
 import { Pet } from '../models/Pet';
+import { Owner } from '../models/Owner';
 // import { Owner } from '../models/Owner';
 
 const router = express.Router();
@@ -22,7 +23,6 @@ router.get('/', async (req, res) => {
 });
 
 router.post('/create', async (req, res) => {
-  console.log('In create');
   const authId = req.auth.payload.sub;
   const { name, type, description, location } = req.body;
   const owner = await getOwner(authId);
@@ -31,6 +31,7 @@ router.post('/create', async (req, res) => {
     res.status(404).send('Owner missing');
     return;
   }
+
   if (!name) {
     res.status(400).send('Name missing');
     return;
@@ -51,11 +52,17 @@ router.post('/create', async (req, res) => {
     return;
   }
 
+  let newOwner: Owner;
+
   try {
-    owner.addPet(newPet);
+    await owner.addPet(newPet);
+    await owner.save();
+    newOwner = await owner.reload();
   } catch (e) {
     console.error(e);
     res.status(e.status).send(e.message);
     return;
   }
+
+  res.status(200).send(newOwner);
 });
