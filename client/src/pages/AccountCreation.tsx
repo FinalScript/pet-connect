@@ -53,7 +53,7 @@ export default function AccountCreation() {
   return (
     <SafeAreaView className='bg-[#fde1da] h-full p-5 flex flex-col justify-between'>
       <View>
-        <Text className='text-[#232323] font-semibold text-2xl'>We need more details about you to finish up your account!</Text>
+        <Text className='text-[#232323] font-semibold text-3xl'>We need more details about you to finish up your account!</Text>
 
         <View className='mt-5 px-2'>
           <View>
@@ -65,13 +65,15 @@ export default function AccountCreation() {
           </View>
 
           <View className='mt-5'>
-            <Text className='mb-2 pl-4 text-lg font-bold text-[#000000bb]'>Name</Text>
+            <Text className='mb-2 pl-4 text-xl font-bold text-[#000000bb]'>Name</Text>
             <TextInput
               ref={nameRef}
               className={
                 (focus.name === true ? 'border-[#FFBA93]' : 'border-transparent') +
-                ' bg-[#fff4f3] border-[5px] shadow-md shadow-[#e47167a2] rounded-3xl h-14 px-5 pb-2 text-md'
+                ' bg-[#fff4f3] border-[5px] shadow-sm shadow-[#fa6b5e46] w-full rounded-3xl px-5 py-3 text-xl'
               }
+              style={{ fontFamily: 'BalooChettan2-Regular' }}
+              placeholderTextColor={'#444444bb'}
               value={name}
               onChangeText={setName}
               onFocus={() => {
@@ -96,7 +98,7 @@ export default function AccountCreation() {
       {isUsernameValid && (
         <View className='mb-5 mx-2 flex flex-row justify-end items-center'>
           <TouchableHighlight
-            className='bg-[#FFBA93] rounded-3xl shadow-md shadow-[#e47167a2]'
+            className='bg-[#FFBA93] rounded-3xl shadow-sm shadow-[#fa6b5e46]'
             underlayColor={'#c59071'}
             onPress={nextOnPress}
             disabled={isLoading}>

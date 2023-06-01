@@ -1,8 +1,9 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { TextInput } from 'react-native';
-import { View, Text, TextProps } from 'react-native';
+import { View, TextProps } from 'react-native';
 import { usernameExists } from '../api';
 import { throttle } from 'lodash';
+import Text from './Text';
 
 interface Props {
   setValue: React.Dispatch<React.SetStateAction<string | undefined>>;
@@ -85,13 +86,15 @@ export default function UsernameInput({ className, value, setValue, isValid, set
 
   return (
     <View className={className}>
-      <Text className='mb-2 pl-4 text-lg font-bold text-[#000000bb]'>Username *</Text>
+      <Text className='mb-2 pl-4 text-xl font-bold text-[#000000bb]'>Username *</Text>
       <View className='flex flex-col items-center w-full'>
         <TextInput
           className={
             (isValid ? 'border-[#6cc594]' : isError ? 'border-[#e2514c]' : inFocus ? 'border-[#FFBA93]' : 'border-transparent') +
-            ' bg-[#fff4f3] border-[5px] shadow-md shadow-[#e47167a2] w-full rounded-3xl h-14 px-5 pb-2 text-md'
+            ' bg-[#fff4f3] border-[5px] shadow-sm shadow-[#fa6b5e46] w-full rounded-3xl px-5 py-3 text-xl'
           }
+          style={{ fontFamily: 'BalooChettan2-Regular' }}
+          placeholderTextColor={'#444444bb'}
           value={value}
           onChangeText={onChange}
           onFocus={onFocus}

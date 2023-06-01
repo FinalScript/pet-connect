@@ -20,13 +20,15 @@ export default function Auth() {
     getCredentials('openid profile email').then(async (auth) => {
       if (auth && auth.accessToken) {
         setBearerToken(`Bearer ${auth.accessToken}`);
-
         getOwnerData()
           .then((res) => {
             navigation.replace('Home');
           })
           .catch((err) => {
-            navigation.replace('Account Creation');
+            console.log(err);
+            if (err.response && err.response.status === 404) {
+              navigation.replace('Account Creation');
+            }
           });
       } else {
         login();

@@ -39,8 +39,8 @@ const App = () => {
       setClientId(Config.AUTH0_CLIENT_ID);
     }
 
-    if (Platform.OS === 'ios') {
-      setApiBaseUrl('http://localhost:3000');
+    if (Config.API_URL) {
+      setApiBaseUrl(Config.API_URL);
     }
   }, []);
 
