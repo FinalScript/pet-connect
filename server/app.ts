@@ -7,6 +7,7 @@ import { Owner } from './src/models/Owner';
 import { Pet } from './src/models/Pet';
 import type { ErrorRequestHandler } from 'express';
 import { OwnerRouter } from './src/routes/OwnerRoute';
+import { PetRouter } from './src/routes/PetRoute';
 dotenv.config();
 
 const app = express();
@@ -40,6 +41,9 @@ app.get('/api/public', (req, res) => {
 
 // This route needs authentication
 app.use('/api/private/owner', checkJwt, OwnerRouter);
+
+app.use('/api/private/pet', checkJwt, PetRouter);
+
 
 app.use(jwtErrorHandler);
 
