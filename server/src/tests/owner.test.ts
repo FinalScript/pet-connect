@@ -1,7 +1,12 @@
 import request from 'supertest';
+import { getTestToken } from './generateToken';
 const baseURL = 'http://localhost:3000/api/private/owner/';
 
-const TEST_TOKEN = 'Bearer ' + process.env.API_TEST_TOKEN;
+let TEST_TOKEN = '';
+
+beforeAll(async () => {
+  TEST_TOKEN = `Bearer ${await getTestToken()}`;
+});
 
 describe('GET / without access token', () => {
   it('should return 401', async () => {
