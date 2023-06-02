@@ -1,6 +1,6 @@
 import express from 'express';
 import { getOwner } from '../controllers/OwnerController';
-import { createPet } from '../controllers/PetController';
+import { createPet, getPet } from '../controllers/PetController';
 import { Pet } from '../models/Pet';
 import { Owner } from '../models/Owner';
 
@@ -8,17 +8,28 @@ const router = express.Router();
 
 export { router as PetRouter };
 
-router.get('/', async (req, res) => {
-  const authId = req.auth.payload.sub;
+router.get('/:id?', async (req, res) => {
+  try {
+    const petId = req.params.id;
 
-  const owner = await getOwner(authId);
+    if (!petId) {
+      res.status(400).send({ message: 'Id missing' });
+      return;
+    }
 
-  if (owner) {
-    res.send(owner);
+    const pet = await getPet(petId);
+
+    if (pet) {
+      res.send(pet);
+      return;
+    }
+  } catch (e) {
+    console.error(e);
+    res.status(e.status || 400).send(e.message);
     return;
   }
 
-  res.status(404).send();
+  res.status(404).send({ message: 'Pet not found' });
 });
 
 router.post('/create', async (req, res) => {
