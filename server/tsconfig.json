@@ -1,10 +1,10 @@
 {
-    "compilerOptions": {
-        "module": "Commonjs",
-        "target": "es6",
-        "outDir": "build",
-        "noImplicitAny": true,
-        "esModuleInterop": true
-    },
-    "include": ["src", "app.ts"]
+  "compilerOptions": {
+    "module": "Commonjs",
+    "target": "es6",
+    "outDir": "build",
+    "noImplicitAny": true,
+    "esModuleInterop": true
+  },
+  "include": ["src", "app.ts", "generateToken.ts"],
 }
