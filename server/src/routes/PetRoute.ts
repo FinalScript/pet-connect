@@ -3,7 +3,6 @@ import { getOwner } from '../controllers/OwnerController';
 import { createPet } from '../controllers/PetController';
 import { Pet } from '../models/Pet';
 import { Owner } from '../models/Owner';
-// import { Owner } from '../models/Owner';
 
 const router = express.Router();
 
@@ -24,31 +23,28 @@ router.get('/', async (req, res) => {
 
 router.post('/create', async (req, res) => {
   const authId = req.auth.payload.sub;
-  // Is changing this from a const to a let correct?
   let { name, type, description, location } = req.body;
   const owner = await getOwner(authId);
 
-  // Should data values be trimmed? e.g trim leading or trailing spaces
-  name = name.trim();
-  type = type.trim().toUpperCase();
-
   if (!owner) {
-    res.status(404).send('Owner does not exist');
+    res.status(404).send({ message: 'Owner does not exist' });
     return;
   }
 
   if (!name) {
-    res.status(400).send('Name missing');
+    res.status(400).send({ message: 'Name missing' });
     return;
   }
+  name = name.trim();
 
   if (!type) {
-    res.status(400).send('Type missing');
+    res.status(400).send({ message: 'Type missing' });
     return;
-  } else if (!Pet.getAttributes().type.values.includes(type)) {
-    res.status(400).send('Incorrect type provided');
+  } else if (!Pet.getAttributes().type.values.includes(type.trim().toUpperCase())) {
+    res.status(400).send({ message: 'Incorrect type provided' });
     return;
   }
+  type = type.trim().toUpperCase();
 
   let newPet: Pet;
 
