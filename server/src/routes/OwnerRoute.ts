@@ -22,7 +22,6 @@ router.get('/', async (req, res) => {
 router.post('/validateusername', async (req, res) => {
   const { username } = req.body;
 
-  console.log(username);
   if (!username) {
     res.status(400).send({ message: 'Please provide username' });
     return;

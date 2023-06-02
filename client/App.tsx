@@ -39,8 +39,8 @@ const App = () => {
       setClientId(Config.AUTH0_CLIENT_ID);
     }
 
-    if (Platform.OS === 'ios') {
-      setApiBaseUrl('http://localhost:3000');
+    if (Config.API_URL) {
+      setApiBaseUrl(Config.API_URL);
     }
   }, []);
 
@@ -55,7 +55,9 @@ const App = () => {
   return (
     <Auth0Provider domain={domain} clientId={clientId}>
       <NavigationContainer>
-        <Stack.Navigator initialRouteName='Auth' screenOptions={{ headerShown: false, headerBackVisible: false }}>
+        <Stack.Navigator
+          initialRouteName='Auth'
+          screenOptions={{ headerShown: false, headerBackVisible: false, animationTypeForReplace: 'push', animation: 'fade_from_bottom' }}>
           <Stack.Screen name='Home' component={Home} />
           <Stack.Screen name='Auth' component={Auth} />
           <Stack.Screen name='Pet Creation' component={PetCreation} />

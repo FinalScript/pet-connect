@@ -28,7 +28,7 @@ export default function PetCreation() {
 
   const petTypeOnPress = useCallback((type: string) => {
     setSelectedPetType(type);
-    trigger(HapticFeedbackTypes.impactMedium, options);
+    trigger(HapticFeedbackTypes.effectClick, options);
   }, []);
 
   const moreOptionsOnPress = useCallback(() => {
@@ -55,7 +55,7 @@ export default function PetCreation() {
   return (
     <SafeAreaView className='bg-[#fde1da] h-full p-5 flex flex-col justify-between'>
       <View>
-        <Text className='text-[#232323] font-semibold text-2xl'>Time to build your pet's profile! Start by selecting the pet type.</Text>
+        <Text className='text-[#232323] font-semibold text-3xl'>Time to build your pet's profile! Start by selecting the pet type.</Text>
 
         <View className='mt-14 -mx-5 flex flex-wrap flex-row justify-center'>
           {petTypes.slice(shuffle, shuffle + 4).map((pet) => {
@@ -68,7 +68,7 @@ export default function PetCreation() {
                 <View
                   className={
                     (selectedPetType === pet.type ? 'border-[#FFBA93]' : 'border-transparent') +
-                    ' mb-5 mx-2.5 p-5 bg-[#fff4f3] border-[5px] shadow-md shadow-[#e47167a2] w-36 h-36 rounded-3xl flex items-center'
+                    ' mb-5 mx-2.5 p-5 bg-[#fff4f3] border-[5px] shadow-sm shadow-[#fa6b5e46] w-36 h-36 rounded-3xl flex items-center'
                   }>
                   <Image className='flex w-full h-[75%] aspect-square opacity-70' source={pet.img} />
                   <Text className='mt-1 text-md text-[#000000bb]'>{pet.type}</Text>
@@ -85,14 +85,14 @@ export default function PetCreation() {
         </View>
       </View>
 
-      <View className='mb-5 mx-2 flex flex-row justify-between items-center'>
+      <View className='mb-2 mx-2 flex flex-row justify-between items-center'>
         <TouchableOpacity onPress={skipOnPress} activeOpacity={0.6}>
           <View className='px-6 py-2 rounded-3xl'>
             <Text className='text-xl text-[#c07c4e]'>Skip</Text>
           </View>
         </TouchableOpacity>
 
-        <TouchableHighlight className='bg-[#FFBA93] rounded-3xl shadow-md shadow-[#e47167a2]' underlayColor={'#c59071'} onPress={nextOnPress}>
+        <TouchableHighlight className='bg-[#FFBA93] rounded-3xl shadow-sm shadow-[#fa6b5e46]' underlayColor={'#c59071'} onPress={nextOnPress}>
           <View className='px-6 py-1 flex flex-row justify-center items-center'>
             <Text className='text-xl font-semibold text-black'>Next</Text>
           </View>
