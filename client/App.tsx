@@ -6,7 +6,7 @@
  */
 
 import React, { useEffect, useState } from 'react';
-import { SafeAreaView, Text, Platform } from 'react-native';
+import { SafeAreaView, Text, Platform, StatusBar } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { Auth0Provider } from 'react-native-auth0';
@@ -54,16 +54,19 @@ const App = () => {
 
   return (
     <Auth0Provider domain={domain} clientId={clientId}>
-      <NavigationContainer>
-        <Stack.Navigator
-          initialRouteName='Auth'
-          screenOptions={{ headerShown: false, headerBackVisible: false, animationTypeForReplace: 'push', animation: 'fade_from_bottom' }}>
-          <Stack.Screen name='Home' component={Home} />
-          <Stack.Screen name='Auth' component={Auth} />
-          <Stack.Screen name='Pet Creation' component={PetCreation} />
-          <Stack.Screen name='Account Creation' component={AccountCreation} />
-        </Stack.Navigator>
-      </NavigationContainer>
+      <>
+        <StatusBar animated={true} barStyle={'dark-content'} />
+        <NavigationContainer>
+          <Stack.Navigator
+            initialRouteName='Auth'
+            screenOptions={{ headerShown: false, headerBackVisible: false, animationTypeForReplace: 'push', animation: 'fade_from_bottom' }}>
+            <Stack.Screen name='Home' component={Home} />
+            <Stack.Screen name='Auth' component={Auth} />
+            <Stack.Screen name='Pet Creation' component={PetCreation} />
+            <Stack.Screen name='Account Creation' component={AccountCreation} />
+          </Stack.Navigator>
+        </NavigationContainer>
+      </>
     </Auth0Provider>
   );
 };
