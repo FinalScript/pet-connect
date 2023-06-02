@@ -28,7 +28,7 @@ export default function PetCreation() {
 
   const petTypeOnPress = useCallback((type: string) => {
     setSelectedPetType(type);
-    trigger(HapticFeedbackTypes.impactMedium, options);
+    trigger(HapticFeedbackTypes.effectClick, options);
   }, []);
 
   const moreOptionsOnPress = useCallback(() => {
@@ -85,7 +85,7 @@ export default function PetCreation() {
         </View>
       </View>
 
-      <View className='mb-5 mx-2 flex flex-row justify-between items-center'>
+      <View className='mb-2 mx-2 flex flex-row justify-between items-center'>
         <TouchableOpacity onPress={skipOnPress} activeOpacity={0.6}>
           <View className='px-6 py-2 rounded-3xl'>
             <Text className='text-xl text-[#c07c4e]'>Skip</Text>

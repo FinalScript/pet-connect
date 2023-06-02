@@ -55,7 +55,9 @@ const App = () => {
   return (
     <Auth0Provider domain={domain} clientId={clientId}>
       <NavigationContainer>
-        <Stack.Navigator initialRouteName='Auth' screenOptions={{ headerShown: false, headerBackVisible: false }}>
+        <Stack.Navigator
+          initialRouteName='Auth'
+          screenOptions={{ headerShown: false, headerBackVisible: false, animationTypeForReplace: 'push', animation: 'fade_from_bottom' }}>
           <Stack.Screen name='Home' component={Home} />
           <Stack.Screen name='Auth' component={Auth} />
           <Stack.Screen name='Pet Creation' component={PetCreation} />

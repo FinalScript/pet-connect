@@ -13,7 +13,9 @@ export default function Auth() {
   const { authorize, clearSession, user, getCredentials } = useAuth0();
 
   useEffect(() => {
-    getAuth();
+    if(user) {
+      getAuth();
+    }
   }, [user]);
 
   const getAuth = useCallback(() => {

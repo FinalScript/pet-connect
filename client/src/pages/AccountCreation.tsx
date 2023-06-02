@@ -96,7 +96,7 @@ export default function AccountCreation() {
       </View>
 
       {isUsernameValid && (
-        <View className='mb-5 mx-2 flex flex-row justify-end items-center'>
+        <View className='mb-2 mx-2 flex flex-row justify-end items-center'>
           <TouchableHighlight
             className='bg-[#FFBA93] rounded-3xl shadow-sm shadow-[#fa6b5e46]'
             underlayColor={'#c59071'}
