@@ -24,11 +24,16 @@ router.get('/', async (req, res) => {
 
 router.post('/create', async (req, res) => {
   const authId = req.auth.payload.sub;
-  const { name, type, description, location } = req.body;
+  // Is changing this from a const to a let correct?
+  let { name, type, description, location } = req.body;
   const owner = await getOwner(authId);
 
+  // Should data values be trimmed? e.g trim leading or trailing spaces
+  name = name.trim();
+  type = type.trim().toUpperCase();
+
   if (!owner) {
-    res.status(404).send('Owner missing');
+    res.status(404).send('Owner does not exist');
     return;
   }
 
@@ -40,6 +45,9 @@ router.post('/create', async (req, res) => {
   if (!type) {
     res.status(400).send('Type missing');
     return;
+  } else if (!Pet.getAttributes().type.values.includes(type)) {
+    res.status(400).send('Incorrect type provided');
+    return;
   }
 
   let newPet: Pet;
@@ -48,7 +56,8 @@ router.post('/create', async (req, res) => {
     newPet = await createPet({ name, type, description, location });
   } catch (e) {
     console.error(e);
-    res.status(e.status).send(e.message);
+    // default option for status added to prevent crashing
+    res.status(e.status || 400).send(e.message);
     return;
   }
 
