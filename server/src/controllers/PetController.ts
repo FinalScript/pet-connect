@@ -27,3 +27,19 @@ export const deletePet = async (id: string) => {
   return { message: 'Pet deleted' };
 };
 
+export const updatePet = async (id: string, { name, type, description, location }: PetCreationDAO) => {
+  // Retrieve the pet by its ID
+  const pet = await getPet(id);
+
+  // Update the pet's fields with the provided values
+  pet.name = name;
+  pet.type = type;
+  pet.description = description;
+  pet.location = location;
+
+  // Save the changes to the pet
+  await pet.save();
+
+  // Return the updated pet object
+  return pet;
+};
