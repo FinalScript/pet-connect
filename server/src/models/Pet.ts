@@ -7,6 +7,13 @@ export interface PetCreationDAO {
   description?: string;
   location?: string;
 }
+export interface PetUpdateDAO {
+  name?: string;
+  type?: string;
+  description?: string;
+  location?: string;
+}
+
 export class Pet extends Model<InferAttributes<Pet>, InferCreationAttributes<Pet>> {
   declare id: CreationOptional<number>;
   declare name: string;
