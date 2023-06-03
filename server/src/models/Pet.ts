@@ -1,6 +1,19 @@
 import { CreationOptional, DataTypes, InferAttributes, InferCreationAttributes, Model, Sequelize } from 'sequelize';
 import { sequelize } from '../db/connection';
 
+export interface PetCreationDAO {
+  name: string;
+  type: string;
+  description?: string;
+  location?: string;
+}
+export interface PetUpdateDAO {
+  name?: string;
+  type?: string;
+  description?: string;
+  location?: string;
+}
+
 export class Pet extends Model<InferAttributes<Pet>, InferCreationAttributes<Pet>> {
   declare id: CreationOptional<number>;
   declare name: string;

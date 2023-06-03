@@ -1,4 +1,5 @@
 import request from 'supertest';
+import { sequelize } from '../db/connection';
 const baseURL = 'http://localhost:3000/api/private/owner/';
 
 const TEST_TOKEN = 'Bearer ' + process.env.API_TEST_TOKEN;
