@@ -51,7 +51,7 @@ connectToDB().then(async () => {
   Owner.belongsToMany(Pet, { through: 'OwnerPets', onDelete: 'cascade', hooks: true });
   Pet.belongsToMany(Owner, { through: 'OwnerPets', onDelete: 'cascade', hooks: true });
 
-  await sequelize.sync({ force: true });
+  await sequelize.sync();
 
   // // create pet and insert // .build for no insert
   // const tom = await Pet.create({ name: 'Tom', type: 'CAT' });

@@ -1,3 +1,4 @@
+import { PetUpdateDAO } from './../models/Pet';
 import { Pet, PetCreationDAO } from '../models/Pet';
 
 export const getPet = async (id: string) => {
@@ -10,8 +11,8 @@ export const getPet = async (id: string) => {
   return pet;
 };
 
-export const createPet = async ({ name, type, description, location }: PetCreationDAO) => {
-  const newPet = await Pet.create({ name, type, description, location });
+export const createPet = async (data: PetCreationDAO) => {
+  const newPet = await Pet.create(data);
 
   return newPet;
 };
@@ -27,18 +28,8 @@ export const deletePet = async (id: string) => {
   return { message: 'Pet deleted' };
 };
 
-export const updatePet = async (id: string, { name, type, description, location }: PetCreationDAO) => {
-  // Retrieve the pet by its ID
-  const pet = await getPet(id);
-
-  // Update the pet's fields with the provided values
-  pet.name = name;
-  pet.type = type;
-  pet.description = description;
-  pet.location = location;
-
-  // Save the changes to the pet
-  await pet.save();
+export const updatePet = async (id: string, data: PetUpdateDAO) => {
+  const pet = Pet.update(data, { where: { id }, });
 
   // Return the updated pet object
   return pet;
