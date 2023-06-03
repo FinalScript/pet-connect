@@ -51,9 +51,9 @@ export default function AccountCreation() {
   };
 
   return (
-    <SafeAreaView className='bg-[#fde1da] h-full p-5 flex flex-col justify-between'>
+    <SafeAreaView className='bg-themeBg h-full p-5 flex flex-col justify-between'>
       <View>
-        <Text className='text-[#232323] font-semibold text-3xl'>We need more details about you to finish up your account!</Text>
+        <Text className='text-themeText font-semibold text-3xl'>We need more details about you to finish up your account!</Text>
 
         <View className='mt-5 px-2'>
           <View>
@@ -65,12 +65,12 @@ export default function AccountCreation() {
           </View>
 
           <View className='mt-5'>
-            <Text className='mb-2 pl-4 text-xl font-bold text-[#000000bb]'>Name</Text>
+            <Text className='mb-2 pl-4 text-xl font-bold text-themeText'>Name</Text>
             <TextInput
               ref={nameRef}
               className={
-                (focus.name === true ? 'border-[#FFBA93]' : 'border-transparent') +
-                ' bg-[#fff4f3] border-[5px] shadow-sm shadow-[#fa6b5e46] w-full rounded-3xl px-5 py-3 text-xl'
+                (focus.name === true ? 'border-themeActive' : 'border-transparent') +
+                ' bg-themeInput border-[5px] shadow-sm shadow-themeShadow w-full rounded-3xl px-5 py-3 text-xl'
               }
               style={{ fontFamily: 'BalooChettan2-Regular' }}
               placeholderTextColor={'#444444bb'}
@@ -98,13 +98,13 @@ export default function AccountCreation() {
       {isUsernameValid && (
         <View className='mb-2 mx-2 flex flex-row justify-end items-center'>
           <TouchableHighlight
-            className='bg-[#FFBA93] rounded-3xl shadow-sm shadow-[#fa6b5e46]'
+            className='bg-themeBtn rounded-3xl shadow-sm shadow-themeShadow'
             underlayColor={'#c59071'}
             onPress={nextOnPress}
             disabled={isLoading}>
-            <View className='px-5 py-1 flex flex-row justify-center items-center'>
+            <View className='px-6 py-1 flex flex-row justify-center items-center'>
               {isLoading && <ActivityIndicator className='mr-2 -ml-2' size='small' color={'#321411'} />}
-              <Text className='text-xl font-semibold text-black'>Next</Text>
+              <Text className='text-xl font-semibold text-themeText'>Next</Text>
             </View>
           </TouchableHighlight>
         </View>

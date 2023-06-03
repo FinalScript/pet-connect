@@ -1,8 +1,8 @@
 import React, { useCallback, useState } from 'react';
-import { View, Image, TouchableWithoutFeedback, TouchableHighlight, TouchableOpacity, Button } from 'react-native';
+import { View, Image, TouchableWithoutFeedback, TouchableHighlight, TouchableOpacity } from 'react-native';
 import Text from '../components/Text';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { trigger, HapticOptions, HapticFeedbackTypes } from 'react-native-haptic-feedback';
+import { trigger, HapticFeedbackTypes } from 'react-native-haptic-feedback';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../../App';
@@ -40,7 +40,7 @@ export default function PetCreation() {
 
     setSelectedPetType('');
 
-    trigger(HapticFeedbackTypes.impactMedium, options);
+    trigger(HapticFeedbackTypes.effectClick, options);
   }, [shuffle]);
 
   const skipOnPress = useCallback(() => {
@@ -53,9 +53,9 @@ export default function PetCreation() {
   }, []);
 
   return (
-    <SafeAreaView className='bg-[#fde1da] h-full p-5 flex flex-col justify-between'>
+    <SafeAreaView className='bg-themeBg h-full p-5 flex flex-col justify-between'>
       <View>
-        <Text className='text-[#232323] font-semibold text-3xl'>Time to build your pet's profile! Start by selecting the pet type.</Text>
+        <Text className='text-themeText font-semibold text-3xl'>Time to build your pet's profile! Start by selecting the pet type.</Text>
 
         <View className='mt-14 -mx-5 flex flex-wrap flex-row justify-center'>
           {petTypes.slice(shuffle, shuffle + 4).map((pet) => {
@@ -67,11 +67,11 @@ export default function PetCreation() {
                 }}>
                 <View
                   className={
-                    (selectedPetType === pet.type ? 'border-[#FFBA93]' : 'border-transparent') +
-                    ' mb-5 mx-2.5 p-5 bg-[#fff4f3] border-[5px] shadow-sm shadow-[#fa6b5e46] w-36 h-36 rounded-3xl flex items-center'
+                    (selectedPetType === pet.type ? 'border-themeActive' : 'border-transparent') +
+                    ' mb-5 mx-2.5 p-5 bg-themeInput border-[5px] shadow-sm shadow-themeShadow w-40 h-40 rounded-3xl flex items-center'
                   }>
                   <Image className='flex w-full h-[75%] aspect-square opacity-70' source={pet.img} />
-                  <Text className='mt-1 text-md text-[#000000bb]'>{pet.type}</Text>
+                  <Text className='mt-1 text-lg text-themeText'>{pet.type}</Text>
                 </View>
               </TouchableWithoutFeedback>
             );
@@ -80,7 +80,7 @@ export default function PetCreation() {
 
         <View className='mt-10 flex flex-row justify-center'>
           <TouchableOpacity onPress={moreOptionsOnPress}>
-            <Text className='text-[#505050] text-lg p-2'>See more options...</Text>
+            <Text className='text-themeText text-lg p-2'>See more options...</Text>
           </TouchableOpacity>
         </View>
       </View>
@@ -92,9 +92,9 @@ export default function PetCreation() {
           </View>
         </TouchableOpacity>
 
-        <TouchableHighlight className='bg-[#FFBA93] rounded-3xl shadow-sm shadow-[#fa6b5e46]' underlayColor={'#c59071'} onPress={nextOnPress}>
+        <TouchableHighlight className='bg-themeBtn rounded-3xl shadow-sm shadow-themeShadow' underlayColor={'#c59071'} onPress={nextOnPress}>
           <View className='px-6 py-1 flex flex-row justify-center items-center'>
-            <Text className='text-xl font-semibold text-black'>Next</Text>
+            <Text className='text-xl font-semibold text-themeText'>Next</Text>
           </View>
         </TouchableHighlight>
       </View>

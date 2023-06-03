@@ -81,17 +81,17 @@ export default function UsernameInput({ className, value, setValue, isValid, set
   );
 
   const messageStyles = useCallback(() => {
-    return isValid ? 'bg-[#6cc594] mb-2' : isError && message ? 'bg-[#e2514c] mb-2' : 'bg-transparent';
+    return isValid ? 'bg-success mb-2' : isError && message ? 'bg-danger mb-2' : 'bg-transparent';
   }, [isError, message]);
 
   return (
     <View className={className}>
-      <Text className='mb-2 pl-4 text-xl font-bold text-[#000000bb]'>Username *</Text>
+      <Text className='mb-2 pl-4 text-xl font-bold text-themeText'>Username *</Text>
       <View className='flex flex-col items-center w-full'>
         <TextInput
           className={
-            (isValid ? 'border-[#6cc594]' : isError ? 'border-[#e2514c]' : inFocus ? 'border-[#FFBA93]' : 'border-transparent') +
-            ' bg-[#fff4f3] border-[5px] shadow-sm shadow-[#fa6b5e46] w-full rounded-3xl px-5 py-3 text-xl'
+            (isValid ? 'border-success' : isError ? 'border-danger' : inFocus ? 'border-themeActive' : 'border-transparent') +
+            ' bg-themeInput border-[5px] shadow-sm shadow-themeShadow w-full rounded-3xl px-5 py-3 text-xl'
           }
           style={{ fontFamily: 'BalooChettan2-Regular' }}
           placeholderTextColor={'#444444bb'}
@@ -108,7 +108,7 @@ export default function UsernameInput({ className, value, setValue, isValid, set
           }}
           blurOnSubmit={false}
         />
-        <View className={messageStyles() + ' rounded-b-xl px-3 pb-1 text-sm text-[#000000bb]'}>
+        <View className={messageStyles() + ' rounded-b-xl px-3 pb-1 text-sm'}>
           <Text className='text-xs text-[#000000bb]'>{message}</Text>
         </View>
       </View>

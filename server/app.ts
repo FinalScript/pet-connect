@@ -44,14 +44,13 @@ app.use('/api/private/owner', checkJwt, OwnerRouter);
 
 app.use('/api/private/pet', checkJwt, PetRouter);
 
-
 app.use(jwtErrorHandler);
 
 connectToDB().then(async () => {
   Owner.belongsToMany(Pet, { through: 'OwnerPets', onDelete: 'cascade', hooks: true });
   Pet.belongsToMany(Owner, { through: 'OwnerPets', onDelete: 'cascade', hooks: true });
 
-  await sequelize.sync();
+  await sequelize.sync({ force: true });
 
   // // create pet and insert // .build for no insert
   // const tom = await Pet.create({ name: 'Tom', type: 'CAT' });

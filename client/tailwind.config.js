@@ -6,6 +6,18 @@ module.exports = {
       fontFamily: {
         itim: ['Itim-Regular'],
       },
+      colors: {
+        themeBg: '#fde1da',
+        themeText: '#583420',
+        themeBtn: '#FFBA93',
+        themeBtnPressed: '#c59071',        
+        themeShadow: '#fa6b5e46',
+        themeShadowLight: '#fd8479c8',
+        themeInput: '#fff4f3',
+        themeActive: '#FFBA93',
+        success: '#6cc594' ,
+        danger:'#e2514c'
+      },
     },
   },
   plugins: [],
