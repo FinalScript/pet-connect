@@ -1,6 +1,6 @@
 import express from 'express';
 import { getOwner } from '../controllers/OwnerController';
-import { createPet, getPet } from '../controllers/PetController';
+import { createPet, deletePet, getPet } from '../controllers/PetController';
 import { Pet } from '../models/Pet';
 import { Owner } from '../models/Owner';
 
@@ -30,6 +30,31 @@ router.get('/:id?', async (req, res) => {
   }
 
   res.status(404).send({ message: 'Pet not found' });
+});
+
+router.delete('/delete/:id?', async (req, res) => {
+  try {
+    const petId = req.params.id;
+
+    if (!petId) {
+      res.status(400).send({ message: 'Id missing' });
+      return;
+    }
+    
+    const pet = await getPet(petId);
+
+    if (!pet) {
+      res.status(404).send({ message: 'Pet not found' });
+      return;
+    }
+
+    await deletePet(petId); 
+
+    res.status(200).send({ message: 'Pet successfully deleted' });
+  } catch (e) {
+    console.error(e);
+    res.status(e.status || 400).send(e.message);
+  }
 });
 
 router.post('/create', async (req, res) => {

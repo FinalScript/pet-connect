@@ -15,3 +15,15 @@ export const createPet = async ({ name, type, description, location }: PetCreati
 
   return newPet;
 };
+
+export const deletePet = async (id: string) => {
+  await Pet.destroy({
+    where: {
+      id,
+    },
+    force: true,
+  });
+
+  return { message: 'Pet deleted' };
+};
+
