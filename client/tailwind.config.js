@@ -7,8 +7,9 @@ module.exports = {
         itim: ['Itim-Regular'],
       },
       colors: {
+        themeMain: '#FF8770',
         themeBg: '#fde1da',
-        themeText: '#583420',
+        themeText: '#362013',
         themeBtn: '#FFBA93',
         themeBtnPressed: '#c59071',        
         themeShadow: '#fa6b5e46',

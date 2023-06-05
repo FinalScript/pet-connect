@@ -11,6 +11,8 @@ import { getOwnerData, setBearerToken } from '../api';
 import { HapticFeedbackTypes, trigger } from 'react-native-haptic-feedback';
 import { options } from '../utils/hapticFeedbackOptions';
 import { LOADING } from '../redux/constants';
+import Wave from '../../assets/img/wave-haikei.svg';
+import { TouchableWithoutFeedback } from 'react-native-gesture-handler';
 
 type NavigationProp = NativeStackNavigationProp<RootStackParamList, 'AuthLoader'>;
 
@@ -31,7 +33,7 @@ export default function AuthLoader() {
         if (!res.accessToken || !user) {
           return;
         }
-        
+
         setBearerToken(`Bearer ${res.accessToken}`);
         getAuth();
       })
@@ -77,20 +79,25 @@ export default function AuthLoader() {
   }
 
   return (
-    <SafeAreaView className='bg-themeBg h-full p-5 flex flex-col justify-between'>
-      <View className='flex flex-col items-center justify-center'>
-        <View className={'w-[250px] h-[250px]'}>
-          <Image className='flex w-full h-full aspect-square shadow-md shadow-themeShadowLight' source={require('../../assets/img/cat-logo.png')} />
-        </View>
-        <Text className='mt-5 text-themeText font-semibold text-5xl'>Welcome!</Text>
+    <SafeAreaView className='bg-themeBg h-full'>
+      <View className='absolute -z-10 bottom-0 w-full h-full'>
+        <Image className='flex w-full h-full shadow-lg shadow-red-600' source={require('../../assets/img/wave-haikei.png')} />
       </View>
-
-      <View className='mx-5 mb-5'>
-        <TouchableHighlight className='bg-themeBtn rounded-3xl shadow-sm shadow-themeShadow' underlayColor={'#c59071'} onPress={login}>
-          <View className='px-5 py-2 flex flex-row justify-center items-center'>
-            <Text className='text-2xl font-semibold text-themeText'>Get Started</Text>
+      <View className='h-full p-5 flex flex-col justify-between'>
+        <View className='mt-16 flex flex-col items-center justify-center'>
+          <View className={'w-[180px] h-[180px]'}>
+            <Image className='flex w-full h-full aspect-square shadow-md shadow-themeShadowLight' source={require('../../assets/img/cat-logo.png')} />
           </View>
-        </TouchableHighlight>
+          <Text className='mt-5 text-themeText font-semibold text-4xl'>Pet Connect</Text>
+        </View>
+
+        <View className='mx-10'>
+          <TouchableWithoutFeedback className='bg-transparent' onPress={login}>
+            <View className='p-10 flex flex-row justify-center items-center'>
+              <Text className='text-2xl font-semibold text-themeText'>Get Started</Text>
+            </View>
+          </TouchableWithoutFeedback>
+        </View>
       </View>
     </SafeAreaView>
   );
