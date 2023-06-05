@@ -14,11 +14,11 @@ export default function Home() {
   const logout = async () => {
     try {
       await clearSession();
+
+      navigation.navigate('AuthLoader');
     } catch (e) {
       console.log('Log out cancelled');
     }
-
-    navigation.navigate('Auth');
   };
 
   return (

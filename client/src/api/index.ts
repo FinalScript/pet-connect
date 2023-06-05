@@ -14,6 +14,14 @@ export const getBearerToken = () => {
   return api.defaults.headers.common;
 };
 
+export const ping = () => {
+  return api({
+    method: 'GET',
+    url: '/api/public/',
+    timeout: 3000,
+  });
+};
+
 export const getOwnerData = () => {
   return api({
     method: 'GET',
