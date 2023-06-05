@@ -8,6 +8,12 @@ export interface OwnerCreationDAO {
   username: string;
   location?: string;
 }
+
+export interface OwnerUpdateDAO {
+  name?: string;
+  username?: string;
+  location?: string;
+}
 export class Owner extends Model<InferAttributes<Owner>, InferCreationAttributes<Owner>> {
   declare id: CreationOptional<number>;
   declare authId: CreationOptional<string>;

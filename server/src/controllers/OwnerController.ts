@@ -1,4 +1,5 @@
-import { Owner, OwnerCreationDAO } from '../models/Owner';
+import { Owner, OwnerCreationDAO, OwnerUpdateDAO } from '../models/Owner';
+import { OwnerPets } from '../models/OwnerPets';
 import { Pet } from '../models/Pet';
 
 export const getOwner = async (authId: string) => {
@@ -32,4 +33,23 @@ export const createOwner = async ({ authId, username, name, location }: OwnerCre
   const newOwner = await Owner.create({ authId, username, name, location });
 
   return newOwner;
+};
+
+export const updateOwner = async (authId: string, data: OwnerUpdateDAO) => {
+  const owner = await Owner.update(data, { where: { authId } });
+
+  // Return the updated owner object
+  return owner;
+};
+
+export const deleteOwner = async (authId: string) => {
+  await Owner.destroy({
+    where: {
+      authId,
+    },
+    force: true,
+    cascade: true,
+  });
+
+  return { message: 'Account deleted' };
 };
