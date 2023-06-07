@@ -10,22 +10,30 @@ import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../../App';
 import { options } from '../utils/hapticFeedbackOptions';
+import { useDispatch, useSelector } from 'react-redux';
+import { GeneralReducer } from '../redux/reducers/generalReducer';
+import { LOADING, OWNER_DATA, PET_DATA } from '../redux/constants';
 
 type NavigationProp = NativeStackNavigationProp<RootStackParamList, 'Account Creation'>;
 
 export default function AccountCreation() {
+  const dispatch = useDispatch();
+  const loading = useSelector((state: GeneralReducer) => state.general.loading);
   const navigation = useNavigation<NavigationProp>();
   const [username, setUsername] = useState<string>();
   const [isUsernameValid, setIsUsernameValid] = useState(false);
   const [name, setName] = useState<string>();
   const nameRef = useRef<TextInput>(null);
   const [focus, setFocus] = useState({ username: false, name: false });
-  const [isLoading, setIsLoading] = useState(false);
+
+  useEffect(() => {
+    dispatch({ type: LOADING, payload: false });
+  }, []);
 
   const nextOnPress = useCallback(() => {
     if (isUsernameValid && username) {
       trigger(HapticFeedbackTypes.impactMedium, options);
-      setIsLoading(true);
+      dispatch({ type: LOADING, payload: true });
 
       setTimeout(() => {
         signup({ username: username.toLowerCase(), name })
@@ -33,6 +41,7 @@ export default function AccountCreation() {
             console.log(res.status, res.data);
 
             if (res.status === 200) {
+              dispatch({ type: OWNER_DATA, payload: (({ Pets, ...o }) => o)(res.data.dataValues) });
               navigation.replace('Pet Creation');
             }
           })
@@ -40,11 +49,11 @@ export default function AccountCreation() {
             console.log(err);
           })
           .finally(() => {
-            setIsLoading(false);
+            dispatch({ type: LOADING, payload: false });
           });
       }, 1500);
     }
-  }, [isUsernameValid, username, name]);
+  }, [isUsernameValid, username, name, loading]);
 
   const focusNameInput = () => {
     nameRef.current?.focus();
@@ -89,7 +98,9 @@ export default function AccountCreation() {
               autoCorrect={false}
               autoComplete='name'
               maxLength={30}
+              returnKeyType='done'
               placeholder='Enter your name'
+              editable={!loading}
             />
           </View>
         </View>
@@ -101,9 +112,9 @@ export default function AccountCreation() {
             className='bg-themeBtn rounded-3xl shadow-sm shadow-themeShadow'
             underlayColor={'#c59071'}
             onPress={nextOnPress}
-            disabled={isLoading}>
+            disabled={loading}>
             <View className='px-6 py-1 flex flex-row justify-center items-center'>
-              {isLoading && <ActivityIndicator className='mr-2 -ml-2' size='small' color={'#321411'} />}
+              {loading && <ActivityIndicator className='mr-2 -ml-2' size='small' color={'#321411'} />}
               <Text className='text-xl font-semibold text-themeText'>Next</Text>
             </View>
           </TouchableHighlight>

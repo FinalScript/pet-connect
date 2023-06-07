@@ -1,11 +1,13 @@
-import { CreationOptional, DataTypes, InferAttributes, InferCreationAttributes, Model, Sequelize } from 'sequelize';
+import { CreationOptional, DataTypes, HasOneSetAssociationMixin, InferAttributes, InferCreationAttributes, Model, Sequelize } from 'sequelize';
 import { sequelize } from '../db/connection';
+import { ProfilePicture, ProfilePictureCreationDAO } from './ProfilePicture';
 
 export interface PetCreationDAO {
   name: string;
   type: string;
   description?: string;
   location?: string;
+  profilePicture?: string;
 }
 export interface PetUpdateDAO {
   name?: string;
@@ -17,10 +19,11 @@ export interface PetUpdateDAO {
 export class Pet extends Model<InferAttributes<Pet>, InferCreationAttributes<Pet>> {
   declare id: CreationOptional<number>;
   declare name: string;
-  declare profilePicture: CreationOptional<Blob>;
+  declare profilePicture: CreationOptional<string>;
   declare type: string;
   declare description: CreationOptional<string>;
   declare location: CreationOptional<string>;
+  declare setProfilePicture: HasOneSetAssociationMixin<ProfilePicture, 'id'>;
 }
 
 Pet.init(

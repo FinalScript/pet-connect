@@ -8,12 +8,14 @@ import { Pet } from './src/models/Pet';
 import type { ErrorRequestHandler } from 'express';
 import { OwnerRouter } from './src/routes/OwnerRoute';
 import { PetRouter } from './src/routes/PetRoute';
+import { ProfilePicture } from './src/models/ProfilePicture';
+import bodyParser from 'body-parser';
 dotenv.config();
 
 const app = express();
 
-app.use(express.urlencoded({ extended: true }));
-app.use(express.json());
+app.use(express.json({ limit: '100mb' }));
+app.use(express.urlencoded({ limit: '100mb', extended: true }));
 app.use(cors({ origin: true, credentials: true }));
 
 // Authorization middleware. When used, the Access Token must
@@ -49,6 +51,7 @@ app.use(jwtErrorHandler);
 connectToDB().then(async () => {
   Owner.belongsToMany(Pet, { through: 'OwnerPets', onDelete: 'cascade', hooks: true });
   Pet.belongsToMany(Owner, { through: 'OwnerPets', onDelete: 'cascade', hooks: true });
+  Pet.hasOne(ProfilePicture, { foreignKey: 'petId', as: 'profilePicture' });
 
   await sequelize.sync({ force: true });
 

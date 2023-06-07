@@ -10,7 +10,7 @@ import { useAuth0 } from 'react-native-auth0';
 import { getOwnerData, setBearerToken } from '../api';
 import { HapticFeedbackTypes, trigger } from 'react-native-haptic-feedback';
 import { options } from '../utils/hapticFeedbackOptions';
-import { LOADING } from '../redux/constants';
+import { CURRENT_USER, LOADING, OWNER_DATA, PET_DATA } from '../redux/constants';
 import Wave from '../../assets/img/wave-haikei.svg';
 import { TouchableWithoutFeedback } from 'react-native-gesture-handler';
 
@@ -64,6 +64,10 @@ export default function AuthLoader() {
     }
 
     if (ownerData.status === 200) {
+      console.log(ownerData.data);
+      dispatch({ type: OWNER_DATA, payload: (({ Pets, ...o }) => o)(ownerData.data) });
+      dispatch({ type: PET_DATA, payload: ownerData.data.Pets });
+      dispatch({ type: CURRENT_USER, payload: { id: ownerData.data.id, isPet: false } });
       dispatch({ type: LOADING, payload: false });
       trigger(HapticFeedbackTypes.notificationSuccess, options);
       navigation.replace('Home');
@@ -80,13 +84,13 @@ export default function AuthLoader() {
 
   return (
     <SafeAreaView className='bg-themeBg h-full'>
-      <View className='absolute -z-10 bottom-0 w-full h-full'>
-        <Image className='flex w-full h-full shadow-lg shadow-red-600' source={require('../../assets/img/wave-haikei.png')} />
+      <View className='absolute -z-10 bottom-0 w-full h-full shadow-lg shadow-red-600'>
+        <Image className='flex w-full h-full' source={require('../../assets/img/wave-haikei.png')} />
       </View>
       <View className='h-full p-5 flex flex-col justify-between'>
         <View className='mt-16 flex flex-col items-center justify-center'>
-          <View className={'w-[180px] h-[180px]'}>
-            <Image className='flex w-full h-full aspect-square shadow-md shadow-themeShadowLight' source={require('../../assets/img/cat-logo.png')} />
+          <View className='w-[180px] h-[180px] shadow-md shadow-themeShadowLight'>
+            <Image className='flex w-full h-full aspect-square' source={require('../../assets/img/cat-logo.png')} />
           </View>
           <Text className='mt-5 text-themeText font-semibold text-4xl'>Pet Connect</Text>
         </View>

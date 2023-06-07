@@ -1,4 +1,6 @@
+import { Buffer } from 'buffer';
 import axios from 'axios';
+import { Image as ImageType } from 'react-native-image-crop-picker';
 
 let api = axios.create({ baseURL: 'http://10.0.2.2:3000' });
 
@@ -48,5 +50,32 @@ export const usernameExists = (username: string) => {
     method: 'POST',
     url: '/api/private/owner/validateusername',
     data: { username },
+  });
+};
+
+export interface PetCreationParams {
+  name: string;
+  type: string;
+  description?: string;
+  location?: string;
+  profilePicture?: ImageType | null | undefined;
+}
+
+export const createPet = (data: PetCreationParams) => {
+  return api({
+    method: 'POST',
+    url: '/api/private/pet/create',
+    data,
+  });
+};
+
+export const uploadProfilePic = (data: FormData, id: string) => {
+  return api({
+    method: 'POST',
+    url: `/api/private/pet/${id}/profilepic/upload`,
+    data,
+    headers: {
+      'Content-Type': 'multipart/form-data',
+    },
   });
 };

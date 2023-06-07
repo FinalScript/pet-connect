@@ -1,9 +1,22 @@
 import express from 'express';
 import { getOwner } from '../controllers/OwnerController';
 import { createPet, getPet, deletePet, updatePet } from '../controllers/PetController';
-import { Pet, PetUpdateDAO } from '../models/Pet';
+import { Pet } from '../models/Pet';
 import { Owner } from '../models/Owner';
 import { trimValuesInObject } from '../utils/trimValuesInObject';
+import multer from 'multer';
+import { ProfilePicture } from '../models/ProfilePicture';
+import fs from 'fs';
+
+// Set up Multer storage
+const storage = multer.diskStorage({
+  destination: 'uploads/', // Specify the directory to store the uploaded files
+  filename: (req: any, file: any, cb: any) => {
+    cb(file.name); // Generate a unique file name
+  },
+});
+
+const upload = multer({ storage });
 
 const router = express.Router();
 
@@ -61,10 +74,10 @@ router.delete('/delete/:id?', async (req, res) => {
   res.status(200).send({ message: 'Pet successfully deleted' });
 });
 
-router.post('/create', async (req, res) => {
+router.post('/create', upload.single('image'), async (req, res) => {
   const authId = req.auth.payload.sub;
   req.body = trimValuesInObject(req.body);
-  const { name, type, description, location } = req.body;
+  let { name, type, description, location } = req.body;
   const owner = await getOwner(authId);
 
   if (!owner) {
@@ -85,6 +98,8 @@ router.post('/create', async (req, res) => {
     return;
   }
 
+  type = type.toUpperCase();
+
   let newPet: Pet;
 
   try {
@@ -94,6 +109,19 @@ router.post('/create', async (req, res) => {
     // default option for status added to prevent crashing
     res.status(e.status || 400).send(e.message);
     return;
+  }
+
+  const profilePicture = req.file;
+
+  if (profilePicture) {
+    const profilePictureDAO = ProfilePicture.build({
+      name: profilePicture.filename,
+      type: profilePicture.mimetype,
+      data: fs.readFileSync('uploads/' + req.file.filename),
+    });
+
+    newPet.setProfilePicture(profilePictureDAO);
+    await newPet.save();
   }
 
   let newOwner: Owner;
@@ -108,7 +136,7 @@ router.post('/create', async (req, res) => {
     return;
   }
 
-  res.status(200).send(newOwner);
+  res.status(200).send(newPet);
 });
 
 router.patch('/update/:id?', async (req, res) => {
@@ -116,7 +144,6 @@ router.patch('/update/:id?', async (req, res) => {
   req.body = trimValuesInObject(req.body);
   const { name, type, description, location } = req.body;
 
-  console.log(req.body)
   // Check if the pet ID was provided
   if (!petId) {
     return res.status(400).send({ message: 'Pet ID not provided' });
@@ -136,8 +163,8 @@ router.patch('/update/:id?', async (req, res) => {
 
   // Update the pet
   try {
-     await updatePet(petId, { name, type, description, location });
-     await pet.reload();
+    await updatePet(petId, { name, type, description, location });
+    await pet.reload();
   } catch (e) {
     console.error(e);
     return res.status(e.statusCode).send(e.message);

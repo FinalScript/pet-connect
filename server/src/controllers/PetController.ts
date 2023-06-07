@@ -29,7 +29,7 @@ export const deletePet = async (id: string) => {
 };
 
 export const updatePet = async (id: string, data: PetUpdateDAO) => {
-  const pet = Pet.update(data, { where: { id }, });
+  const pet = Pet.update(data, { where: { id } });
 
   // Return the updated pet object
   return pet;
