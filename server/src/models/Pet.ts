@@ -19,7 +19,6 @@ export interface PetUpdateDAO {
 export class Pet extends Model<InferAttributes<Pet>, InferCreationAttributes<Pet>> {
   declare id: CreationOptional<number>;
   declare name: string;
-  declare profilePicture: CreationOptional<string>;
   declare type: string;
   declare description: CreationOptional<string>;
   declare location: CreationOptional<string>;
@@ -37,10 +36,6 @@ Pet.init(
     name: {
       type: DataTypes.STRING,
       allowNull: false,
-    },
-    profilePicture: {
-      type: DataTypes.BLOB,
-      // allowNull: false,
     },
     type: {
       type: DataTypes.ENUM('DOG', 'CAT', 'BIRD', 'FISH', 'RABBIT', 'HAMSTER', 'MOUSE', 'GUINEA_PIG', 'HORSE', 'SNAKE', 'OTHER'),

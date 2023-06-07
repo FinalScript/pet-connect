@@ -8,15 +8,10 @@ import multer from 'multer';
 import { ProfilePicture } from '../models/ProfilePicture';
 import fs from 'fs';
 
-// Set up Multer storage
-const storage = multer.diskStorage({
-  destination: 'uploads/', // Specify the directory to store the uploaded files
-  filename: (req: any, file: any, cb: any) => {
-    cb(file.name); // Generate a unique file name
-  },
+// Set up Multer middleware
+const upload = multer({
+  dest: 'uploads/', // Specify the directory to save the uploaded files
 });
-
-const upload = multer({ storage });
 
 const router = express.Router();
 
@@ -74,7 +69,43 @@ router.delete('/delete/:id?', async (req, res) => {
   res.status(200).send({ message: 'Pet successfully deleted' });
 });
 
-router.post('/create', upload.single('image'), async (req, res) => {
+router.post('/:id/profilepic/upload', upload.single('image'), async (req, res) => {
+  // Retrieve the uploaded image file
+  const { filename, mimetype, path, buffer } = req.file;
+  const authId = req.auth.payload.sub;
+  const petId = req.params.id;
+
+  const pet = (
+    await Owner.findOne({
+      where: { authId },
+      include: [
+        {
+          model: Pet,
+          as: 'pets',
+          through: { attributes: [] }, // Exclude join table attributes
+        },
+      ],
+    })
+  ).pets[0];
+
+  // Read the image file from the disk
+  const imageBuffer = fs.readFileSync(path);
+
+  const profilePictureDAO = ProfilePicture.build({
+    name: filename,
+    path,
+    data: imageBuffer,
+    type: mimetype,
+  });
+
+  pet.setProfilePicture(profilePictureDAO);
+
+  await pet.save();
+
+  res.send(pet);
+});
+
+router.post('/create', async (req, res) => {
   const authId = req.auth.payload.sub;
   req.body = trimValuesInObject(req.body);
   let { name, type, description, location } = req.body;
@@ -109,19 +140,6 @@ router.post('/create', upload.single('image'), async (req, res) => {
     // default option for status added to prevent crashing
     res.status(e.status || 400).send(e.message);
     return;
-  }
-
-  const profilePicture = req.file;
-
-  if (profilePicture) {
-    const profilePictureDAO = ProfilePicture.build({
-      name: profilePicture.filename,
-      type: profilePicture.mimetype,
-      data: fs.readFileSync('uploads/' + req.file.filename),
-    });
-
-    newPet.setProfilePicture(profilePictureDAO);
-    await newPet.save();
   }
 
   let newOwner: Owner;

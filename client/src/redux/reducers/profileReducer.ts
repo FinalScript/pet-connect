@@ -19,7 +19,7 @@ export interface PetDAO {
   username: string;
   name: string;
   type: string;
-  profilePicture?: ImageType | null | undefined;
+  ProfilePicture?: any;
   description?: string;
   location?: string;
   dateCreated: Date;

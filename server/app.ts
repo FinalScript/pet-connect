@@ -10,6 +10,7 @@ import { OwnerRouter } from './src/routes/OwnerRoute';
 import { PetRouter } from './src/routes/PetRoute';
 import { ProfilePicture } from './src/models/ProfilePicture';
 import bodyParser from 'body-parser';
+import { OwnerPets } from './src/models/OwnerPets';
 dotenv.config();
 
 const app = express();
@@ -49,9 +50,10 @@ app.use('/api/private/pet', checkJwt, PetRouter);
 app.use(jwtErrorHandler);
 
 connectToDB().then(async () => {
-  Owner.belongsToMany(Pet, { through: 'OwnerPets', onDelete: 'cascade', hooks: true });
-  Pet.belongsToMany(Owner, { through: 'OwnerPets', onDelete: 'cascade', hooks: true });
-  Pet.hasOne(ProfilePicture, { foreignKey: 'petId', as: 'profilePicture' });
+  // Define the associations
+  Owner.belongsToMany(Pet, { through: OwnerPets, as: 'pets', foreignKey: 'ownerId' });
+  Pet.belongsToMany(Owner, { through: OwnerPets, as: 'owners', foreignKey: 'petId' });
+  Pet.hasOne(ProfilePicture, { foreignKey: 'petId' });
 
   await sequelize.sync({ force: true });
 

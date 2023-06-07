@@ -69,7 +69,7 @@ export const createPet = (data: PetCreationParams) => {
   });
 };
 
-export const uploadProfilePic = (data: FormData, id: string) => {
+export const uploadProfilePic = (data: any, id: string) => {
   return api({
     method: 'POST',
     url: `/api/private/pet/${id}/profilepic/upload`,

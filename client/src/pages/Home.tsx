@@ -47,12 +47,12 @@ export default function Home() {
           <Text className='font-bold text-2xl'>Pets</Text>
           <View>
             {pets.map((pet, i) => {
-              const { profilePicture, OwnerPets, ...display } = pet;
+              const { ProfilePicture, OwnerPets, ...display } = pet;
               return (
                 <View key={i} className='bg-themeBtn rounded-3xl p-5 flex flex-col items-center'>
-                  {pet.profilePicture && (
+                  {pet.ProfilePicture && (
                     <View className='h-44 w-44'>
-                      <Image className='w-full h-full' source={{ uri: `data:image/*;base64,${pet.profilePicture.data}` }} />
+                      <Image className='w-full h-full' source={{ uri: `data:image/*;base64,${pet.ProfilePicture.data}` }} />
                     </View>
                   )}
                   <Text>{JSON.stringify(display, null, 2)}</Text>

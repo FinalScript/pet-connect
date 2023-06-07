@@ -1,12 +1,24 @@
 import { Owner, OwnerCreationDAO } from '../models/Owner';
 import { Pet } from '../models/Pet';
+import { ProfilePicture } from '../models/ProfilePicture';
 
 export const getOwner = async (authId: string) => {
   const owner = await Owner.findOne({
     where: {
       authId,
     },
-    include: { model: Pet },
+    include: [
+      {
+        model: Pet,
+        as: 'pets',
+        include: [
+          {
+            model: ProfilePicture,
+            as: 'ProfilePicture',
+          },
+        ],
+      },
+    ],
   });
 
   return owner;

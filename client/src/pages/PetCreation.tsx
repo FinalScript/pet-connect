@@ -56,14 +56,23 @@ export default function PetCreation() {
       if (!formData.profilePicture?.data) {
         return;
       }
-      createPet(formData)
+      createPet({
+        ...formData,
+      })
         .then((res) => {
           if (res.status === 200) {
+            const imageData = new FormData();
+            imageData.append('image', {
+              uri: formData.profilePicture?.path,
+              type: formData.profilePicture?.mime,
+              name: formData.profilePicture?.filename,
+            });
+
+            uploadProfilePic(imageData, res.data.id);
+
             dispatch({ type: ADD_PET, payload: res.data });
             dispatch({ type: CURRENT_USER, payload: { id: res.data.id, isPet: true } });
           }
-
-          console.log(res.data);
 
           navigation.replace('Home');
         })
@@ -104,8 +113,9 @@ export default function PetCreation() {
       cropping: true,
       mediaType: 'photo',
       includeBase64: true,
-      compressImageMaxHeight: 500,
-      compressImageMaxWidth: 500,
+      compressImageMaxHeight: 200,
+      compressImageMaxWidth: 200,
+      compressImageQuality: 1,
     })
       .then((image) => {
         setFormData((prev) => {
