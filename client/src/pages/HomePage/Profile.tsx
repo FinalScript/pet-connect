@@ -1,18 +1,17 @@
+import { View, Text, SafeAreaView, ScrollView, Button, Image } from 'react-native';
 import React from 'react';
-import { View, Button, SafeAreaView, ScrollView, Image } from 'react-native';
-import { useAuth0 } from 'react-native-auth0';
-import { useNavigation } from '@react-navigation/native';
-import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { RootStackParamList } from '../../App';
 import { useDispatch, useSelector } from 'react-redux';
-import { ProfileReducer } from '../redux/reducers/profileReducer';
-import Text from '../components/Text';
+import { ProfileReducer } from '../../redux/reducers/profileReducer';
+import { useNavigation } from '@react-navigation/native';
+import { useAuth0 } from 'react-native-auth0';
+import { LOGOUT } from '../../redux/constants';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { RootStackParamList } from '../../../App';
 import { Buffer } from 'buffer';
-import { LOGOUT } from '../redux/constants';
 
 type NavigationProp = NativeStackNavigationProp<RootStackParamList, 'Home'>;
 
-export default function Home() {
+const Profile = () => {
   const dispatch = useDispatch();
   const owner = useSelector((state: ProfileReducer) => state.profile.owner);
   const pets = useSelector((state: ProfileReducer) => state.profile.pets);
@@ -32,7 +31,7 @@ export default function Home() {
   };
 
   return (
-    <SafeAreaView className='flex-1 h-full items-center bg-[#fde1da]'>
+    <SafeAreaView className='flex-1 h-full items-center bg-themeBg'>
       <ScrollView className='w-screen px-10'>
         <Text className='font-bold text-3xl'>Home Page</Text>
 
@@ -77,4 +76,6 @@ export default function Home() {
       </View>
     </SafeAreaView>
   );
-}
+};
+
+export default Profile;

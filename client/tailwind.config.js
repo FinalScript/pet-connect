@@ -9,6 +9,7 @@ module.exports = {
       colors: {
         themeMain: '#FF8770',
         themeBg: '#fde1da',
+        themeTabBg:'#efc3b6',
         themeText: '#362013',
         themeBtn: '#FFBA93',
         themeBtnPressed: '#c59071',        
