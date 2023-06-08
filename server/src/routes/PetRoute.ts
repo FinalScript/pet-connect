@@ -7,7 +7,6 @@ import { trimValuesInObject } from '../utils/trimValuesInObject';
 import multer from 'multer';
 import { ProfilePicture } from '../models/ProfilePicture';
 import fs from 'fs';
-import path from 'path';
 
 const allowedFileTypes = ['.jpg', '.jpeg', '.png', 'image/png', 'image/jpg', 'image/jpeg', 'image/heic'];
 
@@ -16,7 +15,7 @@ const storage = multer.diskStorage({
   destination: 'uploads/',
 
   filename: function (req, file, callback) {
-    callback(null, file.originalname);
+    callback(null, Date.now() + file.originalname);
   },
 });
 

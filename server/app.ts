@@ -28,7 +28,7 @@ const checkJwt = auth({
 
 const jwtErrorHandler: ErrorRequestHandler = (err, req, res, next) => {
   if (err) {
-    res.status(err.status).send({ message: err.message });
+    res.status(err.code === typeof Number ? err.code : 503).send({ message: err });
     return;
   }
   next();
@@ -52,8 +52,7 @@ connectToDB().then(async () => {
   Owner.hasMany(Pet, { onDelete: 'cascade' });
   Pet.hasOne(ProfilePicture);
 
-  // await sequelize.sync({ force: true });
-  // fs.rmSync('uploads/', { recursive: true, force: true });
+  await sequelize.sync({ force: true });
 });
 
 const port = process.env.PORT || 3000;

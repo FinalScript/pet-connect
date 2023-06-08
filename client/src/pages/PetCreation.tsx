@@ -65,8 +65,9 @@ export default function PetCreation() {
   const submit = useCallback(() => {
     dispatch({ type: LOADING, payload: true });
 
-    if (!(formData.name && formData.username)) {
+    if (!(formData.name && formData.username && isUsernameValid)) {
       trigger(HapticFeedbackTypes.notificationError, options);
+      dispatch({ type: LOADING, payload: false });
       return;
     }
 
@@ -101,7 +102,7 @@ export default function PetCreation() {
           dispatch({ type: LOADING, payload: false });
         });
     }, 1500);
-  }, [formData, dispatch]);
+  }, [formData, dispatch, isUsernameValid]);
 
   const petTypeOnPress = useCallback((type: string) => {
     setFormData((prev) => {
@@ -172,7 +173,7 @@ export default function PetCreation() {
     if (step === maxStep) {
       submit();
     }
-  }, [step, formData.type, formData.name, formData.username, formData.profilePicture]);
+  }, [step, formData.type, formData.name, formData.username, formData.profilePicture, isUsernameValid]);
 
   const stepOne = () => {
     return (
