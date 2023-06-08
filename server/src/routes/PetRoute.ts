@@ -107,12 +107,12 @@ router.post('/:id/profilepic/upload', upload.single('image'), async (req, res) =
 
   const owner = await getOwner(authId);
 
-  if (!owner || !owner.pets) {
+  if (!owner || !owner.Pets) {
     res.status(500).send();
     return;
   }
 
-  const pet = owner.pets.find((pet) => {
+  const pet = owner.Pets.find((pet) => {
     if (pet.id === petId) {
       return pet;
     }
@@ -206,7 +206,6 @@ router.post('/create', async (req, res) => {
   try {
     await owner.addPet(newPet);
     await owner.save();
-    await owner.reload();
   } catch (e) {
     console.error(e);
     res.status(e.status).send(e.message);

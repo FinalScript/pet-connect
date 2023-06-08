@@ -55,6 +55,7 @@ export const usernameExists = (username: string) => {
 
 export interface PetCreationParams {
   name: string;
+  username:string;
   type: string;
   description?: string;
   location?: string;

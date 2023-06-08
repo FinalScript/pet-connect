@@ -65,8 +65,8 @@ export default function AuthLoader() {
 
     if (ownerData.status === 200) {
       console.log(ownerData.data);
-      dispatch({ type: OWNER_DATA, payload: (({ pets, ...o }) => o)(ownerData.data) });
-      dispatch({ type: PET_DATA, payload: ownerData.data.pets });
+      dispatch({ type: OWNER_DATA, payload: (({ Pets, ...o }) => o)(ownerData.data) });
+      dispatch({ type: PET_DATA, payload: ownerData.data.Pets });
       dispatch({ type: CURRENT_USER, payload: { id: ownerData.data.id, isPet: false } });
       dispatch({ type: LOADING, payload: false });
       trigger(HapticFeedbackTypes.notificationSuccess, options);

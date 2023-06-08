@@ -42,7 +42,7 @@ export default function AccountCreation() {
 
             if (res.status === 200) {
               dispatch({ type: OWNER_DATA, payload: (({ Pets, ...o }) => o)(res.data.dataValues) });
-              navigation.replace('Pet Creation');
+              navigation.replace('Pet Creation', { initial: true });
             }
           })
           .catch((err) => {

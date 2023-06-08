@@ -1,11 +1,22 @@
 import React, { useCallback, useState } from 'react';
-import { View, Image, TouchableWithoutFeedback, TouchableOpacity, TextInput, Keyboard, TouchableHighlight, ActivityIndicator } from 'react-native';
+import {
+  View,
+  Image,
+  TouchableWithoutFeedback,
+  TouchableOpacity,
+  TextInput,
+  Keyboard,
+  TouchableHighlight,
+  ActivityIndicator,
+  KeyboardAvoidingView,
+  Platform,
+} from 'react-native';
 import Text from '../components/Text';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { trigger, HapticFeedbackTypes } from 'react-native-haptic-feedback';
-import { useNavigation } from '@react-navigation/native';
+import { CompositeScreenProps, RouteProp, useNavigation, useRoute } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { RootStackParamList } from '../../App';
+import { RootRouteProps, RootStackParamList } from '../../App';
 import { options } from '../utils/hapticFeedbackOptions';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import ImagePicker, { Image as ImageType } from 'react-native-image-crop-picker';
@@ -14,6 +25,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { GeneralReducer } from '../redux/reducers/generalReducer';
 import { ADD_PET, CURRENT_USER, LOADING, PET_DATA } from '../redux/constants';
 import { ProfileReducer } from '../redux/reducers/profileReducer';
+import { ScrollView } from 'react-native-gesture-handler';
 
 const petTypes = [
   { type: 'Dog', img: require('../../assets/img/dog.png') },
@@ -29,6 +41,7 @@ const petTypes = [
 type NavigationProp = NativeStackNavigationProp<RootStackParamList, 'Pet Creation'>;
 
 interface FormData {
+  username: string;
   type: string;
   name: string;
   description: string;
@@ -40,22 +53,18 @@ export default function PetCreation() {
   const owner = useSelector((state: ProfileReducer) => state.profile.owner);
   const loading = useSelector((state: GeneralReducer) => state.general.loading);
   const navigation = useNavigation<NavigationProp>();
+  const route = useRoute<RootRouteProps<'Pet Creation'>>();
   const maxStep = 1;
   const [step, setStep] = useState(0);
-  const [formData, setFormData] = useState<FormData>({ type: '', name: '', description: '', profilePicture: undefined });
-  const [focus, setFocus] = useState({ name: false, description: false });
+  const [formData, setFormData] = useState<FormData>({ type: '', username: '', name: '', description: '', profilePicture: undefined });
+  const [focus, setFocus] = useState({ username: false, name: false, description: false });
   const [optionsShuffle, setShuffle] = useState(0);
 
   const submit = useCallback(() => {
     dispatch({ type: LOADING, payload: true });
 
     setTimeout(() => {
-      if (!formData.profilePicture?.data) {
-        return;
-      }
-      createPet({
-        ...formData,
-      })
+      createPet(formData)
         .then(async (res) => {
           if (res.status === 200) {
             if (formData.profilePicture) {
@@ -66,10 +75,12 @@ export default function PetCreation() {
                 name: formData.profilePicture?.filename,
               });
 
-              await uploadProfilePic(imageData, res.data.id);
+              const newPet = await uploadProfilePic(imageData, res.data.id);
+              dispatch({ type: ADD_PET, payload: newPet.data });
+            } else {
+              dispatch({ type: ADD_PET, payload: res.data });
             }
 
-            dispatch({ type: ADD_PET, payload: res.data });
             dispatch({ type: CURRENT_USER, payload: { id: res.data.id, isPet: true } });
           }
 
@@ -111,10 +122,8 @@ export default function PetCreation() {
       height: 500,
       cropping: true,
       mediaType: 'photo',
-      includeBase64: true,
-      compressImageMaxHeight: 200,
-      compressImageMaxWidth: 200,
-      compressImageQuality: 1,
+      compressImageMaxHeight: 500,
+      compressImageMaxWidth: 500,
     })
       .then((image) => {
         setFormData((prev) => {
@@ -155,7 +164,7 @@ export default function PetCreation() {
     if (step === maxStep && formData.name) {
       submit();
     }
-  }, [step, formData.type, formData.name]);
+  }, [step, formData.type, formData.name, formData.username]);
 
   const stepOne = () => {
     return (
@@ -197,7 +206,7 @@ export default function PetCreation() {
       <View>
         <Text className='text-themeText font-semibold text-3xl'>We need some details about your pet!</Text>
 
-        <View className='mt-5 px-2'>
+        <View className='px-2'>
           <View className='flex flex-col justify-center items-center'>
             <Text className='mb-2 text-xl font-bold text-themeText'>Profile Picture</Text>
             <TouchableHighlight
@@ -216,7 +225,8 @@ export default function PetCreation() {
               </View>
             </TouchableHighlight>
           </View>
-          <View className='mt-5'>
+
+          <View className='mt-3'>
             <Text className='mb-2 pl-4 text-xl font-bold text-themeText'>Name *</Text>
             <TextInput
               className={
@@ -247,7 +257,38 @@ export default function PetCreation() {
               editable={!loading}
             />
           </View>
-          <View className='mt-5'>
+          <View className='mt-3'>
+            <Text className='mb-2 pl-4 text-xl font-bold text-themeText'>Username *</Text>
+            <TextInput
+              className={
+                (focus.username === true ? 'border-themeActive' : 'border-transparent') +
+                ' bg-themeInput border-[5px] shadow-sm shadow-themeShadow w-full rounded-3xl px-5 py-3 text-xl'
+              }
+              style={{ fontFamily: 'BalooChettan2-Regular' }}
+              placeholderTextColor={'#444444bb'}
+              value={formData.username}
+              onChangeText={(e) => {
+                setFormData((prev) => {
+                  return { ...prev, username: e };
+                });
+              }}
+              onFocus={() => {
+                setFocus((prev) => {
+                  return { ...prev, username: true };
+                });
+              }}
+              onBlur={() => {
+                setFocus((prev) => {
+                  return { ...prev, username: false };
+                });
+              }}
+              maxLength={30}
+              returnKeyType='next'
+              placeholder='Give your pet an unique username'
+              editable={!loading}
+            />
+          </View>
+          <View className='mt-3'>
             <Text className='mb-2 pl-4 text-xl font-bold text-themeText'>Tell us about{formData.name ? ` ${formData.name}` : '...'}</Text>
             <TextInput
               className={
@@ -300,12 +341,15 @@ export default function PetCreation() {
   };
 
   return (
-    <SafeAreaView className='bg-themeBg h-full p-5 flex flex-col justify-between'>
-      {getStep()}
-      <View className='mb-2 mx-2 flex flex-row justify-between items-center'>
+    <SafeAreaView className='bg-themeBg h-full p-5 flex flex-col flew-grow'>
+      <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : undefined} style={{ flex: 1 }}>
+        <View>{getStep()}</View>
+      </KeyboardAvoidingView>
+
+      <View className='mb-10 absolute bottom-0 w-full mx-2 flex flex-row justify-between items-center'>
         <TouchableOpacity onPress={secondaryOnPress} activeOpacity={0.6} disabled={loading}>
           <View className='px-6 py-2 rounded-3xl'>
-            <Text className='text-xl text-[#c07c4e]'>{step === 0 ? 'Skip' : 'Go Back'}</Text>
+            <Text className='text-xl text-[#c07c4e]'>{step === 0 ? (route?.params?.initial ? 'Skip' : 'Cancel') : 'Go Back'}</Text>
           </View>
         </TouchableOpacity>
 

@@ -20,7 +20,7 @@ export class Owner extends Model<InferAttributes<Owner>, InferCreationAttributes
   declare name: CreationOptional<string>;
   declare username: string;
   declare location: CreationOptional<string>;
-  declare pets?: Pet[];
+  declare Pets?: Pet[];
   declare addPet: HasManyAddAssociationMixin<InferAttributes<Pet>, InferCreationAttributes<Pet>>;
 }
 

@@ -10,7 +10,7 @@ export const getOwner = async (authId: string) => {
     include: [
       {
         model: Pet,
-        as: 'pets',
+        as: 'Pets',
         include: [
           {
             model: ProfilePicture,

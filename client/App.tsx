@@ -6,8 +6,8 @@
  */
 
 import React, { useEffect, useReducer, useState } from 'react';
-import { ActivityIndicator, StatusBar } from 'react-native';
-import { NavigationContainer } from '@react-navigation/native';
+import { ActivityIndicator, StatusBar, View } from 'react-native';
+import { NavigationContainer, RouteProp } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import PetCreation from './src/pages/PetCreation';
 import AccountCreation from './src/pages/AccountCreation';
@@ -23,9 +23,13 @@ import { ping } from './src/api';
 export type RootStackParamList = {
   Home: undefined;
   AuthLoader: undefined;
-  'Pet Creation': undefined;
+  'Pet Creation'?: {
+    initial?: boolean;
+  };
   'Account Creation': undefined;
 };
+
+export type RootRouteProps<RouteName extends keyof RootStackParamList> = RouteProp<RootStackParamList, RouteName>;
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
@@ -58,19 +62,25 @@ const App = () => {
   }
 
   return (
-    <>
+    <View className='bg-themeBg h-full'>
       <StatusBar animated={true} barStyle={'dark-content'} />
       <NavigationContainer>
         <Stack.Navigator
           initialRouteName='AuthLoader'
-          screenOptions={{ headerShown: false, headerBackVisible: false, animationTypeForReplace: 'push', animation: 'fade_from_bottom' }}>
+          screenOptions={{
+            headerShown: false,
+            headerBackVisible: false,
+            animationTypeForReplace: 'push',
+            animation: 'fade_from_bottom',
+            contentStyle: { backgroundColor: '#f6f6f6f' },
+          }}>
           <Stack.Screen name='Home' component={Home} />
           <Stack.Screen name='AuthLoader' component={AuthLoader} />
           <Stack.Screen name='Pet Creation' component={PetCreation} />
           <Stack.Screen name='Account Creation' component={AccountCreation} />
         </Stack.Navigator>
       </NavigationContainer>
-    </>
+    </View>
   );
 };
 

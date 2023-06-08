@@ -49,7 +49,7 @@ export default function Home() {
             {pets.map((pet, i) => {
               const { ProfilePicture, OwnerPets, ...display } = pet;
               return (
-                <View key={i} className='bg-themeBtn rounded-3xl p-5 flex flex-col items-center'>
+                <View key={i} className='bg-themeBtn rounded-3xl p-5 flex flex-col items-center mb-2'>
                   {pet.ProfilePicture && (
                     <View className='h-44 w-44'>
                       <Image className='w-full h-full' source={{ uri: `data:image/*;base64,${Buffer.from(pet.ProfilePicture.data).toString('base64')}` }} />
