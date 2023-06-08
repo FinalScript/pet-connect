@@ -1,6 +1,7 @@
 import express from 'express';
-import { createOwner, getOwner, getOwnerByUsername } from '../controllers/OwnerController';
+import { createOwner, deleteOwner, getOwner, getOwnerByUsername, updateOwner } from '../controllers/OwnerController';
 import { Owner } from '../models/Owner';
+import { trimValuesInObject } from '../utils/trimValuesInObject';
 
 const router = express.Router();
 
@@ -62,4 +63,59 @@ router.post('/signup', async (req, res) => {
   }
 
   res.status(500).send({ message: 'Error creating account' });
+});
+
+router.patch('/update/:authId?', async (req, res) => {
+  const authId = req.params.authId;
+  req.body = trimValuesInObject(req.body);
+  const { name, username, location } = req.body;
+
+  // Check if the account authID was provided
+  if (!authId) {
+    return res.status(400).send({ message: 'AuthId missing' });
+  }
+
+  // Check if the account exists
+  const owner = await getOwner(authId);
+
+  if (!owner) {
+    return res.status(404).send({ message: 'Account not found' });
+  }
+
+  // Update the account
+  try {
+    await updateOwner(authId, { name, username, location });
+    await owner.reload();
+  } catch (e) {
+    console.error(e);
+    return res.status(e.statusCode).send({ message: e.message });
+  }
+
+  // Send the updated account object in the response
+  return res.status(200).send(owner);
+});
+
+router.delete('/delete/:authId?', async (req, res) => {
+  const authId = req.params.authId;
+
+  if (!authId) {
+    res.status(400).send({ message: 'AuthId missing' });
+    return;
+  }
+
+  const owner = await getOwner(authId);
+
+  if (!owner) {
+    res.status(404).send({ message: 'Account not found' });
+    return;
+  }
+
+  try {
+    await deleteOwner(authId);
+  } catch (e) {
+    console.error(e);
+    res.status(e.status || 400).send(e.message);
+  }
+
+  res.status(200).send({ message: 'Account successfully deleted' });
 });

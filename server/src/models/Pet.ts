@@ -3,6 +3,7 @@ import { sequelize } from '../db/connection';
 import { ProfilePicture, ProfilePictureCreationDAO } from './ProfilePicture';
 
 export interface PetCreationDAO {
+  username: string;
   name: string;
   type: string;
   description?: string;
@@ -10,6 +11,7 @@ export interface PetCreationDAO {
   profilePicture?: string;
 }
 export interface PetUpdateDAO {
+  username?: string;
   name?: string;
   type?: string;
   description?: string;
@@ -18,6 +20,7 @@ export interface PetUpdateDAO {
 
 export class Pet extends Model<InferAttributes<Pet>, InferCreationAttributes<Pet>> {
   declare id: CreationOptional<string>;
+  declare username: string;
   declare name: string;
   declare type: string;
   declare description: CreationOptional<string>;
@@ -32,6 +35,11 @@ Pet.init(
       defaultValue: DataTypes.UUIDV4,
       allowNull: false,
       primaryKey: true,
+    },
+    username: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      unique: true,
     },
     name: {
       type: DataTypes.STRING,
