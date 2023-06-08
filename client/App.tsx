@@ -5,67 +5,89 @@
  * @flow
  */
 
-import React, { useEffect, useState } from 'react';
-import { SafeAreaView, Text, Platform } from 'react-native';
-import { NavigationContainer } from '@react-navigation/native';
+import React, { useEffect, useReducer, useState } from 'react';
+import { ActivityIndicator, StatusBar, View } from 'react-native';
+import { NavigationContainer, RouteProp } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import { Auth0Provider } from 'react-native-auth0';
-import { Config } from 'react-native-config';
-import Auth from './src/pages/Auth';
 import PetCreation from './src/pages/PetCreation';
 import AccountCreation from './src/pages/AccountCreation';
 import Home from './src/pages/Home';
-import { setApiBaseUrl } from './src/api';
+import AppLoader from './src/hoc/AppLoader';
+import AuthLoader from './src/pages/AuthLoader';
+import { useSelector } from 'react-redux';
+import { GeneralReducer } from './src/redux/reducers/generalReducer';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import Text from './src/components/Text';
+import { ping } from './src/api';
 
 export type RootStackParamList = {
   Home: undefined;
-  Auth: undefined;
-  'Pet Creation': undefined;
+  AuthLoader: undefined;
+  'Pet Creation'?: {
+    initial?: boolean;
+  };
   'Account Creation': undefined;
 };
+
+export type RootRouteProps<RouteName extends keyof RootStackParamList> = RouteProp<RootStackParamList, RouteName>;
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
 const App = () => {
-  const [domain, setDomain] = useState<string>();
-  const [clientId, setClientId] = useState<string>();
+  const [apiStatus, setApiStatus] = useState(true);
 
   useEffect(() => {
-    if (Config.AUTH0_DOMAIN) {
-      setDomain(Config.AUTH0_DOMAIN);
-    }
-
-    if (Config.AUTH0_CLIENT_ID) {
-      setClientId(Config.AUTH0_CLIENT_ID);
-    }
-
-    if (Config.API_URL) {
-      setApiBaseUrl(Config.API_URL);
-    }
+    pingApi();
   }, []);
 
-  if (!domain || !clientId) {
+  const pingApi = async () => {
+    ping()
+      .then((res) => {
+        if (res.status !== 200) {
+          setApiStatus(false);
+        }
+      })
+      .catch((err) => {
+        console.log(err);
+        setApiStatus(false);
+      });
+  };
+
+  if (!apiStatus) {
     return (
-      <SafeAreaView>
-        <Text>Error</Text>
+      <SafeAreaView className='bg-themeBg h-full flex justify-center items-center'>
+        <Text className='text-themeText font-semibold text-3xl'>Error contacting server</Text>
       </SafeAreaView>
     );
   }
 
   return (
-    <Auth0Provider domain={domain} clientId={clientId}>
+    <View className='bg-themeBg h-full'>
+      <StatusBar animated={true} barStyle={'dark-content'} />
       <NavigationContainer>
         <Stack.Navigator
-          initialRouteName='Auth'
-          screenOptions={{ headerShown: false, headerBackVisible: false, animationTypeForReplace: 'push', animation: 'fade_from_bottom' }}>
+          initialRouteName='AuthLoader'
+          screenOptions={{
+            headerShown: false,
+            headerBackVisible: false,
+            animationTypeForReplace: 'push',
+            animation: 'fade_from_bottom',
+            contentStyle: { backgroundColor: '#f6f6f6f' },
+          }}>
           <Stack.Screen name='Home' component={Home} />
-          <Stack.Screen name='Auth' component={Auth} />
+          <Stack.Screen name='AuthLoader' component={AuthLoader} />
           <Stack.Screen name='Pet Creation' component={PetCreation} />
           <Stack.Screen name='Account Creation' component={AccountCreation} />
         </Stack.Navigator>
       </NavigationContainer>
-    </Auth0Provider>
+    </View>
   );
 };
 
-export default App;
+export default () => {
+  return (
+    <AppLoader>
+      <App />
+    </AppLoader>
+  );
+};

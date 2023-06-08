@@ -1,5 +1,6 @@
-import { CreationOptional, DataTypes, InferAttributes, InferCreationAttributes, Model, Sequelize } from 'sequelize';
+import { CreationOptional, DataTypes, HasOneSetAssociationMixin, InferAttributes, InferCreationAttributes, Model, Sequelize } from 'sequelize';
 import { sequelize } from '../db/connection';
+import { ProfilePicture, ProfilePictureCreationDAO } from './ProfilePicture';
 
 export interface PetCreationDAO {
   username: string;
@@ -7,6 +8,7 @@ export interface PetCreationDAO {
   type: string;
   description?: string;
   location?: string;
+  profilePicture?: string;
 }
 export interface PetUpdateDAO {
   username?: string;
@@ -17,13 +19,13 @@ export interface PetUpdateDAO {
 }
 
 export class Pet extends Model<InferAttributes<Pet>, InferCreationAttributes<Pet>> {
-  declare id: CreationOptional<number>;
-  declare username: string;  // Added username to the pet
+  declare id: CreationOptional<string>;
+  declare username: string;
   declare name: string;
-  declare profilePicture: CreationOptional<Blob>;
   declare type: string;
   declare description: CreationOptional<string>;
   declare location: CreationOptional<string>;
+  declare setProfilePicture: HasOneSetAssociationMixin<ProfilePicture, 'id'>;
 }
 
 Pet.init(
@@ -42,10 +44,6 @@ Pet.init(
     name: {
       type: DataTypes.STRING,
       allowNull: false,
-    },
-    profilePicture: {
-      type: DataTypes.BLOB,
-      // allowNull: false,
     },
     type: {
       type: DataTypes.ENUM('DOG', 'CAT', 'BIRD', 'FISH', 'RABBIT', 'HAMSTER', 'MOUSE', 'GUINEA_PIG', 'HORSE', 'SNAKE', 'OTHER'),

@@ -18,6 +18,22 @@
 		446A3CC73D1D48539206CE2D /* BalooChettan2-SemiBold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 29290B54055E4DC9AA9E859D /* BalooChettan2-SemiBold.ttf */; };
 		52CAC30A5B8F45DC9545EF0A /* Mali-SemiBold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 65F11644265E4CD99C4A0348 /* Mali-SemiBold.ttf */; };
 		57A27DFDC98D435D8819E568 /* Mali-Medium.ttf in Resources */ = {isa = PBXBuildFile; fileRef = A049C07CEFBC42328D3EC6E8 /* Mali-Medium.ttf */; };
+		6657B9EA2A2E012200A6A69F /* Fontisto.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 6657B9DA2A2E012200A6A69F /* Fontisto.ttf */; };
+		6657B9EB2A2E012200A6A69F /* Octicons.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 6657B9DB2A2E012200A6A69F /* Octicons.ttf */; };
+		6657B9EC2A2E012200A6A69F /* Feather.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 6657B9DC2A2E012200A6A69F /* Feather.ttf */; };
+		6657B9ED2A2E012200A6A69F /* Entypo.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 6657B9DD2A2E012200A6A69F /* Entypo.ttf */; };
+		6657B9EE2A2E012200A6A69F /* FontAwesome5_Brands.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 6657B9DE2A2E012200A6A69F /* FontAwesome5_Brands.ttf */; };
+		6657B9EF2A2E012200A6A69F /* MaterialCommunityIcons.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 6657B9DF2A2E012200A6A69F /* MaterialCommunityIcons.ttf */; };
+		6657B9F02A2E012200A6A69F /* AntDesign.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 6657B9E02A2E012200A6A69F /* AntDesign.ttf */; };
+		6657B9F12A2E012200A6A69F /* Foundation.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 6657B9E12A2E012200A6A69F /* Foundation.ttf */; };
+		6657B9F22A2E012200A6A69F /* Ionicons.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 6657B9E22A2E012200A6A69F /* Ionicons.ttf */; };
+		6657B9F32A2E012200A6A69F /* FontAwesome5_Solid.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 6657B9E32A2E012200A6A69F /* FontAwesome5_Solid.ttf */; };
+		6657B9F42A2E012200A6A69F /* FontAwesome5_Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 6657B9E42A2E012200A6A69F /* FontAwesome5_Regular.ttf */; };
+		6657B9F52A2E012200A6A69F /* FontAwesome.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 6657B9E52A2E012200A6A69F /* FontAwesome.ttf */; };
+		6657B9F62A2E012200A6A69F /* Zocial.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 6657B9E62A2E012200A6A69F /* Zocial.ttf */; };
+		6657B9F72A2E012200A6A69F /* EvilIcons.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 6657B9E72A2E012200A6A69F /* EvilIcons.ttf */; };
+		6657B9F82A2E012200A6A69F /* SimpleLineIcons.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 6657B9E82A2E012200A6A69F /* SimpleLineIcons.ttf */; };
+		6657B9F92A2E012200A6A69F /* MaterialIcons.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 6657B9E92A2E012200A6A69F /* MaterialIcons.ttf */; };
 		676C1A05FC5C4BFD821659EC /* BalooChettan2-ExtraBold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 773CDFB81EAB4AB399722C44 /* BalooChettan2-ExtraBold.ttf */; };
 		7699B88040F8A987B510C191 /* libPods-PetConnect-PetConnectTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 19F6CBCC0A4E27FBF8BF4A61 /* libPods-PetConnect-PetConnectTests.a */; };
 		7BAC07D00C134D5D9136373A /* Mali-Light.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 04AB17F0E7A24ABE90B81928 /* Mali-Light.ttf */; };
@@ -50,7 +66,7 @@
 		00E356F11AD99517003FC87E /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		00E356F21AD99517003FC87E /* PetConnectTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = PetConnectTests.m; sourceTree = "<group>"; };
 		04AB17F0E7A24ABE90B81928 /* Mali-Light.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Mali-Light.ttf"; path = "../assets/fonts/Mali-Light.ttf"; sourceTree = "<group>"; };
-		13B07F961A680F5B00A75B9A /* PetConnect.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = PetConnect.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		13B07F961A680F5B00A75B9A /* Pet Connect.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Pet Connect.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		13B07FAF1A68108700A75B9A /* AppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AppDelegate.h; path = PetConnect/AppDelegate.h; sourceTree = "<group>"; };
 		13B07FB01A68108700A75B9A /* AppDelegate.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = AppDelegate.mm; path = PetConnect/AppDelegate.mm; sourceTree = "<group>"; };
 		13B07FB51A68108700A75B9A /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = Images.xcassets; path = PetConnect/Images.xcassets; sourceTree = "<group>"; };
@@ -70,6 +86,22 @@
 		5DCACB8F33CDC322A6C60F78 /* libPods-PetConnect.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-PetConnect.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		60B8EC2D478548A3BAB1C607 /* Mali-Italic.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Mali-Italic.ttf"; path = "../assets/fonts/Mali-Italic.ttf"; sourceTree = "<group>"; };
 		65F11644265E4CD99C4A0348 /* Mali-SemiBold.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Mali-SemiBold.ttf"; path = "../assets/fonts/Mali-SemiBold.ttf"; sourceTree = "<group>"; };
+		6657B9DA2A2E012200A6A69F /* Fontisto.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = Fontisto.ttf; sourceTree = "<group>"; };
+		6657B9DB2A2E012200A6A69F /* Octicons.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = Octicons.ttf; sourceTree = "<group>"; };
+		6657B9DC2A2E012200A6A69F /* Feather.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = Feather.ttf; sourceTree = "<group>"; };
+		6657B9DD2A2E012200A6A69F /* Entypo.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = Entypo.ttf; sourceTree = "<group>"; };
+		6657B9DE2A2E012200A6A69F /* FontAwesome5_Brands.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = FontAwesome5_Brands.ttf; sourceTree = "<group>"; };
+		6657B9DF2A2E012200A6A69F /* MaterialCommunityIcons.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = MaterialCommunityIcons.ttf; sourceTree = "<group>"; };
+		6657B9E02A2E012200A6A69F /* AntDesign.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = AntDesign.ttf; sourceTree = "<group>"; };
+		6657B9E12A2E012200A6A69F /* Foundation.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = Foundation.ttf; sourceTree = "<group>"; };
+		6657B9E22A2E012200A6A69F /* Ionicons.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = Ionicons.ttf; sourceTree = "<group>"; };
+		6657B9E32A2E012200A6A69F /* FontAwesome5_Solid.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = FontAwesome5_Solid.ttf; sourceTree = "<group>"; };
+		6657B9E42A2E012200A6A69F /* FontAwesome5_Regular.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = FontAwesome5_Regular.ttf; sourceTree = "<group>"; };
+		6657B9E52A2E012200A6A69F /* FontAwesome.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = FontAwesome.ttf; sourceTree = "<group>"; };
+		6657B9E62A2E012200A6A69F /* Zocial.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = Zocial.ttf; sourceTree = "<group>"; };
+		6657B9E72A2E012200A6A69F /* EvilIcons.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = EvilIcons.ttf; sourceTree = "<group>"; };
+		6657B9E82A2E012200A6A69F /* SimpleLineIcons.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = SimpleLineIcons.ttf; sourceTree = "<group>"; };
+		6657B9E92A2E012200A6A69F /* MaterialIcons.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = MaterialIcons.ttf; sourceTree = "<group>"; };
 		773CDFB81EAB4AB399722C44 /* BalooChettan2-ExtraBold.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "BalooChettan2-ExtraBold.ttf"; path = "../assets/fonts/BalooChettan2-ExtraBold.ttf"; sourceTree = "<group>"; };
 		81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = LaunchScreen.storyboard; path = PetConnect/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		89C6BE57DB24E9ADA2F236DE /* Pods-PetConnect-PetConnectTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-PetConnect-PetConnectTests.release.xcconfig"; path = "Target Support Files/Pods-PetConnect-PetConnectTests/Pods-PetConnect-PetConnectTests.release.xcconfig"; sourceTree = "<group>"; };
@@ -130,6 +162,7 @@
 				13B07FB01A68108700A75B9A /* AppDelegate.mm */,
 				13B07FB51A68108700A75B9A /* Images.xcassets */,
 				13B07FB61A68108700A75B9A /* Info.plist */,
+				6657B9D92A2E012200A6A69F /* Fonts */,
 				81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */,
 				13B07FB71A68108700A75B9A /* main.m */,
 			);
@@ -172,6 +205,30 @@
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
+		6657B9D92A2E012200A6A69F /* Fonts */ = {
+			isa = PBXGroup;
+			children = (
+				6657B9DA2A2E012200A6A69F /* Fontisto.ttf */,
+				6657B9DB2A2E012200A6A69F /* Octicons.ttf */,
+				6657B9DC2A2E012200A6A69F /* Feather.ttf */,
+				6657B9DD2A2E012200A6A69F /* Entypo.ttf */,
+				6657B9DE2A2E012200A6A69F /* FontAwesome5_Brands.ttf */,
+				6657B9DF2A2E012200A6A69F /* MaterialCommunityIcons.ttf */,
+				6657B9E02A2E012200A6A69F /* AntDesign.ttf */,
+				6657B9E12A2E012200A6A69F /* Foundation.ttf */,
+				6657B9E22A2E012200A6A69F /* Ionicons.ttf */,
+				6657B9E32A2E012200A6A69F /* FontAwesome5_Solid.ttf */,
+				6657B9E42A2E012200A6A69F /* FontAwesome5_Regular.ttf */,
+				6657B9E52A2E012200A6A69F /* FontAwesome.ttf */,
+				6657B9E62A2E012200A6A69F /* Zocial.ttf */,
+				6657B9E72A2E012200A6A69F /* EvilIcons.ttf */,
+				6657B9E82A2E012200A6A69F /* SimpleLineIcons.ttf */,
+				6657B9E92A2E012200A6A69F /* MaterialIcons.ttf */,
+			);
+			name = Fonts;
+			path = "../node_modules/react-native-vector-icons/Fonts";
+			sourceTree = "<group>";
+		};
 		832341AE1AAA6A7D00B99B32 /* Libraries */ = {
 			isa = PBXGroup;
 			children = (
@@ -199,7 +256,7 @@
 		83CBBA001A601CBA00E9B192 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				13B07F961A680F5B00A75B9A /* PetConnect.app */,
+				13B07F961A680F5B00A75B9A /* Pet Connect.app */,
 				00E356EE1AD99517003FC87E /* PetConnectTests.xctest */,
 			);
 			name = Products;
@@ -266,7 +323,7 @@
 			);
 			name = PetConnect;
 			productName = PetConnect;
-			productReference = 13B07F961A680F5B00A75B9A /* PetConnect.app */;
+			productReference = 13B07F961A680F5B00A75B9A /* Pet Connect.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
@@ -323,24 +380,40 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				6657B9EB2A2E012200A6A69F /* Octicons.ttf in Resources */,
+				6657B9F12A2E012200A6A69F /* Foundation.ttf in Resources */,
 				81AB9BB82411601600AC10FF /* LaunchScreen.storyboard in Resources */,
 				13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */,
 				E5BCA0B5C19242AC92CE3F30 /* Itim-Regular.ttf in Resources */,
+				6657B9EE2A2E012200A6A69F /* FontAwesome5_Brands.ttf in Resources */,
 				FF274A3770934DC79837EDE3 /* Mali-Bold.ttf in Resources */,
 				315BEBF436C7484B982EE010 /* Mali-BoldItalic.ttf in Resources */,
 				27FF8AE807CD4C139E1A8AC9 /* Mali-ExtraLight.ttf in Resources */,
+				6657B9EA2A2E012200A6A69F /* Fontisto.ttf in Resources */,
 				7BF1F07802E14D5ABB959DDA /* Mali-ExtraLightItalic.ttf in Resources */,
+				6657B9F72A2E012200A6A69F /* EvilIcons.ttf in Resources */,
+				6657B9F82A2E012200A6A69F /* SimpleLineIcons.ttf in Resources */,
+				6657B9F42A2E012200A6A69F /* FontAwesome5_Regular.ttf in Resources */,
+				6657B9EF2A2E012200A6A69F /* MaterialCommunityIcons.ttf in Resources */,
 				E867F29E2FA2475DBA64F1FA /* Mali-Italic.ttf in Resources */,
 				7BAC07D00C134D5D9136373A /* Mali-Light.ttf in Resources */,
 				FF1FE0A0CA514F64A9985B59 /* Mali-LightItalic.ttf in Resources */,
+				6657B9F32A2E012200A6A69F /* FontAwesome5_Solid.ttf in Resources */,
 				57A27DFDC98D435D8819E568 /* Mali-Medium.ttf in Resources */,
+				6657B9ED2A2E012200A6A69F /* Entypo.ttf in Resources */,
+				6657B9F52A2E012200A6A69F /* FontAwesome.ttf in Resources */,
 				9AEEC4A7BBFD4C95A7E4353E /* Mali-MediumItalic.ttf in Resources */,
 				CCA57DBFAEA74B7EA4FCCB13 /* Mali-Regular.ttf in Resources */,
+				6657B9F22A2E012200A6A69F /* Ionicons.ttf in Resources */,
+				6657B9EC2A2E012200A6A69F /* Feather.ttf in Resources */,
 				52CAC30A5B8F45DC9545EF0A /* Mali-SemiBold.ttf in Resources */,
 				D8CBBCFD4E6646BA84B67BAB /* Mali-SemiBoldItalic.ttf in Resources */,
 				7CA2E717A4E14EA7ACFC75DC /* BalooChettan2-Bold.ttf in Resources */,
 				676C1A05FC5C4BFD821659EC /* BalooChettan2-ExtraBold.ttf in Resources */,
+				6657B9F62A2E012200A6A69F /* Zocial.ttf in Resources */,
 				280D5E288D1F4593A0FBD055 /* BalooChettan2-Medium.ttf in Resources */,
+				6657B9F92A2E012200A6A69F /* MaterialIcons.ttf in Resources */,
+				6657B9F02A2E012200A6A69F /* AntDesign.ttf in Resources */,
 				D85586E8AEC04DFABAFE134C /* BalooChettan2-Regular.ttf in Resources */,
 				446A3CC73D1D48539206CE2D /* BalooChettan2-SemiBold.ttf in Resources */,
 			);
@@ -602,7 +675,7 @@
 					"-lc++",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = org.finalscript.petapp;
-				PRODUCT_NAME = PetConnect;
+				PRODUCT_NAME = "Pet Connect";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
 				VERSIONING_SYSTEM = "apple-generic";
@@ -630,7 +703,7 @@
 					"-lc++",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = org.finalscript.petapp;
-				PRODUCT_NAME = PetConnect;
+				PRODUCT_NAME = "Pet Connect";
 				SWIFT_VERSION = 5.0;
 				VERSIONING_SYSTEM = "apple-generic";
 			};
@@ -669,7 +742,7 @@
 				COPY_PHASE_STRIP = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
-				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = i386;
+				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = "";
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_NO_COMMON_BLOCKS = YES;
@@ -741,7 +814,7 @@
 				COPY_PHASE_STRIP = YES;
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
-				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = i386;
+				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = "";
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_NO_COMMON_BLOCKS = YES;
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
