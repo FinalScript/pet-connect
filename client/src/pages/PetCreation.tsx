@@ -8,15 +8,12 @@ import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../../App';
 import { options } from '../utils/hapticFeedbackOptions';
 import Icon from 'react-native-vector-icons/FontAwesome';
-import { launchCamera, launchImageLibrary, Asset } from 'react-native-image-picker';
 import ImagePicker, { Image as ImageType } from 'react-native-image-crop-picker';
 import { createPet, uploadProfilePic } from '../api';
 import { useDispatch, useSelector } from 'react-redux';
 import { GeneralReducer } from '../redux/reducers/generalReducer';
 import { ADD_PET, CURRENT_USER, LOADING, PET_DATA } from '../redux/constants';
 import { ProfileReducer } from '../redux/reducers/profileReducer';
-import { btoa } from '../utils/btoa';
-import { Buffer } from 'buffer';
 
 const petTypes = [
   { type: 'Dog', img: require('../../assets/img/dog.png') },
@@ -59,16 +56,18 @@ export default function PetCreation() {
       createPet({
         ...formData,
       })
-        .then((res) => {
+        .then(async (res) => {
           if (res.status === 200) {
-            const imageData = new FormData();
-            imageData.append('image', {
-              uri: formData.profilePicture?.path,
-              type: formData.profilePicture?.mime,
-              name: formData.profilePicture?.filename,
-            });
+            if (formData.profilePicture) {
+              const imageData = new FormData();
+              imageData.append('image', {
+                uri: formData.profilePicture?.path,
+                type: formData.profilePicture?.mime,
+                name: formData.profilePicture?.filename,
+              });
 
-            uploadProfilePic(imageData, res.data.id);
+              await uploadProfilePic(imageData, res.data.id);
+            }
 
             dispatch({ type: ADD_PET, payload: res.data });
             dispatch({ type: CURRENT_USER, payload: { id: res.data.id, isPet: true } });

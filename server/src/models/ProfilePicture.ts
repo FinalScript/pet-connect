@@ -2,7 +2,6 @@ import { CreationOptional, DataTypes, InferAttributes, InferCreationAttributes, 
 import { sequelize } from '../db/connection';
 
 export interface ProfilePictureCreationDAO {
-  authId: string;
   path: string;
   name: string;
   type: string;

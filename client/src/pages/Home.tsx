@@ -7,7 +7,7 @@ import { RootStackParamList } from '../../App';
 import { useSelector } from 'react-redux';
 import { ProfileReducer } from '../redux/reducers/profileReducer';
 import Text from '../components/Text';
-import { btoa } from '../utils/btoa';
+import {Buffer} from 'buffer';
 
 type NavigationProp = NativeStackNavigationProp<RootStackParamList, 'Home'>;
 
@@ -52,7 +52,7 @@ export default function Home() {
                 <View key={i} className='bg-themeBtn rounded-3xl p-5 flex flex-col items-center'>
                   {pet.ProfilePicture && (
                     <View className='h-44 w-44'>
-                      <Image className='w-full h-full' source={{ uri: `data:image/*;base64,${pet.ProfilePicture.data}` }} />
+                      <Image className='w-full h-full' source={{ uri: `data:image/*;base64,${Buffer.from(pet.ProfilePicture.data).toString('base64')}` }} />
                     </View>
                   )}
                   <Text>{JSON.stringify(display, null, 2)}</Text>

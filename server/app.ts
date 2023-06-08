@@ -55,7 +55,7 @@ connectToDB().then(async () => {
   Pet.belongsToMany(Owner, { through: OwnerPets, as: 'owners', foreignKey: 'petId' });
   Pet.hasOne(ProfilePicture, { foreignKey: 'petId' });
 
-  await sequelize.sync({ force: true });
+  await sequelize.sync();
 
   // // create pet and insert // .build for no insert
   // const tom = await Pet.create({ name: 'Tom', type: 'CAT' });

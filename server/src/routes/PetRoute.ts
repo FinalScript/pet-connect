@@ -71,22 +71,29 @@ router.delete('/delete/:id?', async (req, res) => {
 
 router.post('/:id/profilepic/upload', upload.single('image'), async (req, res) => {
   // Retrieve the uploaded image file
-  const { filename, mimetype, path, buffer } = req.file;
+  const { filename, mimetype, path } = req.file;
   const authId = req.auth.payload.sub;
   const petId = req.params.id;
 
-  const pet = (
-    await Owner.findOne({
-      where: { authId },
-      include: [
-        {
-          model: Pet,
-          as: 'pets',
-          through: { attributes: [] }, // Exclude join table attributes
-        },
-      ],
-    })
-  ).pets[0];
+  console.log(authId)
+
+  const owner = await getOwner(authId);
+
+  if (!owner || !owner.pets) {
+    res.status(500).send();
+    return;
+  }
+
+  const pet = owner.pets.find((pet) => {
+    if (pet.id === petId) {
+      return pet;
+    }
+  });
+
+  if (!pet) {
+    res.status(500).send();
+    return;
+  }
 
   // Read the image file from the disk
   const imageBuffer = fs.readFileSync(path);
@@ -98,9 +105,10 @@ router.post('/:id/profilepic/upload', upload.single('image'), async (req, res) =
     type: mimetype,
   });
 
-  pet.setProfilePicture(profilePictureDAO);
+  await pet.setProfilePicture(profilePictureDAO);
 
   await pet.save();
+  await pet.reload();
 
   res.send(pet);
 });
@@ -142,12 +150,10 @@ router.post('/create', async (req, res) => {
     return;
   }
 
-  let newOwner: Owner;
-
   try {
     await owner.addPet(newPet);
     await owner.save();
-    newOwner = await owner.reload();
+    await owner.reload();
   } catch (e) {
     console.error(e);
     res.status(e.status).send(e.message);

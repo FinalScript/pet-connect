@@ -17,7 +17,7 @@ export interface PetUpdateDAO {
 }
 
 export class Pet extends Model<InferAttributes<Pet>, InferCreationAttributes<Pet>> {
-  declare id: CreationOptional<number>;
+  declare id: CreationOptional<string>;
   declare name: string;
   declare type: string;
   declare description: CreationOptional<string>;
