@@ -49,7 +49,6 @@ app.use(jwtErrorHandler);
 
 connectToDB().then(async () => {
   Owner.hasMany(Pet, { onDelete: 'cascade' });
-  Pet.hasMany(Owner);
 
   await sequelize.sync({ force: true });
 });
