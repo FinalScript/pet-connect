@@ -45,10 +45,18 @@ export const signup = (data: SignUpParams) => {
   });
 };
 
-export const usernameExists = (username: string) => {
+export const ownerUsernameExists = (username: string) => {
   return api({
     method: 'POST',
     url: '/api/private/owner/validateusername',
+    data: { username },
+  });
+};
+
+export const petUsernameExists = (username: string) => {
+  return api({
+    method: 'POST',
+    url: '/api/private/pet/validateusername',
     data: { username },
   });
 };

@@ -66,7 +66,19 @@ export default function AccountCreation() {
 
         <View className='mt-5 px-2'>
           <View>
-            <UsernameInput value={username} setValue={setUsername} isValid={isUsernameValid} setIsValid={setIsUsernameValid} focusNext={focusNameInput} />
+            <View>
+              <Text className='mb-2 pl-4 text-xl font-bold text-themeText'>Username *</Text>
+              <UsernameInput
+                value={username}
+                setValue={setUsername}
+                isValid={isUsernameValid}
+                setIsValid={setIsUsernameValid}
+                focusNext={focusNameInput}
+                maxLength={30}
+                placeholder='Enter your username'
+                returnKeyType='next'
+              />
+            </View>
             <View>
               <Text className='text-xs pl-3'>- No spaces</Text>
               <Text className='text-xs pl-3'>- Dashes, underscores, and periods allowed</Text>

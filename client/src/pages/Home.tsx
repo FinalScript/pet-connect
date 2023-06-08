@@ -4,14 +4,16 @@ import { useAuth0 } from 'react-native-auth0';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../../App';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { ProfileReducer } from '../redux/reducers/profileReducer';
 import Text from '../components/Text';
-import {Buffer} from 'buffer';
+import { Buffer } from 'buffer';
+import { LOGOUT } from '../redux/constants';
 
 type NavigationProp = NativeStackNavigationProp<RootStackParamList, 'Home'>;
 
 export default function Home() {
+  const dispatch = useDispatch();
   const owner = useSelector((state: ProfileReducer) => state.profile.owner);
   const pets = useSelector((state: ProfileReducer) => state.profile.pets);
   const currentUser = useSelector((state: ProfileReducer) => state.profile.currentUser);
@@ -23,6 +25,7 @@ export default function Home() {
       await clearSession();
 
       navigation.navigate('AuthLoader');
+      dispatch({ type: LOGOUT });
     } catch (e) {
       console.log('Log out cancelled');
     }

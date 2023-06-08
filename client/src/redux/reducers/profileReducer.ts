@@ -1,6 +1,4 @@
-import { Buffer } from 'buffer';
-import { ADD_PET, CURRENT_USER, LOADING, OWNER_DATA, PET_DATA, REMOVE_PET } from '../constants';
-import { Image as ImageType } from 'react-native-image-crop-picker';
+import { ADD_PET, CURRENT_USER, LOGOUT, OWNER_DATA, PET_DATA, REMOVE_PET } from '../constants';
 
 const initialState: ProfileState = { owner: undefined, pets: [], currentUser: undefined };
 
@@ -65,6 +63,9 @@ const profileReducer: ProfileReducerFn = (state = initialState, action: any) => 
 
     case REMOVE_PET:
       return { ...state, storeData: state.pets.filter((store: any) => store.id !== action.payload) };
+
+    case LOGOUT:
+      return { ...initialState };
     default:
       return state;
   }

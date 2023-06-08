@@ -31,7 +31,7 @@ router.post('/validateusername', async (req, res) => {
   const owner = await getOwnerByUsername(username);
 
   if (owner) {
-    res.status(409).send({ message: 'Username exists' });
+    res.status(409).send({ message: 'Username taken' });
     return;
   }
 

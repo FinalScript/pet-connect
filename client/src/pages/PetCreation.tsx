@@ -26,6 +26,7 @@ import { GeneralReducer } from '../redux/reducers/generalReducer';
 import { ADD_PET, CURRENT_USER, LOADING, PET_DATA } from '../redux/constants';
 import { ProfileReducer } from '../redux/reducers/profileReducer';
 import { ScrollView } from 'react-native-gesture-handler';
+import UsernameInput from '../components/UsernameInput';
 
 const petTypes = [
   { type: 'Dog', img: require('../../assets/img/dog.png') },
@@ -58,10 +59,16 @@ export default function PetCreation() {
   const [step, setStep] = useState(0);
   const [formData, setFormData] = useState<FormData>({ type: '', username: '', name: '', description: '', profilePicture: undefined });
   const [focus, setFocus] = useState({ username: false, name: false, description: false });
+  const [isUsernameValid, setIsUsernameValid] = useState(false);
   const [optionsShuffle, setShuffle] = useState(0);
 
   const submit = useCallback(() => {
     dispatch({ type: LOADING, payload: true });
+
+    if (!(formData.name && formData.username)) {
+      trigger(HapticFeedbackTypes.notificationError, options);
+      return;
+    }
 
     setTimeout(() => {
       createPet(formData)
@@ -76,6 +83,7 @@ export default function PetCreation() {
               });
 
               const newPet = await uploadProfilePic(imageData, res.data.id);
+              console.log(res.data);
               dispatch({ type: ADD_PET, payload: newPet.data });
             } else {
               dispatch({ type: ADD_PET, payload: res.data });
@@ -161,10 +169,10 @@ export default function PetCreation() {
       setStep((prev) => prev + 1);
     }
 
-    if (step === maxStep && formData.name) {
+    if (step === maxStep) {
       submit();
     }
-  }, [step, formData.type, formData.name, formData.username]);
+  }, [step, formData.type, formData.name, formData.username, formData.profilePicture]);
 
   const stepOne = () => {
     return (
@@ -227,7 +235,7 @@ export default function PetCreation() {
           </View>
 
           <View className='mt-3'>
-            <Text className='mb-2 pl-4 text-xl font-bold text-themeText'>Name *</Text>
+            <Text className='mb-2 pl-4 text-xl font-bold text-themeText'>Display Name *</Text>
             <TextInput
               className={
                 (focus.name === true ? 'border-themeActive' : 'border-transparent') +
@@ -259,32 +267,19 @@ export default function PetCreation() {
           </View>
           <View className='mt-3'>
             <Text className='mb-2 pl-4 text-xl font-bold text-themeText'>Username *</Text>
-            <TextInput
-              className={
-                (focus.username === true ? 'border-themeActive' : 'border-transparent') +
-                ' bg-themeInput border-[5px] shadow-sm shadow-themeShadow w-full rounded-3xl px-5 py-3 text-xl'
-              }
-              style={{ fontFamily: 'BalooChettan2-Regular' }}
-              placeholderTextColor={'#444444bb'}
+            <UsernameInput
               value={formData.username}
-              onChangeText={(e) => {
+              setValue={(e: string) => {
                 setFormData((prev) => {
                   return { ...prev, username: e };
                 });
               }}
-              onFocus={() => {
-                setFocus((prev) => {
-                  return { ...prev, username: true };
-                });
-              }}
-              onBlur={() => {
-                setFocus((prev) => {
-                  return { ...prev, username: false };
-                });
-              }}
-              maxLength={30}
+              isValid={isUsernameValid}
+              setIsValid={setIsUsernameValid}
               returnKeyType='next'
               placeholder='Give your pet an unique username'
+              autoCapitalize='none'
+              autoCorrect={false}
               editable={!loading}
             />
           </View>

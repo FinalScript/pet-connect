@@ -1,27 +1,36 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { TextInput } from 'react-native';
+import { ActivityIndicator, TextInput, TextInputProps } from 'react-native';
 import { View, TextProps } from 'react-native';
-import { usernameExists } from '../api';
+import { ownerUsernameExists, petUsernameExists } from '../api';
 import { throttle } from 'lodash';
 import Text from './Text';
 
-interface Props {
-  setValue: React.Dispatch<React.SetStateAction<string | undefined>>;
+interface Props extends TextInputProps {
+  setValue: Function;
   value: string | undefined;
   setIsValid: React.Dispatch<React.SetStateAction<boolean>>;
   isValid: boolean;
   className?: string | undefined;
-  focusNext: Function;
+  focusNext?: Function;
+  forOwner?: boolean;
 }
 
-export default function UsernameInput({ className, value, setValue, isValid, setIsValid, focusNext }: Props) {
+export default function UsernameInput({ className, value, setValue, isValid, setIsValid, focusNext, forOwner, ...rest }: Props) {
   const [inFocus, setInFocus] = useState(false);
   const [isError, setIsError] = useState(false);
   const [message, setMessage] = useState('');
+  const [isChecking, setChecking] = useState(false);
 
   useEffect(() => {
+    if (value) {
+      setChecking(true);
+    }
+
     const timeoutId = setTimeout(() => {
-      if (value) validateUsername(value);
+      if (value) {
+        validateUsername(value);
+        setChecking(false);
+      }
     }, 1000);
 
     return () => clearTimeout(timeoutId);
@@ -60,8 +69,10 @@ export default function UsernameInput({ className, value, setValue, isValid, set
   };
 
   const checkUsernameExists = useCallback(
-    throttle((username: string) => {
-      usernameExists(username)
+    (username: string) => {
+      const func = forOwner ? ownerUsernameExists : petUsernameExists;
+
+      func(username)
         .then((res) => {
           console.log(res.status, res.data);
           if (res.status === 200) {
@@ -76,8 +87,8 @@ export default function UsernameInput({ className, value, setValue, isValid, set
             setMessage('Username Taken');
           }
         });
-    }, 2000),
-    []
+    },
+    [forOwner]
   );
 
   const messageStyles = useCallback(() => {
@@ -85,13 +96,13 @@ export default function UsernameInput({ className, value, setValue, isValid, set
   }, [isError, message]);
 
   return (
-    <View className={className}>
-      <Text className='mb-2 pl-4 text-xl font-bold text-themeText'>Username *</Text>
-      <View className='flex flex-col items-center w-full'>
+    <View className='flex flex-col items-center justify-center w-full relative'>
+      <View className='flex flex-row items-center'>
         <TextInput
           className={
             (isValid ? 'border-success' : isError ? 'border-danger' : inFocus ? 'border-themeActive' : 'border-transparent') +
-            ' bg-themeInput border-[5px] shadow-sm shadow-themeShadow w-full rounded-3xl px-5 py-3 text-xl'
+            ' bg-themeInput border-[5px] shadow-sm shadow-themeShadow w-full rounded-3xl px-5 py-3 pr-10 text-xl ' +
+            className
           }
           style={{ fontFamily: 'BalooChettan2-Regular' }}
           placeholderTextColor={'#444444bb'}
@@ -101,17 +112,15 @@ export default function UsernameInput({ className, value, setValue, isValid, set
           onBlur={onBlur}
           autoCorrect={false}
           autoCapitalize={'none'}
-          maxLength={30}
-          placeholder='Enter your username'
           onSubmitEditing={() => {
-            focusNext();
+            if (focusNext) focusNext();
           }}
-          blurOnSubmit={false}
-          returnKeyType="next"
+          {...rest}
         />
-        <View className={messageStyles() + ' rounded-b-xl px-3 pb-1 text-sm'}>
-          <Text className='text-xs text-[#000000bb]'>{message}</Text>
-        </View>
+        {isChecking && <ActivityIndicator className='absolute right-5' size='small' color={'#321411'} />}
+      </View>
+      <View className={messageStyles() + ' rounded-b-xl px-3 pb-1 text-sm'}>
+        <Text className='text-xs text-[#000000bb]'>{message}</Text>
       </View>
     </View>
   );
