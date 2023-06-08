@@ -2,12 +2,14 @@ import { CreationOptional, DataTypes, InferAttributes, InferCreationAttributes, 
 import { sequelize } from '../db/connection';
 
 export interface PetCreationDAO {
+  username: string;
   name: string;
   type: string;
   description?: string;
   location?: string;
 }
 export interface PetUpdateDAO {
+  username?: string;
   name?: string;
   type?: string;
   description?: string;
@@ -16,6 +18,7 @@ export interface PetUpdateDAO {
 
 export class Pet extends Model<InferAttributes<Pet>, InferCreationAttributes<Pet>> {
   declare id: CreationOptional<number>;
+  declare username: string;  // Added username to the pet
   declare name: string;
   declare profilePicture: CreationOptional<Blob>;
   declare type: string;
@@ -30,6 +33,11 @@ Pet.init(
       defaultValue: DataTypes.UUIDV4,
       allowNull: false,
       primaryKey: true,
+    },
+    username: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      unique: true,
     },
     name: {
       type: DataTypes.STRING,

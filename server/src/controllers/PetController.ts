@@ -1,10 +1,20 @@
 import { PetUpdateDAO } from './../models/Pet';
 import { Pet, PetCreationDAO } from '../models/Pet';
 
-export const getPet = async (id: string) => {
+export const getPetById = async (id: string) => {
   const pet = await Pet.findOne({
     where: {
       id,
+    },
+  });
+
+  return pet;
+};
+
+export const getPetByUsername = async (username: string) => {
+  const pet = await Pet.findOne({
+    where: {
+      username,
     },
   });
 

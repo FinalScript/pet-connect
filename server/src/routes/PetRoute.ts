@@ -1,6 +1,6 @@
 import express from 'express';
 import { getOwner } from '../controllers/OwnerController';
-import { createPet, getPet, deletePet, updatePet } from '../controllers/PetController';
+import { createPet, deletePet, updatePet, getPetById, getPetByUsername } from '../controllers/PetController';
 import { Pet, PetUpdateDAO } from '../models/Pet';
 import { Owner } from '../models/Owner';
 import { trimValuesInObject } from '../utils/trimValuesInObject';
@@ -9,7 +9,7 @@ const router = express.Router();
 
 export { router as PetRouter };
 
-router.get('/:id?', async (req, res) => {
+router.get('/id/:id?', async (req, res) => {
   const petId = req.params.id;
 
   if (!petId) {
@@ -20,7 +20,35 @@ router.get('/:id?', async (req, res) => {
   let pet: Pet;
 
   try {
-    pet = await getPet(petId);
+    pet = await getPetById(petId);
+
+    if (!pet) {
+      res.status(404).send({ message: 'Pet not found' });
+
+      return;
+    }
+  } catch (e) {
+    console.error(e);
+    res.status(e.status || 400).send(e.message);
+    return;
+  }
+
+  res.send(pet);
+});
+
+router.get('/username/:username?', async (req, res) => {
+  const petUsername = req.params.username;
+
+  if (!petUsername) {
+    res.status(400).send({ message: 'Username missing' });
+    return;
+  }
+
+  let pet: Pet;
+
+  try {
+    pet = await getPetByUsername(petUsername);
+    console.log(pet);
 
     if (!pet) {
       res.status(404).send({ message: 'Pet not found' });
@@ -44,7 +72,7 @@ router.delete('/delete/:id?', async (req, res) => {
     return;
   }
 
-  const pet = await getPet(petId);
+  const pet = await getPetById(petId);
 
   if (!pet) {
     res.status(404).send({ message: 'Pet not found' });
@@ -64,7 +92,7 @@ router.delete('/delete/:id?', async (req, res) => {
 router.post('/create', async (req, res) => {
   const authId = req.auth.payload.sub;
   req.body = trimValuesInObject(req.body);
-  const { name, type, description, location } = req.body;
+  const { name, type, description, location, username } = req.body;
   const owner = await getOwner(authId);
 
   if (!owner) {
@@ -74,6 +102,31 @@ router.post('/create', async (req, res) => {
 
   if (!name) {
     res.status(400).send({ message: 'Name missing' });
+    return;
+  }
+
+  if (!username) {
+    res.status(400).send({ message: 'Username missing' });
+    return;
+  }
+
+  if (username.match('[^a-zA-Z0-9._\\-]')) {
+    res.status(400).send({ message: 'Username invalid' });
+    return;
+  }
+
+  if (username.length > 30) {
+    res.status(400).send({ message: 'Username is too long (Max 30)' });
+    return;
+  }
+
+  if (username.length < 2) {
+    res.status(400).send({ message: 'Username is too short (Min 2)' });
+    return;
+  }
+
+  if (await getPetByUsername(username)) {
+    res.status(409).send({ message: 'Username taken' });
     return;
   }
 
@@ -88,7 +141,7 @@ router.post('/create', async (req, res) => {
   let newPet: Pet;
 
   try {
-    newPet = await createPet({ name, type, description, location });
+    newPet = await createPet({ name, type, description, location, username });
   } catch (e) {
     console.error(e);
     // default option for status added to prevent crashing
@@ -114,9 +167,8 @@ router.post('/create', async (req, res) => {
 router.patch('/update/:id?', async (req, res) => {
   const petId = req.params.id;
   req.body = trimValuesInObject(req.body);
-  const { name, type, description, location } = req.body;
+  const { name, type, description, location, username } = req.body;
 
-  console.log(req.body)
   // Check if the pet ID was provided
   if (!petId) {
     return res.status(400).send({ message: 'Pet ID not provided' });
@@ -128,16 +180,33 @@ router.patch('/update/:id?', async (req, res) => {
   }
 
   // Check if the pet exists
-  const pet = await getPet(petId);
+  const pet = await getPetById(petId);
 
   if (!pet) {
     return res.status(404).send({ message: 'Pet not found' });
   }
 
+  if (username || username?.length == 0) {
+    if (username.match('[^a-zA-Z0-9._\\-]')) {
+      res.status(400).send({ message: 'Username invalid' });
+      return;
+    }
+
+    if (username.length > 30) {
+      res.status(400).send({ message: 'Username is too long (Max 30)' });
+      return;
+    }
+
+    if (username.length < 2) {
+      res.status(400).send({ message: 'Username is too short (Min 2)' });
+      return;
+    }
+  } 
+
   // Update the pet
   try {
-     await updatePet(petId, { name, type, description, location });
-     await pet.reload();
+    await updatePet(petId, { name, type, description, location, username });
+    await pet.reload();
   } catch (e) {
     console.error(e);
     return res.status(e.statusCode).send(e.message);
