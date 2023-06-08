@@ -201,7 +201,7 @@ router.patch('/update/:id?', async (req, res) => {
       res.status(400).send({ message: 'Username is too short (Min 2)' });
       return;
     }
-  } 
+  }
 
   // Update the pet
   try {

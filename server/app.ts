@@ -8,6 +8,7 @@ import { Pet } from './src/models/Pet';
 import type { ErrorRequestHandler } from 'express';
 import { OwnerRouter } from './src/routes/OwnerRoute';
 import { PetRouter } from './src/routes/PetRoute';
+import { OwnerPets } from './src/models/OwnerPets';
 dotenv.config();
 
 const app = express();
@@ -44,63 +45,13 @@ app.use('/api/private/owner', checkJwt, OwnerRouter);
 
 app.use('/api/private/pet', checkJwt, PetRouter);
 
-
 app.use(jwtErrorHandler);
 
 connectToDB().then(async () => {
-  Owner.belongsToMany(Pet, { through: 'OwnerPets', onDelete: 'cascade', hooks: true });
-  Pet.belongsToMany(Owner, { through: 'OwnerPets', onDelete: 'cascade', hooks: true });
+  Owner.hasMany(Pet, { onDelete: 'cascade' });
+  Pet.hasMany(Owner);
 
-  await sequelize.sync();
-
-  // // create pet and insert // .build for no insert
-  // const tom = await Pet.create({ name: 'Tom', type: 'CAT' });
-  // const jerry = await Pet.create({ name: 'Jerry', type: 'MOUSE' });
-
-  // // create owner model and not insert
-  // const ownerOne = Owner.build(
-  //     {
-  //         username: 'Aimen',
-  //     },
-  //     {
-  //         include: [Pet],
-  //     }
-  // );
-
-  // // create owner model and not insert
-  // const ownerTwo = Owner.build(
-  //     {
-  //         username: 'Roynul',
-  //     },
-  //     {
-  //         include: [Pet],
-  //     }
-  // );
-
-  // // add pet association to  owner
-  // ownerOne.addPet(tom);
-
-  // // insert owner
-  // await ownerOne.save();
-
-  // ownerTwo.addPet(tom);
-  // ownerTwo.addPet(jerry);
-
-  // await ownerTwo.save();
-
-  // // find query
-  // const users = await Owner.findAll({
-  //     attributes: ['username'],
-  //     order: [['username', 'ASC']],
-  //     include: { model: Pet, attributes: ['name'] },
-  // });
-
-  // const pets = await Pet.findAll({
-  //     order: [['name', 'ASC']],
-  // });
-
-  // console.log('All users:', JSON.stringify(users, null, 2));
-  // console.log('All pets:', JSON.stringify(pets, null, 2));
+  await sequelize.sync({ force: true });
 });
 
 const port = process.env.PORT || 3000;
