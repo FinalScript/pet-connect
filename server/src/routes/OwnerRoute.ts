@@ -72,7 +72,7 @@ router.patch('/update/:authId?', async (req, res) => {
 
   // Check if the account authID was provided
   if (!authId) {
-    return res.status(404).send({ message: 'AuthId missing' });
+    return res.status(400).send({ message: 'AuthId missing' });
   }
 
   // Check if the account exists

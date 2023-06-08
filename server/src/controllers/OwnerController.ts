@@ -1,7 +1,5 @@
 import { Owner, OwnerCreationDAO, OwnerUpdateDAO } from '../models/Owner';
-import { OwnerPets } from '../models/OwnerPets';
 import { Pet } from '../models/Pet';
-import { Op } from 'sequelize';
 
 export const getOwner = async (authId: string) => {
   const owner = await Owner.findOne({
@@ -44,42 +42,9 @@ export const updateOwner = async (authId: string, data: OwnerUpdateDAO) => {
 };
 
 export const deleteOwner = async (authId: string) => {
-  const owner = await Owner.findOne({
-    where: {
-      authId,
-    },
-  });
+  const owner = await getOwner(authId);
 
-  const ownerPets = await OwnerPets.findAll({
-    where: {
-      ownerId: owner.id,
-    },
-  });
-
-  const petIds = ownerPets.map((ownerPet: any) => ownerPet.petId);
-
-  await Pet.destroy({
-    where: {
-      id: {
-        [Op.in]: petIds,
-      },
-    },
-    force: true,
-  });
-
-  await OwnerPets.destroy({
-    where: {
-      ownerId: owner.id,
-    },
-    force: true,
-  });
-
-  await Owner.destroy({
-    where: {
-      authId,
-    },
-    force: true,
-  });
+  await owner.destroy();
 
   return { message: 'Owner and pets deleted' };
 };
