@@ -79,6 +79,10 @@ const HomeNavigator = () => {
             // You can return any component that you like here!
             return <FontAwesome name={iconName} size={size + 15} color={color} />;
           },
+          unmountOnBlur: true,
+          tabBarStyle: {
+            display: 'none',
+          },
         }}
       />
 
