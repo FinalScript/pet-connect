@@ -101,7 +101,7 @@ export default function UsernameInput({ className, value, setValue, isValid, set
         <TextInput
           className={
             (isValid ? 'border-success' : isError ? 'border-danger' : inFocus ? 'border-themeActive' : 'border-transparent') +
-            ' bg-themeInput border-[5px] shadow-sm shadow-themeShadow w-full rounded-3xl px-5 py-3 pr-10 text-xl ' +
+            ' bg-themeInput border-[5px] shadow-sm shadow-themeShadow w-full rounded-3xl px-5 py-3 pr-10 text-lg ' +
             className
           }
           style={{ fontFamily: 'BalooChettan2-Regular' }}

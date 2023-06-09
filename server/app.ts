@@ -51,6 +51,7 @@ app.use(jwtErrorHandler);
 connectToDB().then(async () => {
   Owner.hasMany(Pet, { onDelete: 'cascade' });
   Pet.hasOne(ProfilePicture);
+  await sequelize.sync({force:true})
 });
 
 const port = process.env.PORT || 3000;

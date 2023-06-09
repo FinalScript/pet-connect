@@ -240,7 +240,7 @@ export default function PetCreation() {
             <TextInput
               className={
                 (focus.name === true ? 'border-themeActive' : 'border-transparent') +
-                ' bg-themeInput border-[5px] shadow-sm shadow-themeShadow w-full rounded-3xl px-5 py-3 text-xl'
+                ' bg-themeInput border-[5px] shadow-sm shadow-themeShadow w-full rounded-3xl px-5 py-3 text-lg'
               }
               style={{ fontFamily: 'BalooChettan2-Regular' }}
               placeholderTextColor={'#444444bb'}
@@ -278,7 +278,7 @@ export default function PetCreation() {
               isValid={isUsernameValid}
               setIsValid={setIsUsernameValid}
               returnKeyType='next'
-              placeholder='Give your pet an unique username'
+              placeholder='Give your pet a unique username'
               autoCapitalize='none'
               autoCorrect={false}
               editable={!loading}
@@ -289,7 +289,7 @@ export default function PetCreation() {
             <TextInput
               className={
                 (focus.description === true ? 'border-themeActive' : 'border-transparent') +
-                ' bg-themeInput border-[5px] shadow-sm shadow-themeShadow h-44 max-h-44 overflow-hidden w-full rounded-3xl px-5 py-3 text-xl'
+                ' bg-themeInput border-[5px] shadow-sm shadow-themeShadow h-44 max-h-44 overflow-hidden w-full rounded-3xl px-5 py-3 text-lg'
               }
               style={{ fontFamily: 'BalooChettan2-Regular' }}
               placeholderTextColor={'#444444bb'}
