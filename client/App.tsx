@@ -11,14 +11,15 @@ import { NavigationContainer, RouteProp } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import PetCreation from './src/pages/PetCreation';
 import AccountCreation from './src/pages/AccountCreation';
-import Home from './src/pages/Home';
+import Home from './src/pages/HomePage/Feed';
 import AppLoader from './src/hoc/AppLoader';
 import AuthLoader from './src/pages/AuthLoader';
-import { useSelector } from 'react-redux';
-import { GeneralReducer } from './src/redux/reducers/generalReducer';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Text from './src/components/Text';
 import { ping } from './src/api';
+import { navigationRef } from './src/services/navigator';
+import { useAuth0 } from 'react-native-auth0';
+import HomeNavigator from './src/pages/HomePage/HomeNavigator';
 
 export type RootStackParamList = {
   Home: undefined;
@@ -35,10 +36,17 @@ const Stack = createNativeStackNavigator<RootStackParamList>();
 
 const App = () => {
   const [apiStatus, setApiStatus] = useState(true);
+  const { user } = useAuth0();
 
   useEffect(() => {
     pingApi();
   }, []);
+
+  useEffect(() => {
+    if (navigationRef.isReady() && !user) {
+      navigationRef.navigate('AuthLoader');
+    }
+  }, [user]);
 
   const pingApi = async () => {
     ping()
@@ -64,7 +72,7 @@ const App = () => {
   return (
     <View className='bg-themeBg h-full'>
       <StatusBar animated={true} barStyle={'dark-content'} />
-      <NavigationContainer>
+      <NavigationContainer ref={navigationRef}>
         <Stack.Navigator
           initialRouteName='AuthLoader'
           screenOptions={{
@@ -74,7 +82,7 @@ const App = () => {
             animation: 'fade_from_bottom',
             contentStyle: { backgroundColor: '#f6f6f6f' },
           }}>
-          <Stack.Screen name='Home' component={Home} />
+          <Stack.Screen name='Home' component={HomeNavigator} />
           <Stack.Screen name='AuthLoader' component={AuthLoader} />
           <Stack.Screen name='Pet Creation' component={PetCreation} />
           <Stack.Screen name='Account Creation' component={AccountCreation} />
