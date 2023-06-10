@@ -65,14 +65,14 @@ export default function PetCreation() {
   const submit = useCallback(() => {
     dispatch({ type: LOADING, payload: true });
 
-    if (!(formData.name && formData.username && isUsernameValid)) {
+    if (!(formData.name.trim() && formData.username && isUsernameValid)) {
       trigger(HapticFeedbackTypes.notificationError, options);
       dispatch({ type: LOADING, payload: false });
       return;
-    } else{
-      // Triggers success haptics
-      trigger(HapticFeedbackTypes.notificationSuccess, options);
     }
+
+    // Triggers success haptics
+    trigger(HapticFeedbackTypes.notificationSuccess, options);
 
     setTimeout(() => {
       createPet(formData)
@@ -169,7 +169,7 @@ export default function PetCreation() {
       }
     }
 
-    if(step === 1 && !isUsernameValid){
+    if (step === 1 && !isUsernameValid) {
       return;
     }
 
