@@ -22,15 +22,18 @@ export default function UsernameInput({ className, value, setValue, isValid, set
   const [isChecking, setChecking] = useState(false);
 
   useEffect(() => {
+
     if (value) {
       setChecking(true);
     }
 
     const timeoutId = setTimeout(() => {
-      if (value) {
+      // value === "" will prevent an infinite load from occuring when a username is entered then deleted quickly
+      if (value || value === "") {
         validateUsername(value);
         setChecking(false);
       }
+      
     }, 1000);
 
     return () => clearTimeout(timeoutId);
@@ -101,7 +104,7 @@ export default function UsernameInput({ className, value, setValue, isValid, set
         <TextInput
           className={
             (isValid ? 'border-success' : isError ? 'border-danger' : inFocus ? 'border-themeActive' : 'border-transparent') +
-            ' bg-themeInput border-[5px] shadow-sm shadow-themeShadow w-full rounded-3xl px-5 py-3 pr-10 text-xl ' +
+            ' bg-themeInput border-[5px] shadow-sm shadow-themeShadow w-full rounded-3xl px-5 py-3 pr-10 text-lg ' +
             className
           }
           style={{ fontFamily: 'BalooChettan2-Regular' }}
