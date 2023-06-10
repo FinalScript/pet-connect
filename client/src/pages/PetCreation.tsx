@@ -243,7 +243,7 @@ export default function PetCreation() {
           </View>
 
           <View className='mt-6'>
-            <Text className='mb-2 pl-4 text-xl font-bold text-themeText'>Pet Username *</Text>
+            <Text className='mb-2 pl-4 text-lg font-bold text-themeText'>Pet Username *</Text>
             <UsernameInput
               value={formData.username}
               setValue={(e: string) => {
@@ -273,11 +273,11 @@ export default function PetCreation() {
         <Text className='text-themeText font-semibold text-3xl'>We're almost done!</Text>
 
         <View className='mt-3'>
-          <Text className='mb-2 pl-4 text-xl font-bold text-themeText'>Pet Name *</Text>
+          <Text className='mb-2 pl-4 text-lg font-bold text-themeText'>Pet Name *</Text>
           <TextInput
             className={
               (focus.name === true ? 'border-themeActive' : 'border-transparent') +
-              ' bg-themeInput border-[5px] shadow-sm shadow-themeShadow w-full rounded-3xl px-3 h-16 text-xl'
+              ' bg-themeInput border-[5px] shadow-sm shadow-themeShadow w-full rounded-3xl px-3 py-3 text-lg'
             }
             style={{ fontFamily: 'BalooChettan2-Regular' }}
             placeholderTextColor={'#444444bb'}
@@ -309,7 +309,7 @@ export default function PetCreation() {
           <TextInput
             className={
               (focus.description === true ? 'border-themeActive' : 'border-transparent') +
-              ' bg-themeInput border-[5px] shadow-sm shadow-themeShadow h-44 max-h-44 overflow-hidden w-full rounded-3xl px-3 py-3 text-xl'
+              ' bg-themeInput border-[5px] shadow-sm shadow-themeShadow h-44 max-h-44 overflow-hidden w-full rounded-3xl px-3 py-3 text-lg'
             }
             style={{ fontFamily: 'BalooChettan2-Regular' }}
             placeholderTextColor={'#444444bb'}
