@@ -4,7 +4,7 @@ import { Pet } from './Pet';
 import { Comment } from './Comment';
 import { Like } from './Like';
 
-export interface PostCreationAttributes extends Optional<PostAttributes, 'id'> {
+export interface PostCreationAttributes extends Optional<PostAttributes, 'id' | 'timestamp'> {
 
 }
 
@@ -45,10 +45,11 @@ Post.init(
     },
     description: {
       type: DataTypes.TEXT,
-      allowNull: false,
+      allowNull: true,
     },
     media: {
-      type: DataTypes.ARRAY(DataTypes.BLOB),
+      //type: DataTypes.ARRAY(DataTypes.BLOB),
+      type: DataTypes.JSON,
       allowNull: false,
     },
     timestamp: {

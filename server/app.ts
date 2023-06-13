@@ -8,8 +8,12 @@ import { Pet } from './src/models/Pet';
 import type { ErrorRequestHandler } from 'express';
 import { OwnerRouter } from './src/routes/OwnerRoute';
 import { PetRouter } from './src/routes/PetRoute';
+import { PostRouter } from './src/routes/PostRoute';
+import { LikeRouter } from './src/routes/LikeRoute';
+import { CommentRouter } from './src/routes/CommentRoute';
 import { ProfilePicture } from './src/models/ProfilePicture';
 import fs from 'fs';
+import { Console } from 'console';
 dotenv.config();
 
 const app = express();
@@ -26,6 +30,7 @@ const checkJwt = auth({
   tokenSigningAlg: 'RS256',
 });
 
+
 const jwtErrorHandler: ErrorRequestHandler = (err, req, res, next) => {
   if (err) {
     res.status(err.code === typeof Number ? err.code : 503).send({ message: err });
@@ -33,6 +38,8 @@ const jwtErrorHandler: ErrorRequestHandler = (err, req, res, next) => {
   }
   next();
 };
+
+
 
 // This route doesn't need authentication
 app.get('/api/public', (req, res) => {
@@ -46,11 +53,21 @@ app.use('/api/private/owner', checkJwt, OwnerRouter);
 
 app.use('/api/private/pet', checkJwt, PetRouter);
 
+app.use('/api/private/post', checkJwt, PostRouter);
+
+app.use('/api/private/like', checkJwt, LikeRouter);
+
+app.use('/api/private/comment', checkJwt, CommentRouter);
+
 app.use(jwtErrorHandler);
+
 
 connectToDB().then(async () => {
   Owner.hasMany(Pet, { onDelete: 'cascade' });
   Pet.hasOne(ProfilePicture);
+
+  sequelize.sync({ force:true })
+
 });
 
 const port = process.env.PORT || 3000;
