@@ -9,21 +9,34 @@ export { router as PostRouter };
 
 // POST /posts: Create a new post with media and initial description. 
 router.post('/create', async (req, res) => {
-    const pet = await getPetById(req.body.petId);
+    let pet;
+    try {
+        pet = await getPetById(req.body.petId);
+    } catch (e) {
+        console.error(e);
+        res.status(e.status || 400).send(e.message);
+        return;
+    }
 
     if (!pet) {
         res.status(404).send({ message: 'Pet does not exist' });
         return;
     }
-    
+
     if (!req.body.media) {
         res.status(400).send({ message: 'Media missing' });
         return;
     }
 
-  const { petId, description, media } = req.body;
-  const newPost = await createPost({ petId, description, media });
-  res.status(201).send(newPost);
+    try {
+        const { petId, description, media } = req.body;
+        const newPost = await createPost({ petId, description, media });
+        res.status(201).send(newPost);
+    } catch (e) {
+        console.error(e);
+        res.status(e.status || 400).send(e.message);
+        return;
+    }
 });
 
 // GET /posts: Retrieve all posts. 
@@ -34,43 +47,74 @@ router.get('/', async (req, res) => {
 
 // GET /posts/{postId}: Retrieve a specific post by its ID.
 router.get('/:postId', async (req, res) => {
-  const { postId } = req.params;
-  const post = await getPostById(postId);
-  if (!post) {
-    res.status(404).send({ message: 'Post not found' });
-    return;
-  }
-  res.send(post);
+    let post;
+    try {
+        const { postId } = req.params;
+        post = await getPostById(postId);
+    } catch (e) {
+        console.error(e);
+        res.status(e.status || 400).send(e.message);
+        return;
+    }
+
+    if (!post) {
+        res.status(404).send({ message: 'Post not found' });
+        return;
+    }
+    res.send(post);
 });
 
 // PATCH /posts/{postId}: Update a specific post, such as editing the description.
 router.patch('/:postId', async (req, res) => {
-  const { postId } = req.params;
-  req.body = trimValuesInObject(req.body);
-  const { description } = req.body;
-  const updatedPost = await updatePost(postId, { description });
-  if (!updatedPost) {
-    res.status(404).send({ message: 'Post not found' });
-    return;
-  }
-  res.send(updatedPost);
+    let updatedPost;
+    try {
+        const { postId } = req.params;
+        req.body = trimValuesInObject(req.body);
+        const { description } = req.body;
+        updatedPost = await updatePost(postId, { description });
+    } catch (e) {
+        console.error(e);
+        res.status(e.status || 400).send(e.message);
+        return;
+    }
+
+    if (!updatedPost) {
+        res.status(404).send({ message: 'Post not found' });
+        return;
+    }
+    res.send(updatedPost);
 });
 
 // DELETE /posts/{postId}: Delete a specific post.
 router.delete('/:postId', async (req, res) => {
-    const { postId } = req.params;
-    const deleted = await deletePost(postId);
+    let deleted;
+    try {
+        const { postId } = req.params;
+        deleted = await deletePost(postId);
+    } catch (e) {
+        console.error(e);
+        res.status(e.status || 400).send(e.message);
+        return;
+    }
+
     if (!deleted) {
-      res.status(404).send({ message: 'Post not found' });
-      return;
+        res.status(404).send({ message: 'Post not found' });
+        return;
     }
     res.send({ message: 'Post successfully deleted' });
-  });
+});
   
 
 // GET /posts/pet/{petId}: Retrieve all posts from a specific pet by its ID.
 router.get('/pet/:petId', async (req, res) => {
-  const { petId } = req.params;
-  const posts = await getPostsByPetId(petId);
-  res.send(posts);
+    let posts;
+    try {
+        const { petId } = req.params;
+        posts = await getPostsByPetId(petId);
+    } catch (e) {
+        console.error(e);
+        res.status(e.status || 400).send(e.message);
+        return;
+    }
+    res.send(posts);
 });
