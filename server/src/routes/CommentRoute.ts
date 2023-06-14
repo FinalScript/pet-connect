@@ -11,8 +11,8 @@ export { router as CommentRouter };
 // Comment Endpoints
 // TODO: POST /posts/{postId}/comments: Add a comment to a specific post. // body of the end point
 
-router.post('/posts/:postId/comments', async (req, res) => {
-  const postId = req.params.postId;
+router.post('/posts/comments', async (req, res) => {
+  const { text, postId, ownerId } = req.body;
   const authId = req.auth.payload.sub;
   req.body = trimValuesInObject(req.body);
   const post = await getPostById(postId);
@@ -28,15 +28,12 @@ router.post('/posts/:postId/comments', async (req, res) => {
     return;
   }
 
-  const { text } = req.body;
-
   if (!text) {
     res.status(400).send({ message: 'Text missing' });
     return;
   }
 
   try {
-    const { postId, ownerId } = req.body;
     const newComment = await createComment({ text, postId, ownerId });
     res.status(201).send(newComment);
   } catch (e) {
@@ -44,7 +41,6 @@ router.post('/posts/:postId/comments', async (req, res) => {
     res.status(e.status || 400).send(e.message);
     return;
   }
-  res.send(post);
 });
 
 // TODO: GET /posts/{postId}/comments: Retrieve all comments for a specific post.
