@@ -33,15 +33,16 @@ router.post('/posts/likes', async (req, res) => {
 
 // TODO: DELETE /posts/{postId}/likes/{likeId}: Remove a like from a specific post.
 router.delete('/posts/:postId/likes/:likeId', async (req, res) => {
-  let deletedComment;
+  let deletedLike;
 
   try {
     const likeId = req.params.likeId;
-    console.log(likeId);
-    deletedComment = await deleteLike(likeId);
+    deletedLike = await deleteLike(likeId);
   } catch (e) {
     console.error(e);
     res.status(e.status || 400).send(e.message);
     return;
   }
+
+  res.send({ message: 'Post successfully deleted' });
 });
