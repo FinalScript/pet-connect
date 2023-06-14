@@ -29,8 +29,6 @@ router.post('/posts/likes', async (req, res) => {
     res.status(e.status || 400).send(e.message);
     return;
   }
-
-  res.status(201).send({ message: 'Like created' });
 });
 
 // TODO: DELETE /posts/{postId}/likes/{likeId}: Remove a like from a specific post.
@@ -39,13 +37,11 @@ router.delete('/posts/:postId/likes/:likeId', async (req, res) => {
 
   try {
     const likeId = req.params.likeId;
-    console.log(likeId)
+    console.log(likeId);
     deletedComment = await deleteLike(likeId);
   } catch (e) {
     console.error(e);
     res.status(e.status || 400).send(e.message);
     return;
   }
-
-  res.send({ message: 'Like successfully deleted' });
 });
