@@ -8,81 +8,115 @@ const router = express.Router();
 
 export { router as CommentRouter };
 
-// Comment Endpoints
-// TODO: POST /posts/{postId}/comments: Add a comment to a specific post. // body of the end point
+// POST /posts/{postId}/comments: Add a comment to a specific post.
+router.post('/:postId/comments', async (req, res) => {
+    const { text, ownerId } = req.body;
+    const authId = req.auth.payload.sub;
+    req.body = trimValuesInObject(req.body);
+    const { postId } = req.params;
 
-router.post('/posts/comments', async (req, res) => {
-  const { text, postId, ownerId } = req.body;
-  const authId = req.auth.payload.sub;
-  req.body = trimValuesInObject(req.body);
-  const post = await getPostById(postId);
-  const owner = await getOwner(authId);
+    let owner;
+    try {
+        owner = await getOwner(authId);
+    } catch (e) {
+        console.error(e);
+        res.sendStatus(400);
+        return;
+    }
 
-  if (!owner) {
-    res.status(404).send({ message: 'Owner does not exist' });
-    return;
-  }
+    if (!owner) {
+        res.sendStatus(404);
+        return;
+    }
 
-  if (!post) {
-    res.status(404).send({ message: 'Post does not exist' });
-    return;
-  }
+    let post;
+    try {
+        post = await getPostById(postId);
+    } catch (e) {
+        console.error(e);
+        res.sendStatus(400);
+        return;
+    }
 
-  if (!text) {
-    res.status(400).send({ message: 'Text missing' });
-    return;
-  }
+    if (!post) {
+        res.sendStatus(404);
+        return;
+    }
 
-  try {
-    const newComment = await createComment({ text, postId, ownerId });
+    if (!text) {
+        res.sendStatus(400);
+        return;
+    }
+
+    let newComment;
+    try {
+        newComment = await createComment({ text, postId, ownerId });
+    } catch (e) {
+        console.error(e);
+        res.sendStatus(400);
+        return;
+    }
+
     res.status(201).send(newComment);
-  } catch (e) {
-    console.error(e);
-    res.status(e.status || 400).send(e.message);
-    return;
-  }
 });
 
-// TODO: GET /posts/{postId}/comments: Retrieve all comments for a specific post.
+// GET /posts/{postId}/comments: Retrieve all comments for a specific post.
+router.get('/:postId/comments', async (req, res) => {
+    const { postId } = req.params;
+    
+    if (!postId) {
+        res.sendStatus(400);
+        return;
+    }
 
-router.get('/posts/:postId/comments', async (req, res) => {
-  const postId = req.params.postId;
-  const post = await getPostById(postId);
-  let comments;
+    let post;
+    try {
+        post = await getPostById(postId);
+    } catch (e) {
+        console.error(e);
+        res.sendStatus(400);
+        return;
+    }
 
-  if (!postId) {
-    res.status(400).send({ message: 'Post Id missing' });
-    return;
-  }
+    if (!post) {
+        res.sendStatus(404);
+        return;
+    }
 
-  if (!post) {
-    res.status(404).send({ message: 'Post does not exist' });
-    return;
-  }
+    let comments;
+    try {
+        comments = await getCommentsByPostId(postId);
+    } catch (e) {
+        console.error(e);
+        res.sendStatus(400);
+        return;
+    }
 
-  try {
-    comments = await getCommentsByPostId(postId);
     res.send(comments);
-  } catch (e) {
-    console.error(e);
-    res.status(e.status || 400).send(e.message);
-    return;
-  }
 });
 
-// TODO: DELETE /posts/{postId}/comments/{commentId}: Delete a specific comment. //aka your comment
-
-router.delete('/posts/:postId/comments/:commentId', async (req, res) => {
-  let deletedComment;
-
-  try {
+// DELETE /posts/{postId}/comments/{commentId}: Delete a specific comment.
+router.delete('/:postId/comments/:commentId', async (req, res) => {
     const { commentId } = req.params;
-    deletedComment = await deleteComment(commentId);
-  } catch (e) {
-    console.error(e);
-    res.status(e.status || 400).send(e.message);
-    return;
-  }
+    
+    if (!commentId) {
+        res.sendStatus(400);
+        return;
+    }
 
-  res.send({ message: 'Post successfully deleted' });
+    let deleted;
+    try {
+        deleted = await deleteComment(commentId);
+    } catch (e) {
+        console.error(e);
+        res.sendStatus(400);
+        return;
+    }
+
+    if (!deleted) {
+        res.sendStatus(404);
+        return;
+    }
+
+    res.sendStatus(200);
 });

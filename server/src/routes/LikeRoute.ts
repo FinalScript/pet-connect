@@ -1,48 +1,42 @@
 import express from 'express';
 import { createLike, deleteLike } from '../controllers/LikeController';
-import { trimValuesInObject } from '../utils/trimValuesInObject';
 
 const router = express.Router();
 
 export { router as LikeRouter };
 
-// Like Endpoints
-// TODO: POST /posts/{postId}/likes: Add a like to a specific post.
-router.post('/posts/likes', async (req, res) => {
-  const { postId, ownerId } = req.body;
+// POST /{postId}/likes: Add a like to a specific post.
+router.post('/:postId/likes', async (req, res) => {
+    const { postId, ownerId } = req.body;
+    
+    if (!postId || !ownerId) {
+        res.sendStatus(400);
+        return;
+    }
 
-  if (!postId) {
-    res.status(400).send({ message: 'Post Id missing' });
-    return;
-  }
+    let newLike;
+    try {
+        newLike = await createLike({ postId, ownerId });
+    } catch (e) {
+        console.error(e);
+        res.sendStatus(400);
+        return;
+    }
 
-  if (!ownerId) {
-    res.status(400).send({ message: 'Owner Id missing' });
-    return;
-  }
-
-  try {
-    const newLike = await createLike({ postId, ownerId });
     res.status(201).send(newLike);
-  } catch (e) {
-    console.error(e);
-    res.status(e.status || 400).send(e.message);
-    return;
-  }
 });
 
-// TODO: DELETE /posts/{postId}/likes/{likeId}: Remove a like from a specific post.
-router.delete('/posts/:postId/likes/:likeId', async (req, res) => {
-  let deletedLike;
+// DELETE /{postId}/likes/{likeId}: Remove a like from a specific post.
+router.delete('/:postId/likes/:likeId', async (req, res) => {
+    const { likeId } = req.params;
 
-  try {
-    const likeId = req.params.likeId;
-    deletedLike = await deleteLike(likeId);
-  } catch (e) {
-    console.error(e);
-    res.status(e.status || 400).send(e.message);
-    return;
-  }
+    try {
+        await deleteLike(likeId);
+    } catch (e) {
+        console.error(e);
+        res.sendStatus(400);
+        return;
+    }
 
-  res.send({ message: 'Post successfully deleted' });
+    res.send({ message: 'Like successfully deleted' });
 });

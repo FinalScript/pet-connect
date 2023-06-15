@@ -8,10 +8,10 @@ export interface CommentAttributes {
   ownerId: string;
   postId: string;
   text: string;
-  // TODO timestamp
+  timestamp: Date;
 }
 
-export interface CommentCreationAttributes extends Optional<CommentAttributes, 'id'> {
+export interface CommentCreationAttributes extends Optional<CommentAttributes, 'id' | 'timestamp'> {
 
 }
 
@@ -20,6 +20,7 @@ export class Comment extends Model<CommentAttributes, CommentCreationAttributes>
   public ownerId!: string;
   public postId!: string;
   public text!: string;
+  public timestamp!: Date;
 
   public readonly createdAt!: Date;
   public readonly updatedAt!: Date;
@@ -52,6 +53,11 @@ Comment.init(
     text: {
       type: DataTypes.TEXT,
       allowNull: false,
+    },
+    timestamp: {
+      type: DataTypes.DATE,
+      allowNull: false,
+      defaultValue: Sequelize.literal('CURRENT_TIMESTAMP'),
     },
   },
   {
