@@ -71,9 +71,6 @@ export default function PetCreation() {
       return;
     }
 
-    // Triggers success haptics
-    trigger(HapticFeedbackTypes.notificationSuccess, options);
-
     setTimeout(() => {
       createPet(formData)
         .then(async (res) => {
@@ -95,7 +92,9 @@ export default function PetCreation() {
 
             dispatch({ type: CURRENT_USER, payload: { id: res.data.id, isPet: true } });
           }
-
+          // Triggers success haptics
+          trigger(HapticFeedbackTypes.notificationSuccess, options);
+          
           navigation.replace('Home');
         })
         .catch((err) => {
