@@ -6,7 +6,7 @@ import Feed from './Feed';
 import Explore from './Explore';
 import Inbox from './Inbox';
 import Profile from './Profile';
-import CameraView from './CameraView';
+import {CameraView} from './CameraView';
 import { RouteProp } from '@react-navigation/native';
 
 export type HomeStackParamList = {
