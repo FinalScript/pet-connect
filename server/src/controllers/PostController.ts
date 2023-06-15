@@ -24,7 +24,7 @@ export const updatePost = async (id: string, data: Partial<PostAttributes>) => {
   return null;
 };
 
-export const deletePost = async (id: string): Promise<boolean> => {
+export const deletePost = async (id: string) => {
     const post = await getPostById(id);
     if (post) {
       await post.destroy();

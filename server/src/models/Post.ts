@@ -4,7 +4,7 @@ import { Pet } from './Pet';
 import { Comment } from './Comment';
 import { Like } from './Like';
 
-export interface PostCreationAttributes extends Optional<PostAttributes, 'id' | 'timestamp'> {
+export interface PostCreationAttributes extends Optional<PostAttributes, 'id'> {
 
 }
 
@@ -13,7 +13,6 @@ export interface PostAttributes {
   petId: string;
   description: string;
   media: Blob[];
-  timestamp: Date;
 }
 
 export class Post extends Model<PostAttributes, PostCreationAttributes> {
@@ -21,7 +20,6 @@ export class Post extends Model<PostAttributes, PostCreationAttributes> {
   public petId: string;
   public description: string;
   public media: Blob[];
-  public timestamp: Date;
 
   public readonly createdAt!: Date;
   public readonly updatedAt!: Date;
@@ -52,11 +50,6 @@ Post.init(
       type: DataTypes.JSON,
       allowNull: false,
     },
-    timestamp: {
-      type: DataTypes.DATE,
-      allowNull: false,
-      defaultValue: Sequelize.literal('CURRENT_TIMESTAMP'),
-    },
   },
   {
     sequelize,
@@ -65,15 +58,3 @@ Post.init(
     updatedAt: 'updateTimestamp',
   }
 );
-
-Post.hasMany(Comment, {
-  sourceKey: 'id',
-  foreignKey: 'postId',
-  as: 'comments',
-});
-
-Post.hasMany(Like, {
-  sourceKey: 'id',
-  foreignKey: 'postId',
-  as: 'likes',
-});

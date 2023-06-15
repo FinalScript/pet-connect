@@ -14,6 +14,9 @@ import { CommentRouter } from './src/routes/CommentRoute';
 import { ProfilePicture } from './src/models/ProfilePicture';
 import fs from 'fs';
 import { Console } from 'console';
+import { Post } from './src/models/Post';
+import { Like } from './src/models/Like';
+import { Comment } from './src/models/Comment';
 dotenv.config();
 
 const app = express();
@@ -66,8 +69,20 @@ connectToDB().then(async () => {
   Owner.hasMany(Pet, { onDelete: 'cascade' });
   Pet.hasOne(ProfilePicture);
 
-  sequelize.sync({ force:true })
+  Post.hasMany(Comment, {
+    sourceKey: 'id',
+    foreignKey: 'postId',
+    as: 'comments',
+  });
+  
+  Post.hasMany(Like, {
+    sourceKey: 'id',
+    foreignKey: 'postId',
+    as: 'likes',
+  });
+  
 
+  sequelize.sync({ force:true })
 });
 
 const port = process.env.PORT || 3000;
