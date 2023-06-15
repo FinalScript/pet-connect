@@ -1,6 +1,3 @@
-import { Owner } from '../models/Owner';
-import { Pet } from '../models/Pet';
-import { Post } from '../models/Post';
 import { Comment, CommentCreationAttributes } from '../models/Comment';
 
 export const createComment = async (comment: CommentCreationAttributes) => {
@@ -17,7 +14,16 @@ export const getCommentsByPostId = async (postId: string) => {
   return comments;
 };
 
-export const deleteComment = async (id: string): Promise<boolean> => {
+export const getCommentById = async (id: string) => {
+  const comment = await Comment.findOne({
+    where: {
+      id,
+    },
+  });
+  return comment;
+};
+
+export const deleteComment = async (id: string) => {
   await Comment.destroy({
     where: {
       id,

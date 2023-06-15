@@ -1,5 +1,5 @@
 import express from 'express';
-import { createComment, deleteComment, getCommentsByPostId } from '../controllers/CommentController';
+import { createComment, deleteComment, getCommentById, getCommentsByPostId } from '../controllers/CommentController';
 import { trimValuesInObject } from '../utils/trimValuesInObject';
 import { getPostById } from '../controllers/PostController';
 import { getOwner } from '../controllers/OwnerController';
@@ -10,113 +10,121 @@ export { router as CommentRouter };
 
 // POST /posts/{postId}/comments: Add a comment to a specific post.
 router.post('/:postId/comments', async (req, res) => {
-    const { text, ownerId } = req.body;
-    const authId = req.auth.payload.sub;
-    req.body = trimValuesInObject(req.body);
-    const { postId } = req.params;
+  const { text, ownerId } = req.body;
+  const { postId } = req.params;
+  const authId = req.auth.payload.sub;
+  req.body = trimValuesInObject(req.body);
 
-    let owner;
-    try {
-        owner = await getOwner(authId);
-    } catch (e) {
-        console.error(e);
-        res.sendStatus(400);
-        return;
-    }
+  if (!postId) {
+    res.status(400).send({ message: 'Please provide postId' });
+    return;
+  }
 
-    if (!owner) {
-        res.sendStatus(404);
-        return;
-    }
+  if (!ownerId) {
+    res.status(400).send({ message: 'Please provide ownerId' });
+    return;
+  }
 
-    let post;
-    try {
-        post = await getPostById(postId);
-    } catch (e) {
-        console.error(e);
-        res.sendStatus(400);
-        return;
-    }
+  let owner;
 
-    if (!post) {
-        res.sendStatus(404);
-        return;
-    }
+  try {
+    owner = await getOwner(authId);
+  } catch (e) {
+    console.error(e);
+    res.status(e.status || 400).send(e.message);
+    return;
+  }
 
-    if (!text) {
-        res.sendStatus(400);
-        return;
-    }
+  if (!owner) {
+    res.status(404).send({ message: 'Owner does not exist' });
+    return;
+  }
 
-    let newComment;
-    try {
-        newComment = await createComment({ text, postId, ownerId });
-    } catch (e) {
-        console.error(e);
-        res.sendStatus(400);
-        return;
-    }
+  let post;
 
+  try {
+    post = await getPostById(postId);
+  } catch (e) {
+    console.error(e);
+    res.status(e.status || 400).send(e.message);
+    return;
+  }
+
+  if (!post) {
+    res.status(404).send({ message: 'Post does not exist' });
+    return;
+  }
+
+  if (!text) {
+    res.status(400).send({ message: 'Text missing' });
+    return;
+  }
+
+  try {
+    const newComment = await createComment({ text, postId, ownerId });
     res.status(201).send(newComment);
+  } catch (e) {
+    console.error(e);
+    res.status(e.status || 400).send(e.message);
+    return;
+  }
 });
 
 // GET /posts/{postId}/comments: Retrieve all comments for a specific post.
 router.get('/:postId/comments', async (req, res) => {
-    const { postId } = req.params;
-    
-    if (!postId) {
-        res.sendStatus(400);
-        return;
-    }
+  const { postId } = req.params;
 
-    let post;
-    try {
-        post = await getPostById(postId);
-    } catch (e) {
-        console.error(e);
-        res.sendStatus(400);
-        return;
-    }
+  if (!postId) {
+    res.status(400).send({ message: 'Please provide postId' });
+    return;
+  }
 
-    if (!post) {
-        res.sendStatus(404);
-        return;
-    }
+  let post;
+  try {
+    post = await getPostById(postId);
+  } catch (e) {
+    console.error(e);
+    res.status(e.status || 400).send(e.message);
+    return;
+  }
 
-    let comments;
-    try {
-        comments = await getCommentsByPostId(postId);
-    } catch (e) {
-        console.error(e);
-        res.sendStatus(400);
-        return;
-    }
+  if (!post) {
+    res.status(400).send({ message: 'Post does not exist' });
+    return;
+  }
 
-    res.send(comments);
+  try {
+    const comments = await getCommentsByPostId(postId);
+    res.status(201).send(comments);
+  } catch (e) {
+    console.error(e);
+    res.status(e.status || 400).send(e.message);
+    return;
+  }
 });
 
 // DELETE /posts/{postId}/comments/{commentId}: Delete a specific comment.
 router.delete('/:postId/comments/:commentId', async (req, res) => {
-    const { commentId } = req.params;
-    
-    if (!commentId) {
-        res.sendStatus(400);
-        return;
-    }
+  const { postId, commentId } = req.params;
 
-    let deleted;
-    try {
-        deleted = await deleteComment(commentId);
-    } catch (e) {
-        console.error(e);
-        res.sendStatus(400);
-        return;
-    }
+  const comment = await getCommentById(commentId);
+  const post = await getPostById(postId);
 
-    if (!deleted) {
-        res.sendStatus(404);
-        return;
-    }
+  if (!comment) {
+    return res.status(404).send({ message: 'Comment not found' });
+  }
 
-    res.sendStatus(200);
+  if (!post) {
+    return res.status(404).send({ message: 'Post not found' });
+  }
+
+  try {
+    const deleted = await deleteComment(commentId);
+  } catch (e) {
+    console.error(e);
+    res.status(e.status || 400).send(e.message);
+    return;
+  }
+
+  res.send({ message: 'Comment successfully deleted' });
 });

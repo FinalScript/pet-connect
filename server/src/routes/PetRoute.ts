@@ -1,8 +1,7 @@
 import express from 'express';
 import { getOwner } from '../controllers/OwnerController';
 import { createPet, deletePet, updatePet, getPetById, getPetByUsername } from '../controllers/PetController';
-import { Pet, PetUpdateDAO } from '../models/Pet';
-import { Owner } from '../models/Owner';
+import { Pet } from '../models/Pet';
 import { trimValuesInObject } from '../utils/trimValuesInObject';
 import multer from 'multer';
 import { ProfilePicture } from '../models/ProfilePicture';
