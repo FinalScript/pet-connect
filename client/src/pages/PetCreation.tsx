@@ -55,7 +55,7 @@ export default function PetCreation() {
   const loading = useSelector((state: GeneralReducer) => state.general.loading);
   const navigation = useNavigation<NavigationProp>();
   const route = useRoute<RootRouteProps<'Pet Creation'>>();
-  const maxStep = 1;
+  const maxStep = 2;
   const [step, setStep] = useState(0);
   const [formData, setFormData] = useState<FormData>({ type: '', username: '', name: '', description: '', profilePicture: undefined });
   const [focus, setFocus] = useState({ username: false, name: false, description: false });
@@ -65,11 +65,14 @@ export default function PetCreation() {
   const submit = useCallback(() => {
     dispatch({ type: LOADING, payload: true });
 
-    if (!(formData.name && formData.username && isUsernameValid)) {
+    if (!(formData.name.trim() && formData.username && isUsernameValid)) {
       trigger(HapticFeedbackTypes.notificationError, options);
       dispatch({ type: LOADING, payload: false });
       return;
     }
+
+    // Triggers success haptics
+    trigger(HapticFeedbackTypes.notificationSuccess, options);
 
     setTimeout(() => {
       createPet(formData)
@@ -166,6 +169,10 @@ export default function PetCreation() {
       }
     }
 
+    if (step === 1 && !isUsernameValid) {
+      return;
+    }
+
     if (step < maxStep) {
       setStep((prev) => prev + 1);
     }
@@ -215,7 +222,7 @@ export default function PetCreation() {
       <View>
         <Text className='text-themeText font-semibold text-3xl'>We need some details about your pet!</Text>
 
-        <View className='px-2'>
+        <View className='px-2 mt-3'>
           <View className='flex flex-col justify-center items-center'>
             <Text className='mb-2 text-xl font-bold text-themeText'>Profile Picture</Text>
             <TouchableHighlight
@@ -292,32 +299,83 @@ export default function PetCreation() {
                 ' bg-themeInput border-[5px] shadow-sm shadow-themeShadow h-44 max-h-44 overflow-hidden w-full rounded-3xl px-5 py-3 text-lg'
               }
               style={{ fontFamily: 'BalooChettan2-Regular' }}
-              placeholderTextColor={'#444444bb'}
-              value={formData.description}
-              onChangeText={(e) => {
-                setFormData((prev) => {
-                  return { ...prev, description: e };
-                });
-              }}
-              onFocus={() => {
-                setFocus((prev) => {
-                  return { ...prev, description: true };
-                });
-              }}
-              onBlur={() => {
-                setFocus((prev) => {
-                  return { ...prev, description: false };
-                });
-              }}
-              maxLength={100}
-              numberOfLines={4}
-              multiline={true}
-              returnKeyType={'done'}
-              blurOnSubmit={true}
-              placeholder='Write a nice description for your pet'
-              editable={!loading}
             />
           </View>
+        </View>
+      </View>
+    );
+  };
+
+  const stepThree = () => {
+    return (
+      <View>
+        <Text className='text-themeText font-semibold text-3xl'>We're almost done!</Text>
+
+        <View className='mt-3'>
+          <Text className='mb-2 pl-4 text-lg font-bold text-themeText'>Pet Name *</Text>
+          <TextInput
+            className={
+              (focus.name === true ? 'border-themeActive' : 'border-transparent') +
+              ' bg-themeInput border-[5px] shadow-sm shadow-themeShadow w-full rounded-3xl px-3 py-3 text-lg'
+            }
+            style={{ fontFamily: 'BalooChettan2-Regular' }}
+            placeholderTextColor={'#444444bb'}
+            value={formData.name}
+            onChangeText={(e) => {
+              setFormData((prev) => {
+                return { ...prev, name: e };
+              });
+            }}
+            onFocus={() => {
+              setFocus((prev) => {
+                return { ...prev, name: true };
+              });
+            }}
+            onBlur={() => {
+              setFocus((prev) => {
+                return { ...prev, name: false };
+              });
+            }}
+            maxLength={30}
+            returnKeyType='next'
+            placeholder="Enter your pet's name"
+            editable={!loading}
+          />
+        </View>
+
+        <View className='mt-5'>
+          <Text className='mb-2 pl-4 text-xl font-bold text-themeText'>Tell us about{formData.name ? ` ${formData.name}` : '...'}</Text>
+          <TextInput
+            className={
+              (focus.description === true ? 'border-themeActive' : 'border-transparent') +
+              ' bg-themeInput border-[5px] shadow-sm shadow-themeShadow h-44 max-h-44 overflow-hidden w-full rounded-3xl px-3 py-3 text-lg'
+            }
+            style={{ fontFamily: 'BalooChettan2-Regular' }}
+            placeholderTextColor={'#444444bb'}
+            value={formData.description}
+            onChangeText={(e) => {
+              setFormData((prev) => {
+                return { ...prev, description: e };
+              });
+            }}
+            onFocus={() => {
+              setFocus((prev) => {
+                return { ...prev, description: true };
+              });
+            }}
+            onBlur={() => {
+              setFocus((prev) => {
+                return { ...prev, description: false };
+              });
+            }}
+            maxLength={100}
+            numberOfLines={4}
+            multiline={true}
+            returnKeyType={'done'}
+            blurOnSubmit={true}
+            placeholder='Write a nice description for your pet'
+            editable={!loading}
+          />
         </View>
       </View>
     );
@@ -329,6 +387,8 @@ export default function PetCreation() {
         return stepOne();
       case 1:
         return stepTwo();
+      case 2:
+        return stepThree();
       default:
         break;
     }

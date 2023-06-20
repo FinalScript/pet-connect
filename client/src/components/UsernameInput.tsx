@@ -22,15 +22,18 @@ export default function UsernameInput({ className, value, setValue, isValid, set
   const [isChecking, setChecking] = useState(false);
 
   useEffect(() => {
+
     if (value) {
       setChecking(true);
     }
 
     const timeoutId = setTimeout(() => {
-      if (value) {
+      // value === "" will prevent an infinite load from occuring when a username is entered then deleted quickly
+      if (value || value === "") {
         validateUsername(value);
         setChecking(false);
       }
+      
     }, 1000);
 
     return () => clearTimeout(timeoutId);

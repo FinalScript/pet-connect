@@ -67,7 +67,7 @@ export default function AccountCreation() {
         <View className='mt-5 px-2'>
           <View>
             <View>
-              <Text className='mb-2 pl-4 text-xl font-bold text-themeText'>Username *</Text>
+              <Text className='mb-2 pl-4 text-lg font-bold text-themeText'>Username *</Text>
               <UsernameInput
                 value={username}
                 setValue={setUsername}
@@ -86,12 +86,12 @@ export default function AccountCreation() {
           </View>
 
           <View className='mt-5'>
-            <Text className='mb-2 pl-4 text-xl font-bold text-themeText'>Name</Text>
+            <Text className='mb-2 pl-4 text-lg font-bold text-themeText'>Name</Text>
             <TextInput
               ref={nameRef}
               className={
                 (focus.name === true ? 'border-themeActive' : 'border-transparent') +
-                ' bg-themeInput border-[5px] shadow-sm shadow-themeShadow w-full rounded-3xl px-5 py-3 text-xl'
+                ' bg-themeInput border-[5px] shadow-sm shadow-themeShadow w-full rounded-3xl px-5 py-3 text-lg'
               }
               style={{ fontFamily: 'BalooChettan2-Regular' }}
               placeholderTextColor={'#444444bb'}
