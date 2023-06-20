@@ -242,8 +242,39 @@ export default function PetCreation() {
             </TouchableHighlight>
           </View>
 
-          <View className='mt-6'>
-            <Text className='mb-2 pl-4 text-lg font-bold text-themeText'>Pet Username *</Text>
+          <View className='mt-3'>
+            <Text className='mb-2 pl-4 text-xl font-bold text-themeText'>Display Name *</Text>
+            <TextInput
+              className={
+                (focus.name === true ? 'border-themeActive' : 'border-transparent') +
+                ' bg-themeInput border-[5px] shadow-sm shadow-themeShadow w-full rounded-3xl px-5 py-3 text-lg'
+              }
+              style={{ fontFamily: 'BalooChettan2-Regular' }}
+              placeholderTextColor={'#444444bb'}
+              value={formData.name}
+              onChangeText={(e) => {
+                setFormData((prev) => {
+                  return { ...prev, name: e };
+                });
+              }}
+              onFocus={() => {
+                setFocus((prev) => {
+                  return { ...prev, name: true };
+                });
+              }}
+              onBlur={() => {
+                setFocus((prev) => {
+                  return { ...prev, name: false };
+                });
+              }}
+              maxLength={30}
+              returnKeyType='next'
+              placeholder="Enter your pet's name"
+              editable={!loading}
+            />
+          </View>
+          <View className='mt-3'>
+            <Text className='mb-2 pl-4 text-xl font-bold text-themeText'>Username *</Text>
             <UsernameInput
               value={formData.username}
               setValue={(e: string) => {
@@ -258,7 +289,15 @@ export default function PetCreation() {
               autoCapitalize='none'
               autoCorrect={false}
               editable={!loading}
-              // Font style added, was not being detected from TextInput component
+            />
+          </View>
+          <View className='mt-3'>
+            <Text className='mb-2 pl-4 text-xl font-bold text-themeText'>Tell us about{formData.name ? ` ${formData.name}` : '...'}</Text>
+            <TextInput
+              className={
+                (focus.description === true ? 'border-themeActive' : 'border-transparent') +
+                ' bg-themeInput border-[5px] shadow-sm shadow-themeShadow h-44 max-h-44 overflow-hidden w-full rounded-3xl px-5 py-3 text-lg'
+              }
               style={{ fontFamily: 'BalooChettan2-Regular' }}
             />
           </View>

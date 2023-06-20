@@ -674,7 +674,7 @@
 					"-ObjC",
 					"-lc++",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = org.finalscript.petapp;
+				PRODUCT_BUNDLE_IDENTIFIER = org.finalscript.petconnect;
 				PRODUCT_NAME = "Pet Connect";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
@@ -702,7 +702,7 @@
 					"-ObjC",
 					"-lc++",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = org.finalscript.petapp;
+				PRODUCT_BUNDLE_IDENTIFIER = org.finalscript.petconnect;
 				PRODUCT_NAME = "Pet Connect";
 				SWIFT_VERSION = 5.0;
 				VERSIONING_SYSTEM = "apple-generic";
