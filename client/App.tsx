@@ -5,7 +5,7 @@
  * @flow
  */
 
-import React, { useCallback, useEffect, useReducer, useState } from 'react';
+import React, { useCallback, useEffect, useReducer, useRef, useState } from 'react';
 import { ActivityIndicator, StatusBar, View } from 'react-native';
 import { NavigationContainer, RouteProp } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
@@ -27,6 +27,10 @@ import { options } from './src/utils/hapticFeedbackOptions';
 import { GeneralReducer } from './src/redux/reducers/generalReducer';
 import Loading from './src/pages/Loading';
 import GetStarted from './src/pages/GetStarted';
+import { StackActions } from '@react-navigation/native';
+import { throttle } from 'lodash';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { ProfileReducer } from './src/redux/reducers/profileReducer';
 
 export type RootStackParamList = {
   Loading: undefined;
@@ -46,31 +50,63 @@ const App = () => {
   const dispatch = useDispatch();
   const [apiStatus, setApiStatus] = useState(true);
   const { user, getCredentials } = useAuth0();
-  const loading = useSelector((state: GeneralReducer) => state.general.loading);
+  const owner = useSelector((state: ProfileReducer) => state.profile.owner);
 
   useEffect(() => {
     pingApi();
   }, []);
 
   useEffect(() => {
-    if (navigationRef.isReady()) {
-      getCredentials('openid profile email')
-        .then((res) => {
-          if (!res?.accessToken) {
-            dispatch({ type: LOADING, payload: false });
-            navigationRef.navigate('Get Started');
-            return;
-          }
+    const timeoutId = setTimeout(() => {
+      getAuth();
+    }, 100);
 
-          setBearerToken(`Bearer ${res.accessToken}`);
-          getAuth();
-        })
-        .catch((err) => {
-          console.log(err);
-          return;
-        });
-    }
+    return () => clearTimeout(timeoutId);
   }, [user]);
+
+  useEffect(() => {
+    if (owner) {
+      navigationRef.dispatch(StackActions.replace('Home'));
+    }
+  }, [owner]);
+
+  const getAuth = useCallback(async () => {
+    if (navigationRef.isReady()) {
+      try {
+        const token = await AsyncStorage.getItem('@token');
+        if (token !== null) {
+          setBearerToken(`Bearer ${token}`);
+          if (!owner) {
+            getUserData();
+          }
+          return;
+        } else {
+          getCredentials('openid profile email')
+            .then(async (res) => {
+              if (!res?.accessToken) {
+                dispatch({ type: LOADING, payload: false });
+                navigationRef.dispatch(StackActions.replace('Get Started'));
+                return;
+              }
+
+              setBearerToken(`Bearer ${res.accessToken}`);
+              try {
+                await AsyncStorage.setItem('@token', res.accessToken);
+              } catch (error) {
+                // Error saving data
+              }
+              getUserData();
+            })
+            .catch((err) => {
+              console.log(err);
+              return;
+            });
+        }
+      } catch (e) {
+        // error reading value
+      }
+    }
+  }, [navigationRef, dispatch]);
 
   const pingApi = async () => {
     ping()
@@ -85,12 +121,12 @@ const App = () => {
       });
   };
 
-  const getAuth = useCallback(async () => {
+  const getUserData = useCallback(async () => {
     const ownerData = await getOwnerData().catch((err) => {
       if (err.response && err.response.status === 404) {
         dispatch({ type: LOADING, payload: false });
         trigger(HapticFeedbackTypes.notificationWarning, options);
-        navigationRef.navigate('Account Creation');
+        navigationRef.dispatch(StackActions.replace('Account Creation'));
       }
       return;
     });
@@ -101,12 +137,10 @@ const App = () => {
     }
 
     if (ownerData.status === 200) {
-      console.log(ownerData.data);
       dispatch({ type: OWNER_DATA, payload: (({ Pets, ...o }) => o)(ownerData.data) });
       dispatch({ type: PET_DATA, payload: ownerData.data.Pets });
       dispatch({ type: CURRENT_USER, payload: { id: ownerData.data.id, isPet: false } });
       dispatch({ type: LOADING, payload: false });
-      navigationRef.navigate('Home');
     }
   }, [navigationRef, dispatch]);
 
