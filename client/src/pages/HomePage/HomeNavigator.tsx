@@ -37,6 +37,7 @@ const HomeNavigator = () => {
         tabBarShowLabel: false,
         tabBarActiveTintColor: '#FF8770',
         tabBarInactiveTintColor: 'gray',
+        
       })}>
       <Tab.Screen
         name='Feed'

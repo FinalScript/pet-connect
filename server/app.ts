@@ -28,7 +28,8 @@ const checkJwt = auth({
 
 const jwtErrorHandler: ErrorRequestHandler = (err, req, res, next) => {
   if (err) {
-    res.status(err.code === typeof Number ? err.code : 503).send({ message: err });
+    console.log(err);
+    res.status(err.status === typeof Number ? err.status : 401).send({ message: err });
     return;
   }
   next();
@@ -45,6 +46,10 @@ app.get('/api/public', (req, res) => {
 app.use('/api/private/owner', checkJwt, OwnerRouter);
 
 app.use('/api/private/pet', checkJwt, PetRouter);
+
+app.get('/api/private/verifyToken', checkJwt, (req, res) => {
+  res.send();
+});
 
 app.use(jwtErrorHandler);
 

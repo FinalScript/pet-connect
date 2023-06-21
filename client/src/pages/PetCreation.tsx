@@ -87,7 +87,6 @@ export default function PetCreation() {
               });
 
               const newPet = await uploadProfilePic(imageData, res.data.id);
-              console.log(res.data);
               dispatch({ type: ADD_PET, payload: newPet.data });
             } else {
               dispatch({ type: ADD_PET, payload: res.data });
@@ -151,7 +150,11 @@ export default function PetCreation() {
     trigger(HapticFeedbackTypes.impactMedium, options);
     if (step === 0) {
       dispatch({ type: CURRENT_USER, payload: { id: owner?.id, isPet: false } });
-      navigation.replace('Home');
+      if (navigation.canGoBack()) {
+        navigation.goBack();
+      } else {
+        navigation.replace('Home');
+      }
       return;
     }
 
@@ -271,34 +274,6 @@ export default function PetCreation() {
               returnKeyType='next'
               placeholder="Enter your pet's name"
               editable={!loading}
-            />
-          </View>
-          <View className='mt-3'>
-            <Text className='mb-2 pl-4 text-xl font-bold text-themeText'>Username *</Text>
-            <UsernameInput
-              value={formData.username}
-              setValue={(e: string) => {
-                setFormData((prev) => {
-                  return { ...prev, username: e };
-                });
-              }}
-              isValid={isUsernameValid}
-              setIsValid={setIsUsernameValid}
-              returnKeyType='next'
-              placeholder='Give your pet a unique username'
-              autoCapitalize='none'
-              autoCorrect={false}
-              editable={!loading}
-            />
-          </View>
-          <View className='mt-3'>
-            <Text className='mb-2 pl-4 text-xl font-bold text-themeText'>Tell us about{formData.name ? ` ${formData.name}` : '...'}</Text>
-            <TextInput
-              className={
-                (focus.description === true ? 'border-themeActive' : 'border-transparent') +
-                ' bg-themeInput border-[5px] shadow-sm shadow-themeShadow h-44 max-h-44 overflow-hidden w-full rounded-3xl px-5 py-3 text-lg'
-              }
-              style={{ fontFamily: 'BalooChettan2-Regular' }}
             />
           </View>
         </View>

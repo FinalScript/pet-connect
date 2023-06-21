@@ -8,6 +8,8 @@ export interface OwnerDAO {
   authId: string;
   username: string;
   name?: string;
+  ProfilePicture?: any;
+  description?: string;
   location?: string;
   dateCreated: Date;
   updateTimestamp: Date;
@@ -17,7 +19,7 @@ export interface PetDAO {
   id: string;
   username: string;
   name: string;
-  type: string;
+  type: 'DOG' | 'CAT' | 'BIRD' | 'FISH' | 'RABBIT' | 'HAMSTER' | 'REPTILE' | 'OTHER';
   ProfilePicture?: any;
   description?: string;
   location?: string;
@@ -26,10 +28,15 @@ export interface PetDAO {
   OwnerPets?: any;
 }
 
+export interface CurrentUser {
+  id: string;
+  isPet: boolean;
+}
+
 export interface ProfileState {
   owner: OwnerDAO | undefined;
   pets: PetDAO[];
-  currentUser: OwnerDAO | PetDAO | undefined;
+  currentUser?: CurrentUser;
 }
 
 export interface ProfileReducer {
@@ -66,7 +73,7 @@ const profileReducer: ProfileReducerFn = (state = initialState, action: any) => 
       return { ...state, storeData: state.pets.filter((store: any) => store.id !== action.payload) };
 
     case LOGOUT:
-      AsyncStorage.removeItem('@token')
+      AsyncStorage.removeItem('@token');
       return { ...initialState };
     default:
       return state;

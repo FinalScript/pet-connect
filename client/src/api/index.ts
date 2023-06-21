@@ -24,6 +24,13 @@ export const ping = () => {
   });
 };
 
+export const verifyToken = () => {
+  return api({
+    method: 'GET',
+    url: '/api/private/verifyToken',
+  });
+};
+
 export const getOwnerData = () => {
   return api({
     method: 'GET',

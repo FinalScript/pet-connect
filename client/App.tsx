@@ -16,12 +16,12 @@ import AppLoader from './src/hoc/AppLoader';
 import AuthLoader from './src/pages/GetStarted';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Text from './src/components/Text';
-import { getOwnerData, ping, setBearerToken } from './src/api';
+import { getOwnerData, ping, setBearerToken, verifyToken } from './src/api';
 import { navigationRef } from './src/services/navigator';
 import { useAuth0 } from 'react-native-auth0';
 import HomeNavigator from './src/pages/HomePage/HomeNavigator';
 import { useDispatch, useSelector } from 'react-redux';
-import { CURRENT_USER, LOADING, OWNER_DATA, PET_DATA } from './src/redux/constants';
+import { CURRENT_USER, LOADING, LOGOUT, OWNER_DATA, PET_DATA } from './src/redux/constants';
 import { HapticFeedbackTypes, trigger } from 'react-native-haptic-feedback';
 import { options } from './src/utils/hapticFeedbackOptions';
 import { GeneralReducer } from './src/redux/reducers/generalReducer';
@@ -59,52 +59,69 @@ const App = () => {
   useEffect(() => {
     const timeoutId = setTimeout(() => {
       getAuth();
-    }, 100);
+    }, 200);
+
+    console.log(user)
 
     return () => clearTimeout(timeoutId);
-  }, [user]);
+  }, [user, navigationRef]);
 
   useEffect(() => {
     if (owner) {
+      trigger(HapticFeedbackTypes.notificationSuccess, options);
       navigationRef.dispatch(StackActions.replace('Home'));
     }
   }, [owner]);
 
   const getAuth = useCallback(async () => {
     if (navigationRef.isReady()) {
-      try {
-        const token = await AsyncStorage.getItem('@token');
-        if (token !== null) {
-          setBearerToken(`Bearer ${token}`);
-          if (!owner) {
-            getUserData();
-          }
-          return;
-        } else {
-          getCredentials('openid profile email')
-            .then(async (res) => {
-              if (!res?.accessToken) {
-                dispatch({ type: LOADING, payload: false });
-                navigationRef.dispatch(StackActions.replace('Get Started'));
-                return;
-              }
+      let token;
 
-              setBearerToken(`Bearer ${res.accessToken}`);
-              try {
-                await AsyncStorage.setItem('@token', res.accessToken);
-              } catch (error) {
-                // Error saving data
-              }
-              getUserData();
-            })
-            .catch((err) => {
-              console.log(err);
-              return;
-            });
-        }
+      try {
+        token = await AsyncStorage.getItem('@token');
       } catch (e) {
         // error reading value
       }
+
+      if (!token) {
+        console.log('token not found');
+        const credentials = await getCredentials('openid profile email');
+
+        if (!credentials?.accessToken) {
+          dispatch({ type: LOADING, payload: false });
+          navigationRef.dispatch(StackActions.replace('Get Started'));
+          return;
+        }
+
+        setBearerToken(`Bearer ${credentials.accessToken}`);
+        try {
+          await AsyncStorage.setItem('@token', credentials.accessToken);
+        } catch (error) {
+          // Error saving data
+        }
+
+        getUserData();
+
+        return;
+      }
+
+      console.log('token found');
+
+      setBearerToken(`Bearer ${token}`);
+
+      try {
+        await verifyToken();
+      } catch (e: any) {
+        console.log(e);
+        if (e.response.status) {
+          await AsyncStorage.removeItem('@token');
+          dispatch({ type: LOADING, payload: false });
+          navigationRef.dispatch(StackActions.replace('Get Started'));
+          return;
+        }
+      }
+
+      getUserData();
     }
   }, [navigationRef, dispatch]);
 
@@ -137,7 +154,8 @@ const App = () => {
     }
 
     if (ownerData.status === 200) {
-      dispatch({ type: OWNER_DATA, payload: (({ Pets, ...o }) => o)(ownerData.data) });
+      const owner = (({ Pets, ...o }) => o)(ownerData.data);
+      dispatch({ type: OWNER_DATA, payload: owner });
       dispatch({ type: PET_DATA, payload: ownerData.data.Pets });
       dispatch({ type: CURRENT_USER, payload: { id: ownerData.data.id, isPet: false } });
       dispatch({ type: LOADING, payload: false });
@@ -162,7 +180,7 @@ const App = () => {
             headerShown: false,
             headerBackVisible: false,
             animationTypeForReplace: 'push',
-            animation: 'fade_from_bottom',
+            animation: 'fade',
             contentStyle: { backgroundColor: '#f6f6f6f' },
           }}>
           <Stack.Screen name='Loading' component={Loading} />
