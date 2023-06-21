@@ -172,7 +172,7 @@ export default function PetCreation() {
       }
     }
 
-    if (step === 1 && !isUsernameValid) {
+    if (step === 2 && !isUsernameValid) {
       return;
     }
 
@@ -287,33 +287,20 @@ export default function PetCreation() {
         <Text className='text-themeText font-semibold text-3xl'>We're almost done!</Text>
 
         <View className='mt-3'>
-          <Text className='mb-2 pl-4 text-lg font-bold text-themeText'>Pet Name *</Text>
-          <TextInput
-            className={
-              (focus.name === true ? 'border-themeActive' : 'border-transparent') +
-              ' bg-themeInput border-[5px] shadow-sm shadow-themeShadow w-full rounded-3xl px-3 py-3 text-lg'
-            }
-            style={{ fontFamily: 'BalooChettan2-Regular' }}
-            placeholderTextColor={'#444444bb'}
-            value={formData.name}
-            onChangeText={(e) => {
+          <Text className='mb-2 pl-4 text-lg font-bold text-themeText'>Pet Username *</Text>
+          <UsernameInput
+            value={formData.username}
+            setValue={(e: string) => {
               setFormData((prev) => {
-                return { ...prev, name: e };
+                return { ...prev, username: e };
               });
             }}
-            onFocus={() => {
-              setFocus((prev) => {
-                return { ...prev, name: true };
-              });
-            }}
-            onBlur={() => {
-              setFocus((prev) => {
-                return { ...prev, name: false };
-              });
-            }}
-            maxLength={30}
+            isValid={isUsernameValid}
+            setIsValid={setIsUsernameValid}
             returnKeyType='next'
-            placeholder="Enter your pet's name"
+            placeholder='Give your pet a unique username'
+            autoCapitalize='none'
+            autoCorrect={false}
             editable={!loading}
           />
         </View>

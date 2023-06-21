@@ -12,7 +12,7 @@ import { RootStackParamList } from '../../App';
 import { options } from '../utils/hapticFeedbackOptions';
 import { useDispatch, useSelector } from 'react-redux';
 import { GeneralReducer } from '../redux/reducers/generalReducer';
-import { LOADING, OWNER_DATA, PET_DATA } from '../redux/constants';
+import { CURRENT_USER, LOADING, OWNER_DATA, PET_DATA } from '../redux/constants';
 
 type NavigationProp = NativeStackNavigationProp<RootStackParamList, 'Account Creation'>;
 
@@ -42,6 +42,8 @@ export default function AccountCreation() {
 
             if (res.status === 200) {
               dispatch({ type: OWNER_DATA, payload: (({ Pets, ...o }) => o)(res.data.dataValues) });
+              dispatch({ type: CURRENT_USER, payload: { id: res.data.id, isPet: false } });
+
               navigation.replace('Pet Creation', { initial: true });
             }
           })
@@ -77,6 +79,7 @@ export default function AccountCreation() {
                 maxLength={30}
                 placeholder='Enter your username'
                 returnKeyType='next'
+                forOwner
               />
             </View>
             <View>

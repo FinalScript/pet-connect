@@ -61,7 +61,7 @@ const App = () => {
       getAuth();
     }, 200);
 
-    console.log(user)
+    console.log(user);
 
     return () => clearTimeout(timeoutId);
   }, [user, navigationRef]);
@@ -154,10 +154,17 @@ const App = () => {
     }
 
     if (ownerData.status === 200) {
+      const cachedCurrentUser = JSON.parse((await AsyncStorage.getItem('@currentUser')) || '{}');
+
       const owner = (({ Pets, ...o }) => o)(ownerData.data);
+      const pets: any[] = ownerData.data.Pets;
+
       dispatch({ type: OWNER_DATA, payload: owner });
-      dispatch({ type: PET_DATA, payload: ownerData.data.Pets });
-      dispatch({ type: CURRENT_USER, payload: { id: ownerData.data.id, isPet: false } });
+      dispatch({ type: PET_DATA, payload: pets });
+
+      const validCache = owner?.id === cachedCurrentUser?.id || pets.find((pet) => pet?.id === cachedCurrentUser?.id) ? true : false;
+
+      dispatch({ type: CURRENT_USER, payload: cachedCurrentUser && validCache ? cachedCurrentUser : { id: ownerData.data.id, isPet: false } });
       dispatch({ type: LOADING, payload: false });
     }
   }, [navigationRef, dispatch]);

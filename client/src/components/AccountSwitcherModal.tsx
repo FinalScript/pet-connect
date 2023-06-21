@@ -1,5 +1,5 @@
 import { Image, Modal, ModalProps, View } from 'react-native';
-import React from 'react';
+import React, { useCallback } from 'react';
 import { Pressable } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
 import { CURRENT_USER } from '../redux/constants';
@@ -8,6 +8,8 @@ import { Buffer } from 'buffer';
 import Ionicon from 'react-native-vector-icons/Ionicons';
 import PetTypeImage from './PetTypeImage';
 import Text from './Text';
+import { HapticFeedbackTypes, trigger } from 'react-native-haptic-feedback';
+import { options } from '../utils/hapticFeedbackOptions';
 
 interface Props extends ModalProps {
   modalVisible: boolean;
@@ -19,6 +21,18 @@ const AccountSwitcherModal = ({ modalVisible, setModalVisible, currentUser }: Pr
   const dispatch = useDispatch();
   const owner = useSelector((state: ProfileReducer) => state.profile.owner);
   const pets = useSelector((state: ProfileReducer) => state.profile.pets);
+
+  const switchProfile = useCallback(
+    (id?: string, isPet?: boolean) => {
+      dispatch({ type: CURRENT_USER, payload: { id, isPet } });
+      trigger(HapticFeedbackTypes.impactMedium, options);
+
+      setTimeout(() => {
+        setModalVisible(false);
+      }, 100);
+    },
+    [dispatch]
+  );
 
   return (
     <Modal
@@ -34,11 +48,10 @@ const AccountSwitcherModal = ({ modalVisible, setModalVisible, currentUser }: Pr
           <Pressable
             className={
               (owner?.id === currentUser?.id ? 'border-themeActive' : 'border-transparent') +
-              ' flex flex-row items-center mb-5 rounded-xl bg-themeInput border-[5px] shadow-sm shadow-themeShadow py-2.5 px-5'
+              ' flex flex-row items-center mb-5 rounded-3xl bg-themeInput border-4 shadow-sm shadow-themeShadow py-2.5 px-5'
             }
             onPress={() => {
-              dispatch({ type: CURRENT_USER, payload: { id: owner?.id, isPet: false } });
-              setModalVisible(false);
+              switchProfile(owner?.id, false);
             }}>
             <View className='h-16 w-16 flex justify-center items-center mr-5'>
               {owner?.ProfilePicture ? (
@@ -65,11 +78,10 @@ const AccountSwitcherModal = ({ modalVisible, setModalVisible, currentUser }: Pr
                 key={pet.id}
                 className={
                   (pet?.id === currentUser?.id ? 'border-themeActive' : 'border-transparent') +
-                  ' flex flex-row items-center mb-5 rounded-xl bg-themeInput border-[5px] shadow-sm shadow-themeShadow py-2.5 px-5'
+                  ' flex flex-row items-center mb-5 rounded-3xl bg-themeInput border-4 shadow-sm shadow-themeShadow py-2.5 px-5'
                 }
                 onPress={() => {
-                  dispatch({ type: CURRENT_USER, payload: { id: pet.id, isPet: true } });
-                  setModalVisible(false);
+                  switchProfile(pet?.id, false);
                 }}>
                 <View className='h-16 w-16 flex justify-center items-center mr-5'>
                   {pet.ProfilePicture ? (

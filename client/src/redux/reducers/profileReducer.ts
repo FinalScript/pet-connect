@@ -58,6 +58,7 @@ const profileReducer: ProfileReducerFn = (state = initialState, action: any) => 
         pets: action.payload,
       };
     case CURRENT_USER:
+      AsyncStorage.setItem('@currentUser', JSON.stringify(action.payload));
       return {
         ...state,
         currentUser: action.payload,
