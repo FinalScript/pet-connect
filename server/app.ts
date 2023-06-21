@@ -33,7 +33,6 @@ const checkJwt = auth({
   tokenSigningAlg: 'RS256',
 });
 
-
 const jwtErrorHandler: ErrorRequestHandler = (err, req, res, next) => {
   if (err) {
     res.status(err.code === typeof Number ? err.code : 503).send({ message: err });
@@ -41,8 +40,6 @@ const jwtErrorHandler: ErrorRequestHandler = (err, req, res, next) => {
   }
   next();
 };
-
-
 
 // This route doesn't need authentication
 app.get('/api/public', (req, res) => {
@@ -64,7 +61,6 @@ app.use('/api/private/comment', checkJwt, CommentRouter);
 
 app.use(jwtErrorHandler);
 
-
 connectToDB().then(async () => {
   Owner.hasMany(Pet, { onDelete: 'cascade' });
   Pet.hasOne(ProfilePicture);
@@ -74,15 +70,14 @@ connectToDB().then(async () => {
     foreignKey: 'postId',
     as: 'comments',
   });
-  
+
   Post.hasMany(Like, {
     sourceKey: 'id',
     foreignKey: 'postId',
     as: 'likes',
   });
-  
 
-  sequelize.sync({ force:true })
+  sequelize.sync({ force: true });
 });
 
 const port = process.env.PORT || 3000;

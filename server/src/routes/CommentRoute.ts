@@ -106,10 +106,23 @@ router.get('/:postId/comments', async (req, res) => {
 // DELETE /posts/{postId}/comments/{commentId}: Delete a specific comment.
 router.delete('/:postId/comments/:commentId', async (req, res) => {
   const { postId, commentId } = req.params;
+  let comment, post;
 
-  const comment = await getCommentById(commentId);
-  const post = await getPostById(postId);
+  try {
+    comment = await getCommentById(commentId);
+  } catch (e) {
+    console.error(e);
+    res.status(e.status || 400).send(e.message);
+    return;
+  }
 
+  try {
+    post = await getPostById(postId);
+  } catch (e) {
+    console.error(e);
+    res.status(e.status || 400).send(e.message);
+    return;
+  }
   if (!comment) {
     return res.status(404).send({ message: 'Comment not found' });
   }

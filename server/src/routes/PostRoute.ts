@@ -10,13 +10,13 @@ export { router as PostRouter };
 // POST /posts: Create a new post with media and initial description.
 router.post('/create', async (req, res) => {
   const { petId, description, media } = req.body;
+  let pet;
 
   if (!petId) {
     res.status(400).send({ message: 'Please provide petId' });
     return;
   }
 
-  let pet;
 
   try {
     pet = await getPetById(petId);
@@ -60,6 +60,7 @@ router.get('/', async (req, res) => {
 // GET /posts/{postId}: Retrieve a specific post by its ID.
 router.get('/:postId', async (req, res) => {
   let post;
+
   try {
     const { postId } = req.params;
     post = await getPostById(postId);
@@ -111,14 +112,22 @@ router.patch('/update/:postId', async (req, res) => {
 // DELETE /posts/{postId}: Delete a specific post.
 router.delete('/delete/:postId', async (req, res) => {
   const { postId } = req.params;
-  const postExists = await getPostById(postId);
+  let postExists;
+  let deleted;
+
+  try {
+    postExists = await getPostById(postId);
+  } catch (e) {
+    console.error(e);
+    res.status(e.status || 400).send(e.message);
+    return;
+  }
 
   if (!postExists) {
     res.status(404).send({ message: 'Post not found' });
     return;
   }
 
-  let deleted;
   try {
     deleted = await deletePost(postId);
   } catch (e) {

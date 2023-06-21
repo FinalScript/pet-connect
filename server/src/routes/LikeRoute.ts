@@ -6,8 +6,8 @@ const router = express.Router();
 
 export { router as LikeRouter };
 
-// POST /{postId}/likes: Add a like to a specific post.
-router.post('/:postId/likes', async (req, res) => {
+// POST /likes:/{postId} Add a like to a specific post.
+router.post('/likes/:postId', async (req, res) => {
   const { ownerId } = req.body;
   const { postId } = req.params;
 
@@ -34,9 +34,23 @@ router.post('/:postId/likes', async (req, res) => {
 // DELETE /{postId}/likes/{likeId}: Remove a like from a specific post.
 router.delete('/:postId/likes/:likeId', async (req, res) => {
   const { likeId, postId } = req.params;
+  let like, post;
 
-  const like = await getLikeById(likeId);
-  const post = await getPostById(postId);
+  try {
+    like = await getLikeById(likeId);
+  } catch (e) {
+    console.error(e);
+    res.status(e.status || 400).send(e.message);
+    return;
+  }
+
+  try {
+    post = await getPostById(postId);
+  } catch (e) {
+    console.error(e);
+    res.status(e.status || 400).send(e.message);
+    return;
+  }
 
   if (!like) {
     return res.status(404).send({ message: 'Like not found' });
@@ -47,7 +61,7 @@ router.delete('/:postId/likes/:likeId', async (req, res) => {
   }
 
   try {
-    const deleted = await deleteLike(likeId);
+    await deleteLike(likeId);
   } catch (e) {
     console.error(e);
     res.status(e.status || 400).send(e.message);

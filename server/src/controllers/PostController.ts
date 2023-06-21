@@ -25,14 +25,13 @@ export const updatePost = async (id: string, data: Partial<PostAttributes>) => {
 };
 
 export const deletePost = async (id: string) => {
-    const post = await getPostById(id);
-    if (post) {
-      await post.destroy();
-      return true;
-    }
-    return false;
-  };
-  
+  const post = await getPostById(id);
+  if (post) {
+    await post.destroy();
+    return true;
+  }
+  return false;
+};
 
 export const getPostsByPetId = async (petId: string) => {
   const posts = await Post.findAll({ where: { petId } });
