@@ -4,7 +4,6 @@ import Text from './Text';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { trigger, HapticFeedbackTypes } from 'react-native-haptic-feedback';
 import { options } from '../utils/hapticFeedbackOptions';
-import { TouchableOpacity, TouchableWithoutFeedback } from 'react-native-gesture-handler';
 import DoubleTap from './DoubleTap';
 
 interface Props {
