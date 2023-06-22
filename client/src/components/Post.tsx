@@ -4,6 +4,8 @@ import Text from './Text';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { trigger, HapticFeedbackTypes } from 'react-native-haptic-feedback';
 import { options } from '../utils/hapticFeedbackOptions';
+import { TouchableOpacity, TouchableWithoutFeedback } from 'react-native-gesture-handler';
+import DoubleTap from './DoubleTap';
 
 interface Props {
   name: string | undefined;
@@ -14,8 +16,18 @@ interface Props {
 
 export default function Post({ name, petImage, postImage, caption }: Props) {
   const [postLiked, setPostLiked] = useState(false);
+  const CAPTION_LINES = 2;
+  const [moreCaption, setMoreCaption] = useState(false);
+
   function handleLike() {
     setPostLiked(!postLiked);
+  }
+
+  function handleMoreCaption() {
+    if (moreCaption === true) {
+      return;
+    }
+    setMoreCaption(true);
   }
 
   useEffect(() => {
@@ -38,10 +50,12 @@ export default function Post({ name, petImage, postImage, caption }: Props) {
         <View className='h-[0.5px] bg-gray-300'></View>
 
         <View className='justify-start items-center'>
-          <View className='w-full aspect-[3/4] justify-center items-center'>
-            {/* postImage would be used in source below */}
-            <Image className='flex w-full h-full' source={require('../../assets/img/catphoto.jpeg')} />
-          </View>
+          <DoubleTap onDoubleTap={()=>{setPostLiked(true)}}>
+            <View className='w-full aspect-[3/4] justify-center items-center'>
+              {/* postImage would be used in source below */}
+              <Image className='flex w-full h-full' source={require('../../assets/img/catphoto.jpeg')} />
+            </View>
+          </DoubleTap>
         </View>
 
         <View className='mx-2 gap-y-2'>
@@ -54,11 +68,13 @@ export default function Post({ name, petImage, postImage, caption }: Props) {
             </View>
           </View>
 
-            {/* Caption should truncate when too long (not working) */}
-          <View className='flex-row max-w-full h-28 p-1 truncate'>
-            <Text className='text-xl min-h-0 truncate'>
-              <Text className='text-xl font-semibold'>{name} </Text>
-              {caption}
+          <View className='flex-row max-w-full min-h-[7rem] mb-3'>
+            <Text className='text-xl line-clamp-1' numberOfLines={moreCaption ? 0 : CAPTION_LINES}>
+              <Text className='font-semibold'>{caption ? name : ''} </Text>
+
+              <Text onPress={handleMoreCaption} suppressHighlighting>
+                {caption}
+              </Text>
             </Text>
           </View>
         </View>
