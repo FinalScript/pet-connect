@@ -9,6 +9,7 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import Text from '../components/Text';
 import { Provider } from 'react-redux';
 import { store } from '../redux/store';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
 interface Props {
   children: ReactNode;
@@ -46,7 +47,9 @@ export default function AppLoader({ children }: Props) {
   return (
     <Provider store={store}>
       <Auth0Provider domain={domain} clientId={clientId}>
-        <>{children}</>
+        <GestureHandlerRootView>
+          <>{children}</>
+        </GestureHandlerRootView>
       </Auth0Provider>
     </Provider>
   );

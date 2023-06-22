@@ -1,10 +1,11 @@
 import { Image, View } from 'react-native';
 import React, { useEffect, useState } from 'react';
 import Text from './Text';
-import Icon from 'react-native-vector-icons/FontAwesome';
+import AntDesign from 'react-native-vector-icons/AntDesign';
+import Ionicon from 'react-native-vector-icons/Ionicons';
 import { trigger, HapticFeedbackTypes } from 'react-native-haptic-feedback';
 import { options } from '../utils/hapticFeedbackOptions';
-import DoubleTap from './DoubleTap';
+import { Gesture, GestureDetector, TapGestureHandler } from 'react-native-gesture-handler';
 
 interface Props {
   name: string | undefined;
@@ -19,77 +20,68 @@ export default function Post({ name, username, petImage, postImage, caption }: P
   const CAPTION_LINES = 2;
   const [moreCaption, setMoreCaption] = useState(false);
 
-  function handleLike() {
-    setPostLiked(!postLiked);
-  }
+  const handleLike = () => {
+    if (!postLiked) {
+      trigger(HapticFeedbackTypes.impactLight, options);
+    }
+    setPostLiked((prev) => !prev);
+  };
 
-  function handleMoreCaption() {
+  const handleMoreCaption = () => {
     if (moreCaption === true) {
       return;
     }
     setMoreCaption(true);
-  }
-
-  useEffect(() => {
-    if (postLiked) {
-      trigger(HapticFeedbackTypes.impactLight, options);
-      return;
-    }
-  }, [postLiked]);
+  };
 
   return (
-    <View className='px-2 mb-3 w-full shadow-sm shadow-gray-400 '>
-      <View className='bg-white mb-3'>
-        <View className='px-2'>
-          <View className='flex-row w-52 h-10 items-center'>
-            <View className='w-8 mr-1 aspect-square'>
-              <Image className='flex w-full h-full rounded-full' source={require('../../assets/img/catphoto.jpeg')} />
-            </View>
-            <View className='justify-center h-full'>
-              <Text className='text-xl font-semibold text-sky-600 h-6 flex'>{name}</Text>
-              <Text className='text-sm font-light text-sky-600'>{username}</Text>
-            </View>
-          </View>
+    <View className='bg-white mb-3 w-full shadow-sm shadow-themeShadow rounded-md'>
+      <View className='flex-row w-full items-center px-3 py-2'>
+        <View className='w-14 h-14 mr-2 aspect-square'>
+          <Image className='flex w-full h-full rounded-full' source={require('../../assets/img/catphoto.jpeg')} />
         </View>
-
-        <View className='h-[0.5px] bg-gray-300'></View>
-
-        <View className='justify-start items-center'>
-          <DoubleTap
-            onDoubleTap={() => {
-              setPostLiked(true);
-            }}>
-            <View className='w-full aspect-[3/4] justify-center items-center'>
-              {/* postImage would be used in source below */}
-              <Image className='flex w-full h-full' source={require('../../assets/img/catphoto.jpeg')} />
-            </View>
-          </DoubleTap>
+        <View className='flex justify-center'>
+          <Text className='text-2xl font-semibold text-sky-700 -mb-2'>{name}</Text>
+          <Text className='text-base font-light text-sky-500'>{username}</Text>
         </View>
+      </View>
 
-        <View className='mx-2 gap-y-2 mb-3'>
-          <View className='flex-row gap-x-5 pt-2'>
-            <View className='mt-1' onTouchEnd={handleLike}>
-              {postLiked === true ? <Icon name='heart' size={40} color={'#ff1000'} /> : <Icon name='heart-o' size={40} color={'#000000'} />}
-            </View>
-            <View className=''>
-              <Icon name='comment-o' size={40} color={'#000000'} />
-            </View>
-          </View>
+      <TapGestureHandler
+        onEnded={() => {
+          if (!postLiked) {
+            handleLike();
+          }
+        }}
+        numberOfTaps={2}>
+        <View className='w-full aspect-[3/4] justify-center items-center'>
+          {/* postImage would be used in source below */}
+          <Image className='flex w-full h-full' source={require('../../assets/img/catphoto.jpeg')} />
+        </View>
+      </TapGestureHandler>
 
-          {!caption?.trim() ? (
-            ''
-          ) : (
-            <View className='flex-row max-w-full min-h-[7rem]'>
-              <Text className='text-xl leading-5' numberOfLines={moreCaption ? 0 : CAPTION_LINES}>
-                <Text className='font-semibold'>{name} </Text>
+      <View className='flex flex-row items-center gap-x-4 px-4 py-1'>
+        <View className='mt-1' onTouchEnd={handleLike}>
+          {postLiked === true ? <AntDesign name='heart' size={25} color={'#ff1000'} /> : <AntDesign name='hearto' size={25} color={'#000000'} />}
+        </View>
+        <View className=''>
+          <Ionicon name='chatbubble-outline' size={25} color={'#000000'} />
+        </View>
+      </View>
 
-                <Text onPress={handleMoreCaption} suppressHighlighting>
-                  {caption}
-                </Text>
+      <View className='px-3 py-1'>
+        {!caption?.trim() ? (
+          ''
+        ) : (
+          <View className='flex flex-row min-h-[7rem]'>
+            <Text className='text-lg leading-5' numberOfLines={moreCaption ? 0 : CAPTION_LINES}>
+              <Text className='font-semibold'>{name} </Text>
+
+              <Text onPress={handleMoreCaption} suppressHighlighting>
+                {caption}
               </Text>
-            </View>
-          )}
-        </View>
+            </Text>
+          </View>
+        )}
       </View>
     </View>
   );
