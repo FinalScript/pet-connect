@@ -14,7 +14,7 @@ const Feed = () => {
 
         <View className='flex justify-center items-center h-full'>
           <View className='mb-3'>
-            <Post name='Mittens' petImage='' postImage='' caption='Out in the park and having a good time! crazy wow woooo' />
+            <Post name='Mittens' petImage='' postImage='' caption='Out in the park and having a good time!' />
             {/* <Post name='Mittens' petImage='' postImage='' caption='' /> */}
           </View>
         </View>

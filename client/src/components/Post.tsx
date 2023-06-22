@@ -1,6 +1,9 @@
 import { Image, View } from 'react-native';
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import Text from './Text';
+import Icon from 'react-native-vector-icons/FontAwesome';
+import { trigger, HapticFeedbackTypes } from 'react-native-haptic-feedback';
+import { options } from '../utils/hapticFeedbackOptions';
 
 interface Props {
   name: string | undefined;
@@ -10,10 +13,21 @@ interface Props {
 }
 
 export default function Post({ name, petImage, postImage, caption }: Props) {
+  const [postLiked, setPostLiked] = useState(false);
+  function handleLike() {
+    setPostLiked(!postLiked);
+  }
+
+  useEffect(() => {
+    if (postLiked) {
+      trigger(HapticFeedbackTypes.impactLight, options);
+      return;
+    }
+  }, [postLiked]);
+
   return (
     <View className='px-2 mb-5 w-full shadow-sm shadow-gray-400 '>
       <View className='bg-white mb-2'>
-
         <View className='px-2'>
           <View className='flex-row w-52 h-10 items-center'>
             <View className='w-10 h-10 mr-1'>{petImage}</View>
@@ -25,23 +39,27 @@ export default function Post({ name, petImage, postImage, caption }: Props) {
 
         <View className='justify-start items-center'>
           <View className='w-full aspect-[3/4] justify-center items-center'>
+            {/* postImage would be used in source below */}
             <Image className='flex w-full h-full' source={require('../../assets/img/catphoto.jpeg')} />
           </View>
         </View>
 
         <View className='mx-2 gap-y-2'>
-          <View className='flex-row gap-x-2 pt-2'>
-            <View className='w-12 h-12 justify-center'>
-              <Text className='text-2xl'>Like</Text>
+          <View className='flex-row gap-x-5 pt-2'>
+            <View className='mt-1' onTouchEnd={handleLike}>
+              {postLiked === true ? <Icon name='heart' size={40} color={'#ff1000'} /> : <Icon name='heart-o' size={40} color={'#000000'} />}
             </View>
-            <View className='w-12 h-12 justify-center'>
-              <Text className='text-2xl'>cmt</Text>
+            <View className=''>
+              <Icon name='comment-o' size={40} color={'#000000'} />
             </View>
           </View>
 
-          <View className='flex-row max-w-full h-28 gap-x-1 border border-red-500 break-words'>
-            <Text className='text-xl font-semibold'>{name}</Text>
-            <Text className='text-xl min-h-0'>{caption}</Text>
+            {/* Caption should truncate when too long (not working) */}
+          <View className='flex-row max-w-full h-28 p-1 truncate'>
+            <Text className='text-xl min-h-0 truncate'>
+              <Text className='text-xl font-semibold'>{name} </Text>
+              {caption}
+            </Text>
           </View>
         </View>
       </View>
