@@ -2,14 +2,13 @@ import express from 'express';
 import dotenv from 'dotenv';
 import cors from 'cors';
 import { auth } from 'express-oauth2-jwt-bearer';
-import { connectToDB, sequelize } from './src/db/connection';
+import { connectToDB } from './src/db/connection';
 import { Owner } from './src/models/Owner';
 import { Pet } from './src/models/Pet';
 import type { ErrorRequestHandler } from 'express';
 import { OwnerRouter } from './src/routes/OwnerRoute';
 import { PetRouter } from './src/routes/PetRoute';
 import { ProfilePicture } from './src/models/ProfilePicture';
-import fs from 'fs';
 dotenv.config();
 
 const app = express();

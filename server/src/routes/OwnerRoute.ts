@@ -67,7 +67,6 @@ router.post('/signup', async (req, res) => {
 
 router.patch('/update/:authId?', async (req, res) => {
   const authId = req.params.authId;
-  req.body = trimValuesInObject(req.body);
   const { name, username, location } = req.body;
 
   // Check if the account authID was provided

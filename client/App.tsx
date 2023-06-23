@@ -31,6 +31,7 @@ import { StackActions } from '@react-navigation/native';
 import { throttle } from 'lodash';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { ProfileReducer } from './src/redux/reducers/profileReducer';
+import { Host } from 'react-native-portalize';
 
 export type RootStackParamList = {
   Loading: undefined;
@@ -180,23 +181,25 @@ const App = () => {
   return (
     <View className='bg-themeBg h-full'>
       <StatusBar animated={true} barStyle={'dark-content'} />
-      <NavigationContainer ref={navigationRef}>
-        <Stack.Navigator
-          initialRouteName='Loading'
-          screenOptions={{
-            headerShown: false,
-            headerBackVisible: false,
-            animationTypeForReplace: 'push',
-            animation: 'fade',
-            contentStyle: { backgroundColor: '#f6f6f6f' },
-          }}>
-          <Stack.Screen name='Loading' component={Loading} />
-          <Stack.Screen name='Home' component={HomeNavigator} />
-          <Stack.Screen name='Get Started' component={GetStarted} />
-          <Stack.Screen name='Pet Creation' component={PetCreation} />
-          <Stack.Screen name='Account Creation' component={AccountCreation} />
-        </Stack.Navigator>
-      </NavigationContainer>
+      <Host>
+        <NavigationContainer ref={navigationRef}>
+          <Stack.Navigator
+            initialRouteName='Loading'
+            screenOptions={{
+              headerShown: false,
+              headerBackVisible: false,
+              animationTypeForReplace: 'push',
+              animation: 'fade',
+              contentStyle: { backgroundColor: '#f6f6f6f' },
+            }}>
+            <Stack.Screen name='Loading' component={Loading} />
+            <Stack.Screen name='Home' component={HomeNavigator} />
+            <Stack.Screen name='Get Started' component={GetStarted} />
+            <Stack.Screen name='Pet Creation' component={PetCreation} />
+            <Stack.Screen name='Account Creation' component={AccountCreation} />
+          </Stack.Navigator>
+        </NavigationContainer>
+      </Host>
     </View>
   );
 };

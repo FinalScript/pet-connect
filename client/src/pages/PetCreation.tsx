@@ -149,10 +149,10 @@ export default function PetCreation() {
   const secondaryOnPress = useCallback(() => {
     trigger(HapticFeedbackTypes.impactMedium, options);
     if (step === 0) {
-      dispatch({ type: CURRENT_USER, payload: { id: owner?.id, isPet: false } });
       if (navigation.canGoBack()) {
         navigation.goBack();
       } else {
+        dispatch({ type: CURRENT_USER, payload: { id: owner?.id, isPet: false } });
         navigation.replace('Home');
       }
       return;

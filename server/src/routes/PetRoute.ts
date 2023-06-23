@@ -2,8 +2,6 @@ import express from 'express';
 import { getOwner } from '../controllers/OwnerController';
 import { createPet, deletePet, updatePet, getPetById, getPetByUsername } from '../controllers/PetController';
 import { Pet, PetUpdateDAO } from '../models/Pet';
-import { Owner } from '../models/Owner';
-import { trimValuesInObject } from '../utils/trimValuesInObject';
 import multer from 'multer';
 import { ProfilePicture } from '../models/ProfilePicture';
 import fs from 'fs';
@@ -183,8 +181,8 @@ router.post('/:id/profilepic/upload', upload.single('image'), async (req, res) =
 
 router.post('/create', async (req, res) => {
   const authId = req.auth.payload.sub;
-  req.body = trimValuesInObject(req.body);
   let { name, type, description, location, username } = req.body;
+
   const owner = await getOwner(authId);
 
   if (!owner) {
@@ -257,7 +255,6 @@ router.post('/create', async (req, res) => {
 
 router.patch('/update/:id?', async (req, res) => {
   const petId = req.params.id;
-  req.body = trimValuesInObject(req.body);
   const { name, type, description, location, username } = req.body;
 
   // Check if the pet ID was provided
