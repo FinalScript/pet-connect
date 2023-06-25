@@ -1,35 +1,22 @@
 import * as React from 'react';
 import { useRef, useState, useMemo, useCallback } from 'react';
-import { Image, StyleSheet, Text, TouchableOpacity, TouchableWithoutFeedback, View } from 'react-native';
-import { Gesture, GestureDetector, PinchGestureHandler, PinchGestureHandlerGestureEvent, TapGestureHandler } from 'react-native-gesture-handler';
-import {
-  CameraDeviceFormat,
-  CameraRuntimeError,
-  FrameProcessorPerformanceSuggestion,
-  PhotoFile,
-  sortFormats,
-  useCameraDevices,
-  useFrameProcessor,
-  VideoFile,
-} from 'react-native-vision-camera';
+import { Image, StyleSheet, TouchableOpacity, View } from 'react-native';
+import { PinchGestureHandler, PinchGestureHandlerGestureEvent, TapGestureHandler } from 'react-native-gesture-handler';
+import { CameraDeviceFormat, CameraRuntimeError, PhotoFile, sortFormats, useCameraDevices, VideoFile } from 'react-native-vision-camera';
 import { Camera, frameRateIncluded } from 'react-native-vision-camera';
 import { CONTENT_SPACING, MAX_ZOOM_FACTOR, SAFE_AREA_PADDING } from '../../utils/constants';
-import Reanimated, { Extrapolate, interpolate, useAnimatedGestureHandler, useAnimatedProps, useSharedValue, withSpring } from 'react-native-reanimated';
+import Reanimated, { Extrapolate, interpolate, useAnimatedGestureHandler, useAnimatedProps, useSharedValue } from 'react-native-reanimated';
 import { useEffect } from 'react';
 import { useIsForeground } from '../../hooks/useIsForeground';
 import { StatusBarBlurBackground } from '../../components/StatusBarBlurBackground';
 import { CaptureButton } from '../../components/CaptureButton';
 import { PressableOpacity } from 'react-native-pressable-opacity';
-import MaterialIcon from 'react-native-vector-icons/MaterialCommunityIcons';
-import IonIcon from 'react-native-vector-icons/Ionicons';
-import type { NativeStackNavigationProp, NativeStackScreenProps } from '@react-navigation/native-stack';
+import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useIsFocused, useNavigation } from '@react-navigation/core';
 import { HomeStackParamList } from './HomeNavigator';
-import { HapticFeedbackTypes, trigger } from 'react-native-haptic-feedback';
-import { options } from '../../utils/hapticFeedbackOptions';
 import { CameraRoll } from '@react-native-camera-roll/camera-roll';
-import Ionicon from 'react-native-vector-icons/Ionicons';
 import ImageCropPicker from 'react-native-image-crop-picker';
+import { Ionicon } from '../../utils/Icons';
 
 const ReanimatedCamera = Reanimated.createAnimatedComponent(Camera);
 Reanimated.addWhitelistedNativeProps({
@@ -273,19 +260,19 @@ export function CameraView(): React.ReactElement {
             navigation.goBack();
           }}
           disabledOpacity={0.4}>
-          <IonIcon name='ios-close' color='white' size={24} />
+          <Ionicon name='ios-close' color='white' size={24} />
         </PressableOpacity>
       </View>
 
       <View style={styles.rightButtonRow}>
         {supportsCameraFlipping && (
           <PressableOpacity style={styles.button} onPress={onFlipCameraPressed} disabledOpacity={0.4}>
-            <IonIcon name='camera-reverse' color='white' size={24} />
+            <Ionicon name='camera-reverse' color='white' size={24} />
           </PressableOpacity>
         )}
         {supportsFlash && (
           <PressableOpacity style={styles.button} onPress={onFlashPressed} disabledOpacity={0.4}>
-            <IonIcon name={flash === 'on' ? 'flash' : 'flash-off'} color='white' size={24} />
+            <Ionicon name={flash === 'on' ? 'flash' : 'flash-off'} color='white' size={24} />
           </PressableOpacity>
         )}
         {/* {supports60Fps && (
@@ -298,7 +285,7 @@ export function CameraView(): React.ReactElement {
         )} */}
         {canToggleNightMode && (
           <PressableOpacity style={styles.button} onPress={() => setEnableNightMode(!enableNightMode)} disabledOpacity={0.4}>
-            <IonIcon name={enableNightMode ? 'moon' : 'moon-outline'} color='white' size={24} />
+            <Ionicon name={enableNightMode ? 'moon' : 'moon-outline'} color='white' size={24} />
           </PressableOpacity>
         )}
       </View>

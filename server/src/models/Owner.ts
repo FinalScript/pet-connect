@@ -1,12 +1,14 @@
 import { Pet } from './Pet';
-import { CreationOptional, DataTypes, HasManyAddAssociationMixin, InferAttributes, InferCreationAttributes, Model, Optional, Sequelize } from 'sequelize';
+import { CreationOptional, DataTypes, HasManyAddAssociationMixin, HasOneSetAssociationMixin, InferAttributes, InferCreationAttributes, Model } from 'sequelize';
 import { sequelize } from '../db/connection';
+import { ProfilePicture } from './ProfilePicture';
 
 export interface OwnerCreationDAO {
   authId: string;
   name?: string;
   username: string;
   location?: string;
+  profilePicture?: string;
 }
 
 export interface OwnerUpdateDAO {
@@ -22,6 +24,7 @@ export class Owner extends Model<InferAttributes<Owner>, InferCreationAttributes
   declare location: CreationOptional<string>;
   declare Pets?: Pet[];
   declare addPet: HasManyAddAssociationMixin<InferAttributes<Pet>, InferCreationAttributes<Pet>>;
+  declare setProfilePicture: HasOneSetAssociationMixin<ProfilePicture, 'id'>;
 }
 
 Owner.init(

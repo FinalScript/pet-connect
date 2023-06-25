@@ -1,11 +1,52 @@
 import express from 'express';
 import { createOwner, deleteOwner, getOwner, getOwnerByUsername, updateOwner } from '../controllers/OwnerController';
 import { Owner } from '../models/Owner';
-import { trimValuesInObject } from '../utils/trimValuesInObject';
+import { allowedFileTypes, upload } from '../utils/multer';
+import { ProfilePicture } from '../models/ProfilePicture';
+import fs from 'fs';
 
 const router = express.Router();
 
 export { router as OwnerRouter };
+
+router.post('/profilepic/upload', upload.single('image'), async (req, res) => {
+  // Retrieve the uploaded image file
+  const { filename, mimetype, path } = req.file;
+
+  if (!allowedFileTypes.includes(mimetype)) {
+    res.status(400).send({ message: 'File type not supported' });
+    return;
+  }
+
+  const authId = req.auth.payload.sub;
+
+  const owner = await getOwner(authId);
+
+  try {
+    // Read the image file from the disk
+    const imageBuffer = fs.readFileSync(path);
+
+    const profilePictureDAO = ProfilePicture.build({
+      name: filename,
+      path,
+      data: imageBuffer,
+      type: mimetype,
+    });
+
+    fs.rmSync(path);
+
+    await owner.setProfilePicture(profilePictureDAO);
+
+    await owner.save();
+    await owner.reload();
+  } catch (e) {
+    console.error(e);
+    res.status(e.status || 400).send(e.message);
+    return;
+  }
+
+  res.send(owner);
+});
 
 router.get('/', async (req, res) => {
   const authId = req.auth.payload.sub;

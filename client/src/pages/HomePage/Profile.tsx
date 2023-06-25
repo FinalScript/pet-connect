@@ -1,12 +1,10 @@
-import { Easing, Image, Pressable, SafeAreaView, ScrollView, View } from 'react-native';
+import { Image, Pressable, SafeAreaView, ScrollView, View } from 'react-native';
 import { OwnerDAO, PetDAO, ProfileReducer } from '../../redux/reducers/profileReducer';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
 import AccountSwitcherModal from '../../components/AccountSwitcherModal';
 import AntDesign from 'react-native-vector-icons/AntDesign';
-import { Buffer } from 'buffer';
-import Ionicon from 'react-native-vector-icons/Ionicons';
 import { LOGOUT } from '../../redux/constants';
 import { Modalize } from 'react-native-modalize';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
@@ -16,8 +14,11 @@ import Text from '../../components/Text';
 import { useAuth0 } from 'react-native-auth0';
 import { useNavigation } from '@react-navigation/native';
 import { Dimensions } from 'react-native';
-import Animated from 'react-native-reanimated';
 import { Portal } from 'react-native-portalize';
+
+import ImagePicker from 'react-native-image-crop-picker';
+import { getImageUriFromBuffer } from '../../utils/getImageUriFromBuffer';
+import { Ionicon } from '../../utils/Icons';
 
 type NavigationProp = NativeStackNavigationProp<RootStackParamList, 'Home'>;
 
@@ -34,8 +35,6 @@ const Profile = () => {
 
   const accountSwitchModalRef = useRef<Modalize>(null);
   const settingsModalRef = useRef<Modalize>(null);
-
-  const animated = useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
     if (owner?.id === currentUserId) {
@@ -60,13 +59,10 @@ const Profile = () => {
 
   const logout = useCallback(async () => {
     try {
-      clearSession({}, { skipLegacyListener: true })
-        .then((success) => {
-          console.log(success);
-        })
-        .catch((error) => {
-          console.log('Log out cancelled', error);
-        });
+      await clearSession({}, { skipLegacyListener: true });
+
+      dispatch({ type: LOGOUT });
+      navigation.replace('Get Started');
     } catch (e) {
       console.log(e);
       console.log('Log out cancelled');
@@ -75,6 +71,23 @@ const Profile = () => {
 
   const navigateNewPet = useCallback(() => {
     navigation.navigate('Pet Creation');
+  }, []);
+
+  const changeProfilePicture = useCallback(() => {
+    ImagePicker.openPicker({
+      width: 500,
+      height: 500,
+      cropping: true,
+      mediaType: 'photo',
+      compressImageMaxHeight: 500,
+      compressImageMaxWidth: 500,
+    })
+      .then((image) => {
+        console.log('object');
+      })
+      .catch((err) => {
+        console.log(err);
+      });
   }, []);
 
   return (
@@ -129,18 +142,20 @@ const Profile = () => {
       <ScrollView className='w-full px-5'>
         <View className='mt-5 flex flex-row items-center justify-between'>
           <View className='relative'>
-            <View className='w-24 h-24 rounded-full border-2 border-themeActive flex items-center justify-center'>
-              {currentUser?.ProfilePicture ? (
-                <Image
-                  className='w-full h-full rounded-full'
-                  source={{
-                    uri: `data:image/*;base64,${Buffer.from(currentUser.ProfilePicture.data).toString('base64')}`,
-                  }}
-                />
-              ) : (
-                <Ionicon name='person' size={55} />
-              )}
-            </View>
+            <Pressable onPress={changeProfilePicture}>
+              <View className='w-24 h-24 rounded-full border-2 border-themeActive flex items-center justify-center'>
+                {currentUser?.ProfilePicture ? (
+                  <Image
+                    className='w-full h-full rounded-full'
+                    source={{
+                      uri: getImageUriFromBuffer(currentUser.ProfilePicture.data),
+                    }}
+                  />
+                ) : (
+                  <Ionicon name='person' size={55} />
+                )}
+              </View>
+            </Pressable>
             <View className='border-2 border-themeBg bg-themeBg absolute rounded-full bottom-1 right-1'>
               <AntDesign name='pluscircle' size={20} color={'blue'} />
             </View>

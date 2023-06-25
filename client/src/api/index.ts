@@ -70,7 +70,7 @@ export const petUsernameExists = (username: string) => {
 
 export interface PetCreationParams {
   name: string;
-  username:string;
+  username: string;
   type: string;
   description?: string;
   location?: string;
@@ -85,7 +85,18 @@ export const createPet = (data: PetCreationParams) => {
   });
 };
 
-export const uploadProfilePic = (data: any, id: string) => {
+export const uploadOwnerProfilePicture = (data: any) => {
+  return api({
+    method: 'POST',
+    url: `/api/private/owner/profilepic/upload`,
+    data,
+    headers: {
+      'Content-Type': 'multipart/form-data',
+    },
+  });
+};
+
+export const uploadPetProfilePicture = (data: any, id: string) => {
   return api({
     method: 'POST',
     url: `/api/private/pet/${id}/profilepic/upload`,

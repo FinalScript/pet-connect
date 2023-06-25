@@ -5,14 +5,13 @@ import { useDispatch, useSelector } from 'react-redux';
 
 import { Buffer } from 'buffer';
 import { CURRENT_USER } from '../redux/constants';
-import Feather from 'react-native-vector-icons/Feather';
-import Ionicon from 'react-native-vector-icons/Ionicons';
 import PetTypeImage from './PetTypeImage';
 import { Pressable } from 'react-native';
 import { ScrollView } from 'react-native-gesture-handler';
 import Text from './Text';
 import { options } from '../utils/hapticFeedbackOptions';
 import { useCallback } from 'react';
+import { Feather, Ionicon } from '../utils/Icons';
 
 interface Props extends ModalProps {
   navigateNewPet: () => void;
@@ -65,7 +64,7 @@ const AccountSwitcherModal = ({ navigateNewPet, currentUser, closeModal }: Props
                 }}
               />
             ) : (
-              <Ionicon name='person' size={50} />
+              <Ionicon name='person' size={50} style={{ opacity: 0.8 }} />
             )}
           </View>
           <Text className='text-xl'>{owner?.username}</Text>

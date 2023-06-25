@@ -2,7 +2,7 @@ import express from 'express';
 import dotenv from 'dotenv';
 import cors from 'cors';
 import { auth } from 'express-oauth2-jwt-bearer';
-import { connectToDB } from './src/db/connection';
+import { connectToDB, sequelize } from './src/db/connection';
 import { Owner } from './src/models/Owner';
 import { Pet } from './src/models/Pet';
 import type { ErrorRequestHandler } from 'express';
@@ -55,6 +55,7 @@ app.use(jwtErrorHandler);
 connectToDB().then(async () => {
   Owner.hasMany(Pet, { onDelete: 'cascade' });
   Pet.hasOne(ProfilePicture);
+  Owner.hasOne(ProfilePicture);
   // await sequelize.sync({force:true})
 });
 

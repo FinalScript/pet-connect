@@ -1,11 +1,10 @@
-import React, { useCallback, useState } from 'react';
+import { useCallback, useState } from 'react';
 import {
   View,
   Image,
   TouchableWithoutFeedback,
   TouchableOpacity,
   TextInput,
-  Keyboard,
   TouchableHighlight,
   ActivityIndicator,
   KeyboardAvoidingView,
@@ -14,18 +13,17 @@ import {
 import Text from '../components/Text';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { trigger, HapticFeedbackTypes } from 'react-native-haptic-feedback';
-import { CompositeScreenProps, RouteProp, useNavigation, useRoute } from '@react-navigation/native';
+import { useNavigation, useRoute } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootRouteProps, RootStackParamList } from '../../App';
 import { options } from '../utils/hapticFeedbackOptions';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import ImagePicker, { Image as ImageType } from 'react-native-image-crop-picker';
-import { createPet, uploadProfilePic } from '../api';
+import { createPet, uploadPetProfilePicture } from '../api';
 import { useDispatch, useSelector } from 'react-redux';
 import { GeneralReducer } from '../redux/reducers/generalReducer';
-import { ADD_PET, CURRENT_USER, LOADING, PET_DATA } from '../redux/constants';
+import { ADD_PET, CURRENT_USER, LOADING } from '../redux/constants';
 import { ProfileReducer } from '../redux/reducers/profileReducer';
-import { ScrollView } from 'react-native-gesture-handler';
 import UsernameInput from '../components/UsernameInput';
 
 const petTypes = [
@@ -86,7 +84,7 @@ export default function PetCreation() {
                 name: formData.profilePicture?.filename,
               });
 
-              const newPet = await uploadProfilePic(imageData, res.data.id);
+              const newPet = await uploadPetProfilePicture(imageData, res.data.id);
               dispatch({ type: ADD_PET, payload: newPet.data });
             } else {
               dispatch({ type: ADD_PET, payload: res.data });
@@ -95,7 +93,11 @@ export default function PetCreation() {
             dispatch({ type: CURRENT_USER, payload: { id: res.data.id, isPet: true } });
           }
 
-          navigation.replace('Home');
+          if (navigation.canGoBack()) {
+            navigation.goBack();
+          } else {
+            navigation.replace('Home');
+          }
         })
         .catch((err) => {
           console.log(err.response);

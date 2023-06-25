@@ -5,21 +5,7 @@ import { Pet, PetUpdateDAO } from '../models/Pet';
 import multer from 'multer';
 import { ProfilePicture } from '../models/ProfilePicture';
 import fs from 'fs';
-
-const allowedFileTypes = ['.jpg', '.jpeg', '.png', 'image/png', 'image/jpg', 'image/jpeg', 'image/heic'];
-
-// Set up Multer middleware
-const storage = multer.diskStorage({
-  destination: 'uploads/',
-
-  filename: function (req, file, callback) {
-    callback(null, Date.now() + file.originalname);
-  },
-});
-
-const upload = multer({
-  storage: storage,
-});
+import { allowedFileTypes, upload } from '../utils/multer';
 
 const router = express.Router();
 

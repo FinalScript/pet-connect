@@ -21,7 +21,7 @@ interface Props extends ViewProps {
 const PetTypeImage = ({ type, ...rest }: Props) => {
   return (
     <View {...rest}>
-      <Image className='h-full w-full' source={petTypes[type]} />
+      <Image className='h-full w-full opacity-70' source={petTypes[type]} />
     </View>
   );
 };
