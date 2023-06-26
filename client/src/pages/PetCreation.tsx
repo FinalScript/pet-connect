@@ -63,14 +63,11 @@ export default function PetCreation() {
   const submit = useCallback(() => {
     dispatch({ type: LOADING, payload: true });
 
-    if (!(formData.name.trim() && formData.username && isUsernameValid)) {
+    if (!(formData.username && isUsernameValid)) {
       trigger(HapticFeedbackTypes.notificationError, options);
       dispatch({ type: LOADING, payload: false });
       return;
     }
-
-    // Triggers success haptics
-    trigger(HapticFeedbackTypes.notificationSuccess, options);
 
     setTimeout(() => {
       createPet(formData)
@@ -78,6 +75,7 @@ export default function PetCreation() {
           if (res.status === 200) {
             if (formData.profilePicture) {
               const imageData = new FormData();
+              imageData.append('photoId', `${res.data?.id}-profilePicture`);
               imageData.append('image', {
                 uri: formData.profilePicture?.path,
                 type: formData.profilePicture?.mime,
@@ -85,6 +83,7 @@ export default function PetCreation() {
               });
 
               const newPet = await uploadPetProfilePicture(imageData, res.data.id);
+
               dispatch({ type: ADD_PET, payload: newPet.data });
             } else {
               dispatch({ type: ADD_PET, payload: res.data });
@@ -163,7 +162,7 @@ export default function PetCreation() {
     if (step <= maxStep) {
       setStep((prev) => prev - 1);
     }
-  }, [step]);
+  }, [step, dispatch]);
 
   const nextOnPress = useCallback(() => {
     trigger(HapticFeedbackTypes.impactMedium, options);
@@ -185,7 +184,7 @@ export default function PetCreation() {
     if (step === maxStep) {
       submit();
     }
-  }, [step, formData.type, formData.name, formData.username, formData.profilePicture, isUsernameValid]);
+  }, [step, formData, isUsernameValid, dispatch]);
 
   const stepOne = () => {
     return (

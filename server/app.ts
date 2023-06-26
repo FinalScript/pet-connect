@@ -9,6 +9,7 @@ import type { ErrorRequestHandler } from 'express';
 import { OwnerRouter } from './src/routes/OwnerRoute';
 import { PetRouter } from './src/routes/PetRoute';
 import { ProfilePicture } from './src/models/ProfilePicture';
+import fs from 'fs';
 dotenv.config();
 
 const app = express();
@@ -50,13 +51,16 @@ app.get('/api/private/verifyToken', checkJwt, (req, res) => {
   res.send();
 });
 
+app.use('/uploads', express.static('uploads'));
+
 app.use(jwtErrorHandler);
 
 connectToDB().then(async () => {
   Owner.hasMany(Pet, { onDelete: 'cascade' });
   Pet.hasOne(ProfilePicture);
   Owner.hasOne(ProfilePicture);
-  // await sequelize.sync({force:true})
+  // await sequelize.sync({ force: true });
+  // fs.rmSync('uploads/', { recursive: true, force: true });
 });
 
 const port = process.env.PORT || 3000;

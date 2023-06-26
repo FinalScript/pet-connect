@@ -72,7 +72,7 @@ const App = () => {
       trigger(HapticFeedbackTypes.notificationSuccess, options);
       navigationRef.dispatch(StackActions.replace('Home'));
     }
-  }, [owner]);
+  }, [owner?.id]);
 
   const getAuth = useCallback(async () => {
     if (navigationRef.isReady()) {

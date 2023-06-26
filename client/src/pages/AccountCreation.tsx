@@ -63,6 +63,7 @@ export default function AccountCreation() {
             if (res.status === 200) {
               if (profilePicture) {
                 const imageData = new FormData();
+                imageData.append('photoId', `${res.data?.id}-profilePicture`);
                 imageData.append('image', {
                   uri: profilePicture?.path,
                   type: profilePicture?.mime,
@@ -73,7 +74,7 @@ export default function AccountCreation() {
 
                 dispatch({ type: OWNER_DATA, payload: (({ Pets, ...o }) => o)(newOwner.data) });
               } else {
-                dispatch({ type: OWNER_DATA, payload: (({ Pets, ...o }) => o)(res.data.dataValues) });
+                dispatch({ type: OWNER_DATA, payload: (({ Pets, ...o }) => o)(res.data) });
               }
 
               dispatch({ type: CURRENT_USER, payload: { id: res.data.id, isPet: false } });
@@ -89,7 +90,7 @@ export default function AccountCreation() {
           });
       }, 1500);
     }
-  }, [isUsernameValid, username, name, loading]);
+  }, [isUsernameValid, username, name, profilePicture, loading]);
 
   const focusNameInput = () => {
     nameRef.current?.focus();

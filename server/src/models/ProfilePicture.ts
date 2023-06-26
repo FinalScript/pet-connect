@@ -5,14 +5,12 @@ export interface ProfilePictureCreationDAO {
   path: string;
   name: string;
   type: string;
-  data: Buffer;
 }
 export class ProfilePicture extends Model<InferAttributes<ProfilePicture>, InferCreationAttributes<ProfilePicture>> {
   declare id: CreationOptional<number>;
   declare name: string;
   declare path: string;
   declare type: string;
-  declare data: Buffer;
 }
 
 ProfilePicture.init(
@@ -33,10 +31,6 @@ ProfilePicture.init(
     },
     type: {
       type: DataTypes.STRING,
-      allowNull: false,
-    },
-    data: {
-      type: DataTypes.BLOB('long'),
       allowNull: false,
     },
   },

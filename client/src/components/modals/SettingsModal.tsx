@@ -1,7 +1,7 @@
 import { Dimensions, ModalProps, View } from 'react-native';
 
 import { Button } from 'react-native';
-import Text from './Text';
+import Text from '../Text';
 
 interface Props extends ModalProps {
   logout: () => void;

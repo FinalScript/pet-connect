@@ -4,6 +4,7 @@ import { Owner } from '../models/Owner';
 import { allowedFileTypes, upload } from '../utils/multer';
 import { ProfilePicture } from '../models/ProfilePicture';
 import fs from 'fs';
+import path from 'path';
 
 const router = express.Router();
 
@@ -11,7 +12,7 @@ export { router as OwnerRouter };
 
 router.post('/profilepic/upload', upload.single('image'), async (req, res) => {
   // Retrieve the uploaded image file
-  const { filename, mimetype, path } = req.file;
+  const { originalname, filename, mimetype, path: filePath, destination } = req.file;
 
   if (!allowedFileTypes.includes(mimetype)) {
     res.status(400).send({ message: 'File type not supported' });
@@ -23,17 +24,35 @@ router.post('/profilepic/upload', upload.single('image'), async (req, res) => {
   const owner = await getOwner(authId);
 
   try {
-    // Read the image file from the disk
-    const imageBuffer = fs.readFileSync(path);
+    const { photoId } = req.body;
 
-    const profilePictureDAO = ProfilePicture.build({
-      name: filename,
-      path,
-      data: imageBuffer,
-      type: mimetype,
-    });
+    let profilePictureDAO = await ProfilePicture.findByPk(photoId);
 
-    fs.rmSync(path);
+    if (profilePictureDAO) {
+      fs.rmSync(profilePictureDAO.path);
+
+      const newPath = destination + profilePictureDAO.id + path.extname(originalname);
+
+      profilePictureDAO.path = newPath;
+      profilePictureDAO.name = profilePictureDAO.id + path.extname(originalname);
+
+      profilePictureDAO.save();
+
+      fs.renameSync(filePath, newPath);
+    } else {
+      profilePictureDAO = ProfilePicture.build({
+        name: filename,
+        path: filePath,
+        type: mimetype,
+      });
+
+      const newPath = destination + profilePictureDAO.id + path.extname(originalname);
+
+      profilePictureDAO.path = newPath;
+      profilePictureDAO.name = profilePictureDAO.id + path.extname(originalname);
+
+      fs.renameSync(filePath, newPath);
+    }
 
     await owner.setProfilePicture(profilePictureDAO);
 

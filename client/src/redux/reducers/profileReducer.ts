@@ -1,5 +1,5 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { ADD_PET, CURRENT_USER, LOGOUT, OWNER_DATA, PET_DATA, REMOVE_PET } from '../constants';
+import { ADD_PET, CURRENT_USER, LOGOUT, OWNER_DATA, PET_DATA, REMOVE_PET, UPDATE_PET } from '../constants';
 
 const initialState: ProfileState = { owner: undefined, pets: [], currentUser: undefined };
 
@@ -64,11 +64,17 @@ const profileReducer: ProfileReducerFn = (state = initialState, action: any) => 
         currentUser: action.payload,
       };
     case ADD_PET:
-      const copy = [...state.pets];
+      return { ...state, pets: [...state.pets, action.payload] };
+    case UPDATE_PET:
+      const petToUpdateIndex = state.pets.findIndex((pet) => {
+        pet.id === action.payload.id;
+      });
 
-      copy.push(action.payload);
+      if (petToUpdateIndex) {
+        state.pets[petToUpdateIndex] = action.payload.newPet;
+      }
 
-      return { ...state, pets: copy };
+      return { ...state };
 
     case REMOVE_PET:
       return { ...state, storeData: state.pets.filter((store: any) => store.id !== action.payload) };

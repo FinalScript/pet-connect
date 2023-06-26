@@ -1,11 +1,11 @@
 import express from 'express';
 import { getOwner } from '../controllers/OwnerController';
 import { createPet, deletePet, updatePet, getPetById, getPetByUsername } from '../controllers/PetController';
-import { Pet, PetUpdateDAO } from '../models/Pet';
-import multer from 'multer';
+import { Pet } from '../models/Pet';
 import { ProfilePicture } from '../models/ProfilePicture';
 import fs from 'fs';
 import { allowedFileTypes, upload } from '../utils/multer';
+import path from 'path';
 
 const router = express.Router();
 
@@ -111,7 +111,7 @@ router.delete('/delete/:id?', async (req, res) => {
 
 router.post('/:id/profilepic/upload', upload.single('image'), async (req, res) => {
   // Retrieve the uploaded image file
-  const { filename, mimetype, path } = req.file;
+  const { filename, mimetype, path: filePath } = req.file;
 
   if (!allowedFileTypes.includes(mimetype)) {
     res.status(400).send({ message: 'File type not supported' });
@@ -140,17 +140,23 @@ router.post('/:id/profilepic/upload', upload.single('image'), async (req, res) =
   }
 
   try {
-    // Read the image file from the disk
-    const imageBuffer = fs.readFileSync(path);
+    const { photoId } = req.body;
 
-    const profilePictureDAO = ProfilePicture.build({
-      name: filename,
-      path,
-      data: imageBuffer,
-      type: mimetype,
-    });
+    let profilePictureDAO = await ProfilePicture.findByPk(photoId);
 
-    fs.rmSync(path);
+    if (profilePictureDAO) {
+      fs.rmSync(profilePictureDAO.path);
+
+      profilePictureDAO.path = filePath;
+
+      profilePictureDAO.save();
+    } else {
+      profilePictureDAO = ProfilePicture.build({
+        name: filename,
+        path: filePath,
+        type: mimetype,
+      });
+    }
 
     await pet.setProfilePicture(profilePictureDAO);
 

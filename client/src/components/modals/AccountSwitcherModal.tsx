@@ -1,17 +1,18 @@
 import { HapticFeedbackTypes, trigger } from 'react-native-haptic-feedback';
 import { Image, ModalProps, TouchableHighlight, View } from 'react-native';
-import { OwnerDAO, PetDAO, ProfileReducer } from '../redux/reducers/profileReducer';
+import { OwnerDAO, PetDAO, ProfileReducer } from '../../redux/reducers/profileReducer';
 import { useDispatch, useSelector } from 'react-redux';
 
 import { Buffer } from 'buffer';
-import { CURRENT_USER } from '../redux/constants';
-import PetTypeImage from './PetTypeImage';
+import { CURRENT_USER } from '../../redux/constants';
+import PetTypeImage from '../PetTypeImage';
 import { Pressable } from 'react-native';
 import { ScrollView } from 'react-native-gesture-handler';
-import Text from './Text';
-import { options } from '../utils/hapticFeedbackOptions';
+import Text from '../Text';
+import { options } from '../../utils/hapticFeedbackOptions';
 import { useCallback } from 'react';
-import { Feather, Ionicon } from '../utils/Icons';
+import { Feather, Ionicon } from '../../utils/Icons';
+import Config from 'react-native-config';
 
 interface Props extends ModalProps {
   navigateNewPet: () => void;
@@ -56,11 +57,11 @@ const AccountSwitcherModal = ({ navigateNewPet, currentUser, closeModal }: Props
             switchProfile(owner?.id, false);
           }}>
           <View className='h-16 w-16 flex justify-center items-center mr-5'>
-            {owner?.ProfilePicture ? (
+            {owner?.ProfilePicture.path ? (
               <Image
                 className='w-full h-full rounded-2xl'
                 source={{
-                  uri: `data:image/*;base64,${Buffer.from(owner?.ProfilePicture.data).toString('base64')}`,
+                  uri: Config.API_URL + '/' + owner.ProfilePicture.path,
                 }}
               />
             ) : (
@@ -96,11 +97,11 @@ const AccountSwitcherModal = ({ navigateNewPet, currentUser, closeModal }: Props
                 switchProfile(pet?.id, false);
               }}>
               <View className='h-16 w-16 flex justify-center items-center mr-5'>
-                {pet.ProfilePicture ? (
+                {pet.ProfilePicture.path ? (
                   <Image
                     className='w-full h-full rounded-2xl'
                     source={{
-                      uri: `data:image/*;base64,${Buffer.from(pet.ProfilePicture.data).toString('base64')}`,
+                      uri: Config.API_URL + '/' + pet.ProfilePicture.path,
                     }}
                   />
                 ) : (
