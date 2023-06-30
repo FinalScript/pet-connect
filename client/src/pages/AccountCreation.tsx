@@ -15,11 +15,13 @@ import { GeneralReducer } from '../redux/reducers/generalReducer';
 import { CURRENT_USER, LOADING, OWNER_DATA, PET_DATA } from '../redux/constants';
 import ImageCropPicker, { Image as ImageType } from 'react-native-image-crop-picker';
 import { FontAwesome } from '../utils/Icons';
+import { useAuth0 } from 'react-native-auth0';
 
 type NavigationProp = NativeStackNavigationProp<RootStackParamList, 'Account Creation'>;
 
 export default function AccountCreation() {
   const dispatch = useDispatch();
+  const { user } = useAuth0();
   const loading = useSelector((state: GeneralReducer) => state.general.loading);
   const navigation = useNavigation<NavigationProp>();
   const [username, setUsername] = useState<string>();
@@ -111,8 +113,8 @@ export default function AccountCreation() {
                 onPress={pickProfilePicture}
                 disabled={loading}>
                 <View className=''>
-                  {profilePicture ? (
-                    <Image className='flex w-full h-full rounded-3xl' source={{ uri: profilePicture?.path }} />
+                  {profilePicture || user?.picture ? (
+                    <Image className='flex w-full h-full rounded-3xl' source={{ uri: profilePicture?.path ? profilePicture?.path : user?.picture }} />
                   ) : (
                     <View className='flex flex-row justify-center items-center h-full'>
                       <FontAwesome name='plus-square-o' size={50} color={'#362013'} />

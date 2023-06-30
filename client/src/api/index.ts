@@ -8,6 +8,10 @@ export const setApiBaseUrl = (url: string) => {
   api.defaults.baseURL = url;
 };
 
+export const getApiBaseUrl = () => {
+  return api.defaults.baseURL;
+}
+
 export const setBearerToken = (token: string) => {
   api.defaults.headers.common = { Authorization: token };
 };

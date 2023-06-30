@@ -111,7 +111,7 @@ router.delete('/delete/:id?', async (req, res) => {
 
 router.post('/:id/profilepic/upload', upload.single('image'), async (req, res) => {
   // Retrieve the uploaded image file
-  const { filename, mimetype, path: filePath } = req.file;
+  const { originalname, destination, filename, mimetype, path: filePath } = req.file;
 
   if (!allowedFileTypes.includes(mimetype)) {
     res.status(400).send({ message: 'File type not supported' });
@@ -147,15 +147,27 @@ router.post('/:id/profilepic/upload', upload.single('image'), async (req, res) =
     if (profilePictureDAO) {
       fs.rmSync(profilePictureDAO.path);
 
-      profilePictureDAO.path = filePath;
+      const newPath = destination + profilePictureDAO.id + path.extname(originalname);
+
+      profilePictureDAO.path = newPath;
+      profilePictureDAO.name = profilePictureDAO.id + path.extname(originalname);
 
       profilePictureDAO.save();
+
+      fs.renameSync(filePath, newPath);
     } else {
       profilePictureDAO = ProfilePicture.build({
         name: filename,
         path: filePath,
         type: mimetype,
       });
+
+      const newPath = destination + profilePictureDAO.id + path.extname(originalname);
+
+      profilePictureDAO.path = newPath;
+      profilePictureDAO.name = profilePictureDAO.id + path.extname(originalname);
+
+      fs.renameSync(filePath, newPath);
     }
 
     await pet.setProfilePicture(profilePictureDAO);

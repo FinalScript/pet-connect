@@ -18,7 +18,7 @@ import { Portal } from 'react-native-portalize';
 
 import ImagePicker from 'react-native-image-crop-picker';
 import { Ionicon } from '../../utils/Icons';
-import { uploadOwnerProfilePicture, uploadPetProfilePicture } from '../../api';
+import { getApiBaseUrl, uploadOwnerProfilePicture, uploadPetProfilePicture } from '../../api';
 import { getImageUriFromBuffer } from '../../utils/getImageUriFromBuffer';
 import Config from 'react-native-config';
 import { PressableOpacity } from 'react-native-pressable-opacity';
@@ -26,6 +26,7 @@ import EditProfileModal from '../../components/modals/EditProfileModal';
 import { Easing } from 'react-native-reanimated';
 import { HapticFeedbackTypes, trigger } from 'react-native-haptic-feedback';
 import { options } from '../../utils/hapticFeedbackOptions';
+import PetTypeImage from '../../components/PetTypeImage';
 
 type NavigationProp = NativeStackNavigationProp<RootStackParamList, 'Home'>;
 
@@ -206,11 +207,11 @@ const Profile = () => {
           <View className='relative'>
             <Pressable onPress={changeProfilePicture}>
               <View className='w-24 h-24 rounded-full border-2 border-themeActive flex items-center justify-center'>
-                {currentUser?.ProfilePicture.path ? (
+                {currentUser?.ProfilePicture?.path ? (
                   <Image
                     className='w-full h-full rounded-full'
                     source={{
-                      uri: Config.API_URL + '/' + currentUser.ProfilePicture.path,
+                      uri: getApiBaseUrl() + '/' + currentUser.ProfilePicture.path,
                     }}
                   />
                 ) : (

@@ -13,6 +13,7 @@ import { options } from '../../utils/hapticFeedbackOptions';
 import { useCallback } from 'react';
 import { Feather, Ionicon } from '../../utils/Icons';
 import Config from 'react-native-config';
+import { getApiBaseUrl } from '../../api';
 
 interface Props extends ModalProps {
   navigateNewPet: () => void;
@@ -57,11 +58,11 @@ const AccountSwitcherModal = ({ navigateNewPet, currentUser, closeModal }: Props
             switchProfile(owner?.id, false);
           }}>
           <View className='h-16 w-16 flex justify-center items-center mr-5'>
-            {owner?.ProfilePicture.path ? (
+            {owner?.ProfilePicture?.path ? (
               <Image
                 className='w-full h-full rounded-2xl'
                 source={{
-                  uri: Config.API_URL + '/' + owner.ProfilePicture.path,
+                  uri: getApiBaseUrl() + '/' + owner.ProfilePicture.path,
                 }}
               />
             ) : (
@@ -97,11 +98,11 @@ const AccountSwitcherModal = ({ navigateNewPet, currentUser, closeModal }: Props
                 switchProfile(pet?.id, false);
               }}>
               <View className='h-16 w-16 flex justify-center items-center mr-5'>
-                {pet.ProfilePicture.path ? (
+                {pet?.ProfilePicture?.path ? (
                   <Image
                     className='w-full h-full rounded-2xl'
                     source={{
-                      uri: Config.API_URL + '/' + pet.ProfilePicture.path,
+                      uri: getApiBaseUrl() + '/' + pet.ProfilePicture.path,
                     }}
                   />
                 ) : (

@@ -1,21 +1,14 @@
-import { useCallback, useEffect, useRef } from 'react';
-import { View, Text, Image } from 'react-native';
+import { useEffect } from 'react';
+import { View, Image } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../../App';
 import { useAuth0 } from 'react-native-auth0';
 import { HapticFeedbackTypes, trigger } from 'react-native-haptic-feedback';
 import { options } from '../utils/hapticFeedbackOptions';
-import {
-  Directions,
-  Gesture,
-  GestureDetector,
-  GestureEvent,
-  PanGestureHandler,
-  PanGestureHandlerEventPayload,
-  TouchableWithoutFeedback,
-} from 'react-native-gesture-handler';
+import { Directions, Gesture, GestureDetector, TouchableWithoutFeedback } from 'react-native-gesture-handler';
 import Animated, { useAnimatedStyle, useSharedValue, withSpring } from 'react-native-reanimated';
+import Text from '../components/Text';
 
 type NavigationProp = NativeStackNavigationProp<RootStackParamList, 'Get Started'>;
 
@@ -69,9 +62,9 @@ export default function GetStarted() {
           <View className='mx-10'>
             <TouchableWithoutFeedback className='bg-transparent' onPress={login}>
               <View className='p-10 flex flex-row justify-center items-center'>
-                <Animated.Text style={[animatedStyles]} className='text-3xl font-semibold text-themeText'>
-                  Get Started
-                </Animated.Text>
+                <Animated.View style={[animatedStyles]}>
+                  <Text className='text-3xl font-semibold text-themeText'>Get Started</Text>
+                </Animated.View>
               </View>
             </TouchableWithoutFeedback>
           </View>
