@@ -201,7 +201,7 @@ const Profile = () => {
         <View className='mt-10 flex-row flex-wrap justify-center gap-x-5'>
           {pets.map((pet) => {
             return (
-              <View key={pet.id} className='bg-themeTabBg rounded-3xl flex-1'>
+              <View key={pet.id} className='bg-themeTabBg rounded-3xl w-5/12'>
                 <View className='aspect-square w-full flex justify-center items-center'>
                   {pet?.ProfilePicture?.path ? (
                     <Image

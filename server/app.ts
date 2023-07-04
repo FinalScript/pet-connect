@@ -85,8 +85,8 @@ connectToDB().then(async () => {
     as: 'likes',
   });
 
-  await sequelize.sync({ force: true });
-  fs.rmSync('uploads/', { recursive: true, force: true });
+  // await sequelize.sync({ force: true });
+  // fs.rmSync('uploads/', { recursive: true, force: true });
 });
 
 const port = process.env.PORT || 3000;

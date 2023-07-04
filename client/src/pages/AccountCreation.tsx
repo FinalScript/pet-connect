@@ -76,7 +76,7 @@ export default function AccountCreation() {
 
                 dispatch({ type: OWNER_DATA, payload: (({ Pets, ...o }) => o)(newOwner.data) });
               } else {
-                dispatch({ type: OWNER_DATA, payload: (({ Pets, ...o }) => o)(res.data) });
+                dispatch({ type: OWNER_DATA, payload: (({ Pets, ...o }) => o)(res.data.dataValues) });
               }
 
               dispatch({ type: CURRENT_USER, payload: { id: res.data.id, isPet: false } });
@@ -113,8 +113,8 @@ export default function AccountCreation() {
                 onPress={pickProfilePicture}
                 disabled={loading}>
                 <View className=''>
-                  {profilePicture || user?.picture ? (
-                    <Image className='flex w-full h-full rounded-3xl' source={{ uri: profilePicture?.path ? profilePicture?.path : user?.picture }} />
+                  {profilePicture ? (
+                    <Image className='flex w-full h-full rounded-3xl' source={{ uri: profilePicture?.path }} />
                   ) : (
                     <View className='flex flex-row justify-center items-center h-full'>
                       <FontAwesome name='plus-square-o' size={50} color={'#362013'} />
