@@ -14,73 +14,19 @@ import { CURRENT_USER, LOADING, OWNER_DATA, PET_DATA } from '../redux/constants'
 import Wave from '../../assets/img/wave-haikei.svg';
 import { TouchableWithoutFeedback } from 'react-native-gesture-handler';
 
-type NavigationProp = NativeStackNavigationProp<RootStackParamList, 'AuthLoader'>;
+type NavigationProp = NativeStackNavigationProp<RootStackParamList, 'Get Started'>;
 
-export default function AuthLoader() {
-  const dispatch = useDispatch();
-  const loading = useSelector((state: GeneralReducer) => state.general.loading);
-  const navigation = useNavigation<NavigationProp>();
-  const { authorize, user, getCredentials } = useAuth0();
+export default function GetStarted() {
+  const { authorize } = useAuth0();
 
   useEffect(() => {
-    getCredentials('openid profile email')
-      .then((res) => {
-        if (!res) {
-          dispatch({ type: LOADING, payload: false });
-          return;
-        }
 
-        if (!res.accessToken || !user) {
-          return;
-        }
-
-        setBearerToken(`Bearer ${res.accessToken}`);
-        getAuth();
-      })
-      .catch((err) => {
-        console.log(err);
-        return;
-      });
-  }, [user]);
+  }, []);
 
   const login = async () => {
     trigger(HapticFeedbackTypes.impactHeavy, options);
     authorize({ scope: 'openid profile email', audience: 'https://pet-app.com/api/v2' });
   };
-
-  const getAuth = useCallback(async () => {
-    const ownerData = await getOwnerData().catch((err) => {
-      if (err.response && err.response.status === 404) {
-        dispatch({ type: LOADING, payload: false });
-        trigger(HapticFeedbackTypes.notificationWarning, options);
-        navigation.replace('Account Creation');
-      }
-      return;
-    });
-
-    if (!ownerData) {
-      dispatch({ type: LOADING, payload: false });
-      return;
-    }
-
-    if (ownerData.status === 200) {
-      console.log(ownerData.data);
-      dispatch({ type: OWNER_DATA, payload: (({ Pets, ...o }) => o)(ownerData.data) });
-      dispatch({ type: PET_DATA, payload: ownerData.data.Pets });
-      dispatch({ type: CURRENT_USER, payload: { id: ownerData.data.id, isPet: false } });
-      dispatch({ type: LOADING, payload: false });
-      trigger(HapticFeedbackTypes.notificationSuccess, options);
-      navigation.replace('Home');
-    }
-  }, [navigation, dispatch]);
-
-  if (loading) {
-    return (
-      <SafeAreaView className='bg-themeBg h-full flex justify-center items-center'>
-        <ActivityIndicator className='mr-2 -ml-2' size='small' color={'#321411'} />
-      </SafeAreaView>
-    );
-  }
 
   return (
     <SafeAreaView className='bg-themeBg h-full'>

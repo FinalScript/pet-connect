@@ -22,9 +22,8 @@ const Profile = () => {
   const logout = async () => {
     try {
       await clearSession();
-
-      navigation.navigate('AuthLoader');
       dispatch({ type: LOGOUT });
+      navigation.replace('Get Started');
     } catch (e) {
       console.log('Log out cancelled');
     }

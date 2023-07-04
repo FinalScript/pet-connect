@@ -165,6 +165,8 @@ router.post('/:id/profilepic/upload', upload.single('image'), async (req, res) =
       type: mimetype,
     });
 
+    fs.rmSync(path);
+
     await pet.setProfilePicture(profilePictureDAO);
 
     await pet.save();

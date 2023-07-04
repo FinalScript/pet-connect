@@ -1,3 +1,4 @@
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { ADD_PET, CURRENT_USER, LOGOUT, OWNER_DATA, PET_DATA, REMOVE_PET } from '../constants';
 
 const initialState: ProfileState = { owner: undefined, pets: [], currentUser: undefined };
@@ -65,6 +66,7 @@ const profileReducer: ProfileReducerFn = (state = initialState, action: any) => 
       return { ...state, storeData: state.pets.filter((store: any) => store.id !== action.payload) };
 
     case LOGOUT:
+      AsyncStorage.removeItem('@token')
       return { ...initialState };
     default:
       return state;
