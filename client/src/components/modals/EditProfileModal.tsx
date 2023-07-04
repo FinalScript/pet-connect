@@ -47,8 +47,6 @@ const EditProfileModal = ({ closeModal, profile }: Props) => {
             )}
           </PressableOpacity>
         </View>
-
-        
       </View>
     </SafeAreaView>
   );

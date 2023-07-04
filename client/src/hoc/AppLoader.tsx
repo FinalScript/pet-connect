@@ -1,15 +1,14 @@
-import React, { ReactNode, useEffect, useState } from 'react';
-import { View, SafeAreaView, ActivityIndicator } from 'react-native';
+import { ReactNode, useEffect, useState } from 'react';
+import { SafeAreaView } from 'react-native';
 import Config from 'react-native-config';
-import { ping, setApiBaseUrl } from '../api';
+import { setApiBaseUrl } from '../api';
 import { Auth0Provider } from 'react-native-auth0';
-import { StatusBar } from 'react-native';
-import { NavigationContainer } from '@react-navigation/native';
-import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import Text from '../components/Text';
 import { Provider } from 'react-redux';
 import { store } from '../redux/store';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
+
+import { BottomSheetModalProvider } from '@gorhom/bottom-sheet';
 
 interface Props {
   children: ReactNode;
@@ -49,7 +48,9 @@ export default function AppLoader({ children }: Props) {
     <Provider store={store}>
       <Auth0Provider domain={domain} clientId={clientId}>
         <GestureHandlerRootView>
-          <>{children}</>
+          <BottomSheetModalProvider>
+            <>{children}</>
+          </BottomSheetModalProvider>
         </GestureHandlerRootView>
       </Auth0Provider>
     </Provider>
