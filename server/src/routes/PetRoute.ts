@@ -2,25 +2,10 @@ import express from 'express';
 import { getOwner } from '../controllers/OwnerController';
 import { createPet, deletePet, updatePet, getPetById, getPetByUsername } from '../controllers/PetController';
 import { Pet } from '../models/Pet';
-import { trimValuesInObject } from '../utils/trimValuesInObject';
-import multer from 'multer';
 import { ProfilePicture } from '../models/ProfilePicture';
 import fs from 'fs';
-
-const allowedFileTypes = ['.jpg', '.jpeg', '.png', 'image/png', 'image/jpg', 'image/jpeg', 'image/heic'];
-
-// Set up Multer middleware
-const storage = multer.diskStorage({
-  destination: 'uploads/',
-
-  filename: function (req, file, callback) {
-    callback(null, Date.now() + file.originalname);
-  },
-});
-
-const upload = multer({
-  storage: storage,
-});
+import { allowedFileTypes, upload } from '../utils/multer';
+import path from 'path';
 
 const router = express.Router();
 
@@ -126,7 +111,7 @@ router.delete('/delete/:id?', async (req, res) => {
 
 router.post('/:id/profilepic/upload', upload.single('image'), async (req, res) => {
   // Retrieve the uploaded image file
-  const { filename, mimetype, path } = req.file;
+  const { originalname, destination, filename, mimetype, path: filePath } = req.file;
 
   if (!allowedFileTypes.includes(mimetype)) {
     res.status(400).send({ message: 'File type not supported' });
@@ -155,17 +140,35 @@ router.post('/:id/profilepic/upload', upload.single('image'), async (req, res) =
   }
 
   try {
-    // Read the image file from the disk
-    const imageBuffer = fs.readFileSync(path);
+    const { photoId } = req.body;
 
-    const profilePictureDAO = ProfilePicture.build({
-      name: filename,
-      path,
-      data: imageBuffer,
-      type: mimetype,
-    });
+    let profilePictureDAO = await ProfilePicture.findByPk(photoId);
 
-    fs.rmSync(path);
+    if (profilePictureDAO) {
+      fs.rmSync(profilePictureDAO.path);
+
+      const newPath = destination + profilePictureDAO.id + path.extname(originalname);
+
+      profilePictureDAO.path = newPath;
+      profilePictureDAO.name = profilePictureDAO.id + path.extname(originalname);
+
+      profilePictureDAO.save();
+
+      fs.renameSync(filePath, newPath);
+    } else {
+      profilePictureDAO = ProfilePicture.build({
+        name: filename,
+        path: filePath,
+        type: mimetype,
+      });
+
+      const newPath = destination + profilePictureDAO.id + path.extname(originalname);
+
+      profilePictureDAO.path = newPath;
+      profilePictureDAO.name = profilePictureDAO.id + path.extname(originalname);
+
+      fs.renameSync(filePath, newPath);
+    }
 
     await pet.setProfilePicture(profilePictureDAO);
 
@@ -182,8 +185,8 @@ router.post('/:id/profilepic/upload', upload.single('image'), async (req, res) =
 
 router.post('/create', async (req, res) => {
   const authId = req.auth.payload.sub;
-  req.body = trimValuesInObject(req.body);
   let { name, type, description, location, username } = req.body;
+
   const owner = await getOwner(authId);
 
   if (!owner) {
@@ -256,7 +259,6 @@ router.post('/create', async (req, res) => {
 
 router.patch('/update/:id?', async (req, res) => {
   const petId = req.params.id;
-  req.body = trimValuesInObject(req.body);
   const { name, type, description, location, username } = req.body;
 
   // Check if the pet ID was provided

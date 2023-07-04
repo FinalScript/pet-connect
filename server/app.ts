@@ -35,7 +35,8 @@ const checkJwt = auth({
 
 const jwtErrorHandler: ErrorRequestHandler = (err, req, res, next) => {
   if (err) {
-    res.status(err.code === typeof Number ? err.code : 503).send({ message: err });
+    console.log(err);
+    res.status(err.status === typeof Number ? err.status : 401).send({ message: err });
     return;
   }
   next();
@@ -53,6 +54,12 @@ app.use('/api/private/owner', checkJwt, OwnerRouter);
 
 app.use('/api/private/pet', checkJwt, PetRouter);
 
+app.get('/api/private/verifyToken', checkJwt, (req, res) => {
+  res.send();
+});
+
+app.use('/uploads', express.static('uploads'));
+
 app.use('/api/private/post', checkJwt, PostRouter);
 
 app.use('/api/private/like', checkJwt, LikeRouter);
@@ -64,6 +71,7 @@ app.use(jwtErrorHandler);
 connectToDB().then(async () => {
   Owner.hasMany(Pet, { onDelete: 'cascade' });
   Pet.hasOne(ProfilePicture);
+  Owner.hasOne(ProfilePicture);
 
   Post.hasMany(Comment, {
     sourceKey: 'id',
@@ -77,7 +85,8 @@ connectToDB().then(async () => {
     as: 'likes',
   });
 
-  sequelize.sync({ force: true });
+  await sequelize.sync({ force: true });
+  fs.rmSync('uploads/', { recursive: true, force: true });
 });
 
 const port = process.env.PORT || 3000;

@@ -1,33 +1,55 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
-import { View, ScrollView, ActivityIndicator, TouchableHighlight, KeyboardAvoidingView, Platform } from 'react-native';
+import { View, ScrollView, ActivityIndicator, TouchableHighlight, KeyboardAvoidingView, Platform, Image } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Text from '../components/Text';
 import { TextInput } from 'react-native-gesture-handler';
 import { HapticFeedbackTypes, HapticOptions, trigger } from 'react-native-haptic-feedback';
 import UsernameInput from '../components/UsernameInput';
-import { signup } from '../api';
+import { signup, uploadOwnerProfilePicture } from '../api';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../../App';
 import { options } from '../utils/hapticFeedbackOptions';
 import { useDispatch, useSelector } from 'react-redux';
 import { GeneralReducer } from '../redux/reducers/generalReducer';
-import { LOADING, OWNER_DATA, PET_DATA } from '../redux/constants';
+import { CURRENT_USER, LOADING, OWNER_DATA, PET_DATA } from '../redux/constants';
+import ImageCropPicker, { Image as ImageType } from 'react-native-image-crop-picker';
+import { FontAwesome } from '../utils/Icons';
+import { useAuth0 } from 'react-native-auth0';
 
 type NavigationProp = NativeStackNavigationProp<RootStackParamList, 'Account Creation'>;
 
 export default function AccountCreation() {
   const dispatch = useDispatch();
+  const { user } = useAuth0();
   const loading = useSelector((state: GeneralReducer) => state.general.loading);
   const navigation = useNavigation<NavigationProp>();
   const [username, setUsername] = useState<string>();
   const [isUsernameValid, setIsUsernameValid] = useState(false);
   const [name, setName] = useState<string>();
+  const [profilePicture, setProfilePicture] = useState<ImageType>();
   const nameRef = useRef<TextInput>(null);
   const [focus, setFocus] = useState({ username: false, name: false });
 
   useEffect(() => {
     dispatch({ type: LOADING, payload: false });
+  }, []);
+
+  const pickProfilePicture = useCallback(async () => {
+    ImageCropPicker.openPicker({
+      width: 500,
+      height: 500,
+      cropping: true,
+      mediaType: 'photo',
+      compressImageMaxHeight: 500,
+      compressImageMaxWidth: 500,
+    })
+      .then((image) => {
+        setProfilePicture(image);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
   }, []);
 
   const nextOnPress = useCallback(() => {
@@ -37,11 +59,28 @@ export default function AccountCreation() {
 
       setTimeout(() => {
         signup({ username: username.toLowerCase(), name })
-          .then((res) => {
+          .then(async (res) => {
             console.log(res.status, res.data);
 
             if (res.status === 200) {
-              dispatch({ type: OWNER_DATA, payload: (({ Pets, ...o }) => o)(res.data.dataValues) });
+              if (profilePicture) {
+                const imageData = new FormData();
+                imageData.append('photoId', `${res.data?.id}-profilePicture`);
+                imageData.append('image', {
+                  uri: profilePicture?.path,
+                  type: profilePicture?.mime,
+                  name: profilePicture?.filename,
+                });
+
+                const newOwner = await uploadOwnerProfilePicture(imageData);
+
+                dispatch({ type: OWNER_DATA, payload: (({ Pets, ...o }) => o)(newOwner.data) });
+              } else {
+                dispatch({ type: OWNER_DATA, payload: (({ Pets, ...o }) => o)(res.data) });
+              }
+
+              dispatch({ type: CURRENT_USER, payload: { id: res.data.id, isPet: false } });
+
               navigation.replace('Pet Creation', { initial: true });
             }
           })
@@ -53,7 +92,7 @@ export default function AccountCreation() {
           });
       }, 1500);
     }
-  }, [isUsernameValid, username, name, loading]);
+  }, [isUsernameValid, username, name, profilePicture, loading]);
 
   const focusNameInput = () => {
     nameRef.current?.focus();
@@ -66,6 +105,24 @@ export default function AccountCreation() {
 
         <View className='mt-5 px-2'>
           <View>
+            <View className='mb-5 flex flex-col justify-center items-center'>
+              <Text className='mb-2 text-xl font-bold text-themeText'>Profile Picture</Text>
+              <TouchableHighlight
+                className='w-[160px] h-[160px] bg-themeInput rounded-3xl shadow-sm shadow-themeShadow'
+                underlayColor={'#d6cbcb'}
+                onPress={pickProfilePicture}
+                disabled={loading}>
+                <View className=''>
+                  {profilePicture || user?.picture ? (
+                    <Image className='flex w-full h-full rounded-3xl' source={{ uri: profilePicture?.path ? profilePicture?.path : user?.picture }} />
+                  ) : (
+                    <View className='flex flex-row justify-center items-center h-full'>
+                      <FontAwesome name='plus-square-o' size={50} color={'#362013'} />
+                    </View>
+                  )}
+                </View>
+              </TouchableHighlight>
+            </View>
             <View>
               <Text className='mb-2 pl-4 text-lg font-bold text-themeText'>Username *</Text>
               <UsernameInput
@@ -77,6 +134,7 @@ export default function AccountCreation() {
                 maxLength={30}
                 placeholder='Enter your username'
                 returnKeyType='next'
+                forOwner
               />
             </View>
             <View>

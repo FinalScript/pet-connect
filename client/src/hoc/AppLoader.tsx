@@ -24,6 +24,7 @@ export default function AppLoader({ children }: Props) {
     load();
   }, []);
   const load = async () => {
+    console.log(Config);
     if (!Config.API_URL) {
       setError(true);
       return;

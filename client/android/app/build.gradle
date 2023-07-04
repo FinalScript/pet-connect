@@ -102,6 +102,7 @@ android {
         versionCode 1
         versionName "1.0"
         manifestPlaceholders = [auth0Domain: "petapp.us.auth0.com", auth0Scheme: "${applicationId}"]
+        vectorDrawables.useSupportLibrary = true
     }
 
     splits {
@@ -167,6 +168,8 @@ dependencies {
     } else {
         implementation jscFlavor
     }
+    implementation project(':@react-native-camera-roll_camera-roll')
 }
 
 apply from: file("../../node_modules/@react-native-community/cli-platform-android/native_modules.gradle"); applyNativeModulesAppBuildGradle(project)
+apply from: "../../node_modules/react-native-vector-icons/fonts.gradle"

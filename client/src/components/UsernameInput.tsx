@@ -15,25 +15,23 @@ interface Props extends TextInputProps {
   forOwner?: boolean;
 }
 
-export default function UsernameInput({ className, value, setValue, isValid, setIsValid, focusNext, forOwner, ...rest }: Props) {
+export default function UsernameInput({ className, value, setValue, isValid, setIsValid, focusNext, forOwner = false, ...rest }: Props) {
   const [inFocus, setInFocus] = useState(false);
   const [isError, setIsError] = useState(false);
   const [message, setMessage] = useState('');
   const [isChecking, setChecking] = useState(false);
 
   useEffect(() => {
-
     if (value) {
       setChecking(true);
     }
 
     const timeoutId = setTimeout(() => {
       // value === "" will prevent an infinite load from occuring when a username is entered then deleted quickly
-      if (value || value === "") {
+      if (value || value === '') {
         validateUsername(value);
         setChecking(false);
       }
-      
     }, 1000);
 
     return () => clearTimeout(timeoutId);

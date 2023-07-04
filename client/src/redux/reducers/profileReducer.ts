@@ -1,5 +1,5 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { ADD_PET, CURRENT_USER, LOGOUT, OWNER_DATA, PET_DATA, REMOVE_PET } from '../constants';
+import { ADD_PET, CURRENT_USER, LOGOUT, OWNER_DATA, PET_DATA, REMOVE_PET, UPDATE_PET } from '../constants';
 
 const initialState: ProfileState = { owner: undefined, pets: [], currentUser: undefined };
 
@@ -8,6 +8,8 @@ export interface OwnerDAO {
   authId: string;
   username: string;
   name?: string;
+  ProfilePicture?: any;
+  description?: string;
   location?: string;
   dateCreated: Date;
   updateTimestamp: Date;
@@ -17,7 +19,7 @@ export interface PetDAO {
   id: string;
   username: string;
   name: string;
-  type: string;
+  type: 'DOG' | 'CAT' | 'BIRD' | 'FISH' | 'RABBIT' | 'HAMSTER' | 'REPTILE' | 'OTHER';
   ProfilePicture?: any;
   description?: string;
   location?: string;
@@ -26,10 +28,15 @@ export interface PetDAO {
   OwnerPets?: any;
 }
 
+export interface CurrentUser {
+  id: string;
+  isPet: boolean;
+}
+
 export interface ProfileState {
   owner: OwnerDAO | undefined;
   pets: PetDAO[];
-  currentUser: OwnerDAO | PetDAO | undefined;
+  currentUser?: CurrentUser;
 }
 
 export interface ProfileReducer {
@@ -51,22 +58,29 @@ const profileReducer: ProfileReducerFn = (state = initialState, action: any) => 
         pets: action.payload,
       };
     case CURRENT_USER:
+      AsyncStorage.setItem('@currentUser', JSON.stringify(action.payload));
       return {
         ...state,
         currentUser: action.payload,
       };
     case ADD_PET:
-      const copy = [...state.pets];
+      return { ...state, pets: [...state.pets, action.payload] };
+    case UPDATE_PET:
+      const petToUpdateIndex = state.pets.findIndex((pet) => {
+        pet.id === action.payload.id;
+      });
 
-      copy.push(action.payload);
+      if (petToUpdateIndex) {
+        state.pets[petToUpdateIndex] = action.payload.newPet;
+      }
 
-      return { ...state, pets: copy };
+      return { ...state };
 
     case REMOVE_PET:
       return { ...state, storeData: state.pets.filter((store: any) => store.id !== action.payload) };
 
     case LOGOUT:
-      AsyncStorage.removeItem('@token')
+      AsyncStorage.removeItem('@token');
       return { ...initialState };
     default:
       return state;
