@@ -1,4 +1,4 @@
-import { Image, Pressable, SafeAreaView, ScrollView, View } from 'react-native';
+import { Image, Pressable, SafeAreaView, ScrollView, StyleSheet, View } from 'react-native';
 import { OwnerDAO, PetDAO, ProfileReducer } from '../../redux/reducers/profileReducer';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
@@ -19,14 +19,13 @@ import { Portal } from 'react-native-portalize';
 import ImagePicker from 'react-native-image-crop-picker';
 import { Ionicon } from '../../utils/Icons';
 import { getApiBaseUrl, uploadOwnerProfilePicture, uploadPetProfilePicture } from '../../api';
-import { getImageUriFromBuffer } from '../../utils/getImageUriFromBuffer';
-import Config from 'react-native-config';
 import { PressableOpacity } from 'react-native-pressable-opacity';
 import EditProfileModal from '../../components/modals/EditProfileModal';
 import { Easing } from 'react-native-reanimated';
 import { HapticFeedbackTypes, trigger } from 'react-native-haptic-feedback';
 import { options } from '../../utils/hapticFeedbackOptions';
 import PetTypeImage from '../../components/PetTypeImage';
+import { BottomSheetModal, BottomSheetBackdrop } from '@gorhom/bottom-sheet';
 
 type NavigationProp = NativeStackNavigationProp<RootStackParamList, 'Home'>;
 
@@ -41,9 +40,9 @@ const Profile = () => {
   const navigation = useNavigation<NavigationProp>();
   const { clearSession } = useAuth0();
 
-  const accountSwitchModalRef = useRef<Modalize>(null);
-  const settingsModalRef = useRef<Modalize>(null);
-  const editProfileModalRef = useRef<Modalize>(null);
+  const accountSwitchModalRef = useRef<BottomSheetModal>(null);
+  const settingsModalRef = useRef<BottomSheetModal>(null);
+  const editProfileModalRef = useRef<BottomSheetModal>(null);
 
   useEffect(() => {
     if (owner?.id === currentUserId?.id) {
@@ -61,7 +60,7 @@ const Profile = () => {
   const setEditProfileModalVisible = useCallback(
     (bool: boolean) => {
       bool && trigger(HapticFeedbackTypes.contextClick, options);
-      bool ? editProfileModalRef.current?.open() : editProfileModalRef.current?.close();
+      bool ? editProfileModalRef.current?.present() : editProfileModalRef.current?.close();
     },
     [editProfileModalRef]
   );
@@ -69,7 +68,7 @@ const Profile = () => {
   const setAccountSwitchModalVisible = useCallback(
     (bool: boolean) => {
       bool && trigger(HapticFeedbackTypes.contextClick, options);
-      bool ? accountSwitchModalRef.current?.open() : accountSwitchModalRef.current?.close();
+      bool ? accountSwitchModalRef.current?.present() : accountSwitchModalRef.current?.close();
     },
     [accountSwitchModalRef]
   );
@@ -77,7 +76,7 @@ const Profile = () => {
   const setSettingsModalVisible = useCallback(
     (bool: boolean) => {
       bool && trigger(HapticFeedbackTypes.contextClick, options);
-      bool ? settingsModalRef.current?.open() : settingsModalRef.current?.close();
+      bool ? settingsModalRef.current?.present() : settingsModalRef.current?.close();
     },
     [settingsModalRef]
   );
@@ -293,32 +292,36 @@ const Profile = () => {
   return (
     <SafeAreaView className='flex-1 h-full items-center bg-themeBg'>
       <Portal>
-        <Modalize
-          useNativeDriver
-          withOverlay={false}
-          openAnimationConfig={{ timing: { duration: 300, easing: Easing.out(Easing.cubic) } }}
-          closeAnimationConfig={{ timing: { duration: 300, easing: Easing.out(Easing.cubic) } }}
+        <BottomSheetModal
           ref={editProfileModalRef}
-          handlePosition='inside'
-          modalHeight={window.height}
-          modalStyle={{ backgroundColor: '#fde1da' }}
-          scrollViewProps={{ contentContainerStyle: { height: '100%' } }}>
+          enableContentPanningGesture={false}
+          index={0}
+          snapPoints={['100%']}
+          handleStyle={{ opacity: 0 }}
+          backgroundStyle={{ backgroundColor: '#fde1da' }}>
           <EditProfileModal
             profile={currentUser}
             closeModal={() => {
               setEditProfileModalVisible(false);
             }}
           />
-        </Modalize>
-        <Modalize
-          useNativeDriver
-          openAnimationConfig={{ timing: { duration: 350, easing: Easing.out(Easing.cubic) } }}
-          closeAnimationConfig={{ timing: { duration: 350, easing: Easing.out(Easing.cubic) } }}
+        </BottomSheetModal>
+        <BottomSheetModal
           ref={accountSwitchModalRef}
-          handlePosition='inside'
-          modalHeight={window.height * 0.75}
-          modalStyle={{ backgroundColor: '#fde1da' }}
-          scrollViewProps={{ contentContainerStyle: { height: '100%' } }}>
+          enablePanDownToClose
+          index={0}
+          snapPoints={['65%']}
+          backdropComponent={(props) => (
+            <BottomSheetBackdrop
+              {...props}
+              opacity={0.2}
+              enableTouchThrough={false}
+              appearsOnIndex={0}
+              disappearsOnIndex={-1}
+              style={[{ backgroundColor: 'rgba(0, 0, 0, 1)' }, StyleSheet.absoluteFillObject]}
+            />
+          )}
+          backgroundStyle={{ backgroundColor: '#fde1da' }}>
           <AccountSwitcherModal
             navigateNewPet={navigateNewPet}
             currentUser={currentUser}
@@ -326,23 +329,31 @@ const Profile = () => {
               setAccountSwitchModalVisible(false);
             }}
           />
-        </Modalize>
-        <Modalize
-          useNativeDriver
-          openAnimationConfig={{ timing: { duration: 350, easing: Easing.out(Easing.cubic) } }}
-          closeAnimationConfig={{ timing: { duration: 350, easing: Easing.out(Easing.cubic) } }}
+        </BottomSheetModal>
+        <BottomSheetModal
           ref={settingsModalRef}
-          handlePosition='inside'
-          modalHeight={window.height * 0.85}
-          modalStyle={{ backgroundColor: '#fde1da' }}
-          scrollViewProps={{ contentContainerStyle: { height: '100%' } }}>
+          enablePanDownToClose
+          enableDismissOnClose
+          index={0}
+          snapPoints={['80%']}
+          backdropComponent={(props) => (
+            <BottomSheetBackdrop
+              {...props}
+              opacity={0.2}
+              enableTouchThrough={false}
+              appearsOnIndex={0}
+              disappearsOnIndex={-1}
+              style={[{ backgroundColor: 'rgba(0, 0, 0, 1)' }, StyleSheet.absoluteFillObject]}
+            />
+          )}
+          backgroundStyle={{ backgroundColor: '#fde1da' }}>
           <SettingsModal
             logout={logout}
             closeModal={() => {
               setSettingsModalVisible(false);
             }}
           />
-        </Modalize>
+        </BottomSheetModal>
       </Portal>
       <View className='flex-row items-center justify-between w-full px-5'>
         <Pressable onPress={() => setAccountSwitchModalVisible(true)}>
