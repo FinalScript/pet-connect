@@ -133,13 +133,171 @@ const Profile = () => {
       });
   }, [currentUser, currentUserId, dispatch]);
 
+  const ownerProfile = useMemo(() => {
+    return (
+      <ScrollView className='w-full px-5'>
+        <View className='mt-5 flex flex-row items-center justify-between'>
+          <View className='relative'>
+            <Pressable onPress={changeProfilePicture}>
+              <View className='w-28 h-28 rounded-full border-2 border-themeActive flex items-center justify-center'>
+                {currentUser?.ProfilePicture?.path ? (
+                  <Image
+                    className='w-full h-full rounded-full'
+                    source={{
+                      uri: getApiBaseUrl() + '/' + currentUser.ProfilePicture.path,
+                    }}
+                  />
+                ) : (
+                  <Ionicon name='person' size={55} />
+                )}
+              </View>
+            </Pressable>
+            <View className='border-2 border-themeBg bg-themeBg absolute rounded-full bottom-1 right-1'>
+              <AntDesign name='pluscircle' size={20} color={'blue'} />
+            </View>
+          </View>
+          <View className='px-5 flex flex-row gap-7'>
+            <View className='flex items-center'>
+              <Text className='text-xl font-bold'>{pets.length}</Text>
+              <Text className='text-md'>Pets</Text>
+            </View>
+            <View className='flex items-center'>
+              <Text className='text-xl font-bold'>20</Text>
+              <Text className='text-md'>Followers</Text>
+            </View>
+            <View className='flex items-center'>
+              <Text className='text-xl font-bold'>25</Text>
+              <Text className='text-md'>Following</Text>
+            </View>
+          </View>
+        </View>
+        <View className='mt-3'>
+          <Text className='text-xl font-bold'>{currentUser?.name}</Text>
+          <Text className='text-md'>{currentUser?.description}</Text>
+        </View>
+        <View className='mt-5 flex-row gap-x-3'>
+          <PressableOpacity
+            className='flex-1'
+            activeOpacity={0.6}
+            onPress={() => {
+              setEditProfileModalVisible(true);
+            }}>
+            <View className='bg-themeBtn px-7 py-1 rounded-lg'>
+              <Text className='text-themeText text-base font-semibold text-center'>Edit Profile</Text>
+            </View>
+          </PressableOpacity>
+          <PressableOpacity
+            className='flex-1'
+            activeOpacity={0.6}
+            onPress={() => {
+              // TODO
+            }}>
+            <View className='bg-themeBtn px-7 py-1 rounded-lg'>
+              <Text className='text-themeText text-base font-semibold text-center'>Share Profile</Text>
+            </View>
+          </PressableOpacity>
+        </View>
+
+        <View className='mt-10 flex-row flex-wrap justify-center gap-x-5'>
+          {pets.map((pet) => {
+            return (
+              <View key={pet.id} className='bg-themeTabBg rounded-3xl flex-1'>
+                <View className='aspect-square w-full flex justify-center items-center'>
+                  {pet?.ProfilePicture?.path ? (
+                    <Image
+                      className='w-full h-full rounded-t-2xl'
+                      source={{
+                        uri: getApiBaseUrl() + '/' + pet.ProfilePicture.path,
+                      }}
+                    />
+                  ) : (
+                    <PetTypeImage type={pet.type} className='w-full h-full' />
+                  )}
+                </View>
+                <View className='px-3 pb-3'>
+                  <Text className='mt-2.5 text-lg font-bold'>{pet.name}</Text>
+                  <Text className='font-light text-slate-700'>@{pet.username}</Text>
+                </View>
+              </View>
+            );
+          })}
+        </View>
+      </ScrollView>
+    );
+  }, [currentUser, pets, setEditProfileModalVisible, changeProfilePicture, getApiBaseUrl]);
+
+  const petProfile = useMemo(() => {
+    return (
+      <ScrollView className='w-full px-5'>
+        <View className='mt-5 flex items-center justify-between'>
+          <View className='relative'>
+            <Pressable onPress={changeProfilePicture}>
+              <View className='w-44 h-44 rounded-full border-2 border-themeActive flex items-center justify-center'>
+                {currentUser?.ProfilePicture?.path ? (
+                  <Image
+                    className='w-full h-full rounded-full'
+                    source={{
+                      uri: getApiBaseUrl() + '/' + currentUser.ProfilePicture.path,
+                    }}
+                  />
+                ) : (
+                  <Ionicon name='person' size={55} />
+                )}
+              </View>
+            </Pressable>
+            <View className='border-2 border-themeBg bg-themeBg absolute rounded-full bottom-3 right-3'>
+              <AntDesign name='pluscircle' size={20} color={'blue'} />
+            </View>
+          </View>
+          <Text className='text-4xl font-semibold mt-5'>{currentUser?.name}</Text>
+          <View className='px-5 flex flex-row gap-x-5 mt-2'>
+            <View className='flex items-center'>
+              <Text className='text-xl font-semibold'>5</Text>
+              <Text className='text-md'>Posts</Text>
+            </View>
+            <View className='flex items-center'>
+              <Text className='text-xl font-semibold'>20</Text>
+              <Text className='text-md'>Followers</Text>
+            </View>
+          </View>
+        </View>
+        <View className='mt-2'>
+          <Text className='text-base'>{currentUser?.description}</Text>
+        </View>
+        <View className='mt-5 flex-row gap-x-3'>
+          <PressableOpacity
+            className='flex-1'
+            activeOpacity={0.6}
+            onPress={() => {
+              setEditProfileModalVisible(true);
+            }}>
+            <View className='bg-themeBtn px-7 py-1 rounded-lg'>
+              <Text className='text-themeText text-base font-semibold text-center'>Edit Profile</Text>
+            </View>
+          </PressableOpacity>
+          <PressableOpacity
+            className='flex-1'
+            activeOpacity={0.6}
+            onPress={() => {
+              // TODO
+            }}>
+            <View className='bg-themeBtn px-7 py-1 rounded-lg'>
+              <Text className='text-themeText text-base font-semibold text-center'>Share Profile</Text>
+            </View>
+          </PressableOpacity>
+        </View>
+      </ScrollView>
+    );
+  }, [currentUser, setEditProfileModalVisible, changeProfilePicture, getApiBaseUrl]);
+
   return (
     <SafeAreaView className='flex-1 h-full items-center bg-themeBg'>
       <Portal>
         <Modalize
           useNativeDriver
-          openAnimationConfig={{ timing: { duration: 350, easing: Easing.out(Easing.cubic) } }}
-          closeAnimationConfig={{ timing: { duration: 350, easing: Easing.out(Easing.cubic) } }}
+          withOverlay={false}
+          openAnimationConfig={{ timing: { duration: 300, easing: Easing.out(Easing.cubic) } }}
+          closeAnimationConfig={{ timing: { duration: 300, easing: Easing.out(Easing.cubic) } }}
           ref={editProfileModalRef}
           handlePosition='inside'
           modalHeight={window.height}
@@ -202,69 +360,7 @@ const Profile = () => {
           <Ionicon name='menu-outline' size={30} />
         </Pressable>
       </View>
-      <ScrollView className='w-full px-5'>
-        <View className='mt-5 flex flex-row items-center justify-between'>
-          <View className='relative'>
-            <Pressable onPress={changeProfilePicture}>
-              <View className='w-24 h-24 rounded-full border-2 border-themeActive flex items-center justify-center'>
-                {currentUser?.ProfilePicture?.path ? (
-                  <Image
-                    className='w-full h-full rounded-full'
-                    source={{
-                      uri: getApiBaseUrl() + '/' + currentUser.ProfilePicture.path,
-                    }}
-                  />
-                ) : (
-                  <Ionicon name='person' size={55} />
-                )}
-              </View>
-            </Pressable>
-            <View className='border-2 border-themeBg bg-themeBg absolute rounded-full bottom-1 right-1'>
-              <AntDesign name='pluscircle' size={20} color={'blue'} />
-            </View>
-          </View>
-          <View className='px-5 flex flex-row gap-7'>
-            <View className='flex items-center'>
-              <Text className='text-xl font-bold'>5</Text>
-              <Text className='text-md'>Posts</Text>
-            </View>
-            <View className='flex items-center'>
-              <Text className='text-xl font-bold'>20</Text>
-              <Text className='text-md'>Followers</Text>
-            </View>
-            <View className='flex items-center'>
-              <Text className='text-xl font-bold'>25</Text>
-              <Text className='text-md'>Following</Text>
-            </View>
-          </View>
-        </View>
-        <View className='mt-2'>
-          <Text className='text-lg font-bold'>{currentUser?.name}</Text>
-          <Text className='text-md'>{currentUser?.description}</Text>
-        </View>
-        <View className='mt-5 flex-row gap-x-3'>
-          <PressableOpacity
-            className='flex-1'
-            activeOpacity={0.6}
-            onPress={() => {
-              setEditProfileModalVisible(true);
-            }}>
-            <View className='bg-themeBtn px-7 py-1 rounded-lg'>
-              <Text className='text-themeText text-base font-semibold text-center'>Edit Profile</Text>
-            </View>
-          </PressableOpacity>
-          <PressableOpacity
-            className='flex-1'
-            activeOpacity={0.6}
-            onPress={() => {
-              // TODO
-            }}>
-            <View className='bg-themeBtn px-7 py-1 rounded-lg'>
-              <Text className='text-themeText text-base font-semibold text-center'>Share Profile</Text>
-            </View>
-          </PressableOpacity>
-        </View>
-      </ScrollView>
+      {currentUserId?.isPet ? petProfile : ownerProfile}
     </SafeAreaView>
   );
 };

@@ -95,7 +95,7 @@ const AccountSwitcherModal = ({ navigateNewPet, currentUser, closeModal }: Props
                 ' flex flex-row items-center mb-5 rounded-3xl bg-themeInput border-4 shadow-sm shadow-themeShadow py-1 px-1'
               }
               onPress={() => {
-                switchProfile(pet?.id, false);
+                switchProfile(pet?.id, true);
               }}>
               <View className='h-16 w-16 flex justify-center items-center mr-5'>
                 {pet?.ProfilePicture?.path ? (
