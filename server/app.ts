@@ -8,8 +8,15 @@ import { Pet } from './src/models/Pet';
 import type { ErrorRequestHandler } from 'express';
 import { OwnerRouter } from './src/routes/OwnerRoute';
 import { PetRouter } from './src/routes/PetRoute';
+import { PostRouter } from './src/routes/PostRoute';
+import { LikeRouter } from './src/routes/LikeRoute';
+import { CommentRouter } from './src/routes/CommentRoute';
 import { ProfilePicture } from './src/models/ProfilePicture';
 import fs from 'fs';
+import { Console } from 'console';
+import { Post } from './src/models/Post';
+import { Like } from './src/models/Like';
+import { Comment } from './src/models/Comment';
 dotenv.config();
 
 const app = express();
@@ -46,12 +53,31 @@ app.use('/api/private/owner', checkJwt, OwnerRouter);
 
 app.use('/api/private/pet', checkJwt, PetRouter);
 
+app.use('/api/private/post', checkJwt, PostRouter);
+
+app.use('/api/private/like', checkJwt, LikeRouter);
+
+app.use('/api/private/comment', checkJwt, CommentRouter);
+
 app.use(jwtErrorHandler);
 
 connectToDB().then(async () => {
   Owner.hasMany(Pet, { onDelete: 'cascade' });
   Pet.hasOne(ProfilePicture);
-  // await sequelize.sync({force:true})
+
+  Post.hasMany(Comment, {
+    sourceKey: 'id',
+    foreignKey: 'postId',
+    as: 'comments',
+  });
+
+  Post.hasMany(Like, {
+    sourceKey: 'id',
+    foreignKey: 'postId',
+    as: 'likes',
+  });
+
+  sequelize.sync({ force: true });
 });
 
 const port = process.env.PORT || 3000;
