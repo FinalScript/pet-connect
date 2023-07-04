@@ -7,7 +7,6 @@ import Text from '../components/Text';
 import { Provider } from 'react-redux';
 import { store } from '../redux/store';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
-
 import { BottomSheetModalProvider } from '@gorhom/bottom-sheet';
 
 interface Props {
