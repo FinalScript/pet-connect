@@ -1,11 +1,10 @@
-import React, { useCallback, useState } from 'react';
+import { useCallback, useState } from 'react';
 import {
   View,
   Image,
   TouchableWithoutFeedback,
   TouchableOpacity,
   TextInput,
-  Keyboard,
   TouchableHighlight,
   ActivityIndicator,
   KeyboardAvoidingView,
@@ -14,18 +13,17 @@ import {
 import Text from '../components/Text';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { trigger, HapticFeedbackTypes } from 'react-native-haptic-feedback';
-import { CompositeScreenProps, RouteProp, useNavigation, useRoute } from '@react-navigation/native';
+import { useNavigation, useRoute } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootRouteProps, RootStackParamList } from '../../App';
 import { options } from '../utils/hapticFeedbackOptions';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import ImagePicker, { Image as ImageType } from 'react-native-image-crop-picker';
-import { createPet, uploadProfilePic } from '../api';
+import { createPet, uploadPetProfilePicture } from '../api';
 import { useDispatch, useSelector } from 'react-redux';
 import { GeneralReducer } from '../redux/reducers/generalReducer';
-import { ADD_PET, CURRENT_USER, LOADING, PET_DATA } from '../redux/constants';
+import { ADD_PET, CURRENT_USER, LOADING } from '../redux/constants';
 import { ProfileReducer } from '../redux/reducers/profileReducer';
-import { ScrollView } from 'react-native-gesture-handler';
 import UsernameInput from '../components/UsernameInput';
 
 const petTypes = [
@@ -65,7 +63,7 @@ export default function PetCreation() {
   const submit = useCallback(() => {
     dispatch({ type: LOADING, payload: true });
 
-    if (!(formData.name.trim() && formData.username && isUsernameValid)) {
+    if (!(formData.username && isUsernameValid)) {
       trigger(HapticFeedbackTypes.notificationError, options);
       dispatch({ type: LOADING, payload: false });
       return;
@@ -77,14 +75,15 @@ export default function PetCreation() {
           if (res.status === 200) {
             if (formData.profilePicture) {
               const imageData = new FormData();
+              imageData.append('photoId', `${res.data?.id}-profilePicture`);
               imageData.append('image', {
                 uri: formData.profilePicture?.path,
                 type: formData.profilePicture?.mime,
                 name: formData.profilePicture?.filename,
               });
 
-              const newPet = await uploadProfilePic(imageData, res.data.id);
-              console.log(res.data);
+              const newPet = await uploadPetProfilePicture(imageData, res.data.id);
+
               dispatch({ type: ADD_PET, payload: newPet.data });
             } else {
               dispatch({ type: ADD_PET, payload: res.data });
@@ -92,10 +91,12 @@ export default function PetCreation() {
 
             dispatch({ type: CURRENT_USER, payload: { id: res.data.id, isPet: true } });
           }
-          // Triggers success haptics
-          trigger(HapticFeedbackTypes.notificationSuccess, options);
-          
-          navigation.replace('Home');
+
+          if (navigation.canGoBack()) {
+            navigation.goBack();
+          } else {
+            navigation.replace('Home');
+          }
         })
         .catch((err) => {
           console.log(err.response);
@@ -149,15 +150,19 @@ export default function PetCreation() {
   const secondaryOnPress = useCallback(() => {
     trigger(HapticFeedbackTypes.impactMedium, options);
     if (step === 0) {
-      dispatch({ type: CURRENT_USER, payload: { id: owner?.id, isPet: false } });
-      navigation.replace('Home');
+      if (navigation.canGoBack()) {
+        navigation.goBack();
+      } else {
+        dispatch({ type: CURRENT_USER, payload: { id: owner?.id, isPet: false } });
+        navigation.replace('Home');
+      }
       return;
     }
 
     if (step <= maxStep) {
       setStep((prev) => prev - 1);
     }
-  }, [step]);
+  }, [step, dispatch]);
 
   const nextOnPress = useCallback(() => {
     trigger(HapticFeedbackTypes.impactMedium, options);
@@ -168,7 +173,7 @@ export default function PetCreation() {
       }
     }
 
-    if (step === 1 && !isUsernameValid) {
+    if (step === 2 && !isUsernameValid) {
       return;
     }
 
@@ -179,7 +184,7 @@ export default function PetCreation() {
     if (step === maxStep) {
       submit();
     }
-  }, [step, formData.type, formData.name, formData.username, formData.profilePicture, isUsernameValid]);
+  }, [step, formData, isUsernameValid, dispatch]);
 
   const stepOne = () => {
     return (
@@ -241,24 +246,35 @@ export default function PetCreation() {
             </TouchableHighlight>
           </View>
 
-          <View className='mt-6'>
-            <Text className='mb-2 pl-4 text-lg font-bold text-themeText'>Pet Username *</Text>
-            <UsernameInput
-              value={formData.username}
-              setValue={(e: string) => {
+          <View className='mt-3'>
+            <Text className='mb-2 pl-4 text-xl font-bold text-themeText'>Display Name *</Text>
+            <TextInput
+              className={
+                (focus.name === true ? 'border-themeActive' : 'border-transparent') +
+                ' bg-themeInput border-[5px] shadow-sm shadow-themeShadow w-full rounded-3xl px-5 py-3 text-lg'
+              }
+              style={{ fontFamily: 'BalooChettan2-Regular' }}
+              placeholderTextColor={'#444444bb'}
+              value={formData.name}
+              onChangeText={(e) => {
                 setFormData((prev) => {
-                  return { ...prev, username: e };
+                  return { ...prev, name: e };
                 });
               }}
-              isValid={isUsernameValid}
-              setIsValid={setIsUsernameValid}
+              onFocus={() => {
+                setFocus((prev) => {
+                  return { ...prev, name: true };
+                });
+              }}
+              onBlur={() => {
+                setFocus((prev) => {
+                  return { ...prev, name: false };
+                });
+              }}
+              maxLength={30}
               returnKeyType='next'
-              placeholder='Give your pet a unique username'
-              autoCapitalize='none'
-              autoCorrect={false}
+              placeholder="Enter your pet's name"
               editable={!loading}
-              // Font style added, was not being detected from TextInput component
-              style={{ fontFamily: 'BalooChettan2-Regular' }}
             />
           </View>
         </View>
@@ -272,33 +288,20 @@ export default function PetCreation() {
         <Text className='text-themeText font-semibold text-3xl'>We're almost done!</Text>
 
         <View className='mt-3'>
-          <Text className='mb-2 pl-4 text-lg font-bold text-themeText'>Pet Name *</Text>
-          <TextInput
-            className={
-              (focus.name === true ? 'border-themeActive' : 'border-transparent') +
-              ' bg-themeInput border-[5px] shadow-sm shadow-themeShadow w-full rounded-3xl px-3 py-3 text-lg'
-            }
-            style={{ fontFamily: 'BalooChettan2-Regular' }}
-            placeholderTextColor={'#444444bb'}
-            value={formData.name}
-            onChangeText={(e) => {
+          <Text className='mb-2 pl-4 text-lg font-bold text-themeText'>Pet Username *</Text>
+          <UsernameInput
+            value={formData.username}
+            setValue={(e: string) => {
               setFormData((prev) => {
-                return { ...prev, name: e };
+                return { ...prev, username: e };
               });
             }}
-            onFocus={() => {
-              setFocus((prev) => {
-                return { ...prev, name: true };
-              });
-            }}
-            onBlur={() => {
-              setFocus((prev) => {
-                return { ...prev, name: false };
-              });
-            }}
-            maxLength={30}
+            isValid={isUsernameValid}
+            setIsValid={setIsUsernameValid}
             returnKeyType='next'
-            placeholder="Enter your pet's name"
+            placeholder='Give your pet a unique username'
+            autoCapitalize='none'
+            autoCorrect={false}
             editable={!loading}
           />
         </View>
