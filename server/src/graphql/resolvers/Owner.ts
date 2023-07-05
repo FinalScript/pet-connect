@@ -1,7 +1,7 @@
 import { GraphQLError } from 'graphql';
 import { Owner } from '../../models/Owner';
 import { isTokenValid } from '../../middleware/token';
-import { getOwner, getOwnerByUsername, updateOwner } from '../../controllers/OwnerController';
+import { deleteOwner, getOwner, getOwnerByUsername, updateOwner } from '../../controllers/OwnerController';
 
 export const OwnerResolver = {
   Mutation: {
@@ -71,6 +71,34 @@ export const OwnerResolver = {
       await owner.reload();
 
       return { owner };
+    },
+
+    deleteOwner: async (_, {}, context) => {
+      const { token } = context;
+
+      const jwtResult = await isTokenValid(token);
+
+      if (jwtResult?.error || !jwtResult?.id) {
+        throw new GraphQLError(jwtResult?.error.toString(), {
+          extensions: {
+            code: 'UNAUTHORIZED',
+          },
+        });
+      }
+
+      const owner = await getOwner(jwtResult.id);
+
+      if (!owner) {
+        throw new GraphQLError('Owner not found', {
+          extensions: {
+            code: 'PERSISTED_QUERY_NOT_FOUND',
+          },
+        });
+      }
+
+      await deleteOwner(jwtResult.id);
+
+      return { message: 'Account successfully deleted' };
     },
   },
 

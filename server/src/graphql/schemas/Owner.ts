@@ -21,13 +21,18 @@ export const OwnerTypeDef = `#graphql
     isAvailable: Boolean!
   }
 
+  type DeleteOwnerResponse {
+    message: String!
+  }
+
   type Query {
     getOwner: OwnerResponse!
     validateUsername(username: String!): ValidateUsernameResponse!
   }
 
-  type Mutation {
-    signup(username: String!, name: String, location: String): OwnerResponse
-    updateOwner(username: String, name: String, location: String): OwnerUpdatedResponse
+  type Mutation { 
+    signup(username: String!, name: String, location: String): OwnerResponse!
+    updateOwner(username: String, name: String, location: String): OwnerUpdatedResponse!
+    deleteOwner: DeleteOwnerResponse!
   }
 `;
