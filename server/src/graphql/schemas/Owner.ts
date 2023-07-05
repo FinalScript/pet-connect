@@ -17,8 +17,13 @@ export const OwnerTypeDef = `#graphql
     location: String
   }
 
+  type ValidateUsernameResponse {
+    isAvailable: Boolean!
+  }
+
   type Query {
     getOwner: OwnerResponse!
+    validateUsername(username: String!): ValidateUsernameResponse!
   }
 
   type Mutation {

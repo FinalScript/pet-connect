@@ -1,6 +1,7 @@
 import { GraphQLError } from 'graphql';
 import { Owner } from '../../models/Owner';
 import { isTokenValid } from '../../middleware/token';
+import { getOwner, getOwnerByUsername, updateOwner } from '../../controllers/OwnerController';
 
 export const OwnerResolver = {
   Mutation: {
@@ -56,11 +57,7 @@ export const OwnerResolver = {
         });
       }
 
-      const owner = await Owner.findOne({
-        where: {
-          authId: jwtResult.id,
-        },
-      });
+      const owner = await getOwner(jwtResult.id);
 
       if (!owner) {
         throw new GraphQLError('Owner not found', {
@@ -70,10 +67,10 @@ export const OwnerResolver = {
         });
       }
 
-      await Owner.update({ username, name, location }, { where: { authId: jwtResult.id } });
+      await updateOwner(jwtResult.id, { name, username, location });
       await owner.reload();
 
-      return owner;
+      return { owner };
     },
   },
 
@@ -91,11 +88,7 @@ export const OwnerResolver = {
         });
       }
 
-      const owner = await Owner.findOne({
-        where: {
-          authId: jwtResult.id,
-        },
-      });
+      const owner = await getOwner(jwtResult.id);
 
       if (!owner) {
         throw new GraphQLError('Owner not found', {
@@ -106,6 +99,24 @@ export const OwnerResolver = {
       }
 
       return { owner };
+    },
+
+    validateUsername: async (_, { username }) => {
+      if (!username) {
+        throw new GraphQLError('Username missing', {
+          extensions: {
+            code: 'BAD_USER_INPUT',
+          },
+        });
+      }
+
+      const owner = await getOwnerByUsername(username);
+
+      if (owner) {
+        return { isAvailable: false };
+      }
+
+      return { isAvailable: true };
     },
   },
 };
