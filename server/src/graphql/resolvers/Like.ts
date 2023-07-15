@@ -2,6 +2,10 @@ import { GraphQLError } from 'graphql';
 import { isTokenValid } from '../../middleware/token';
 import { createLike, deleteLike, getLikeById } from '../../controllers/LikeController';
 import { getPostById } from '../../controllers/PostController';
+import { getOwner } from '../../controllers/OwnerController';
+import { Post } from '../../models/Post';
+import { Owner } from '../../models/Owner';
+import { Like } from '../../models/Like';
 
 export const LikeResolver = {
   Mutation: {
@@ -34,9 +38,31 @@ export const LikeResolver = {
         });
       }
 
+      let post: Post, owner: Owner;
+
+      post = await getPostById(postId);
+      owner = await getOwner(ownerId);
+
+      if (!post) {
+        throw new GraphQLError('Post not found', {
+          extensions: {
+            code: 'PERSISTED_QUERY_NOT_FOUND',
+          },
+        });
+      }
+
+      if (!owner) {
+        throw new GraphQLError('Owner not found', {
+          extensions: {
+            code: 'PERSISTED_QUERY_NOT_FOUND',
+          },
+        });
+      }
+
       const newLike = await createLike({ postId, ownerId });
-      return {newLike};
+      return { newLike };
     },
+
     unlikePost: async (_, { likeId, postId }, context) => {
       const { token } = context;
 
@@ -65,10 +91,10 @@ export const LikeResolver = {
           },
         });
       }
-      let like, post;
+      let like: Like, post: Post;
 
-      like = getLikeById(likeId);
-      post = getPostById(postId);
+      like = await getLikeById(likeId);
+      post = await getPostById(postId);
 
       if (!like) {
         throw new GraphQLError('Like not found', {
@@ -86,10 +112,9 @@ export const LikeResolver = {
         });
       }
 
-      await deleteLike(likeId)
+      await deleteLike(likeId);
 
-      return {message: "Post unliked"}
-
+      return { message: 'Post unliked' };
     },
   },
 };
