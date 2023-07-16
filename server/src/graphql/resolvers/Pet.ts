@@ -255,6 +255,23 @@ export const PetResolver = {
       }
 
       return { pet };
-    }
+    },
+
+    validatePetUsername: async (_, { username }, context) => {
+      if (!username) {
+        throw new GraphQLError('Username missing', {
+          extensions: {
+            code: 'BAD_USER_INPUT',
+          },
+        });
+      }
+
+      const pet = await getPetByUsername(username);
+
+      if (pet) {
+        return { isAvailable: false };
+      }
+      return { isAvailable: true };
+    },
   },
 };

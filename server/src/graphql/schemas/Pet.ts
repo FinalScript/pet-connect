@@ -47,7 +47,7 @@ export const PetTypeDef = `#graphql
     type Query{
         getPetById(id: String!): PetResponse!
         getPetByUsername(username: String!): PetResponse!
-        validateUsername(username: String!): ValidateUsernameResponse!
+        validatePetUsername(username: String!): ValidateUsernameResponse!
     }
 
     type Mutation {
