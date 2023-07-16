@@ -29,7 +29,7 @@ type Query{
 
 type Mutation {
     createPost( petId: String!, description: String, media: [String!]! ): PostResponse!
-    updatePost( id: String, petId: String, description: String, media: [String!]! ): PostUpdatedResponse!
+    updatePost( id: String,  description: String, media: [String!]! ): PostUpdatedResponse!
     deletePost( id: String! ): DeletePostResponse!
 }
 
