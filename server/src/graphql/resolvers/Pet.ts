@@ -1,7 +1,7 @@
 import { GraphQLError } from 'graphql';
 import { isTokenValid } from '../../middleware/token';
 import { Pet } from '../../models/Pet';
-import { getOwner, updateOwner } from '../../controllers/OwnerController';
+import { getOwner } from '../../controllers/OwnerController';
 import { createPet, deletePet, getPetById, getPetByUsername, updatePet } from '../../controllers/PetController';
 
 export const PetResolver = {
