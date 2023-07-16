@@ -123,4 +123,28 @@ export const PostResolver = {
       }
     },
   },
+
+  Query: {
+    getPostById: async (_, { id }, context) => {
+      if (!id) {
+        throw new GraphQLError('ID missing', {
+          extensions: {
+            code: 'BAD_USER_INPUT',
+          },
+        });
+      }
+
+      const post = await getPostById(id);
+
+      if (!post) {
+        throw new GraphQLError('Post does not exist', {
+          extensions: {
+            code: 'BAD_USER_INPUT',
+          },
+        });
+      }
+
+      return { post: post };
+    },
+  },
 };
