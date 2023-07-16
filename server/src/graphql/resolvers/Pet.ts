@@ -1,6 +1,8 @@
 import { GraphQLError } from 'graphql';
 import { isTokenValid } from '../../middleware/token';
 import { Pet } from '../../models/Pet';
+import { getOwner } from '../../controllers/OwnerController';
+import { createPet, getPetByUsername } from '../../controllers/PetController';
 
 export const PetResolver = {
   Mutation: {
@@ -16,21 +18,43 @@ export const PetResolver = {
         });
       }
 
-      if (!username) {
-        throw new GraphQLError('Username missing', {
+      const authId = jwtResult.id;
+
+      const owner = await getOwner(authId);
+
+      if (!owner) {
+        throw new GraphQLError('Owner does not exist', {
           extensions: {
             code: 'BAD_USER_INPUT',
           },
         });
       }
 
-      const petUserName = await Pet.findOne({
-        where: {
-          username,
-        },
-      });
+      if (username.match('[^a-zA-Z0-9._\\-]')) {
+        throw new GraphQLError('Username Invalid', {
+          extensions: {
+            code: 'BAD_USER_INPUT',
+          },
+        });
+      }
 
-      if (petUserName) {
+      if (username.length > 30) {
+        throw new GraphQLError('Username is too long (Max 30)', {
+          extensions: {
+            code: 'BAD_USER_INPUT',
+          },
+        });
+      }
+
+      if (username.length < 2) {
+        throw new GraphQLError('Username is too short (Min 2)', {
+          extensions: {
+            code: 'BAD_USER_INPUT',
+          },
+        });
+      }
+
+      if (await getPetByUsername(username)) {
         throw new GraphQLError('Username taken', {
           extensions: {
             code: 'BAD_USER_INPUT',
@@ -38,34 +62,44 @@ export const PetResolver = {
         });
       }
 
-      if (!type) {
-        throw new GraphQLError('Type missing', {
+      if (!Pet.getAttributes().type.values.includes(type.toUpperCase())) {
+        throw new GraphQLError('Incorrect type provided', {
           extensions: {
             code: 'BAD_USER_INPUT',
           },
         });
       }
 
-      //   if (!Object.values(PetType).includes(type)) {
-      //     throw new GraphQLError('Invalid PetType', {
-      //       extensions: {
-      //         code: 'BAD_USER_INPUT',
-      //       },
-      //     });
-      //   }
+      type = type.toUpperCase();
 
-      if (!name) {
-        throw new GraphQLError('Name missing', {
+      let newPet: Pet;
+
+      try {
+        newPet = await createPet({ name, type, description, location, username });
+      } catch (e) {
+        console.error(e);
+
+        throw new GraphQLError(e.message, {
           extensions: {
-            code: 'BAD_USER_INPUT',
+            code: 'SQL_ERROR',
           },
         });
       }
 
-      const pet = await Pet.create({ username, name, type, description, location });
+      try {
+        await owner.addPet(newPet);
+        await owner.save();
+      } catch (e) {
+        console.error(e);
 
-      return { pet };
+        throw new GraphQLError(e.message, {
+          extensions: {
+            code: 'SQL_ERROR',
+          },
+        });
+      }
+
+      return { pet: newPet };
     },
-    Query: {},
   },
 };
