@@ -2,7 +2,7 @@ import { GraphQLError } from 'graphql';
 import { isTokenValid } from '../../middleware/token';
 import { Pet } from '../../models/Pet';
 import { getOwner, updateOwner } from '../../controllers/OwnerController';
-import { createPet, getPetById, getPetByUsername, updatePet } from '../../controllers/PetController';
+import { createPet, deletePet, getPetById, getPetByUsername, updatePet } from '../../controllers/PetController';
 
 export const PetResolver = {
   Mutation: {
@@ -167,6 +167,39 @@ export const PetResolver = {
         await updatePet(pet.id, { username, name, location, type, description });
         await pet.reload();
         return pet;
+      } catch (e) {
+        console.error(e);
+
+        throw new GraphQLError(e.message, {
+          extensions: {
+            code: 'SQL_ERROR',
+          },
+        });
+      }
+    },
+
+    deletePet: async (_, { id }, context) => {
+      if (!id) {
+        throw new GraphQLError('ID missing', {
+          extensions: {
+            code: 'BAD_USER_INPUT',
+          },
+        });
+      }
+
+      const pet = await getPetById(id);
+
+      if (!pet) {
+        throw new GraphQLError('Pet does not exist', {
+          extensions: {
+            code: 'BAD_USER_INPUT',
+          },
+        });
+      }
+
+      try {
+        await deletePet(pet.id);
+        return { message: 'Pet successfully deleted' };
       } catch (e) {
         console.error(e);
 
