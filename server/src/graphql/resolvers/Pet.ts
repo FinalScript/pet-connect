@@ -232,7 +232,29 @@ export const PetResolver = {
         });
       }
 
-      return {pet};
+      return { pet };
     },
+
+    getPetByUsername: async (_, { username }, context) => {
+      if (!username) {
+        throw new GraphQLError('Username missing', {
+          extensions: {
+            code: 'BAD_USER_INPUT',
+          },
+        });
+      }
+
+      const pet = await getPetByUsername(username);
+
+      if (!pet) {
+        throw new GraphQLError('Pet does not exist', {
+          extensions: {
+            code: 'BAD_USER_INPUT',
+          },
+        });
+      }
+
+      return { pet };
+    }
   },
 };
