@@ -67,10 +67,51 @@ export const OwnerResolver = {
         });
       }
 
-      await updateOwner(jwtResult.id, { name, username, location });
-      await owner.reload();
+      if (await getOwnerByUsername(username)) {
+        throw new GraphQLError('Username taken', {
+          extensions: {
+            code: 'BAD_USER_INPUT',
+          },
+        });
+      }
 
-      return { owner };
+      if (username.match('[^a-zA-Z0-9._\\-]')) {
+        throw new GraphQLError('Username Invalid', {
+          extensions: {
+            code: 'BAD_USER_INPUT',
+          },
+        });
+      }
+
+      if (username.length > 30) {
+        throw new GraphQLError('Username is too long (Max 30)', {
+          extensions: {
+            code: 'BAD_USER_INPUT',
+          },
+        });
+      }
+
+      if (username.length < 2) {
+        throw new GraphQLError('Username is too short (Min 2)', {
+          extensions: {
+            code: 'BAD_USER_INPUT',
+          },
+        });
+      }
+
+      try {
+        await updateOwner(jwtResult.id, { name, username, location });
+        await owner.reload();
+        return owner;
+      } catch (e) {
+        console.error(e);
+
+        throw new GraphQLError(e.message, {
+          extensions: {
+            code: 'SQL_ERROR',
+          },
+        });
+      }
     },
 
     deleteOwner: async (_, {}, context) => {
