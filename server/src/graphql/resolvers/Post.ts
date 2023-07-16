@@ -1,6 +1,6 @@
 import { GraphQLError } from 'graphql/error';
 import { getPetById } from '../../controllers/PetController';
-import { createPost, getPostById, updatePost } from '../../controllers/PostController';
+import { createPost, deletePost, getPostById, updatePost } from '../../controllers/PostController';
 import { Post } from '../../models/Post';
 
 export const PostResolver = {
@@ -79,6 +79,39 @@ export const PostResolver = {
         await updatePost(post.id, { description, media });
         await post.reload();
         return post;
+      } catch (e) {
+        console.error(e);
+
+        throw new GraphQLError(e.message, {
+          extensions: {
+            code: 'SQL_ERROR',
+          },
+        });
+      }
+    },
+
+    deletePost: async (_, { id }, context) => {
+      if (!id) {
+        throw new GraphQLError('ID missing', {
+          extensions: {
+            code: 'BAD_USER_INPUT',
+          },
+        });
+      }
+
+      const post = await getPostById(id);
+
+      if (!post) {
+        throw new GraphQLError('Post does not exist', {
+          extensions: {
+            code: 'BAD_USER_INPUT',
+          },
+        });
+      }
+
+      try {
+        await deletePost(post.id);
+        return { message: 'Post successfully deleted' };
       } catch (e) {
         console.error(e);
 
