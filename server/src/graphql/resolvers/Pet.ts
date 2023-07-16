@@ -211,4 +211,28 @@ export const PetResolver = {
       }
     },
   },
+
+  Query: {
+    getPetById: async (_, { id }, context) => {
+      if (!id) {
+        throw new GraphQLError('ID missing', {
+          extensions: {
+            code: 'BAD_USER_INPUT',
+          },
+        });
+      }
+
+      const pet = await getPetById(id);
+
+      if (!pet) {
+        throw new GraphQLError('Pet does not exist', {
+          extensions: {
+            code: 'BAD_USER_INPUT',
+          },
+        });
+      }
+
+      return {pet};
+    },
+  },
 };

@@ -45,7 +45,8 @@ export const PetTypeDef = `#graphql
     }
 
     type Query{
-        getPet: PetResponse!
+        getPetById(id: String!): PetResponse!
+        getPetByUsername(username: String!): PetResponse!
         validateUsername(username: String!): ValidateUsernameResponse!
     }
 
