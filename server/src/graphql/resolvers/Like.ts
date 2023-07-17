@@ -38,10 +38,8 @@ export const LikeResolver = {
         });
       }
 
-      let post: Post, owner: Owner;
-
-      post = await getPostById(postId);
-      owner = await getOwner(ownerId);
+      const post = await getPostById(postId);
+      const owner = await getOwner(ownerId);
 
       if (!post) {
         throw new GraphQLError('Post not found', {
@@ -91,10 +89,9 @@ export const LikeResolver = {
           },
         });
       }
-      let like: Like, post: Post;
 
-      like = await getLikeById(likeId);
-      post = await getPostById(postId);
+      const like = await getLikeById(likeId);
+      const post = await getPostById(postId);
 
       if (!like) {
         throw new GraphQLError('Like not found', {

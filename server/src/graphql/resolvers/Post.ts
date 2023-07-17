@@ -45,7 +45,7 @@ export const PostResolver = {
           },
         });
       }
-      return { post: post };
+      return { post };
     },
 
     updatePost: async (_, { id, description, media }, context) => {
@@ -144,7 +144,7 @@ export const PostResolver = {
         });
       }
 
-      return { post: post };
+      return { post };
     },
   },
 };

@@ -270,10 +270,7 @@ export const PetResolver = {
 
       const pet = await getPetByUsername(username);
 
-      if (pet) {
-        return { isAvailable: false };
-      }
-      return { isAvailable: true };
+      return { isAvailable: pet ? false : true };
     },
   },
 };
