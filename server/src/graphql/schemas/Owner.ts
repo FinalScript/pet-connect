@@ -1,3 +1,5 @@
+import { Pet } from './../../models/Pet';
+
 export const OwnerTypeDef = `#graphql
   type Owner {
     id: String!
@@ -7,27 +9,39 @@ export const OwnerTypeDef = `#graphql
     location: String
   }
 
+  # For Queries
+
   type OwnerResponse {
     owner: Owner
-  }
-
-  type OwnerUpdatedResponse {
-    name: String
-    username: String
-    location: String
+    pets: [Pet]
   }
 
   type ValidateUsernameResponse {
     isAvailable: Boolean!
   }
 
+  type VerifyTokenResponse {
+    valid: Boolean!
+  }
+
+  # For Mutations
+
+  type OwnerUpdatedResponse {
+    name: String
+    username: String
+    location: String
+  }  
+
   type DeleteOwnerResponse {
     message: String!
   }
 
+  # Query and Mutation definitions
+
   type Query {
     getOwner: OwnerResponse!
     validateUsername(username: String!): ValidateUsernameResponse!
+    verifyToken: VerifyTokenResponse!
   }
 
   type Mutation { 

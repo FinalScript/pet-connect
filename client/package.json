@@ -8,11 +8,16 @@
     "lint": "eslint .",
     "start": "react-native start",
     "test": "jest",
-    "pod": "cd ios && pod install && cd .."
+    "pod": "cd ios && pod install && cd ..",
+    "compile-graphql": "graphql-codegen",
+    "watch-graphql": "graphql-codegen -w"
   },
   "dependencies": {
     "@apollo/client": "^3.8.6",
     "@gorhom/bottom-sheet": "^4.4.7",
+    "@graphql-codegen/cli": "^5.0.0",
+    "@graphql-codegen/client-preset": "^4.1.0",
+    "@graphql-typed-document-node/core": "^3.2.0",
     "@react-native-async-storage/async-storage": "^1.18.2",
     "@react-native-camera-roll/camera-roll": "^5.7.1",
     "@react-native-community/blur": "^4.3.2",
@@ -76,7 +81,7 @@
     "react-navigation": "^4.4.4",
     "react-test-renderer": "18.2.0",
     "tailwindcss": "^3.3.2",
-    "typescript": "^4.8.4"
+    "typescript": "^4.9.5"
   },
   "jest": {
     "preset": "react-native"

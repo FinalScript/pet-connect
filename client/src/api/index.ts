@@ -2,7 +2,7 @@ import { Buffer } from 'buffer';
 import axios from 'axios';
 import { Image as ImageType } from 'react-native-image-crop-picker';
 
-let api = axios.create({ baseURL: 'http://10.0.2.2:3000' });
+let api = axios.create({ baseURL: 'http://172.20.10.6:3000' });
 
 export const setApiBaseUrl = (url: string) => {
   api.defaults.baseURL = url;
@@ -24,7 +24,7 @@ export const ping = () => {
   return api({
     method: 'GET',
     url: '/health',
-    timeout: 3000,
+    timeout: 1000,
   });
 };
 

@@ -160,13 +160,10 @@ export const OwnerResolver = {
       }
 
       const owner = await getOwner(jwtResult.id);
+      console.log(owner)
 
       if (!owner) {
-        throw new GraphQLError('Owner not found', {
-          extensions: {
-            code: 'PERSISTED_QUERY_NOT_FOUND',
-          },
-        });
+        throw new GraphQLError('Owner not found');
       }
 
       return { owner };

@@ -1,5 +1,4 @@
 export const PetTypeDef = `#graphql
-
     enum PetType {
         DOG
         CAT
