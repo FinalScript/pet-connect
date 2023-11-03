@@ -57,6 +57,16 @@ const App = () => {
     pingApi();
   }, []);
 
+  const pingApi = async () => {
+    const res = await ping();
+
+    if (res.status !== 200) {
+      <SafeAreaView className='bg-themeBg h-full flex justify-center items-center'>
+        <Text className='text-themeText font-semibold text-3xl'>Error contacting server</Text>
+      </SafeAreaView>;
+    }
+  };
+
   useEffect(() => {
     const timeoutId = setTimeout(() => {
       getAuth();
@@ -81,7 +91,7 @@ const App = () => {
       try {
         token = await AsyncStorage.getItem('@token');
       } catch (e) {
-        // error reading value
+        console.error(e);
       }
 
       if (!token) {
@@ -94,7 +104,9 @@ const App = () => {
           return;
         }
 
+        // TODO
         setBearerToken(`Bearer ${credentials.accessToken}`);
+
         try {
           await AsyncStorage.setItem('@token', credentials.accessToken);
         } catch (error) {
@@ -126,19 +138,6 @@ const App = () => {
     }
   }, [navigationRef, dispatch]);
 
-  const pingApi = async () => {
-    ping()
-      .then((res) => {
-        if (res.status !== 200) {
-          setApiStatus(false);
-        }
-      })
-      .catch((err) => {
-        console.log(err);
-        setApiStatus(false);
-      });
-  };
-
   const getUserData = useCallback(async () => {
     const ownerData = await getOwnerData().catch((err) => {
       if (err.response && err.response.status === 404) {
@@ -169,14 +168,6 @@ const App = () => {
       dispatch({ type: LOADING, payload: false });
     }
   }, [navigationRef, dispatch]);
-
-  if (!apiStatus) {
-    return (
-      <SafeAreaView className='bg-themeBg h-full flex justify-center items-center'>
-        <Text className='text-themeText font-semibold text-3xl'>Error contacting server</Text>
-      </SafeAreaView>
-    );
-  }
 
   return (
     <View className='bg-themeBg h-full'>

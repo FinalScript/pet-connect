@@ -8,6 +8,8 @@ import { Provider } from 'react-redux';
 import { store } from '../redux/store';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { BottomSheetModalProvider } from '@gorhom/bottom-sheet';
+import { ApolloClient, InMemoryCache, ApolloProvider, createHttpLink } from '@apollo/client';
+import { setContext } from '@apollo/client/link/context';
 
 interface Props {
   children: ReactNode;
@@ -17,12 +19,13 @@ export default function AppLoader({ children }: Props) {
   const [domain, setDomain] = useState<string>();
   const [clientId, setClientId] = useState<string>();
   const [error, setError] = useState(false);
+  const [token, setToken] = useState();
 
   useEffect(() => {
     load();
   }, []);
+
   const load = async () => {
-    console.log(Config);
     if (!Config.API_URL) {
       setError(true);
       return;
@@ -35,6 +38,24 @@ export default function AppLoader({ children }: Props) {
     setApiBaseUrl(Config.API_URL);
   };
 
+  const httpLink = createHttpLink({
+    uri: `${Config.API_URL || ''}/graphql`,
+  });
+
+  const authLink = setContext((_, { headers }) => {
+    return {
+      headers: {
+        ...headers,
+        authorization: token ? `Bearer ${token}` : '',
+      },
+    };
+  });
+
+  const client = new ApolloClient({
+    link: authLink.concat(httpLink),
+    cache: new InMemoryCache(),
+  });
+
   if (error || !domain || !clientId) {
     return (
       <SafeAreaView className='bg-themeBg h-full flex justify-center items-center'>
@@ -44,14 +65,16 @@ export default function AppLoader({ children }: Props) {
   }
 
   return (
-    <Provider store={store}>
-      <Auth0Provider domain={domain} clientId={clientId}>
-        <GestureHandlerRootView>
-          <BottomSheetModalProvider>
-            <>{children}</>
-          </BottomSheetModalProvider>
-        </GestureHandlerRootView>
-      </Auth0Provider>
-    </Provider>
+    <ApolloProvider client={client}>
+      <Provider store={store}>
+        <Auth0Provider domain={domain} clientId={clientId}>
+          <GestureHandlerRootView>
+            <BottomSheetModalProvider>
+              <>{children}</>
+            </BottomSheetModalProvider>
+          </GestureHandlerRootView>
+        </Auth0Provider>
+      </Provider>
+    </ApolloProvider>
   );
 }

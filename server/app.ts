@@ -73,6 +73,10 @@ const init = async () => {
 
   await new Promise<void>((resolve) => app.listen({ port }, resolve));
   console.log(`🚀 Server ready at http://localhost:${port}/graphql`);
+
+  app.get('/health', (req, res) => {
+    res.status(200).send('Okay!');
+  });
 };
 
 init();

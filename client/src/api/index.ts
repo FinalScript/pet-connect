@@ -23,7 +23,7 @@ export const getBearerToken = () => {
 export const ping = () => {
   return api({
     method: 'GET',
-    url: '/api/public/',
+    url: '/health',
     timeout: 3000,
   });
 };
