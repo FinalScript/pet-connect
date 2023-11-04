@@ -65,7 +65,7 @@ const init = async () => {
       as: 'likes',
     });
 
-    await sequelize.sync({ force: true });
+    await sequelize.sync({});
     fs.rmSync('uploads/', { recursive: true, force: true });
   });
 

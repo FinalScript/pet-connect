@@ -28,67 +28,6 @@ export const ping = () => {
   });
 };
 
-export const verifyToken = () => {
-  return api({
-    method: 'GET',
-    url: '/api/private/verifyToken',
-  });
-};
-
-export const getOwnerData = () => {
-  return api({
-    method: 'GET',
-    url: '/api/private/owner',
-  });
-};
-
-interface SignUpParams {
-  username: string;
-  name?: string;
-  location?: string;
-}
-
-export const signup = (data: SignUpParams) => {
-  return api({
-    method: 'POST',
-    url: '/api/private/owner/signup',
-    data,
-  });
-};
-
-export const ownerUsernameExists = (username: string) => {
-  return api({
-    method: 'POST',
-    url: '/api/private/owner/validateusername',
-    data: { username },
-  });
-};
-
-export const petUsernameExists = (username: string) => {
-  return api({
-    method: 'POST',
-    url: '/api/private/pet/validateusername',
-    data: { username },
-  });
-};
-
-export interface PetCreationParams {
-  name: string;
-  username: string;
-  type: string;
-  description?: string;
-  location?: string;
-  profilePicture?: ImageType | null | undefined;
-}
-
-export const createPet = (data: PetCreationParams) => {
-  return api({
-    method: 'POST',
-    url: '/api/private/pet/create',
-    data,
-  });
-};
-
 export const uploadOwnerProfilePicture = (data: any) => {
   return api({
     method: 'POST',

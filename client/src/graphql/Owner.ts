@@ -1,13 +1,21 @@
-import { gql } from "../__generated__";
+import { gql } from '../__generated__';
 
 export const GET_OWNER = gql(`
-  query GetOwner {
+  query Query {
     getOwner {
       owner {
         id
         authId
         name
         username
+        location
+      }
+      pets {
+        id
+        username
+        name
+        type
+        description
         location
       }
     }

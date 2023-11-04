@@ -10,12 +10,10 @@ import { Provider } from 'react-redux';
 import Text from '../components/Text';
 import { store } from '../redux/store';
 
-import React, { createContext } from 'react';
-
-export const TokenContext = createContext({
-  token: '',
-  setToken: (newToken: string) => {},
-});
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import React from 'react';
+import * as env from '../../env.json';
+import { setApiBaseUrl } from '../api';
 
 interface Props {
   children: ReactNode;
@@ -25,15 +23,10 @@ export default function AppLoader({ children }: Props) {
   const [domain, setDomain] = useState<string>();
   const [clientId, setClientId] = useState<string>();
   const [error, setError] = useState(false);
-  const [token, setToken] = useState<string>('');
 
   useEffect(() => {
     load();
   }, []);
-
-  useEffect(() => {
-    console.log(token)
-  }, [token])
 
   const load = async () => {
     if (!Config.API_URL) {
@@ -46,18 +39,21 @@ export default function AppLoader({ children }: Props) {
     setClientId(Config.AUTH0_CLIENT_ID);
 
     // setApiBaseUrl(Config.API_URL);
+    setApiBaseUrl(env.API_URL);
   };
 
   const httpLink = createHttpLink({
-    uri: `http://172.20.10.6:3000/graphql`,
+    uri: `${env.API_URL}/graphql`,
     // uri: `${Config.API_URL || ''}/graphql`,
   });
 
-  const authLink = setContext((_, { headers }) => {
+  const authLink = setContext(async (_, { headers }) => {
+    const token = await AsyncStorage.getItem('@token');
+
     return {
       headers: {
         ...headers,
-        authorization: token ? `Bearer ${token}` : '',
+        authorization: token && `Bearer ${token}`,
       },
     };
   });
@@ -76,18 +72,16 @@ export default function AppLoader({ children }: Props) {
   }
 
   return (
-    <TokenContext.Provider value={{ token, setToken }}>
-      <ApolloProvider client={client}>
-        <Provider store={store}>
-          <Auth0Provider domain={domain} clientId={clientId}>
-            <GestureHandlerRootView>
-              <BottomSheetModalProvider>
-                <>{children}</>
-              </BottomSheetModalProvider>
-            </GestureHandlerRootView>
-          </Auth0Provider>
-        </Provider>
-      </ApolloProvider>
-    </TokenContext.Provider>
+    <ApolloProvider client={client}>
+      <Provider store={store}>
+        <Auth0Provider domain={domain} clientId={clientId}>
+          <GestureHandlerRootView>
+            <BottomSheetModalProvider>
+              <>{children}</>
+            </BottomSheetModalProvider>
+          </GestureHandlerRootView>
+        </Auth0Provider>
+      </Provider>
+    </ApolloProvider>
   );
 }

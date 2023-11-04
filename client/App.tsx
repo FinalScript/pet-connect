@@ -18,17 +18,18 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useDispatch, useSelector } from 'react-redux';
 import { ping } from './src/api';
 import Text from './src/components/Text';
-import { GET_OWNER } from './src/graphql/Owner';
-import AppLoader, { TokenContext } from './src/hoc/AppLoader';
+import AppLoader from './src/hoc/AppLoader';
 import AccountCreation from './src/pages/AccountCreation';
 import GetStarted from './src/pages/GetStarted';
 import HomeNavigator from './src/pages/HomePage/HomeNavigator';
 import Loading from './src/pages/Loading';
 import PetCreation from './src/pages/PetCreation';
-import { LOADING } from './src/redux/constants';
+import { CURRENT_USER, LOADING, OWNER_DATA, PET_DATA } from './src/redux/constants';
 import { ProfileReducer } from './src/redux/reducers/profileReducer';
 import { navigationRef } from './src/services/navigator';
 import { options } from './src/utils/hapticFeedbackOptions';
+import { GET_OWNER } from './src/graphql/Owner';
+import { VERIFY_TOKEN } from './src/graphql/Auth';
 
 export type RootStackParamList = {
   Loading: undefined;
@@ -46,9 +47,9 @@ const Stack = createNativeStackNavigator<RootStackParamList>();
 
 const App = () => {
   const dispatch = useDispatch();
-  const { setToken } = useContext(TokenContext);
   const [apiStatus, setApiStatus] = useState(true);
-  const [getUserData, { data: userData, loading: userDataLoading, error: userDataError }] = useLazyQuery(GET_OWNER);
+  const [getUserData] = useLazyQuery(GET_OWNER);
+  const [verifyToken] = useLazyQuery(VERIFY_TOKEN);
   const { user, getCredentials } = useAuth0();
   const owner = useSelector((state: ProfileReducer) => state.profile.owner);
 
@@ -73,8 +74,6 @@ const App = () => {
       getAuth();
     }, 200);
 
-    console.log(user);
-
     return () => clearTimeout(timeoutId);
   }, [user, navigationRef]);
 
@@ -85,100 +84,87 @@ const App = () => {
     }
   }, [owner?.id]);
 
-  useEffect(() => {
-    handleUserData();
-  }, [userData, userDataLoading, dispatch, navigationRef, userDataError]);
+  const getAuth = useCallback(async () => {
+    if (!navigationRef.isReady()) {
+      return;
+    }
 
-  const handleUserData = useCallback(async () => {
-    if (userDataError && !userDataLoading) {
-      if (userDataError.message === 'Owner not found') {
+    let token;
+
+    try {
+      token = await AsyncStorage.getItem('@token');
+    } catch (e) {
+      console.error(e);
+    }
+
+    if (!token) {
+      console.log('token not found');
+      const credentials = await getCredentials('openid profile email');
+
+      if (!credentials?.accessToken) {
+        dispatch({ type: LOADING, payload: false });
+        navigationRef.dispatch(StackActions.replace('Get Started'));
+        return;
+      }
+
+      try {
+        await AsyncStorage.setItem('@token', credentials.accessToken);
+      } catch (error) {
+        // Error saving data
+      }
+
+      fetchUserData();
+
+      return;
+    }
+
+    console.log('token found');
+
+    const verifiedToken = await verifyToken();
+
+    if (verifiedToken.error) {
+      console.log(verifiedToken.error);
+      await AsyncStorage.removeItem('@token');
+      dispatch({ type: LOADING, payload: false });
+      navigationRef.dispatch(StackActions.replace('Get Started'));
+      return;
+    }
+
+    await fetchUserData();
+  }, [navigationRef, dispatch, verifyToken]);
+
+  const fetchUserData = useCallback(async () => {
+    const ownerData = await getUserData().catch((err) => {
+      if (err.message === 'Owner not found') {
         dispatch({ type: LOADING, payload: false });
         trigger(HapticFeedbackTypes.notificationWarning, options);
         navigationRef.dispatch(StackActions.replace('Account Creation'));
       }
       return;
+    });
+
+    console.log(ownerData);
+
+    if (!ownerData) {
+      dispatch({ type: LOADING, payload: false });
+      return;
     }
 
-    if (userDataLoading) {
-      dispatch({ type: LOADING, payload: true });
-      return;
-    } else {
+    if (ownerData.data?.getOwner) {
+      const cachedCurrentUser = JSON.parse((await AsyncStorage.getItem('@currentUser')) || '{}');
+
+      const owner = ownerData.data.getOwner.owner;
+      const pets: any[] = ownerData.data.getOwner.pets;
+
+      dispatch({ type: OWNER_DATA, payload: owner });
+      dispatch({ type: PET_DATA, payload: pets });
+
+      const validCache = owner?.id === cachedCurrentUser?.id || pets.find((pet) => pet?.id === cachedCurrentUser?.id) ? true : false;
+
+      dispatch({ type: CURRENT_USER, payload: cachedCurrentUser && validCache ? cachedCurrentUser : { id: ownerData.data.getOwner.owner.id, isPet: false } });
       dispatch({ type: LOADING, payload: false });
     }
-
-    if (userData && !userDataLoading) {
-      console.log(userData);
-
-      // const cachedCurrentUser = JSON.parse((await AsyncStorage.getItem('@currentUser')) || '{}');
-
-      // const owner = (({ Pets, ...o }) => o)(userData.getOwner.owner);
-      // const pets: any[] = ownerData.data.Pets;
-
-      // dispatch({ type: OWNER_DATA, payload: owner });
-      // dispatch({ type: PET_DATA, payload: pets });
-
-      // const validCache = owner?.id === cachedCurrentUser?.id || pets.find((pet) => pet?.id === cachedCurrentUser?.id) ? true : false;
-
-      // dispatch({ type: CURRENT_USER, payload: cachedCurrentUser && validCache ? cachedCurrentUser : { id: ownerData.data.id, isPet: false } });
-      // dispatch({ type: LOADING, payload: false });
-    }
-  }, [userData, userDataLoading, dispatch, navigationRef, userDataError]);
-
-  const getAuth = useCallback(async () => {
-    if (navigationRef.isReady()) {
-      let token;
-
-      try {
-        token = await AsyncStorage.getItem('@token');
-      } catch (e) {
-        console.error(e);
-      }
-
-      if (!token) {
-        console.log('token not found');
-        const credentials = await getCredentials('openid profile email');
-
-        if (!credentials?.accessToken) {
-          dispatch({ type: LOADING, payload: false });
-          navigationRef.dispatch(StackActions.replace('Get Started'));
-          return;
-        }
-
-        // TODO
-        setToken(`${credentials.accessToken}`);
-
-        try {
-          await AsyncStorage.setItem('@token', credentials.accessToken);
-        } catch (error) {
-          // Error saving data
-        }
-
-        getUserData();
-
-        return;
-      }
-
-      console.log('token found');
-
-      setToken(`${token}`);
-
-      // TODO
-
-      // try {
-      //   await verifyToken();
-      // } catch (e: any) {
-      //   console.log(e);
-      //   if (e.response.status) {
-      //     await AsyncStorage.removeItem('@token');
-      //     dispatch({ type: LOADING, payload: false });
-      //     navigationRef.dispatch(StackActions.replace('Get Started'));
-      //     return;
-      //   }
-      // }
-
-      getUserData();
-    }
-  }, [navigationRef, dispatch]);
+  }, [getUserData, navigationRef, dispatch]);
 
   if (!apiStatus) {
     return (

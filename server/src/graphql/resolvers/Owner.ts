@@ -146,6 +146,22 @@ export const OwnerResolver = {
   },
 
   Query: {
+    verifyToken: async (_, {}, context) => {
+      const { token } = context;
+
+      const jwtResult = await isTokenValid(token);
+
+      if (jwtResult?.error || !jwtResult?.id) {
+        throw new GraphQLError(jwtResult?.error.toString(), {
+          extensions: {
+            code: 'UNAUTHORIZED',
+          },
+        });
+      }
+
+      return { valid: true };
+    },
+
     getOwner: async (_, {}, context) => {
       const { token } = context;
 
@@ -160,13 +176,12 @@ export const OwnerResolver = {
       }
 
       const owner = await getOwner(jwtResult.id);
-      console.log(owner)
 
       if (!owner) {
         throw new GraphQLError('Owner not found');
       }
 
-      return { owner };
+      return { owner: owner.dataValues, pets: owner.Pets };
     },
 
     validateUsername: async (_, { username }) => {

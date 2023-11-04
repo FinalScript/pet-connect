@@ -1,9 +1,10 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { ActivityIndicator, TextInput, TextInputProps } from 'react-native';
 import { View, TextProps } from 'react-native';
-import { ownerUsernameExists, petUsernameExists } from '../api';
-import { throttle } from 'lodash';
 import Text from './Text';
+import { useLazyQuery } from '@apollo/client';
+import { OWNER_USERNAME_EXISTS } from '../graphql/Owner';
+import { PET_USERNAME_EXISTS } from '../graphql/Pet';
 
 interface Props extends TextInputProps {
   setValue: Function;
@@ -16,6 +17,8 @@ interface Props extends TextInputProps {
 }
 
 export default function UsernameInput({ className, value, setValue, isValid, setIsValid, focusNext, forOwner = false, ...rest }: Props) {
+  const [ownerUsernameExists, { data: ownerUsername }] = useLazyQuery(OWNER_USERNAME_EXISTS);
+  const [petUsernameExists, { data: petUsername }] = useLazyQuery(PET_USERNAME_EXISTS);
   const [inFocus, setInFocus] = useState(false);
   const [isError, setIsError] = useState(false);
   const [message, setMessage] = useState('');
@@ -70,24 +73,27 @@ export default function UsernameInput({ className, value, setValue, isValid, set
   };
 
   const checkUsernameExists = useCallback(
-    (username: string) => {
-      const func = forOwner ? ownerUsernameExists : petUsernameExists;
+    async (username: string) => {
+      if (forOwner) {
+        await ownerUsernameExists({ variables: { username } });
 
-      func(username)
-        .then((res) => {
-          console.log(res.status, res.data);
-          if (res.status === 200) {
-            setIsValid(true);
-            setMessage('Username Available');
-          }
-        })
-        .catch((error) => {
-          if (error.response && error.response.status === 409) {
-            setIsValid(false);
-            setIsError(true);
-            setMessage('Username Taken');
-          }
-        });
+        if (ownerUsername?.validateUsername.isAvailable) {
+          setIsValid(true);
+          setMessage('Username Available');
+          return;
+        }
+      } else {
+        await petUsernameExists({ variables: { username } });
+        if (petUsername?.validatePetUsername.isAvailable) {
+          setIsValid(true);
+          setMessage('Username Available');
+          return;
+        }
+      }
+
+      setIsValid(false);
+      setIsError(true);
+      setMessage('Username Taken');
     },
     [forOwner]
   );

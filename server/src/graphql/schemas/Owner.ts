@@ -1,5 +1,3 @@
-import { Pet } from './../../models/Pet';
-
 export const OwnerTypeDef = `#graphql
   type Owner {
     id: String!
@@ -12,8 +10,8 @@ export const OwnerTypeDef = `#graphql
   # For Queries
 
   type OwnerResponse {
-    owner: Owner
-    pets: [Pet]
+    owner: Owner!
+    pets: [Pet!]!
   }
 
   type ValidateUsernameResponse {

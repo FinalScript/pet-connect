@@ -5,7 +5,7 @@ import Text from '../components/Text';
 import { TextInput } from 'react-native-gesture-handler';
 import { HapticFeedbackTypes, HapticOptions, trigger } from 'react-native-haptic-feedback';
 import UsernameInput from '../components/UsernameInput';
-import { signup, uploadOwnerProfilePicture } from '../api';
+import { uploadOwnerProfilePicture } from '../api';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../../App';
@@ -16,12 +16,14 @@ import { CURRENT_USER, LOADING, OWNER_DATA, PET_DATA } from '../redux/constants'
 import ImageCropPicker, { Image as ImageType } from 'react-native-image-crop-picker';
 import { FontAwesome } from '../utils/Icons';
 import { useAuth0 } from 'react-native-auth0';
+import { useMutation } from '@apollo/client';
+import { SIGNUP } from '../graphql/Owner';
 
 type NavigationProp = NativeStackNavigationProp<RootStackParamList, 'Account Creation'>;
 
 export default function AccountCreation() {
   const dispatch = useDispatch();
-  const { user } = useAuth0();
+  const [signUp] = useMutation(SIGNUP);
   const loading = useSelector((state: GeneralReducer) => state.general.loading);
   const navigation = useNavigation<NavigationProp>();
   const [username, setUsername] = useState<string>();
@@ -58,31 +60,31 @@ export default function AccountCreation() {
       dispatch({ type: LOADING, payload: true });
 
       setTimeout(() => {
-        signup({ username: username.toLowerCase(), name })
-          .then(async (res) => {
-            console.log(res.status, res.data);
-
-            if (res.status === 200) {
-              if (profilePicture) {
-                const imageData = new FormData();
-                imageData.append('photoId', `${res.data?.id}-profilePicture`);
-                imageData.append('image', {
-                  uri: profilePicture?.path,
-                  type: profilePicture?.mime,
-                  name: profilePicture?.filename,
-                });
-
-                const newOwner = await uploadOwnerProfilePicture(imageData);
-
-                dispatch({ type: OWNER_DATA, payload: (({ Pets, ...o }) => o)(newOwner.data) });
-              } else {
-                dispatch({ type: OWNER_DATA, payload: (({ Pets, ...o }) => o)(res.data.dataValues) });
-              }
-
-              dispatch({ type: CURRENT_USER, payload: { id: res.data.id, isPet: false } });
-
+        signUp({ variables: { username: username.toLowerCase(), name } })
+          .then(({ data }) => {
+            if (data?.signup.owner) {
+              dispatch({ type: OWNER_DATA, payload: data.signup.owner });
+              dispatch({ type: CURRENT_USER, payload: { id: data.signup.owner.id, isPet: false } });
               navigation.replace('Pet Creation', { initial: true });
             }
+            // console.log(res.status, res.data);
+            // if (res.status === 200) {
+            //   if (profilePicture) {
+            //     const imageData = new FormData();
+            //     imageData.append('photoId', `${res.data?.id}-profilePicture`);
+            //     imageData.append('image', {
+            //       uri: profilePicture?.path,
+            //       type: profilePicture?.mime,
+            //       name: profilePicture?.filename,
+            //     });
+            //     const newOwner = await uploadOwnerProfilePicture(imageData);
+            //     dispatch({ type: OWNER_DATA, payload: (({ Pets, ...o }) => o)(newOwner.data) });
+            //   } else {
+            //     dispatch({ type: OWNER_DATA, payload: (({ Pets, ...o }) => o)(res.data.dataValues) });
+            //   }
+            //   dispatch({ type: CURRENT_USER, payload: { id: res.data.id, isPet: false } });
+            // navigation.replace('Pet Creation', { initial: true });
+            // }
           })
           .catch((err) => {
             console.log(err);

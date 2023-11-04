@@ -43,7 +43,7 @@ export const PetTypeDef = `#graphql
         message: String!
     }
 
-    type Query{
+    type Query {
         getPetById(id: String!): PetResponse!
         getPetByUsername(username: String!): PetResponse!
         validatePetUsername(username: String!): ValidateUsernameResponse!
