@@ -1,7 +1,7 @@
 import { gql } from '../__generated__';
 
 export const GET_OWNER = gql(`
-  query Query {
+  query GetOwner {
     getOwner {
       owner {
         id
@@ -9,6 +9,12 @@ export const GET_OWNER = gql(`
         name
         username
         location
+        ProfilePicture {
+          id
+          name
+          path
+          type
+        }
       }
       pets {
         id

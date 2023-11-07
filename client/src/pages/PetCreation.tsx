@@ -19,29 +19,45 @@ import { RootRouteProps, RootStackParamList } from '../../App';
 import { options } from '../utils/hapticFeedbackOptions';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import ImagePicker, { Image as ImageType } from 'react-native-image-crop-picker';
-import { createPet, uploadPetProfilePicture } from '../api';
+import { uploadPetProfilePicture } from '../api';
 import { useDispatch, useSelector } from 'react-redux';
 import { GeneralReducer } from '../redux/reducers/generalReducer';
 import { ADD_PET, CURRENT_USER, LOADING } from '../redux/constants';
 import { ProfileReducer } from '../redux/reducers/profileReducer';
 import UsernameInput from '../components/UsernameInput';
+import { useMutation } from '@apollo/client';
+import { CREATE_PET } from '../graphql/Pet';
+
+enum PetType {
+  Bird = 'BIRD',
+  Cat = 'CAT',
+  Dog = 'DOG',
+  Fish = 'FISH',
+  GuineaPig = 'GUINEA_PIG',
+  Hamster = 'HAMSTER',
+  Horse = 'HORSE',
+  Mouse = 'MOUSE',
+  Other = 'OTHER',
+  Rabbit = 'RABBIT',
+  Snake = 'SNAKE',
+}
 
 const petTypes = [
-  { type: 'Dog', img: require('../../assets/img/dog.png') },
-  { type: 'Cat', img: require('../../assets/img/cat.png') },
-  { type: 'Bird', img: require('../../assets/img/bird.png') },
-  { type: 'Fish', img: require('../../assets/img/fish.png') },
-  { type: 'Rabbit', img: require('../../assets/img/rabbit.png') },
-  { type: 'Hamster', img: require('../../assets/img/hamster.png') },
-  { type: 'Reptile', img: require('../../assets/img/reptile.png') },
-  { type: 'Other', img: require('../../assets/img/other.png') },
+  { type: PetType.Dog, img: require('../../assets/img/dog.png') },
+  { type: PetType.Cat, img: require('../../assets/img/cat.png') },
+  { type: PetType.Bird, img: require('../../assets/img/bird.png') },
+  { type: PetType.Fish, img: require('../../assets/img/fish.png') },
+  { type: PetType.Rabbit, img: require('../../assets/img/rabbit.png') },
+  { type: PetType.Hamster, img: require('../../assets/img/hamster.png') },
+  { type: PetType.Snake, img: require('../../assets/img/reptile.png') },
+  { type: PetType.Other, img: require('../../assets/img/other.png') },
 ];
 
 type NavigationProp = NativeStackNavigationProp<RootStackParamList, 'Pet Creation'>;
 
 interface FormData {
   username: string;
-  type: string;
+  type: PetType;
   name: string;
   description: string;
   profilePicture?: ImageType | null | undefined;
@@ -51,11 +67,12 @@ export default function PetCreation() {
   const dispatch = useDispatch();
   const owner = useSelector((state: ProfileReducer) => state.profile.owner);
   const loading = useSelector((state: GeneralReducer) => state.general.loading);
+  const [createPet] = useMutation(CREATE_PET);
   const navigation = useNavigation<NavigationProp>();
   const route = useRoute<RootRouteProps<'Pet Creation'>>();
   const maxStep = 2;
   const [step, setStep] = useState(0);
-  const [formData, setFormData] = useState<FormData>({ type: '', username: '', name: '', description: '', profilePicture: undefined });
+  const [formData, setFormData] = useState<FormData>({ type: PetType.Dog, username: '', name: '', description: '', profilePicture: undefined });
   const [focus, setFocus] = useState({ username: false, name: false, description: false });
   const [isUsernameValid, setIsUsernameValid] = useState(false);
   const [optionsShuffle, setShuffle] = useState(0);
@@ -70,26 +87,26 @@ export default function PetCreation() {
     }
 
     setTimeout(() => {
-      createPet(formData)
+      createPet({ variables: formData })
         .then(async (res) => {
-          if (res.status === 200) {
-            if (formData.profilePicture) {
-              const imageData = new FormData();
-              imageData.append('photoId', `${res.data?.id}-profilePicture`);
-              imageData.append('image', {
-                uri: formData.profilePicture?.path,
-                type: formData.profilePicture?.mime,
-                name: formData.profilePicture?.filename,
-              });
+          if (res.data?.createPet.pet) {
+            // if (formData.profilePicture) {
+            //   const imageData = new FormData();
+            //   imageData.append('photoId', `${res.data?.id}-profilePicture`);
+            //   imageData.append('image', {
+            //     uri: formData.profilePicture?.path,
+            //     type: formData.profilePicture?.mime,
+            //     name: formData.profilePicture?.filename,
+            //   });
 
-              const newPet = await uploadPetProfilePicture(imageData, res.data.id);
+            //   const newPet = await uploadPetProfilePicture(imageData, res.data.id);
 
-              dispatch({ type: ADD_PET, payload: newPet.data });
-            } else {
-              dispatch({ type: ADD_PET, payload: res.data });
-            }
+            //   dispatch({ type: ADD_PET, payload: newPet.data });
+            // } else {
+            dispatch({ type: ADD_PET, payload: res.data.createPet.pet });
+            // }
 
-            dispatch({ type: CURRENT_USER, payload: { id: res.data.id, isPet: true } });
+            dispatch({ type: CURRENT_USER, payload: { id: res.data.createPet.pet.id, isPet: true } });
           }
 
           if (navigation.canGoBack()) {
@@ -107,9 +124,9 @@ export default function PetCreation() {
     }, 1500);
   }, [formData, dispatch, isUsernameValid]);
 
-  const petTypeOnPress = useCallback((type: string) => {
+  const petTypeOnPress = useCallback((type: PetType) => {
     setFormData((prev) => {
-      return { ...prev, type: type.toUpperCase() };
+      return { ...prev, type };
     });
     trigger(HapticFeedbackTypes.effectClick, options);
   }, []);
@@ -122,7 +139,7 @@ export default function PetCreation() {
     }
 
     setFormData((prev) => {
-      return { ...prev, type: '' };
+      return { ...prev, type: PetType.Dog };
     });
 
     trigger(HapticFeedbackTypes.effectClick, options);
@@ -205,7 +222,7 @@ export default function PetCreation() {
                     ' mb-5 mx-2.5 p-5 bg-themeInput border-[5px] shadow-sm shadow-themeShadow w-40 h-40 rounded-3xl flex items-center'
                   }>
                   <Image className='flex w-full h-[75%] aspect-square opacity-70' source={pet.img} />
-                  <Text className='mt-1 text-lg text-themeText'>{pet.type}</Text>
+                  <Text className='mt-1 text-lg text-themeText'>{pet.type.charAt(0) + pet.type.substring(1).toLowerCase()}</Text>
                 </View>
               </TouchableWithoutFeedback>
             );

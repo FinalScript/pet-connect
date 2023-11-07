@@ -134,16 +134,14 @@ const App = () => {
   }, [navigationRef, dispatch, verifyToken]);
 
   const fetchUserData = useCallback(async () => {
-    const ownerData = await getUserData().catch((err) => {
-      if (err.message === 'Owner not found') {
-        dispatch({ type: LOADING, payload: false });
-        trigger(HapticFeedbackTypes.notificationWarning, options);
-        navigationRef.dispatch(StackActions.replace('Account Creation'));
-      }
-      return;
-    });
+    const ownerData = await getUserData();
 
-    console.log(ownerData);
+    if (ownerData.error && ownerData.error.message === 'Owner not found') {
+      dispatch({ type: LOADING, payload: false });
+      trigger(HapticFeedbackTypes.notificationWarning, options);
+      navigationRef.dispatch(StackActions.replace('Account Creation'));
+      return;
+    }
 
     if (!ownerData) {
       dispatch({ type: LOADING, payload: false });

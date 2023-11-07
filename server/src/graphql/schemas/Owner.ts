@@ -1,3 +1,4 @@
+import { ProfilePicture } from './../../models/ProfilePicture';
 export const OwnerTypeDef = `#graphql
   type Owner {
     id: String!
@@ -5,6 +6,7 @@ export const OwnerTypeDef = `#graphql
     name: String
     username: String!
     location: String
+    ProfilePicture: ProfilePicture
   }
 
   # For Queries

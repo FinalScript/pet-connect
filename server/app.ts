@@ -14,12 +14,14 @@ import { Comment } from './src/models/Comment';
 import { ApolloServer } from '@apollo/server';
 import { schema } from './src/graphql/schemas/index';
 import fs from 'fs';
+import { OwnerRouter } from './src/routes/OwnerRoute';
+import { PetRouter } from './src/routes/PetRoute';
 dotenv.config();
 
 const app = express();
 
-app.use(express.json({ limit: '100mb' }));
-app.use(express.urlencoded({ limit: '100mb', extended: true }));
+app.use(express.json({}));
+app.use(express.urlencoded({ extended: true }));
 app.use(cors({ origin: true, credentials: true }));
 
 // Authorization middleware. When used, the Access Token must
@@ -66,7 +68,7 @@ const init = async () => {
     });
 
     await sequelize.sync({});
-    fs.rmSync('uploads/', { recursive: true, force: true });
+    // fs.rmSync('uploads/', { recursive: true, force: true });
   });
 
   const port = process.env.PORT || 3000;
@@ -77,6 +79,12 @@ const init = async () => {
   app.get('/health', (req, res) => {
     res.status(200).send('Okay!');
   });
+
+  app.use('/api/private/owner', checkJwt, OwnerRouter);
+
+  app.use('/api/private/pet', checkJwt, PetRouter);
+  
+  app.use('/uploads', express.static('uploads'));
 };
 
 init();
@@ -98,16 +106,6 @@ init();
 // });
 
 // // This route needs authentication
-// app.use('/api/private/owner', checkJwt, OwnerRouter);
-
-// app.use('/api/private/pet', checkJwt, PetRouter);
-
-// app.get('/api/private/verifyToken', checkJwt, (req, res) => {
-//   res.send();
-// });
-
-// app.use('/uploads', express.static('uploads'));
-
 // app.use('/api/private/post', checkJwt, PostRouter);
 
 // app.use('/api/private/like', checkJwt, LikeRouter);

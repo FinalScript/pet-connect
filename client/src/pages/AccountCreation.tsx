@@ -61,30 +61,24 @@ export default function AccountCreation() {
 
       setTimeout(() => {
         signUp({ variables: { username: username.toLowerCase(), name } })
-          .then(({ data }) => {
+          .then(async ({ data }) => {
             if (data?.signup.owner) {
-              dispatch({ type: OWNER_DATA, payload: data.signup.owner });
+              if (profilePicture) {
+                const imageData = new FormData();
+                imageData.append('photoId', `${data?.signup.owner.id}-profilePicture`);
+                imageData.append('image', {
+                  uri: profilePicture?.path,
+                  type: profilePicture?.mime,
+                  name: profilePicture?.filename,
+                });
+                const newOwner = await uploadOwnerProfilePicture(imageData);
+                dispatch({ type: OWNER_DATA, payload: (({ Pets, ...o }) => o)(newOwner.data) });
+              } else {
+                dispatch({ type: OWNER_DATA, payload: data.signup.owner });
+              }
               dispatch({ type: CURRENT_USER, payload: { id: data.signup.owner.id, isPet: false } });
               navigation.replace('Pet Creation', { initial: true });
             }
-            // console.log(res.status, res.data);
-            // if (res.status === 200) {
-            //   if (profilePicture) {
-            //     const imageData = new FormData();
-            //     imageData.append('photoId', `${res.data?.id}-profilePicture`);
-            //     imageData.append('image', {
-            //       uri: profilePicture?.path,
-            //       type: profilePicture?.mime,
-            //       name: profilePicture?.filename,
-            //     });
-            //     const newOwner = await uploadOwnerProfilePicture(imageData);
-            //     dispatch({ type: OWNER_DATA, payload: (({ Pets, ...o }) => o)(newOwner.data) });
-            //   } else {
-            //     dispatch({ type: OWNER_DATA, payload: (({ Pets, ...o }) => o)(res.data.dataValues) });
-            //   }
-            //   dispatch({ type: CURRENT_USER, payload: { id: res.data.id, isPet: false } });
-            // navigation.replace('Pet Creation', { initial: true });
-            // }
           })
           .catch((err) => {
             console.log(err);

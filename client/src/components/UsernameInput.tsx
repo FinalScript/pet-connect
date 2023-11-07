@@ -17,21 +17,21 @@ interface Props extends TextInputProps {
 }
 
 export default function UsernameInput({ className, value, setValue, isValid, setIsValid, focusNext, forOwner = false, ...rest }: Props) {
-  const [ownerUsernameExists, { data: ownerUsername }] = useLazyQuery(OWNER_USERNAME_EXISTS);
-  const [petUsernameExists, { data: petUsername }] = useLazyQuery(PET_USERNAME_EXISTS);
+  const [ownerUsernameExists] = useLazyQuery(OWNER_USERNAME_EXISTS);
+  const [petUsernameExists] = useLazyQuery(PET_USERNAME_EXISTS);
   const [inFocus, setInFocus] = useState(false);
   const [isError, setIsError] = useState(false);
   const [message, setMessage] = useState('');
   const [isChecking, setChecking] = useState(false);
 
   useEffect(() => {
-    if (value) {
+    if (value && value.length > 0) {
       setChecking(true);
     }
 
     const timeoutId = setTimeout(() => {
       // value === "" will prevent an infinite load from occuring when a username is entered then deleted quickly
-      if (value || value === '') {
+      if (value) {
         validateUsername(value);
         setChecking(false);
       }
@@ -54,7 +54,7 @@ export default function UsernameInput({ className, value, setValue, isValid, set
       return;
     }
 
-    if (text !== undefined || text !== null) {
+    if (text.trim().length !== 0 || text !== undefined || text !== null) {
       checkUsernameExists(text);
     }
   }, []);
@@ -75,25 +75,34 @@ export default function UsernameInput({ className, value, setValue, isValid, set
   const checkUsernameExists = useCallback(
     async (username: string) => {
       if (forOwner) {
-        await ownerUsernameExists({ variables: { username } });
+        const ownerUsername = await ownerUsernameExists({ variables: { username } });
 
-        if (ownerUsername?.validateUsername.isAvailable) {
+        if (ownerUsername.error) {
+          setIsValid(false);
+          setIsError(true);
+          setMessage(ownerUsername.error.message);
+        }
+
+        if (ownerUsername?.data?.validateUsername.isAvailable) {
           setIsValid(true);
           setMessage('Username Available');
           return;
         }
       } else {
-        await petUsernameExists({ variables: { username } });
-        if (petUsername?.validatePetUsername.isAvailable) {
+        const petUsername = await petUsernameExists({ variables: { username } });
+
+        if (petUsername.error) {
+          setIsValid(false);
+          setIsError(true);
+          setMessage(petUsername.error.message);
+        }
+
+        if (petUsername?.data?.validatePetUsername.isAvailable) {
           setIsValid(true);
           setMessage('Username Available');
           return;
         }
       }
-
-      setIsValid(false);
-      setIsError(true);
-      setMessage('Username Taken');
     },
     [forOwner]
   );

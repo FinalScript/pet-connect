@@ -13,7 +13,7 @@ import { store } from '../redux/store';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import React from 'react';
 import * as env from '../../env.json';
-import { setApiBaseUrl } from '../api';
+import { setApiBaseUrl, setBearerToken } from '../api';
 
 interface Props {
   children: ReactNode;
@@ -38,17 +38,17 @@ export default function AppLoader({ children }: Props) {
 
     setClientId(Config.AUTH0_CLIENT_ID);
 
-    // setApiBaseUrl(Config.API_URL);
     setApiBaseUrl(env.API_URL);
   };
 
   const httpLink = createHttpLink({
     uri: `${env.API_URL}/graphql`,
-    // uri: `${Config.API_URL || ''}/graphql`,
   });
 
   const authLink = setContext(async (_, { headers }) => {
     const token = await AsyncStorage.getItem('@token');
+
+    setBearerToken(`Bearer ${token}`);
 
     return {
       headers: {
