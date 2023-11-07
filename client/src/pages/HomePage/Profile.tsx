@@ -119,7 +119,7 @@ const Profile = () => {
           if (currentUserId?.isPet) {
             const newPet = await uploadPetProfilePicture(imageData, currentUserId.id);
 
-            dispatch({ type: UPDATE_PET, payload: { newPet, id: currentUserId.id } });
+            dispatch({ type: UPDATE_PET, payload: newPet.data });
           } else {
             const newOwner = await uploadOwnerProfilePicture(imageData);
 
@@ -143,7 +143,7 @@ const Profile = () => {
                   <Image
                     className='w-full h-full rounded-full'
                     source={{
-                      uri: getApiBaseUrl() + '/' + currentUser.ProfilePicture.path,
+                      uri: `${getApiBaseUrl()}/${currentUser.ProfilePicture.path}?${Date.now()}`,
                     }}
                   />
                 ) : (
@@ -236,7 +236,7 @@ const Profile = () => {
                   <Image
                     className='w-full h-full rounded-full'
                     source={{
-                      uri: getApiBaseUrl() + '/' + currentUser.ProfilePicture.path,
+                      uri: `${getApiBaseUrl()}/${currentUser.ProfilePicture.path}?${Date.now()}`,
                     }}
                   />
                 ) : (

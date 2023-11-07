@@ -20,6 +20,7 @@ export const PetTypeDef = `#graphql
         type: PetType!
         description: String
         location: String
+        ProfilePicture: ProfilePicture
     }
     
     type PetResponse {

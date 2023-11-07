@@ -71,7 +71,7 @@ const profileReducer: ProfileReducerFn = (state = initialState, action: any) => 
       });
 
       if (petToUpdateIndex) {
-        state.pets[petToUpdateIndex] = action.payload.newPet;
+        state.pets[petToUpdateIndex] = action.payload;
       }
 
       return { ...state };

@@ -10,6 +10,12 @@ export const CREATE_PET = gql(`
         type
         description
         location
+        ProfilePicture {
+          id
+          name
+          path
+          type
+        }
       }
     }
   }
