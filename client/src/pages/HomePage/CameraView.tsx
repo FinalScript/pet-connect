@@ -3,7 +3,7 @@ import { useRef, useState, useMemo, useCallback } from 'react';
 import { Image, StyleSheet, TouchableOpacity, View } from 'react-native';
 import { PinchGestureHandler, PinchGestureHandlerGestureEvent, TapGestureHandler } from 'react-native-gesture-handler';
 import { CameraDeviceFormat, CameraRuntimeError, PhotoFile, sortFormats, useCameraDevices, VideoFile } from 'react-native-vision-camera';
-import { Camera, frameRateIncluded } from 'react-native-vision-camera';
+import { Camera, frameRateIncludedm } from 'react-native-vision-camera';
 import { CONTENT_SPACING, MAX_ZOOM_FACTOR, SAFE_AREA_PADDING } from '../../utils/constants';
 import Reanimated, { Extrapolate, interpolate, useAnimatedGestureHandler, useAnimatedProps, useSharedValue } from 'react-native-reanimated';
 import { useEffect } from 'react';
@@ -133,8 +133,6 @@ export function CameraView(): React.ReactElement {
   }, [neutralZoom, zoom]);
 
   useEffect(() => {
-    Camera.getMicrophonePermissionStatus().then((status) => setHasMicrophonePermission(status === 'authorized'));
-
     CameraRoll.getPhotos({
       first: 1,
       assetType: 'Photos',
