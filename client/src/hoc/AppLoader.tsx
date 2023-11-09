@@ -15,6 +15,7 @@ import React from 'react';
 import * as env from '../../env.json';
 import { setApiBaseUrl, setBearerToken } from '../api';
 import createUploadLink from 'apollo-upload-client/public/createUploadLink';
+import Loading from '../pages/Loading';
 
 interface Props {
   children: ReactNode;
@@ -77,11 +78,7 @@ export default function AppLoader({ children }: Props) {
   });
 
   if (error || !domain || !clientId) {
-    return (
-      <SafeAreaView className='bg-themeBg h-full flex justify-center items-center'>
-        <Text className='text-themeText font-semibold text-3xl'>An unknown error occured</Text>
-      </SafeAreaView>
-    );
+    return <Loading />;
   }
 
   return (

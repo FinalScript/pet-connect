@@ -60,7 +60,7 @@ export default function AccountCreation() {
     if (isUsernameValid && username) {
       trigger(HapticFeedbackTypes.impactMedium, options);
       dispatch({ type: LOADING, payload: true });
-      
+
       const profilePictureFile =
         profilePicture &&
         new ReactNativeFile({
@@ -69,7 +69,6 @@ export default function AccountCreation() {
           type: profilePicture.mime,
         });
 
-      console.log(profilePictureFile);
       setTimeout(() => {
         signUp({
           variables: {
@@ -79,7 +78,6 @@ export default function AccountCreation() {
           },
         })
           .then(async ({ data }) => {
-            console.log(data);
             if (data?.signup.owner) {
               dispatch({ type: OWNER_DATA, payload: data.signup.owner });
               dispatch({ type: CURRENT_USER, payload: { id: data.signup.owner.id, isPet: false } });

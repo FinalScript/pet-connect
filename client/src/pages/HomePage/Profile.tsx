@@ -1,35 +1,30 @@
-import { Image, Pressable, SafeAreaView, ScrollView, StyleSheet, View } from 'react-native';
-import { OwnerDAO, PetDAO, ProfileReducer } from '../../redux/reducers/profileReducer';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { Image, Pressable, SafeAreaView, ScrollView, StyleSheet, View } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
+import { OwnerDAO, PetDAO, ProfileReducer } from '../../redux/reducers/profileReducer';
 
-import AccountSwitcherModal from '../../components/modals/AccountSwitcherModal';
-import AntDesign from 'react-native-vector-icons/AntDesign';
-import { LOGOUT, OWNER_DATA, UPDATE_PET } from '../../redux/constants';
-import { Modalize } from 'react-native-modalize';
-import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { RootStackParamList } from '../../../App';
-import SettingsModal from '../../components/modals/SettingsModal';
-import Text from '../../components/Text';
-import { useAuth0 } from 'react-native-auth0';
 import { useNavigation } from '@react-navigation/native';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { Dimensions } from 'react-native';
+import { useAuth0 } from 'react-native-auth0';
 import { Portal } from 'react-native-portalize';
+import AntDesign from 'react-native-vector-icons/AntDesign';
+import { RootStackParamList } from '../../../App';
+import Text from '../../components/Text';
+import AccountSwitcherModal from '../../components/modals/AccountSwitcherModal';
+import SettingsModal from '../../components/modals/SettingsModal';
+import { LOGOUT } from '../../redux/constants';
 
-import ImagePicker from 'react-native-image-crop-picker';
-import { Ionicon } from '../../utils/Icons';
-import { getApiBaseUrl, uploadOwnerProfilePicture, uploadPetProfilePicture } from '../../api';
-import { PressableOpacity } from 'react-native-pressable-opacity';
-import EditProfileModal from '../../components/modals/EditProfileModal';
-import { Easing } from 'react-native-reanimated';
+import { BottomSheetBackdrop, BottomSheetModal } from '@gorhom/bottom-sheet';
 import { HapticFeedbackTypes, trigger } from 'react-native-haptic-feedback';
-import { options } from '../../utils/hapticFeedbackOptions';
+import { PressableOpacity } from 'react-native-pressable-opacity';
+import { getApiBaseUrl } from '../../api';
 import PetTypeImage from '../../components/PetTypeImage';
-import { BottomSheetModal, BottomSheetBackdrop } from '@gorhom/bottom-sheet';
+import EditProfileModal from '../../components/modals/EditProfileModal';
+import { Ionicon } from '../../utils/Icons';
+import { options } from '../../utils/hapticFeedbackOptions';
 
 type NavigationProp = NativeStackNavigationProp<RootStackParamList, 'Home'>;
-
-const window = Dimensions.get('screen');
 
 const Profile = () => {
   const dispatch = useDispatch();
@@ -97,47 +92,12 @@ const Profile = () => {
     navigation.navigate('Pet Creation');
   }, []);
 
-  const changeProfilePicture = useCallback(() => {
-    ImagePicker.openPicker({
-      width: 500,
-      height: 500,
-      cropping: true,
-      mediaType: 'photo',
-      compressImageMaxHeight: 500,
-      compressImageMaxWidth: 500,
-    })
-      .then(async (image) => {
-        if (image) {
-          const imageData = new FormData();
-          imageData.append('photoId', currentUser?.ProfilePicture?.id);
-          imageData.append('image', {
-            uri: image?.path,
-            type: image?.mime,
-            name: image?.filename,
-          });
-
-          if (currentUserId?.isPet) {
-            const newPet = await uploadPetProfilePicture(imageData, currentUserId.id);
-
-            dispatch({ type: UPDATE_PET, payload: newPet.data });
-          } else {
-            const newOwner = await uploadOwnerProfilePicture(imageData);
-
-            dispatch({ type: OWNER_DATA, payload: (({ Pets, ...o }) => o)(newOwner?.data) });
-          }
-        }
-      })
-      .catch((err) => {
-        console.log(err);
-      });
-  }, [currentUser, currentUserId, dispatch]);
-
   const ownerProfile = useMemo(() => {
     return (
       <ScrollView className='w-full px-5'>
         <View className='mt-5 flex flex-row items-center justify-between'>
           <View className='relative'>
-            <Pressable onPress={changeProfilePicture}>
+            <Pressable onPress={() => {}}>
               <View className='w-28 h-28 rounded-full border-2 border-themeActive flex items-center justify-center'>
                 {currentUser?.ProfilePicture?.path ? (
                   <Image
@@ -223,14 +183,14 @@ const Profile = () => {
         </View>
       </ScrollView>
     );
-  }, [currentUser, pets, setEditProfileModalVisible, changeProfilePicture, getApiBaseUrl]);
+  }, [currentUser, pets, setEditProfileModalVisible, getApiBaseUrl]);
 
   const petProfile = useMemo(() => {
     return (
       <ScrollView className='w-full px-5'>
         <View className='mt-5 flex items-center justify-between'>
           <View className='relative'>
-            <Pressable onPress={changeProfilePicture}>
+            <Pressable onPress={() => {}}>
               <View className='w-44 h-44 rounded-full border-2 border-themeActive flex items-center justify-center'>
                 {currentUser?.ProfilePicture?.path ? (
                   <Image
@@ -287,7 +247,7 @@ const Profile = () => {
         </View>
       </ScrollView>
     );
-  }, [currentUser, setEditProfileModalVisible, changeProfilePicture, getApiBaseUrl]);
+  }, [currentUser, setEditProfileModalVisible, getApiBaseUrl]);
 
   return (
     <SafeAreaView className='flex-1 h-full items-center bg-themeBg'>

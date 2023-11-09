@@ -1,32 +1,33 @@
-import { useCallback, useState } from 'react';
-import {
-  View,
-  Image,
-  TouchableWithoutFeedback,
-  TouchableOpacity,
-  TextInput,
-  TouchableHighlight,
-  ActivityIndicator,
-  KeyboardAvoidingView,
-  Platform,
-} from 'react-native';
-import Text from '../components/Text';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import { trigger, HapticFeedbackTypes } from 'react-native-haptic-feedback';
+import { useMutation } from '@apollo/client';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { RootRouteProps, RootStackParamList } from '../../App';
-import { options } from '../utils/hapticFeedbackOptions';
-import Icon from 'react-native-vector-icons/FontAwesome';
+import { useCallback, useState } from 'react';
+import {
+  ActivityIndicator,
+  Image,
+  KeyboardAvoidingView,
+  Platform,
+  TextInput,
+  TouchableHighlight,
+  TouchableOpacity,
+  TouchableWithoutFeedback,
+  View,
+} from 'react-native';
+import { HapticFeedbackTypes, trigger } from 'react-native-haptic-feedback';
 import ImagePicker, { Image as ImageType } from 'react-native-image-crop-picker';
-import { uploadPetProfilePicture } from '../api';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import Icon from 'react-native-vector-icons/FontAwesome';
 import { useDispatch, useSelector } from 'react-redux';
-import { GeneralReducer } from '../redux/reducers/generalReducer';
-import { ADD_PET, CURRENT_USER, LOADING } from '../redux/constants';
-import { ProfileReducer } from '../redux/reducers/profileReducer';
+import { RootRouteProps, RootStackParamList } from '../../App';
+import Text from '../components/Text';
 import UsernameInput from '../components/UsernameInput';
-import { useMutation } from '@apollo/client';
 import { CREATE_PET } from '../graphql/Pet';
+import { ADD_PET, CURRENT_USER, LOADING } from '../redux/constants';
+import { GeneralReducer } from '../redux/reducers/generalReducer';
+import { ProfileReducer } from '../redux/reducers/profileReducer';
+import { options } from '../utils/hapticFeedbackOptions';
+import ReactNativeFile from 'apollo-upload-client/public/ReactNativeFile';
+import { uniqueId } from 'lodash';
 
 enum PetType {
   Bird = 'BIRD',
@@ -86,27 +87,20 @@ export default function PetCreation() {
       return;
     }
 
+    const profilePictureFile =
+      formData.profilePicture &&
+      new ReactNativeFile({
+        uri: formData.profilePicture.path,
+        name: formData.profilePicture.filename || uniqueId(),
+        type: formData.profilePicture.mime,
+      });
+
     setTimeout(() => {
-      createPet({ variables: formData })
-        .then(async (res) => {
-          if (res.data?.createPet.pet) {
-            // if (formData.profilePicture) {
-            //   const imageData = new FormData();
-            //   imageData.append('photoId', `${res.data?.id}-profilePicture`);
-            //   imageData.append('image', {
-            //     uri: formData.profilePicture?.path,
-            //     type: formData.profilePicture?.mime,
-            //     name: formData.profilePicture?.filename,
-            //   });
-
-            //   const newPet = await uploadPetProfilePicture(imageData, res.data.id);
-
-            //   dispatch({ type: ADD_PET, payload: newPet.data });
-            // } else {
-            dispatch({ type: ADD_PET, payload: res.data.createPet.pet });
-            // }
-
-            dispatch({ type: CURRENT_USER, payload: { id: res.data.createPet.pet.id, isPet: true } });
+      createPet({ variables: { ...formData, profilePicture: profilePictureFile } })
+        .then(async ({ data }) => {
+          if (data?.createPet.pet) {
+            dispatch({ type: ADD_PET, payload: data.createPet.pet });
+            dispatch({ type: CURRENT_USER, payload: { id: data.createPet.pet.id, isPet: true } });
           }
 
           if (navigation.canGoBack()) {
@@ -116,7 +110,7 @@ export default function PetCreation() {
           }
         })
         .catch((err) => {
-          console.log(err.response);
+          console.log(JSON.stringify(err, null, 2));
         })
         .finally(() => {
           dispatch({ type: LOADING, payload: false });

@@ -9,7 +9,7 @@ import { useLazyQuery } from '@apollo/client';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { NavigationContainer, RouteProp, StackActions } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import React, { useCallback, useContext, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { StatusBar, View } from 'react-native';
 import { useAuth0 } from 'react-native-auth0';
 import { HapticFeedbackTypes, trigger } from 'react-native-haptic-feedback';
@@ -18,6 +18,8 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useDispatch, useSelector } from 'react-redux';
 import { ping } from './src/api';
 import Text from './src/components/Text';
+import { VERIFY_TOKEN } from './src/graphql/Auth';
+import { GET_OWNER } from './src/graphql/Owner';
 import AppLoader from './src/hoc/AppLoader';
 import AccountCreation from './src/pages/AccountCreation';
 import GetStarted from './src/pages/GetStarted';
@@ -28,9 +30,6 @@ import { CURRENT_USER, LOADING, OWNER_DATA, PET_DATA } from './src/redux/constan
 import { ProfileReducer } from './src/redux/reducers/profileReducer';
 import { navigationRef } from './src/services/navigator';
 import { options } from './src/utils/hapticFeedbackOptions';
-import { GET_OWNER } from './src/graphql/Owner';
-import { VERIFY_TOKEN } from './src/graphql/Auth';
-import { useApolloClient } from '@apollo/client/react/hooks/useApolloClient.js';
 
 export type RootStackParamList = {
   Loading: undefined;
@@ -47,7 +46,6 @@ export type RootRouteProps<RouteName extends keyof RootStackParamList> = RoutePr
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
 const App = () => {
-  const apolloClient = useApolloClient();
   const dispatch = useDispatch();
   const [apiStatus, setApiStatus] = useState(true);
   const [getUserData] = useLazyQuery(GET_OWNER);
@@ -131,7 +129,6 @@ const App = () => {
       navigationRef.dispatch(StackActions.replace('Get Started'));
       return;
     }
-    
 
     await fetchUserData();
   }, [navigationRef, dispatch, verifyToken]);

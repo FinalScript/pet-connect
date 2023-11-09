@@ -61,3 +61,19 @@ export const OWNER_USERNAME_EXISTS = gql(`
     }
   }
 `);
+
+export const UPDATE_OWNER = gql(`
+  mutation UpdateOwner($username: String, $name: String, $location: String, $profilePicture: Upload) {
+    updateOwner(username: $username, name: $name, location: $location, profilePicture: $profilePicture) {
+      name
+      username
+      location
+      ProfilePicture {
+        id
+        name
+        path
+        type
+      }
+    }
+  }
+`);
