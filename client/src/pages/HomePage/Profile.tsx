@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { Image, Pressable, SafeAreaView, ScrollView, StyleSheet, View } from 'react-native';
+import { Image, Modal, Pressable, SafeAreaView, ScrollView, StyleSheet, View } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
 import { OwnerDAO, PetDAO, ProfileReducer } from '../../redux/reducers/profileReducer';
 
@@ -34,10 +34,7 @@ const Profile = () => {
   const [currentUser, setCurrentUser] = useState<OwnerDAO | PetDAO>();
   const navigation = useNavigation<NavigationProp>();
   const { clearSession } = useAuth0();
-
-  const accountSwitchModalRef = useRef<BottomSheetModal>(null);
-  const settingsModalRef = useRef<BottomSheetModal>(null);
-  const editProfileModalRef = useRef<BottomSheetModal>(null);
+  const [modals, setModals] = useState({ accountSwitcher: false, settings: false, editProfile: false });
 
   useEffect(() => {
     if (owner?.id === currentUserId?.id) {
@@ -52,29 +49,26 @@ const Profile = () => {
     }
   }, [currentUserId, owner, pets]);
 
-  const setEditProfileModalVisible = useCallback(
-    (bool: boolean) => {
-      bool && trigger(HapticFeedbackTypes.contextClick, options);
-      bool ? editProfileModalRef.current?.present() : editProfileModalRef.current?.close();
-    },
-    [editProfileModalRef]
-  );
+  const setEditProfileModalVisible = useCallback((bool: boolean) => {
+    trigger(HapticFeedbackTypes.contextClick, options);
+    setModals((prev) => {
+      return { ...prev, editProfile: bool };
+    });
+  }, []);
 
-  const setAccountSwitchModalVisible = useCallback(
-    (bool: boolean) => {
-      bool && trigger(HapticFeedbackTypes.contextClick, options);
-      bool ? accountSwitchModalRef.current?.present() : accountSwitchModalRef.current?.close();
-    },
-    [accountSwitchModalRef]
-  );
+  const setAccountSwitchModalVisible = useCallback((bool: boolean) => {
+    trigger(HapticFeedbackTypes.contextClick, options);
+    setModals((prev) => {
+      return { ...prev, accountSwitcher: bool };
+    });
+  }, []);
 
-  const setSettingsModalVisible = useCallback(
-    (bool: boolean) => {
-      bool && trigger(HapticFeedbackTypes.contextClick, options);
-      bool ? settingsModalRef.current?.present() : settingsModalRef.current?.close();
-    },
-    [settingsModalRef]
-  );
+  const setSettingsModalVisible = useCallback((bool: boolean) => {
+    trigger(HapticFeedbackTypes.contextClick, options);
+    setModals((prev) => {
+      return { ...prev, settings: bool };
+    });
+  }, []);
 
   const logout = useCallback(async () => {
     try {
@@ -141,7 +135,7 @@ const Profile = () => {
             onPress={() => {
               setEditProfileModalVisible(true);
             }}>
-            <View className='bg-themeBtn px-7 py-1 rounded-lg'>
+            <View className='bg-themeBtn px-7 py-2 rounded-lg'>
               <Text className='text-themeText text-base font-semibold text-center'>Edit Profile</Text>
             </View>
           </PressableOpacity>
@@ -151,7 +145,7 @@ const Profile = () => {
             onPress={() => {
               // TODO
             }}>
-            <View className='bg-themeBtn px-7 py-1 rounded-lg'>
+            <View className='bg-themeBtn px-7 py-2 rounded-lg'>
               <Text className='text-themeText text-base font-semibold text-center'>Share Profile</Text>
             </View>
           </PressableOpacity>
@@ -252,36 +246,28 @@ const Profile = () => {
   return (
     <SafeAreaView className='flex-1 h-full items-center bg-themeBg'>
       <Portal>
-        <BottomSheetModal
-          ref={editProfileModalRef}
-          enableContentPanningGesture={false}
-          index={0}
-          snapPoints={['100%']}
-          handleStyle={{ opacity: 0 }}
-          backgroundStyle={{ backgroundColor: '#fde1da' }}>
+        <Modal
+          visible={modals.editProfile}
+          presentationStyle='pageSheet'
+          animationType='slide'
+          onRequestClose={() => {
+            setEditProfileModalVisible(false);
+          }}>
           <EditProfileModal
             profile={currentUser}
             closeModal={() => {
               setEditProfileModalVisible(false);
             }}
           />
-        </BottomSheetModal>
-        <BottomSheetModal
-          ref={accountSwitchModalRef}
-          enablePanDownToClose
-          index={0}
-          snapPoints={['65%']}
-          backdropComponent={(props) => (
-            <BottomSheetBackdrop
-              {...props}
-              opacity={0.2}
-              enableTouchThrough={false}
-              appearsOnIndex={0}
-              disappearsOnIndex={-1}
-              style={[{ backgroundColor: 'rgba(0, 0, 0, 1)' }, StyleSheet.absoluteFillObject]}
-            />
-          )}
-          backgroundStyle={{ backgroundColor: '#fde1da' }}>
+        </Modal>
+        <Modal
+          style={{ justifyContent: 'center', alignItems: 'center', margin: 0 }}
+          visible={modals.accountSwitcher}
+          presentationStyle='pageSheet'
+          animationType='slide'
+          onRequestClose={() => {
+            setAccountSwitchModalVisible(false);
+          }}>
           <AccountSwitcherModal
             navigateNewPet={navigateNewPet}
             currentUser={currentUser}
@@ -289,31 +275,21 @@ const Profile = () => {
               setAccountSwitchModalVisible(false);
             }}
           />
-        </BottomSheetModal>
-        <BottomSheetModal
-          ref={settingsModalRef}
-          enablePanDownToClose
-          enableDismissOnClose
-          index={0}
-          snapPoints={['80%']}
-          backdropComponent={(props) => (
-            <BottomSheetBackdrop
-              {...props}
-              opacity={0.2}
-              enableTouchThrough={false}
-              appearsOnIndex={0}
-              disappearsOnIndex={-1}
-              style={[{ backgroundColor: 'rgba(0, 0, 0, 1)' }, StyleSheet.absoluteFillObject]}
-            />
-          )}
-          backgroundStyle={{ backgroundColor: '#fde1da' }}>
+        </Modal>
+        <Modal
+          visible={modals.settings}
+          presentationStyle='pageSheet'
+          animationType='slide'
+          onRequestClose={() => {
+            setSettingsModalVisible(false);
+          }}>
           <SettingsModal
             logout={logout}
             closeModal={() => {
               setSettingsModalVisible(false);
             }}
           />
-        </BottomSheetModal>
+        </Modal>
       </Portal>
       <View className='flex-row items-center justify-between w-full px-5'>
         <Pressable onPress={() => setAccountSwitchModalVisible(true)}>

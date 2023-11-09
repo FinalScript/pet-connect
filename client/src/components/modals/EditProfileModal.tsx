@@ -18,7 +18,7 @@ const EditProfileModal = ({ closeModal, profile }: Props) => {
   }, [closeModal]);
 
   return (
-    <SafeAreaView className='flex w-full h-full px-5 py-5'>
+    <View className='flex w-full h-full px-2 py-5 bg-themeBg'>
       <View className='flex-row justify-between px-5'>
         <Pressable
           onPress={() => {
@@ -34,7 +34,9 @@ const EditProfileModal = ({ closeModal, profile }: Props) => {
 
       <View className='mt-8 px-2'>
         <View className='mb-5 flex flex-col justify-center items-center'>
-          <PressableOpacity activeOpacity={0.8} className='w-[160px] h-[160px] bg-themeInput flex items-center justify-center rounded-3xl shadow-sm shadow-themeShadow'>
+          <PressableOpacity
+            activeOpacity={0.8}
+            className='w-[160px] h-[160px] bg-themeInput flex items-center justify-center rounded-3xl shadow-sm shadow-themeShadow'>
             {profile?.ProfilePicture?.path ? (
               <Image
                 className='w-full h-full rounded-3xl'
@@ -48,7 +50,7 @@ const EditProfileModal = ({ closeModal, profile }: Props) => {
           </PressableOpacity>
         </View>
       </View>
-    </SafeAreaView>
+    </View>
   );
 };
 

@@ -10,8 +10,8 @@ interface Props extends ModalProps {
 
 const SettingsModal = ({ logout, closeModal }: Props) => {
   return (
-    <View className='flex w-full h-full px-5 py-5'>
-      <Text className='text-3xl font-bold'>Settings</Text>
+    <View className='flex w-full h-full px-5 py-5 bg-themeBg'>
+      <Text className='text-3xl font-bold text-center'>Settings</Text>
 
       <View>
         <Button

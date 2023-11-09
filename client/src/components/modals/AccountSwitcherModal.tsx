@@ -39,7 +39,7 @@ const AccountSwitcherModal = ({ navigateNewPet, currentUser, closeModal }: Props
   );
 
   return (
-    <View className='flex w-full h-full bg-themeB px-5 py-5 pt-10'>
+    <View className='flex w-full h-full px-5 py-5 pt-10 bg-themeBg'>
       <Text className='text-3xl font-bold text-center'>Switch Profile</Text>
       <ScrollView className='flex-grow'>
         <View className='flex flex-row items-center my-4 px-3'>
