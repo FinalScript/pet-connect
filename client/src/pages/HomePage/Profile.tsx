@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { Image, Modal, Pressable, SafeAreaView, ScrollView, StyleSheet, View } from 'react-native';
+import { Image, Modal, Pressable, SafeAreaView, ScrollView, Share, StyleSheet, View } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
 import { OwnerDAO, PetDAO, ProfileReducer } from '../../redux/reducers/profileReducer';
 
@@ -50,21 +50,18 @@ const Profile = () => {
   }, [currentUserId, owner, pets]);
 
   const setEditProfileModalVisible = useCallback((bool: boolean) => {
-    trigger(HapticFeedbackTypes.contextClick, options);
     setModals((prev) => {
       return { ...prev, editProfile: bool };
     });
   }, []);
 
   const setAccountSwitchModalVisible = useCallback((bool: boolean) => {
-    trigger(HapticFeedbackTypes.contextClick, options);
     setModals((prev) => {
       return { ...prev, accountSwitcher: bool };
     });
   }, []);
 
   const setSettingsModalVisible = useCallback((bool: boolean) => {
-    trigger(HapticFeedbackTypes.contextClick, options);
     setModals((prev) => {
       return { ...prev, settings: bool };
     });
@@ -84,6 +81,25 @@ const Profile = () => {
 
   const navigateNewPet = useCallback(() => {
     navigation.navigate('Pet Creation');
+  }, []);
+
+  const onShare = useCallback(async () => {
+    try {
+      const result = await Share.share({
+        message: 'Pet Connect - FinalScript',
+      });
+      if (result.action === Share.sharedAction) {
+        if (result.activityType) {
+          // shared with activity type of result.activityType
+        } else {
+          // shared
+        }
+      } else if (result.action === Share.dismissedAction) {
+        // dismissed
+      }
+    } catch (error: any) {
+      console.log(error.message);
+    }
   }, []);
 
   const ownerProfile = useMemo(() => {
@@ -143,7 +159,7 @@ const Profile = () => {
             className='flex-1'
             activeOpacity={0.6}
             onPress={() => {
-              // TODO
+              onShare();
             }}>
             <View className='bg-themeBtn px-7 py-2 rounded-lg'>
               <Text className='text-themeText text-base font-semibold text-center'>Share Profile</Text>
@@ -224,7 +240,7 @@ const Profile = () => {
             onPress={() => {
               setEditProfileModalVisible(true);
             }}>
-            <View className='bg-themeBtn px-7 py-1 rounded-lg'>
+            <View className='bg-themeBtn px-7 py-2 rounded-lg'>
               <Text className='text-themeText text-base font-semibold text-center'>Edit Profile</Text>
             </View>
           </PressableOpacity>
@@ -232,9 +248,9 @@ const Profile = () => {
             className='flex-1'
             activeOpacity={0.6}
             onPress={() => {
-              // TODO
+              onShare();
             }}>
-            <View className='bg-themeBtn px-7 py-1 rounded-lg'>
+            <View className='bg-themeBtn px-7 py-2 rounded-lg'>
               <Text className='text-themeText text-base font-semibold text-center'>Share Profile</Text>
             </View>
           </PressableOpacity>
@@ -245,7 +261,7 @@ const Profile = () => {
 
   return (
     <SafeAreaView className='flex-1 h-full items-center bg-themeBg'>
-      <Portal>
+     
         <Modal
           visible={modals.editProfile}
           presentationStyle='pageSheet'
@@ -290,7 +306,6 @@ const Profile = () => {
             }}
           />
         </Modal>
-      </Portal>
       <View className='flex-row items-center justify-between w-full px-5'>
         <Pressable onPress={() => setAccountSwitchModalVisible(true)}>
           <View className='flex-row items-center gap-2'>
