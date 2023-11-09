@@ -1,9 +1,10 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { ActivityIndicator, TextInput, TextInputProps } from 'react-native';
 import { View, TextProps } from 'react-native';
-import { ownerUsernameExists, petUsernameExists } from '../api';
-import { throttle } from 'lodash';
 import Text from './Text';
+import { useLazyQuery } from '@apollo/client';
+import { OWNER_USERNAME_EXISTS } from '../graphql/Owner';
+import { PET_USERNAME_EXISTS } from '../graphql/Pet';
 
 interface Props extends TextInputProps {
   setValue: Function;
@@ -16,19 +17,21 @@ interface Props extends TextInputProps {
 }
 
 export default function UsernameInput({ className, value, setValue, isValid, setIsValid, focusNext, forOwner = false, ...rest }: Props) {
+  const [ownerUsernameExists] = useLazyQuery(OWNER_USERNAME_EXISTS);
+  const [petUsernameExists] = useLazyQuery(PET_USERNAME_EXISTS);
   const [inFocus, setInFocus] = useState(false);
   const [isError, setIsError] = useState(false);
   const [message, setMessage] = useState('');
   const [isChecking, setChecking] = useState(false);
 
   useEffect(() => {
-    if (value) {
+    if (value && value.length > 0) {
       setChecking(true);
     }
 
     const timeoutId = setTimeout(() => {
       // value === "" will prevent an infinite load from occuring when a username is entered then deleted quickly
-      if (value || value === '') {
+      if (value) {
         validateUsername(value);
         setChecking(false);
       }
@@ -51,7 +54,7 @@ export default function UsernameInput({ className, value, setValue, isValid, set
       return;
     }
 
-    if (text !== undefined || text !== null) {
+    if (text.trim().length !== 0 || text !== undefined || text !== null) {
       checkUsernameExists(text);
     }
   }, []);
@@ -70,24 +73,36 @@ export default function UsernameInput({ className, value, setValue, isValid, set
   };
 
   const checkUsernameExists = useCallback(
-    (username: string) => {
-      const func = forOwner ? ownerUsernameExists : petUsernameExists;
+    async (username: string) => {
+      if (forOwner) {
+        const ownerUsername = await ownerUsernameExists({ variables: { username } });
 
-      func(username)
-        .then((res) => {
-          console.log(res.status, res.data);
-          if (res.status === 200) {
-            setIsValid(true);
-            setMessage('Username Available');
-          }
-        })
-        .catch((error) => {
-          if (error.response && error.response.status === 409) {
-            setIsValid(false);
-            setIsError(true);
-            setMessage('Username Taken');
-          }
-        });
+        if (ownerUsername.error) {
+          setIsValid(false);
+          setIsError(true);
+          setMessage(ownerUsername.error.message);
+        }
+
+        if (ownerUsername?.data?.validateUsername.isAvailable) {
+          setIsValid(true);
+          setMessage('Username Available');
+          return;
+        }
+      } else {
+        const petUsername = await petUsernameExists({ variables: { username } });
+
+        if (petUsername.error) {
+          setIsValid(false);
+          setIsError(true);
+          setMessage(petUsername.error.message);
+        }
+
+        if (petUsername?.data?.validatePetUsername.isAvailable) {
+          setIsValid(true);
+          setMessage('Username Available');
+          return;
+        }
+      }
     },
     [forOwner]
   );

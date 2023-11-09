@@ -23,6 +23,7 @@ export class Pet extends Model<InferAttributes<Pet>, InferCreationAttributes<Pet
   declare username: string;
   declare name: string;
   declare type: string;
+  declare ProfilePicture?: ProfilePicture;
   declare description: CreationOptional<string>;
   declare location: CreationOptional<string>;
   declare setProfilePicture: HasOneSetAssociationMixin<ProfilePicture, 'id'>;

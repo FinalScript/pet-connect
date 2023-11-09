@@ -62,7 +62,7 @@ const AccountSwitcherModal = ({ navigateNewPet, currentUser, closeModal }: Props
               <Image
                 className='w-full h-full rounded-2xl'
                 source={{
-                  uri: getApiBaseUrl() + '/' + owner.ProfilePicture.path,
+                  uri: `${getApiBaseUrl()}/${owner.ProfilePicture.path}?${Date.now()}`,
                 }}
               />
             ) : (
@@ -102,7 +102,7 @@ const AccountSwitcherModal = ({ navigateNewPet, currentUser, closeModal }: Props
                   <Image
                     className='w-full h-full rounded-2xl'
                     source={{
-                      uri: getApiBaseUrl() + '/' + pet.ProfilePicture.path,
+                      uri: `${getApiBaseUrl()}/${pet.ProfilePicture.path}?${Date.now()}`,
                     }}
                   />
                 ) : (

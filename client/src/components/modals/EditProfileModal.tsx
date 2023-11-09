@@ -34,8 +34,8 @@ const EditProfileModal = ({ closeModal, profile }: Props) => {
 
       <View className='mt-8 px-2'>
         <View className='mb-5 flex flex-col justify-center items-center'>
-          <PressableOpacity activeOpacity={0.8} className='w-[160px] h-[160px] bg-themeInput rounded-3xl shadow-sm shadow-themeShadow'>
-            {profile?.ProfilePicture.path ? (
+          <PressableOpacity activeOpacity={0.8} className='w-[160px] h-[160px] bg-themeInput flex items-center justify-center rounded-3xl shadow-sm shadow-themeShadow'>
+            {profile?.ProfilePicture?.path ? (
               <Image
                 className='w-full h-full rounded-3xl'
                 source={{

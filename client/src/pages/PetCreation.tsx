@@ -1,47 +1,64 @@
-import { useCallback, useState } from 'react';
-import {
-  View,
-  Image,
-  TouchableWithoutFeedback,
-  TouchableOpacity,
-  TextInput,
-  TouchableHighlight,
-  ActivityIndicator,
-  KeyboardAvoidingView,
-  Platform,
-} from 'react-native';
-import Text from '../components/Text';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import { trigger, HapticFeedbackTypes } from 'react-native-haptic-feedback';
+import { useMutation } from '@apollo/client';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { RootRouteProps, RootStackParamList } from '../../App';
-import { options } from '../utils/hapticFeedbackOptions';
-import Icon from 'react-native-vector-icons/FontAwesome';
+import { useCallback, useState } from 'react';
+import {
+  ActivityIndicator,
+  Image,
+  KeyboardAvoidingView,
+  Platform,
+  TextInput,
+  TouchableHighlight,
+  TouchableOpacity,
+  TouchableWithoutFeedback,
+  View,
+} from 'react-native';
+import { HapticFeedbackTypes, trigger } from 'react-native-haptic-feedback';
 import ImagePicker, { Image as ImageType } from 'react-native-image-crop-picker';
-import { createPet, uploadPetProfilePicture } from '../api';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import Icon from 'react-native-vector-icons/FontAwesome';
 import { useDispatch, useSelector } from 'react-redux';
-import { GeneralReducer } from '../redux/reducers/generalReducer';
-import { ADD_PET, CURRENT_USER, LOADING } from '../redux/constants';
-import { ProfileReducer } from '../redux/reducers/profileReducer';
+import { RootRouteProps, RootStackParamList } from '../../App';
+import Text from '../components/Text';
 import UsernameInput from '../components/UsernameInput';
+import { CREATE_PET } from '../graphql/Pet';
+import { ADD_PET, CURRENT_USER, LOADING } from '../redux/constants';
+import { GeneralReducer } from '../redux/reducers/generalReducer';
+import { ProfileReducer } from '../redux/reducers/profileReducer';
+import { options } from '../utils/hapticFeedbackOptions';
+import ReactNativeFile from 'apollo-upload-client/public/ReactNativeFile';
+import { uniqueId } from 'lodash';
+
+enum PetType {
+  Bird = 'BIRD',
+  Cat = 'CAT',
+  Dog = 'DOG',
+  Fish = 'FISH',
+  GuineaPig = 'GUINEA_PIG',
+  Hamster = 'HAMSTER',
+  Horse = 'HORSE',
+  Mouse = 'MOUSE',
+  Other = 'OTHER',
+  Rabbit = 'RABBIT',
+  Snake = 'SNAKE',
+}
 
 const petTypes = [
-  { type: 'Dog', img: require('../../assets/img/dog.png') },
-  { type: 'Cat', img: require('../../assets/img/cat.png') },
-  { type: 'Bird', img: require('../../assets/img/bird.png') },
-  { type: 'Fish', img: require('../../assets/img/fish.png') },
-  { type: 'Rabbit', img: require('../../assets/img/rabbit.png') },
-  { type: 'Hamster', img: require('../../assets/img/hamster.png') },
-  { type: 'Reptile', img: require('../../assets/img/reptile.png') },
-  { type: 'Other', img: require('../../assets/img/other.png') },
+  { type: PetType.Dog, img: require('../../assets/img/dog.png') },
+  { type: PetType.Cat, img: require('../../assets/img/cat.png') },
+  { type: PetType.Bird, img: require('../../assets/img/bird.png') },
+  { type: PetType.Fish, img: require('../../assets/img/fish.png') },
+  { type: PetType.Rabbit, img: require('../../assets/img/rabbit.png') },
+  { type: PetType.Hamster, img: require('../../assets/img/hamster.png') },
+  { type: PetType.Snake, img: require('../../assets/img/reptile.png') },
+  { type: PetType.Other, img: require('../../assets/img/other.png') },
 ];
 
 type NavigationProp = NativeStackNavigationProp<RootStackParamList, 'Pet Creation'>;
 
 interface FormData {
   username: string;
-  type: string;
+  type: PetType;
   name: string;
   description: string;
   profilePicture?: ImageType | null | undefined;
@@ -51,11 +68,12 @@ export default function PetCreation() {
   const dispatch = useDispatch();
   const owner = useSelector((state: ProfileReducer) => state.profile.owner);
   const loading = useSelector((state: GeneralReducer) => state.general.loading);
+  const [createPet] = useMutation(CREATE_PET);
   const navigation = useNavigation<NavigationProp>();
   const route = useRoute<RootRouteProps<'Pet Creation'>>();
   const maxStep = 2;
   const [step, setStep] = useState(0);
-  const [formData, setFormData] = useState<FormData>({ type: '', username: '', name: '', description: '', profilePicture: undefined });
+  const [formData, setFormData] = useState<FormData>({ type: PetType.Dog, username: '', name: '', description: '', profilePicture: undefined });
   const [focus, setFocus] = useState({ username: false, name: false, description: false });
   const [isUsernameValid, setIsUsernameValid] = useState(false);
   const [optionsShuffle, setShuffle] = useState(0);
@@ -69,27 +87,20 @@ export default function PetCreation() {
       return;
     }
 
+    const profilePictureFile =
+      formData.profilePicture &&
+      new ReactNativeFile({
+        uri: formData.profilePicture.path,
+        name: formData.profilePicture.filename || uniqueId(),
+        type: formData.profilePicture.mime,
+      });
+
     setTimeout(() => {
-      createPet(formData)
-        .then(async (res) => {
-          if (res.status === 200) {
-            if (formData.profilePicture) {
-              const imageData = new FormData();
-              imageData.append('photoId', `${res.data?.id}-profilePicture`);
-              imageData.append('image', {
-                uri: formData.profilePicture?.path,
-                type: formData.profilePicture?.mime,
-                name: formData.profilePicture?.filename,
-              });
-
-              const newPet = await uploadPetProfilePicture(imageData, res.data.id);
-
-              dispatch({ type: ADD_PET, payload: newPet.data });
-            } else {
-              dispatch({ type: ADD_PET, payload: res.data });
-            }
-
-            dispatch({ type: CURRENT_USER, payload: { id: res.data.id, isPet: true } });
+      createPet({ variables: { ...formData, profilePicture: profilePictureFile } })
+        .then(async ({ data }) => {
+          if (data?.createPet.pet) {
+            dispatch({ type: ADD_PET, payload: data.createPet.pet });
+            dispatch({ type: CURRENT_USER, payload: { id: data.createPet.pet.id, isPet: true } });
           }
 
           if (navigation.canGoBack()) {
@@ -99,7 +110,7 @@ export default function PetCreation() {
           }
         })
         .catch((err) => {
-          console.log(err.response);
+          console.log(JSON.stringify(err, null, 2));
         })
         .finally(() => {
           dispatch({ type: LOADING, payload: false });
@@ -107,9 +118,9 @@ export default function PetCreation() {
     }, 1500);
   }, [formData, dispatch, isUsernameValid]);
 
-  const petTypeOnPress = useCallback((type: string) => {
+  const petTypeOnPress = useCallback((type: PetType) => {
     setFormData((prev) => {
-      return { ...prev, type: type.toUpperCase() };
+      return { ...prev, type };
     });
     trigger(HapticFeedbackTypes.effectClick, options);
   }, []);
@@ -122,7 +133,7 @@ export default function PetCreation() {
     }
 
     setFormData((prev) => {
-      return { ...prev, type: '' };
+      return { ...prev, type: PetType.Dog };
     });
 
     trigger(HapticFeedbackTypes.effectClick, options);
@@ -205,7 +216,7 @@ export default function PetCreation() {
                     ' mb-5 mx-2.5 p-5 bg-themeInput border-[5px] shadow-sm shadow-themeShadow w-40 h-40 rounded-3xl flex items-center'
                   }>
                   <Image className='flex w-full h-[75%] aspect-square opacity-70' source={pet.img} />
-                  <Text className='mt-1 text-lg text-themeText'>{pet.type}</Text>
+                  <Text className='mt-1 text-lg text-themeText'>{pet.type.charAt(0) + pet.type.substring(1).toLowerCase()}</Text>
                 </View>
               </TouchableWithoutFeedback>
             );

@@ -5,33 +5,31 @@
  * @flow
  */
 
-import React, { useCallback, useEffect, useReducer, useRef, useState } from 'react';
-import { ActivityIndicator, StatusBar, View } from 'react-native';
-import { NavigationContainer, RouteProp } from '@react-navigation/native';
-import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import PetCreation from './src/pages/PetCreation';
-import AccountCreation from './src/pages/AccountCreation';
-import Home from './src/pages/HomePage/Feed';
-import AppLoader from './src/hoc/AppLoader';
-import AuthLoader from './src/pages/GetStarted';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import Text from './src/components/Text';
-import { getOwnerData, ping, setBearerToken, verifyToken } from './src/api';
-import { navigationRef } from './src/services/navigator';
-import { useAuth0 } from 'react-native-auth0';
-import HomeNavigator from './src/pages/HomePage/HomeNavigator';
-import { useDispatch, useSelector } from 'react-redux';
-import { CURRENT_USER, LOADING, LOGOUT, OWNER_DATA, PET_DATA } from './src/redux/constants';
-import { HapticFeedbackTypes, trigger } from 'react-native-haptic-feedback';
-import { options } from './src/utils/hapticFeedbackOptions';
-import { GeneralReducer } from './src/redux/reducers/generalReducer';
-import Loading from './src/pages/Loading';
-import GetStarted from './src/pages/GetStarted';
-import { StackActions } from '@react-navigation/native';
-import { throttle } from 'lodash';
+import { useLazyQuery } from '@apollo/client';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { ProfileReducer } from './src/redux/reducers/profileReducer';
+import { NavigationContainer, RouteProp, StackActions } from '@react-navigation/native';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import React, { useCallback, useEffect, useState } from 'react';
+import { StatusBar, View } from 'react-native';
+import { useAuth0 } from 'react-native-auth0';
+import { HapticFeedbackTypes, trigger } from 'react-native-haptic-feedback';
 import { Host } from 'react-native-portalize';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { useDispatch, useSelector } from 'react-redux';
+import { ping } from './src/api';
+import Text from './src/components/Text';
+import { VERIFY_TOKEN } from './src/graphql/Auth';
+import { GET_OWNER } from './src/graphql/Owner';
+import AppLoader from './src/hoc/AppLoader';
+import AccountCreation from './src/pages/AccountCreation';
+import GetStarted from './src/pages/GetStarted';
+import HomeNavigator from './src/pages/HomePage/HomeNavigator';
+import Loading from './src/pages/Loading';
+import PetCreation from './src/pages/PetCreation';
+import { CURRENT_USER, LOADING, OWNER_DATA, PET_DATA } from './src/redux/constants';
+import { ProfileReducer } from './src/redux/reducers/profileReducer';
+import { navigationRef } from './src/services/navigator';
+import { options } from './src/utils/hapticFeedbackOptions';
 
 export type RootStackParamList = {
   Loading: undefined;
@@ -50,6 +48,8 @@ const Stack = createNativeStackNavigator<RootStackParamList>();
 const App = () => {
   const dispatch = useDispatch();
   const [apiStatus, setApiStatus] = useState(true);
+  const [getUserData] = useLazyQuery(GET_OWNER);
+  const [verifyToken] = useLazyQuery(VERIFY_TOKEN);
   const { user, getCredentials } = useAuth0();
   const owner = useSelector((state: ProfileReducer) => state.profile.owner);
 
@@ -57,12 +57,22 @@ const App = () => {
     pingApi();
   }, []);
 
+  const pingApi = async () => {
+    ping()
+      .then((res) => {
+        if (res.status !== 200) {
+          setApiStatus(false);
+        }
+      })
+      .catch((err) => {
+        setApiStatus(false);
+      });
+  };
+
   useEffect(() => {
     const timeoutId = setTimeout(() => {
       getAuth();
     }, 200);
-
-    console.log(user);
 
     return () => clearTimeout(timeoutId);
   }, [user, navigationRef]);
@@ -75,100 +85,84 @@ const App = () => {
   }, [owner?.id]);
 
   const getAuth = useCallback(async () => {
-    if (navigationRef.isReady()) {
-      let token;
+    if (!navigationRef.isReady()) {
+      return;
+    }
 
-      try {
-        token = await AsyncStorage.getItem('@token');
-      } catch (e) {
-        // error reading value
-      }
+    let token;
 
-      if (!token) {
-        console.log('token not found');
-        const credentials = await getCredentials('openid profile email');
+    try {
+      token = await AsyncStorage.getItem('@token');
+    } catch (e) {
+      console.error(e);
+    }
 
-        if (!credentials?.accessToken) {
-          dispatch({ type: LOADING, payload: false });
-          navigationRef.dispatch(StackActions.replace('Get Started'));
-          return;
-        }
+    if (!token) {
+      console.log('token not found');
+      const credentials = await getCredentials('openid profile email');
 
-        setBearerToken(`Bearer ${credentials.accessToken}`);
-        try {
-          await AsyncStorage.setItem('@token', credentials.accessToken);
-        } catch (error) {
-          // Error saving data
-        }
-
-        getUserData();
-
+      if (!credentials?.accessToken) {
+        dispatch({ type: LOADING, payload: false });
+        navigationRef.dispatch(StackActions.replace('Get Started'));
         return;
       }
 
-      console.log('token found');
-
-      setBearerToken(`Bearer ${token}`);
-
       try {
-        await verifyToken();
-      } catch (e: any) {
-        console.log(e);
-        if (e.response.status) {
-          await AsyncStorage.removeItem('@token');
-          dispatch({ type: LOADING, payload: false });
-          navigationRef.dispatch(StackActions.replace('Get Started'));
-          return;
-        }
+        await AsyncStorage.setItem('@token', credentials.accessToken);
+      } catch (error) {
+        // Error saving data
       }
 
-      getUserData();
-    }
-  }, [navigationRef, dispatch]);
+      fetchUserData();
 
-  const pingApi = async () => {
-    ping()
-      .then((res) => {
-        if (res.status !== 200) {
-          setApiStatus(false);
-        }
-      })
-      .catch((err) => {
-        console.log(err);
-        setApiStatus(false);
-      });
-  };
-
-  const getUserData = useCallback(async () => {
-    const ownerData = await getOwnerData().catch((err) => {
-      if (err.response && err.response.status === 404) {
-        dispatch({ type: LOADING, payload: false });
-        trigger(HapticFeedbackTypes.notificationWarning, options);
-        navigationRef.dispatch(StackActions.replace('Account Creation'));
-      }
       return;
-    });
+    }
+
+    console.log('token found');
+
+    const verifiedToken = await verifyToken();
+
+    if (verifiedToken.error) {
+      console.log(verifiedToken.error);
+      await AsyncStorage.removeItem('@token');
+      dispatch({ type: LOADING, payload: false });
+      navigationRef.dispatch(StackActions.replace('Get Started'));
+      return;
+    }
+
+    await fetchUserData();
+  }, [navigationRef, dispatch, verifyToken]);
+
+  const fetchUserData = useCallback(async () => {
+    const ownerData = await getUserData();
+
+    if (ownerData.error && ownerData.error.message === 'Owner not found') {
+      dispatch({ type: LOADING, payload: false });
+      trigger(HapticFeedbackTypes.notificationWarning, options);
+      navigationRef.dispatch(StackActions.replace('Account Creation'));
+      return;
+    }
 
     if (!ownerData) {
       dispatch({ type: LOADING, payload: false });
       return;
     }
 
-    if (ownerData.status === 200) {
+    if (ownerData.data?.getOwner) {
       const cachedCurrentUser = JSON.parse((await AsyncStorage.getItem('@currentUser')) || '{}');
 
-      const owner = (({ Pets, ...o }) => o)(ownerData.data);
-      const pets: any[] = ownerData.data.Pets;
+      const owner = ownerData.data.getOwner.owner;
+      const pets: any[] = ownerData.data.getOwner.pets;
 
       dispatch({ type: OWNER_DATA, payload: owner });
       dispatch({ type: PET_DATA, payload: pets });
 
       const validCache = owner?.id === cachedCurrentUser?.id || pets.find((pet) => pet?.id === cachedCurrentUser?.id) ? true : false;
 
-      dispatch({ type: CURRENT_USER, payload: cachedCurrentUser && validCache ? cachedCurrentUser : { id: ownerData.data.id, isPet: false } });
+      dispatch({ type: CURRENT_USER, payload: cachedCurrentUser && validCache ? cachedCurrentUser : { id: ownerData.data.getOwner.owner.id, isPet: false } });
       dispatch({ type: LOADING, payload: false });
     }
-  }, [navigationRef, dispatch]);
+  }, [getUserData, navigationRef, dispatch]);
 
   if (!apiStatus) {
     return (
