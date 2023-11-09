@@ -33,7 +33,7 @@ const Feed = () => {
         <View className='flex justify-center items-center h-full pb-5 px-3'>
           {posts.map((post, i) => {
             return (
-              <Post key={i} name='Whiskers' username='catnip.lover' caption={post.quote} petImage={undefined} postImage={{ uri: post.picture.url }} />
+              <Post key={i} name='Pet Connect' username='catnip.lover' caption={post.quote} petImage={undefined} postImage={{ uri: post.picture.url }} />
             );
           })}
         </View>

@@ -16,6 +16,7 @@ import { schema } from './src/graphql/schemas/index';
 import fs from 'fs';
 import { OwnerRouter } from './src/routes/OwnerRoute';
 import { PetRouter } from './src/routes/PetRoute';
+
 dotenv.config();
 
 const app = express();
@@ -39,6 +40,10 @@ interface MyContext {
 const server = new ApolloServer<MyContext>({ schema });
 
 const init = async () => {
+  const graphqlUploadExress = (await import('graphql-upload/graphqlUploadExpress.mjs')).default;
+
+  app.use(graphqlUploadExress());
+
   await server.start();
 
   app.use(
@@ -67,7 +72,7 @@ const init = async () => {
       as: 'likes',
     });
 
-    await sequelize.sync({});
+    await sequelize.sync({ force: true });
     // fs.rmSync('uploads/', { recursive: true, force: true });
   });
 
@@ -83,7 +88,7 @@ const init = async () => {
   app.use('/api/private/owner', checkJwt, OwnerRouter);
 
   app.use('/api/private/pet', checkJwt, PetRouter);
-  
+
   app.use('/uploads', express.static('uploads'));
 };
 

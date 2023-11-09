@@ -18,6 +18,8 @@ import { FontAwesome } from '../utils/Icons';
 import { useAuth0 } from 'react-native-auth0';
 import { useMutation } from '@apollo/client';
 import { SIGNUP } from '../graphql/Owner';
+import ReactNativeFile from 'apollo-upload-client/public/ReactNativeFile';
+import { uniqueId } from 'lodash';
 
 type NavigationProp = NativeStackNavigationProp<RootStackParamList, 'Account Creation'>;
 
@@ -58,30 +60,34 @@ export default function AccountCreation() {
     if (isUsernameValid && username) {
       trigger(HapticFeedbackTypes.impactMedium, options);
       dispatch({ type: LOADING, payload: true });
+      
+      const profilePictureFile =
+        profilePicture &&
+        new ReactNativeFile({
+          uri: profilePicture.path,
+          name: profilePicture.filename || uniqueId(),
+          type: profilePicture.mime,
+        });
 
+      console.log(profilePictureFile);
       setTimeout(() => {
-        signUp({ variables: { username: username.toLowerCase(), name } })
+        signUp({
+          variables: {
+            username: username.toLowerCase(),
+            name,
+            profilePicture: profilePictureFile,
+          },
+        })
           .then(async ({ data }) => {
+            console.log(data);
             if (data?.signup.owner) {
-              if (profilePicture) {
-                const imageData = new FormData();
-                imageData.append('photoId', `${data?.signup.owner.id}-profilePicture`);
-                imageData.append('image', {
-                  uri: profilePicture?.path,
-                  type: profilePicture?.mime,
-                  name: profilePicture?.filename,
-                });
-                const newOwner = await uploadOwnerProfilePicture(imageData);
-                dispatch({ type: OWNER_DATA, payload: (({ Pets, ...o }) => o)(newOwner.data) });
-              } else {
-                dispatch({ type: OWNER_DATA, payload: data.signup.owner });
-              }
+              dispatch({ type: OWNER_DATA, payload: data.signup.owner });
               dispatch({ type: CURRENT_USER, payload: { id: data.signup.owner.id, isPet: false } });
               navigation.replace('Pet Creation', { initial: true });
             }
           })
           .catch((err) => {
-            console.log(err);
+            console.log(JSON.stringify(err, null, 2));
           })
           .finally(() => {
             dispatch({ type: LOADING, payload: false });

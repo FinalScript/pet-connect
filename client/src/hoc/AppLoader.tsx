@@ -1,4 +1,4 @@
-import { ApolloClient, ApolloProvider, InMemoryCache, createHttpLink } from '@apollo/client';
+import { ApolloClient, ApolloProvider, InMemoryCache, createHttpLink, ApolloLink } from '@apollo/client';
 import { setContext } from '@apollo/client/link/context';
 import { BottomSheetModalProvider } from '@gorhom/bottom-sheet';
 import { ReactNode, useEffect, useState } from 'react';
@@ -14,6 +14,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import React from 'react';
 import * as env from '../../env.json';
 import { setApiBaseUrl, setBearerToken } from '../api';
+import createUploadLink from 'apollo-upload-client/public/createUploadLink';
 
 interface Props {
   children: ReactNode;
@@ -23,12 +24,20 @@ export default function AppLoader({ children }: Props) {
   const [domain, setDomain] = useState<string>();
   const [clientId, setClientId] = useState<string>();
   const [error, setError] = useState(false);
+  const [token, setToken] = useState<string>();
 
   useEffect(() => {
     load();
   }, []);
 
   const load = async () => {
+    const fetchedToken = await AsyncStorage.getItem('@token');
+
+    if (fetchedToken) {
+      setToken(fetchedToken);
+      setBearerToken(`Bearer ${fetchedToken}`);
+    }
+
     if (!Config.API_URL) {
       setError(true);
       return;
@@ -41,25 +50,29 @@ export default function AppLoader({ children }: Props) {
     setApiBaseUrl(env.API_URL);
   };
 
-  const httpLink = createHttpLink({
-    uri: `${env.API_URL}/graphql`,
-  });
+  const httpLink = createUploadLink({ uri: `${env.API_URL}/graphql` });
 
-  const authLink = setContext(async (_, { headers }) => {
+  const withToken = setContext(async () => {
     const token = await AsyncStorage.getItem('@token');
-
-    setBearerToken(`Bearer ${token}`);
-
-    return {
-      headers: {
-        ...headers,
-        authorization: token && `Bearer ${token}`,
-      },
-    };
+    return { token };
   });
+
+  const authMiddleware = new ApolloLink((operation, forward) => {
+    const { token } = operation.getContext();
+    operation.setContext(() => ({
+      headers: {
+        Authorization: token ? `Bearer ${token}` : '',
+        'apollo-require-preflight': true,
+      },
+    }));
+
+    return forward(operation);
+  });
+
+  const link = ApolloLink.from([withToken, authMiddleware.concat(httpLink)]);
 
   const client = new ApolloClient({
-    link: authLink.concat(httpLink),
+    link,
     cache: new InMemoryCache(),
   });
 

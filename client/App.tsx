@@ -30,6 +30,7 @@ import { navigationRef } from './src/services/navigator';
 import { options } from './src/utils/hapticFeedbackOptions';
 import { GET_OWNER } from './src/graphql/Owner';
 import { VERIFY_TOKEN } from './src/graphql/Auth';
+import { useApolloClient } from '@apollo/client/react/hooks/useApolloClient.js';
 
 export type RootStackParamList = {
   Loading: undefined;
@@ -46,6 +47,7 @@ export type RootRouteProps<RouteName extends keyof RootStackParamList> = RoutePr
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
 const App = () => {
+  const apolloClient = useApolloClient();
   const dispatch = useDispatch();
   const [apiStatus, setApiStatus] = useState(true);
   const [getUserData] = useLazyQuery(GET_OWNER);
@@ -129,6 +131,7 @@ const App = () => {
       navigationRef.dispatch(StackActions.replace('Get Started'));
       return;
     }
+    
 
     await fetchUserData();
   }, [navigationRef, dispatch, verifyToken]);

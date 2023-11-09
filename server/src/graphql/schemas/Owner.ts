@@ -1,5 +1,6 @@
-import { ProfilePicture } from './../../models/ProfilePicture';
 export const OwnerTypeDef = `#graphql
+  scalar Upload
+
   type Owner {
     id: String!
     authId: String!
@@ -26,10 +27,15 @@ export const OwnerTypeDef = `#graphql
 
   # For Mutations
 
+  type SignUpResponse {
+    owner: Owner!
+  }
+
   type OwnerUpdatedResponse {
     name: String
     username: String
     location: String
+    ProfilePicture: ProfilePicture
   }  
 
   type DeleteOwnerResponse {
@@ -45,8 +51,8 @@ export const OwnerTypeDef = `#graphql
   }
 
   type Mutation { 
-    signup(username: String!, name: String, location: String): OwnerResponse!
-    updateOwner(username: String, name: String, location: String): OwnerUpdatedResponse!
+    signup(username: String!, name: String, location: String, profilePicture: Upload): SignUpResponse!
+    updateOwner(username: String, name: String, location: String, profilePicture: Upload): OwnerUpdatedResponse!
     deleteOwner: DeleteOwnerResponse!
   }
 `;

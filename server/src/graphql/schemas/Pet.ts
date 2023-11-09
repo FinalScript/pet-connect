@@ -33,7 +33,8 @@ export const PetTypeDef = `#graphql
         type: PetType
         description: String
         location: String
-        id: String
+        id: String 
+        ProfilePicture: ProfilePicture
     }
 
     type ValidateUsernameResponse {
@@ -51,8 +52,8 @@ export const PetTypeDef = `#graphql
     }
 
     type Mutation {
-        createPet( username: String!, name: String!, type: PetType!, description: String, location: String ): PetResponse!
-        updatePet( id: String, username: String, name: String, type: PetType, description: String, location: String ): PetUpdatedResponse!
+        createPet( username: String!, name: String!, type: PetType!, description: String, location: String, profilePicture: Upload ): PetResponse!
+        updatePet( id: String, username: String, name: String, type: PetType, description: String, location: String, profilePicture: Upload ): PetUpdatedResponse!
         deletePet(id: String!): DeletePetResponse!
     }
     `;

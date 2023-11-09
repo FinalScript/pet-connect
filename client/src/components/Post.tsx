@@ -69,9 +69,7 @@ export default function Post({ name, username, petImage, postImage, caption }: P
       </View>
 
       <View className='px-3 py-1'>
-        {!caption?.trim() ? (
-          ''
-        ) : (
+        {caption &&
           <View className='flex flex-row min-h-[7rem]'>
             <Text className='text-lg leading-5' numberOfLines={moreCaption ? 0 : CAPTION_LINES}>
               <Text className='font-semibold text-sky-600'>{name} </Text>
@@ -81,7 +79,7 @@ export default function Post({ name, username, petImage, postImage, caption }: P
               </Text>
             </Text>
           </View>
-        )}
+        }
       </View>
     </View>
   );

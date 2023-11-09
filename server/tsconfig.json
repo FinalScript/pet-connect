@@ -8,9 +8,9 @@
 
     "target": "es2020",
 
-    "module": "CommonJS",
+    "module": "Node16",
 
-    "moduleResolution": "node",
+    "moduleResolution": "Node16",
 
     "esModuleInterop": true,
 
