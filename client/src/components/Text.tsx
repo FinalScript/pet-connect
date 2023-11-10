@@ -39,7 +39,7 @@ export default function Text(props: TextProps) {
   });
 
   return (
-    <T {...props} style={[baseStyle, props.style]}>
+    <T {...props} className='text-themeText' style={[baseStyle, props.style]}>
       {props.children}
     </T>
   );

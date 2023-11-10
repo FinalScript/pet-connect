@@ -8,11 +8,12 @@ import Profile from './Profile';
 import { CameraView } from './CameraView';
 import { RouteProp } from '@react-navigation/native';
 import { Ionicon } from '../../utils/Icons';
+import PostPage from './PostPage';
 
 export type HomeStackParamList = {
   Feed: undefined;
   Explore: undefined;
-  Camera: undefined;
+  PostPage: undefined;
   Inbox: undefined;
   Profile: undefined;
 };
@@ -68,8 +69,8 @@ const HomeNavigator = () => {
       />
 
       <Tab.Screen
-        name='Camera'
-        component={CameraView}
+        name='PostPage'
+        component={PostPage}
         options={{
           tabBarIcon: ({ focused, color, size }) => {
             let iconName = '';

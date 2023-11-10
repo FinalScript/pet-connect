@@ -1,22 +1,18 @@
+import { useIsFocused } from '@react-navigation/core';
 import * as React from 'react';
-import { useRef, useState, useMemo, useCallback } from 'react';
-import { Image, StyleSheet, TouchableOpacity, View } from 'react-native';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { StyleSheet, Text, View } from 'react-native';
 import { PinchGestureHandler, PinchGestureHandlerGestureEvent, TapGestureHandler } from 'react-native-gesture-handler';
-import { CameraDeviceFormat, CameraRuntimeError, PhotoFile, sortFormats, useCameraDevices, VideoFile } from 'react-native-vision-camera';
-import { Camera, frameRateIncludedm } from 'react-native-vision-camera';
-import { CONTENT_SPACING, MAX_ZOOM_FACTOR, SAFE_AREA_PADDING } from '../../utils/constants';
-import Reanimated, { Extrapolate, interpolate, useAnimatedGestureHandler, useAnimatedProps, useSharedValue } from 'react-native-reanimated';
-import { useEffect } from 'react';
-import { useIsForeground } from '../../hooks/useIsForeground';
-import { StatusBarBlurBackground } from '../../components/StatusBarBlurBackground';
-import { CaptureButton } from '../../components/CaptureButton';
 import { PressableOpacity } from 'react-native-pressable-opacity';
-import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { useIsFocused, useNavigation } from '@react-navigation/core';
-import { HomeStackParamList } from './HomeNavigator';
-import { CameraRoll } from '@react-native-camera-roll/camera-roll';
-import ImageCropPicker from 'react-native-image-crop-picker';
+import Reanimated, { Extrapolate, interpolate, useAnimatedGestureHandler, useAnimatedProps, useSharedValue } from 'react-native-reanimated';
+import IonIcon from 'react-native-vector-icons/Ionicons';
+import MaterialIcon from 'react-native-vector-icons/MaterialCommunityIcons';
+import { Camera, CameraRuntimeError, PhotoFile, VideoFile, useCameraDevice, useCameraFormat } from 'react-native-vision-camera';
+import { CaptureButton } from '../../components/CaptureButton';
+import { StatusBarBlurBackground } from '../../components/StatusBarBlurBackground';
+import { useIsForeground } from '../../hooks/useIsForeground';
 import { Ionicon } from '../../utils/Icons';
+import { CONTENT_SPACING, MAX_ZOOM_FACTOR, SAFE_AREA_PADDING, SCREEN_HEIGHT, SCREEN_WIDTH } from '../../utils/constants';
 
 const ReanimatedCamera = Reanimated.createAnimatedComponent(Camera);
 Reanimated.addWhitelistedNativeProps({
@@ -26,17 +22,12 @@ Reanimated.addWhitelistedNativeProps({
 const SCALE_FULL_ZOOM = 3;
 const BUTTON_SIZE = 40;
 
-type NavigationProp = NativeStackNavigationProp<HomeStackParamList, 'Camera'>;
-
 export function CameraView(): React.ReactElement {
-  const navigation = useNavigation<NavigationProp>();
-  const [recentImage, setRecentImage] = useState<string>();
   const camera = useRef<Camera>(null);
   const [isCameraInitialized, setIsCameraInitialized] = useState(false);
   const [hasMicrophonePermission, setHasMicrophonePermission] = useState(false);
   const zoom = useSharedValue(0);
   const isPressingButton = useSharedValue(false);
-  const [isRecording, setIsRecording] = useState(false);
 
   // check if camera page is active
   const isFocussed = useIsFocused();
@@ -44,43 +35,32 @@ export function CameraView(): React.ReactElement {
   const isActive = isFocussed && isForeground;
 
   const [cameraPosition, setCameraPosition] = useState<'front' | 'back'>('back');
+  const [enableHdr, setEnableHdr] = useState(false);
   const [flash, setFlash] = useState<'off' | 'on'>('off');
   const [enableNightMode, setEnableNightMode] = useState(false);
 
-  // camera format settings
-  const devices = useCameraDevices();
-  const device = devices[cameraPosition];
-  const formats = useMemo<CameraDeviceFormat[]>(() => {
-    if (device?.formats == null) return [];
-    return device.formats.sort(sortFormats);
-  }, [device?.formats]);
+  let device = useCameraDevice(cameraPosition);
 
-  // //#region Memos
-  // const [is60Fps, setIs60Fps] = useState(true);
-  // const fps = useMemo(() => {
-  //   if (!is60Fps) return 30;
+  const [targetFps, setTargetFps] = useState(30);
 
-  //   if (enableNightMode && !device?.supportsLowLightBoost) {
-  //     // User has enabled Night Mode, but Night Mode is not natively supported, so we simulate it by lowering the frame rate.
-  //     return 30;
-  //   }
+  const screenAspectRatio = SCREEN_HEIGHT / SCREEN_WIDTH;
+  const format = useCameraFormat(device, [
+    { fps: targetFps },
+    { videoAspectRatio: screenAspectRatio },
+    { videoResolution: 'max' },
+    { photoAspectRatio: screenAspectRatio },
+    { photoResolution: 'max' },
+    { videoStabilizationMode: 'cinematic-extended' },
+  ]);
 
-  //   const supports60Fps = formats.some((f) => f.frameRateRanges.some((r) => frameRateIncluded(r, 60)));
-  //   if (!supports60Fps) {
-  //     // 60 FPS is not supported by any format.
-  //     return 30;
-  //   }
-  //   // If nothing blocks us from using it, we default to 60 FPS.
-  //   return 60;
-  // }, [device?.supportsLowLightBoost, enableNightMode, formats, is60Fps]);
+  const supportsVideoStabilization = format?.videoStabilizationModes.includes('cinematic-extended');
 
-  const supportsCameraFlipping = useMemo(() => devices.back != null && devices.front != null, [devices.back, devices.front]);
+  const fps = Math.min(format?.maxFps ?? 1, targetFps);
+
   const supportsFlash = device?.hasFlash ?? false;
-  const supports60Fps = useMemo(() => formats.some((f) => f.frameRateRanges.some((rate) => frameRateIncluded(rate, 60))), [formats]);
-  const canToggleNightMode = enableNightMode
-    ? true // it's enabled so you have to be able to turn it off again
-    : device?.supportsLowLightBoost ?? false; // either we have native support, or we can lower the FPS
-  //#endregion
+  const supportsHdr = format?.supportsPhotoHDR;
+  const supports60Fps = useMemo(() => device?.formats.some((f) => f.maxFps >= 60), [device?.formats]);
+  const canToggleNightMode = device?.supportsLowLightBoost ?? false;
 
   //#region Animated Zoom
   // This just maps the zoom factor to a percentage value.
@@ -111,18 +91,21 @@ export function CameraView(): React.ReactElement {
     console.log('Camera initialized!');
     setIsCameraInitialized(true);
   }, []);
-  const onMediaCaptured = useCallback(
-    (media: PhotoFile | VideoFile, type: 'photo' | 'video') => {
-      console.log(`Media captured! ${JSON.stringify(media)}`);
-    },
-    [navigation]
-  );
+  const onMediaCaptured = useCallback((media: PhotoFile | VideoFile, type: 'photo' | 'video') => {
+    console.log(`Media captured! ${JSON.stringify(media)}`);
+  }, []);
   const onFlipCameraPressed = useCallback(() => {
     setCameraPosition((p) => (p === 'back' ? 'front' : 'back'));
   }, []);
   const onFlashPressed = useCallback(() => {
     setFlash((f) => (f === 'off' ? 'on' : 'off'));
   }, []);
+  //#endregion
+
+  //#region Tap Gesture
+  const onDoubleTap = useCallback(() => {
+    onFlipCameraPressed();
+  }, [onFlipCameraPressed]);
   //#endregion
 
   //#region Effects
@@ -133,26 +116,8 @@ export function CameraView(): React.ReactElement {
   }, [neutralZoom, zoom]);
 
   useEffect(() => {
-    CameraRoll.getPhotos({
-      first: 1,
-      assetType: 'Photos',
-    })
-      .then((r) => {
-        if (r.edges[0].node.image.uri) {
-          setRecentImage(r.edges[0].node.image.uri);
-        }
-      })
-      .catch((err) => {
-        console.log(err);
-        //Error Loading Images
-      });
+    Camera.getMicrophonePermissionStatus().then((status) => setHasMicrophonePermission(status === 'granted'));
   }, []);
-  //#endregion
-
-  //#region Tap Gesture
-  const onDoubleTap = useCallback(() => {
-    onFlipCameraPressed();
-  }, [onFlipCameraPressed]);
   //#endregion
 
   //#region Pinch to Zoom Gesture
@@ -171,25 +136,13 @@ export function CameraView(): React.ReactElement {
   });
   //#endregion
 
-  const selectFromLibrary = useCallback(() => {
-    ImageCropPicker.openPicker({
-      width: 1000,
-      height: 1000,
-      cropping: true,
-      mediaType: 'photo',
-    })
-      .then((image) => {
-        console.log(image);
-      })
-      .catch((err) => {
-        console.log(err);
-      });
-  }, []);
-
-  if (device != null) {
-  } else {
-    console.log('re-rendering camera page without active camera');
-  }
+  useEffect(() => {
+    const f =
+      format != null
+        ? `(${format.photoWidth}x${format.photoHeight} photo / ${format.videoWidth}x${format.videoHeight}@${format.maxFps} video @ ${fps}fps)`
+        : undefined;
+    console.log(`Camera: ${device?.name} | Format: ${f}`);
+  }, [device?.name, format, fps]);
 
   return (
     <View style={styles.container}>
@@ -201,89 +154,67 @@ export function CameraView(): React.ReactElement {
                 ref={camera}
                 style={StyleSheet.absoluteFill}
                 device={device}
-                hdr={false}
+                format={format}
+                fps={fps}
+                hdr={enableHdr}
                 lowLightBoost={device.supportsLowLightBoost && enableNightMode}
                 isActive={isActive}
                 onInitialized={onInitialized}
                 onError={onError}
                 enableZoomGesture={false}
                 animatedProps={cameraAnimatedProps}
+                orientation='portrait'
                 photo={true}
                 video={true}
                 audio={hasMicrophonePermission}
-                orientation='portrait'
-                enableHighQualityPhotos
               />
             </TapGestureHandler>
           </Reanimated.View>
         </PinchGestureHandler>
       )}
 
-      <View style={styles.captureRow} className='w-full'>
-        <View className='flex flex-row justify-center items-center'>
-          <TouchableOpacity onPress={selectFromLibrary} className='flex-1'>
-            <View className='px-2 py-2 flex flex-col justify-center items-center'>
-              <View className='rounded-xl w-12 h-12 flex flex-row justify-center items-center'>
-                {/* <Ionicon name='image' size={40} /> */}
-                {recentImage ? (
-                  <Image source={{ uri: recentImage }} className='flex w-full h-full aspect-square rounded-xl' />
-                ) : (
-                  <Ionicon name='image' color={'white'} size={40} />
-                )}
-              </View>
-            </View>
-          </TouchableOpacity>
-
-          <CaptureButton
-            camera={camera}
-            onMediaCaptured={onMediaCaptured}
-            cameraZoom={zoom}
-            minZoom={minZoom}
-            maxZoom={maxZoom}
-            flash={supportsFlash ? flash : 'off'}
-            enabled={isCameraInitialized && isActive}
-            setIsPressingButton={setIsPressingButton}
-            setIsRecording={setIsRecording}
-          />
-          <View className='flex-1'></View>
-        </View>
-      </View>
+      <CaptureButton
+        style={styles.captureButton}
+        camera={camera}
+        onMediaCaptured={onMediaCaptured}
+        cameraZoom={zoom}
+        minZoom={minZoom}
+        maxZoom={maxZoom}
+        flash={supportsFlash ? flash : 'off'}
+        enabled={isCameraInitialized && isActive}
+        setIsPressingButton={setIsPressingButton}
+      />
 
       <StatusBarBlurBackground />
 
       <View style={styles.leftButtonRow}>
-        <PressableOpacity
-          style={styles.button}
-          onPress={() => {
-            navigation.goBack();
-          }}
-          disabledOpacity={0.4}>
+        <PressableOpacity style={styles.button} onPress={() => {}} disabledOpacity={0.4}>
           <Ionicon name='ios-close' color='white' size={24} />
         </PressableOpacity>
       </View>
 
       <View style={styles.rightButtonRow}>
-        {supportsCameraFlipping && (
-          <PressableOpacity style={styles.button} onPress={onFlipCameraPressed} disabledOpacity={0.4}>
-            <Ionicon name='camera-reverse' color='white' size={24} />
-          </PressableOpacity>
-        )}
+        <PressableOpacity style={styles.button} onPress={onFlipCameraPressed} disabledOpacity={0.4}>
+          <IonIcon name='camera-reverse' color='white' size={24} />
+        </PressableOpacity>
         {supportsFlash && (
           <PressableOpacity style={styles.button} onPress={onFlashPressed} disabledOpacity={0.4}>
-            <Ionicon name={flash === 'on' ? 'flash' : 'flash-off'} color='white' size={24} />
+            <IonIcon name={flash === 'on' ? 'flash' : 'flash-off'} color='white' size={24} />
           </PressableOpacity>
         )}
-        {/* {supports60Fps && (
-          <PressableOpacity style={styles.button} onPress={() => setIs60Fps(!is60Fps)}>
-            <Text style={styles.text}>
-              {is60Fps ? '60' : '30'}
-              {'\n'}FPS
-            </Text>
+        {supports60Fps && (
+          <PressableOpacity style={styles.button} onPress={() => setTargetFps((t) => (t === 30 ? 60 : 30))}>
+            <Text style={styles.text}>{`${targetFps}\nFPS`}</Text>
           </PressableOpacity>
-        )} */}
+        )}
+        {supportsHdr && (
+          <PressableOpacity style={styles.button} onPress={() => setEnableHdr((h) => !h)}>
+            <MaterialIcon name={enableHdr ? 'hdr' : 'hdr-off'} color='white' size={24} />
+          </PressableOpacity>
+        )}
         {canToggleNightMode && (
           <PressableOpacity style={styles.button} onPress={() => setEnableNightMode(!enableNightMode)} disabledOpacity={0.4}>
-            <Ionicon name={enableNightMode ? 'moon' : 'moon-outline'} color='white' size={24} />
+            <IonIcon name={enableNightMode ? 'moon' : 'moon-outline'} color='white' size={24} />
           </PressableOpacity>
         )}
       </View>
@@ -296,7 +227,11 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: 'black',
   },
-  captureRow: { position: 'absolute', alignSelf: 'center', bottom: SAFE_AREA_PADDING.paddingBottom + 20 },
+  captureButton: {
+    position: 'absolute',
+    alignSelf: 'center',
+    bottom: SAFE_AREA_PADDING.paddingBottom,
+  },
   button: {
     marginBottom: CONTENT_SPACING,
     width: BUTTON_SIZE,
@@ -306,14 +241,14 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
-  rightButtonRow: {
-    position: 'absolute',
-    right: SAFE_AREA_PADDING.paddingRight,
-    top: SAFE_AREA_PADDING.paddingTop,
-  },
   leftButtonRow: {
     position: 'absolute',
     left: SAFE_AREA_PADDING.paddingLeft,
+    top: SAFE_AREA_PADDING.paddingTop,
+  },
+  rightButtonRow: {
+    position: 'absolute',
+    right: SAFE_AREA_PADDING.paddingRight,
     top: SAFE_AREA_PADDING.paddingTop,
   },
   text: {

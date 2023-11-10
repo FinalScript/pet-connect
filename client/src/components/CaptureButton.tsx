@@ -1,14 +1,6 @@
-import React, { Ref, useCallback, useMemo, useRef } from 'react';
+import React, { useCallback, useMemo, useRef } from 'react';
 import { StyleSheet, View, ViewProps } from 'react-native';
-import {
-  GestureHandlerRootView,
-  NativeViewGestureHandler,
-  PanGestureHandler,
-  PanGestureHandlerGestureEvent,
-  State,
-  TapGestureHandler,
-  TapGestureHandlerStateChangeEvent,
-} from 'react-native-gesture-handler';
+import { PanGestureHandler, PanGestureHandlerGestureEvent, State, TapGestureHandler, TapGestureHandlerStateChangeEvent } from 'react-native-gesture-handler';
 import Reanimated, {
   cancelAnimation,
   Easing,
@@ -21,7 +13,7 @@ import Reanimated, {
   useSharedValue,
   withRepeat,
 } from 'react-native-reanimated';
-import type { Camera, PhotoFile, TakePhotoOptions, TakeSnapshotOptions, VideoFile } from 'react-native-vision-camera';
+import type { Camera, PhotoFile, TakePhotoOptions, VideoFile } from 'react-native-vision-camera';
 import { CAPTURE_BUTTON_SIZE, SCREEN_HEIGHT, SCREEN_WIDTH } from '../utils/constants';
 import { HapticFeedbackTypes, trigger } from 'react-native-haptic-feedback';
 import { options } from '../utils/hapticFeedbackOptions';
@@ -29,7 +21,7 @@ import { options } from '../utils/hapticFeedbackOptions';
 const PAN_GESTURE_HANDLER_FAIL_X = [-SCREEN_WIDTH, SCREEN_WIDTH];
 const PAN_GESTURE_HANDLER_ACTIVE_Y = [-2, 2];
 
-const START_RECORDING_DELAY = 400;
+const START_RECORDING_DELAY = 200;
 const BORDER_WIDTH = CAPTURE_BUTTON_SIZE * 0.1;
 
 interface Props extends ViewProps {
@@ -45,8 +37,6 @@ interface Props extends ViewProps {
   enabled: boolean;
 
   setIsPressingButton: (isPressingButton: boolean) => void;
-
-  setIsRecording: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 const _CaptureButton: React.FC<Props> = ({
@@ -58,19 +48,19 @@ const _CaptureButton: React.FC<Props> = ({
   flash,
   enabled,
   setIsPressingButton,
-  setIsRecording,
   style,
   ...props
 }): React.ReactElement => {
   const pressDownDate = useRef<Date | undefined>(undefined);
+  const isRecording = useRef(false);
   const recordingProgress = useSharedValue(0);
-  const takePhotoOptions = useMemo<TakePhotoOptions & TakeSnapshotOptions>(
+  const takePhotoOptions = useMemo<TakePhotoOptions>(
     () => ({
       photoCodec: 'jpeg',
       qualityPrioritization: 'balanced',
       flash: flash,
       quality: 100,
-      skipMetadata: true,
+      enableShutterSound: true,
     }),
     [flash]
   );
@@ -90,7 +80,7 @@ const _CaptureButton: React.FC<Props> = ({
   }, [camera, onMediaCaptured, takePhotoOptions]);
 
   const onStoppedRecording = useCallback(() => {
-    setIsRecording(false);
+    isRecording.current = false;
     cancelAnimation(recordingProgress);
     console.log('stopped recording video!');
   }, [recordingProgress]);
@@ -124,7 +114,7 @@ const _CaptureButton: React.FC<Props> = ({
       });
       // TODO: wait until startRecording returns to actually find out if the recording has successfully started
       console.log('called startRecording()!');
-      setIsRecording(true);
+      isRecording.current = true;
     } catch (e) {
       console.error('failed to start recording!', e, 'camera');
     }
