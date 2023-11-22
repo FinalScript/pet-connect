@@ -45,7 +45,7 @@ export const OwnerResolver = {
       }
 
       let owner = await Owner.create({ authId: jwtResult.id, username, name, location });
-  
+
       if (profilePicture?.file) {
         const { filename, filePath, mimetype, root } = await storeUpload(profilePicture.file);
 
@@ -100,36 +100,38 @@ export const OwnerResolver = {
       }
 
       if (username) {
-        if (await getOwnerByUsername(username)) {
-          throw new GraphQLError('Username taken', {
-            extensions: {
-              code: 'BAD_USER_INPUT',
-            },
-          });
-        }
+        if (username !== owner.username) {
+          if (await getOwnerByUsername(username)) {
+            throw new GraphQLError('Username taken', {
+              extensions: {
+                code: 'BAD_USER_INPUT',
+              },
+            });
+          }
 
-        if (username.match('[^a-zA-Z0-9._\\-]')) {
-          throw new GraphQLError('Username Invalid', {
-            extensions: {
-              code: 'BAD_USER_INPUT',
-            },
-          });
-        }
+          if (username.match('[^a-zA-Z0-9._\\-]')) {
+            throw new GraphQLError('Username Invalid', {
+              extensions: {
+                code: 'BAD_USER_INPUT',
+              },
+            });
+          }
 
-        if (username.length > 30) {
-          throw new GraphQLError('Username is too long (Max 30)', {
-            extensions: {
-              code: 'BAD_USER_INPUT',
-            },
-          });
-        }
+          if (username.length > 30) {
+            throw new GraphQLError('Username is too long (Max 30)', {
+              extensions: {
+                code: 'BAD_USER_INPUT',
+              },
+            });
+          }
 
-        if (username.length < 2) {
-          throw new GraphQLError('Username is too short (Min 2)', {
-            extensions: {
-              code: 'BAD_USER_INPUT',
-            },
-          });
+          if (username.length < 2) {
+            throw new GraphQLError('Username is too short (Min 2)', {
+              extensions: {
+                code: 'BAD_USER_INPUT',
+              },
+            });
+          }
         }
       }
 

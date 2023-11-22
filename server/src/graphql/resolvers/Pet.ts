@@ -81,7 +81,7 @@ export const PetResolver = {
       try {
         newPet = await createPet({ name, type, description, location, username });
 
-        if (profilePicture.file) {
+        if (profilePicture?.file) {
           const { filename, filePath, mimetype, root } = await storeUpload(profilePicture.file);
 
           const profilePictureDAO = ProfilePicture.build({

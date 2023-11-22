@@ -1,20 +1,18 @@
-import { ApolloClient, ApolloProvider, InMemoryCache, createHttpLink, ApolloLink } from '@apollo/client';
+import { ApolloClient, ApolloLink, ApolloProvider, InMemoryCache } from '@apollo/client';
 import { setContext } from '@apollo/client/link/context';
 import { BottomSheetModalProvider } from '@gorhom/bottom-sheet';
 import { ReactNode, useEffect, useState } from 'react';
-import { SafeAreaView } from 'react-native';
 import { Auth0Provider } from 'react-native-auth0';
 import Config from 'react-native-config';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { Provider } from 'react-redux';
-import Text from '../components/Text';
 import { store } from '../redux/store';
 
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import createUploadLink from 'apollo-upload-client/public/createUploadLink';
 import React from 'react';
 import * as env from '../../env.json';
 import { setApiBaseUrl, setBearerToken } from '../api';
-import createUploadLink from 'apollo-upload-client/public/createUploadLink';
 import Loading from '../pages/Loading';
 
 interface Props {
