@@ -8,11 +8,11 @@ import Reanimated, { Extrapolate, interpolate, useAnimatedGestureHandler, useAni
 import IonIcon from 'react-native-vector-icons/Ionicons';
 import MaterialIcon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { Camera, CameraRuntimeError, PhotoFile, VideoFile, useCameraDevice, useCameraFormat } from 'react-native-vision-camera';
-import { CaptureButton } from '../../components/CaptureButton';
-import { StatusBarBlurBackground } from '../../components/StatusBarBlurBackground';
-import { useIsForeground } from '../../hooks/useIsForeground';
-import { Ionicon } from '../../utils/Icons';
-import { CONTENT_SPACING, MAX_ZOOM_FACTOR, SAFE_AREA_PADDING, SCREEN_HEIGHT, SCREEN_WIDTH } from '../../utils/constants';
+import { CaptureButton } from './CaptureButton';
+import { StatusBarBlurBackground } from './StatusBarBlurBackground';
+import { useIsForeground } from '../hooks/useIsForeground';
+import { Ionicon } from '../utils/Icons';
+import { CONTENT_SPACING, MAX_ZOOM_FACTOR, SAFE_AREA_PADDING, SCREEN_HEIGHT, SCREEN_WIDTH } from '../utils/constants';
 
 const ReanimatedCamera = Reanimated.createAnimatedComponent(Camera);
 Reanimated.addWhitelistedNativeProps({
