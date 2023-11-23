@@ -5,7 +5,6 @@ import Feed from './Feed';
 import Explore from './Explore';
 import Inbox from './Inbox';
 import Profile from './Profile';
-import { CameraView } from './CameraView';
 import { RouteProp } from '@react-navigation/native';
 import { Ionicon } from '../../utils/Icons';
 import PostPage from './PostPage';
@@ -48,7 +47,6 @@ const HomeNavigator = () => {
 
             iconName = focused ? 'home' : 'home-outline';
 
-            // You can return any component that you like here!
             return <Ionicon name={iconName} size={size} color={color} />;
           },
         }}
@@ -62,7 +60,6 @@ const HomeNavigator = () => {
 
             iconName = focused ? 'search' : 'search-outline';
 
-            // You can return any component that you like here!
             return <Ionicon name={iconName} size={size} color={color} />;
           },
         }}
@@ -77,7 +74,6 @@ const HomeNavigator = () => {
 
             iconName = focused ? 'plus-square-o' : 'plus-square-o';
 
-            // You can return any component that you like here!
             return <FontAwesome name={iconName} size={size + 15} color={color} />;
           },
           unmountOnBlur: true,
@@ -96,7 +92,6 @@ const HomeNavigator = () => {
 
             iconName = focused ? 'file-tray' : 'file-tray-outline';
 
-            // You can return any component that you like here!
             return <Ionicon name={iconName} size={size} color={color} />;
           },
         }}
@@ -111,7 +106,6 @@ const HomeNavigator = () => {
 
             iconName = focused ? 'person-circle' : 'person-circle-outline';
 
-            // You can return any component that you like here!
             return <Ionicon name={iconName} size={size} color={color} />;
           },
         }}

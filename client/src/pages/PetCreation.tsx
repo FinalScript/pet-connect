@@ -2,11 +2,13 @@ import { useMutation } from '@apollo/client';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useCallback, useState } from 'react';
+import { Keyboard } from 'react-native';
 import {
   ActivityIndicator,
   Image,
   KeyboardAvoidingView,
   Platform,
+  Pressable,
   TextInput,
   TouchableHighlight,
   TouchableOpacity,
@@ -187,7 +189,6 @@ export default function PetCreation() {
     return (
       <View>
         <Text className='text-themeText font-semibold text-3xl'>Time to build your pet's profile! Start by selecting the pet type.</Text>
-
         <View className='mt-14 -mx-5 flex flex-wrap flex-row justify-center'>
           {petTypes.slice(optionsShuffle, optionsShuffle + 4).map((pet) => {
             return (
@@ -208,7 +209,6 @@ export default function PetCreation() {
             );
           })}
         </View>
-
         <View className='mt-10 flex flex-row justify-center'>
           <TouchableOpacity onPress={moreOptionsOnPress}>
             <Text className='text-themeText text-lg p-2'>See more options...</Text>
@@ -220,124 +220,124 @@ export default function PetCreation() {
 
   const stepTwo = () => {
     return (
-      <View>
-        <Text className='text-themeText font-semibold text-3xl'>We need some details about your pet!</Text>
-
-        <View className='px-2 mt-3'>
-          <View className='flex flex-col justify-center items-center'>
-            <Text className='mb-2 text-xl font-bold text-themeText'>Profile Picture</Text>
-            <TouchableHighlight
-              className='w-[160px] h-[160px] bg-themeInput rounded-3xl shadow-sm shadow-themeShadow'
-              underlayColor={'#d6cbcb'}
-              onPress={pickProfilePicture}
-              disabled={loading}>
-              <View className=''>
-                {formData.profilePicture ? (
-                  <Image className='flex w-full h-full rounded-3xl' source={{ uri: formData.profilePicture?.path }} />
-                ) : (
-                  <View className='flex flex-row justify-center items-center h-full'>
-                    <Icon name='plus-square-o' size={50} color={'#362013'} />
-                  </View>
-                )}
-              </View>
-            </TouchableHighlight>
-          </View>
-
-          <View className='mt-3'>
-            <Text className='mb-2 pl-4 text-xl font-bold text-themeText'>Display Name *</Text>
-            <TextInput
-              className={
-                (focus.name === true ? 'border-themeActive' : 'border-transparent') +
-                ' bg-themeInput border-[5px] shadow-sm shadow-themeShadow w-full rounded-3xl px-5 py-3 text-lg'
-              }
-              style={{ fontFamily: 'BalooChettan2-Regular' }}
-              placeholderTextColor={'#444444bb'}
-              value={formData.name}
-              onChangeText={(e) => {
-                setFormData((prev) => {
-                  return { ...prev, name: e };
-                });
-              }}
-              onFocus={() => {
-                setFocus((prev) => {
-                  return { ...prev, name: true };
-                });
-              }}
-              onBlur={() => {
-                setFocus((prev) => {
-                  return { ...prev, name: false };
-                });
-              }}
-              maxLength={30}
-              returnKeyType='next'
-              placeholder="Enter your pet's name"
-              editable={!loading}
-            />
+      <Pressable onPress={Keyboard.dismiss}>
+        <View>
+          <Text className='text-themeText font-semibold text-3xl'>We need some details about your pet!</Text>
+          <View className='px-2 mt-3'>
+            <View className='flex flex-col justify-center items-center'>
+              <Text className='mb-2 text-xl font-bold text-themeText'>Profile Picture</Text>
+              <TouchableHighlight
+                className='w-[160px] h-[160px] bg-themeInput rounded-3xl shadow-sm shadow-themeShadow'
+                underlayColor={'#d6cbcb'}
+                onPress={pickProfilePicture}
+                disabled={loading}>
+                <View className=''>
+                  {formData.profilePicture ? (
+                    <Image className='flex w-full h-full rounded-3xl' source={{ uri: formData.profilePicture?.path }} />
+                  ) : (
+                    <View className='flex flex-row justify-center items-center h-full'>
+                      <Icon name='plus-square-o' size={50} color={'#362013'} />
+                    </View>
+                  )}
+                </View>
+              </TouchableHighlight>
+            </View>
+            <View className='mt-3'>
+              <Text className='mb-2 pl-4 text-xl font-bold text-themeText'>Display Name *</Text>
+              <TextInput
+                className={
+                  (focus.name === true ? 'border-themeActive' : 'border-transparent') +
+                  ' bg-themeInput border-[5px] shadow-sm shadow-themeShadow w-full rounded-3xl px-5 py-3 text-lg'
+                }
+                style={{ fontFamily: 'BalooChettan2-Regular' }}
+                placeholderTextColor={'#444444bb'}
+                value={formData.name}
+                onChangeText={(e) => {
+                  setFormData((prev) => {
+                    return { ...prev, name: e };
+                  });
+                }}
+                onFocus={() => {
+                  setFocus((prev) => {
+                    return { ...prev, name: true };
+                  });
+                }}
+                onBlur={() => {
+                  setFocus((prev) => {
+                    return { ...prev, name: false };
+                  });
+                }}
+                maxLength={30}
+                returnKeyType='next'
+                placeholder="Enter your pet's name"
+                editable={!loading}
+              />
+            </View>
           </View>
         </View>
-      </View>
+      </Pressable>
     );
   };
 
   const stepThree = () => {
     return (
-      <View>
-        <Text className='text-themeText font-semibold text-3xl'>We're almost done!</Text>
-
-        <View className='mt-3'>
-          <Text className='mb-2 pl-4 text-lg font-bold text-themeText'>Pet Username *</Text>
-          <UsernameInput
-            value={formData.username}
-            setValue={(e: string) => {
-              setFormData((prev) => {
-                return { ...prev, username: e };
-              });
-            }}
-            isValid={isUsernameValid}
-            setIsValid={setIsUsernameValid}
-            returnKeyType='next'
-            placeholder='Give your pet a unique username'
-            autoCapitalize='none'
-            autoCorrect={false}
-            editable={!loading}
-          />
+      <Pressable onPress={Keyboard.dismiss}>
+        <View>
+          <Text className='text-themeText font-semibold text-3xl'>We're almost done!</Text>
+          <View className='mt-3'>
+            <Text className='mb-2 pl-4 text-lg font-bold text-themeText'>Pet Username *</Text>
+            <UsernameInput
+              value={formData.username}
+              setValue={(e: string) => {
+                setFormData((prev) => {
+                  return { ...prev, username: e };
+                });
+              }}
+              isValid={isUsernameValid}
+              setIsValid={setIsUsernameValid}
+              returnKeyType='next'
+              placeholder='Give your pet a unique username'
+              autoCapitalize='none'
+              autoCorrect={false}
+              editable={!loading}
+            />
+          </View>
+          <View className='mt-5'>
+            <Text className='mb-2 pl-4 text-xl font-bold text-themeText'>Tell us about{formData.name ? ` ${formData.name}` : '...'}</Text>
+            <TextInput
+              className={
+                (focus.description === true ? 'border-themeActive' : 'border-transparent') +
+                ' bg-themeInput border-[5px] shadow-sm shadow-themeShadow h-44 max-h-44 overflow-hidden w-full rounded-3xl px-3 py-3 text-lg'
+              }
+              style={{ fontFamily: 'BalooChettan2-Regular' }}
+              placeholderTextColor={'#444444bb'}
+              value={formData.description}
+              onChangeText={(e) => {
+                setFormData((prev) => {
+                  return { ...prev, description: e };
+                });
+              }}
+              onFocus={() => {
+                setFocus((prev) => {
+                  return { ...prev, description: true };
+                });
+              }}
+              onBlur={() => {
+                setFocus((prev) => {
+                  return { ...prev, description: false };
+                });
+              }}
+              maxLength={100}
+              numberOfLines={4}
+              multiline={true}
+              returnKeyType={'done'}
+              blurOnSubmit={true}
+              placeholder='Write a nice description for your pet'
+              editable={!loading}
+            />
+          </View>
         </View>
-
-        <View className='mt-5'>
-          <Text className='mb-2 pl-4 text-xl font-bold text-themeText'>Tell us about{formData.name ? ` ${formData.name}` : '...'}</Text>
-          <TextInput
-            className={
-              (focus.description === true ? 'border-themeActive' : 'border-transparent') +
-              ' bg-themeInput border-[5px] shadow-sm shadow-themeShadow h-44 max-h-44 overflow-hidden w-full rounded-3xl px-3 py-3 text-lg'
-            }
-            style={{ fontFamily: 'BalooChettan2-Regular' }}
-            placeholderTextColor={'#444444bb'}
-            value={formData.description}
-            onChangeText={(e) => {
-              setFormData((prev) => {
-                return { ...prev, description: e };
-              });
-            }}
-            onFocus={() => {
-              setFocus((prev) => {
-                return { ...prev, description: true };
-              });
-            }}
-            onBlur={() => {
-              setFocus((prev) => {
-                return { ...prev, description: false };
-              });
-            }}
-            maxLength={100}
-            numberOfLines={4}
-            multiline={true}
-            returnKeyType={'done'}
-            blurOnSubmit={true}
-            placeholder='Write a nice description for your pet'
-            editable={!loading}
-          />
-        </View>
-      </View>
+      </Pressable>
     );
   };
 
