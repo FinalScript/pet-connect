@@ -8,7 +8,6 @@
 
 /* Begin PBXBuildFile section */
 		00E356F31AD99517003FC87E /* PetConnectTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 00E356F21AD99517003FC87E /* PetConnectTests.m */; };
-		0C80B921A6F3F58F76C31292 /* libPods-PetConnect.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5DCACB8F33CDC322A6C60F78 /* libPods-PetConnect.a */; };
 		13B07FBC1A68108700A75B9A /* AppDelegate.mm in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB01A68108700A75B9A /* AppDelegate.mm */; };
 		13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB51A68108700A75B9A /* Images.xcassets */; };
 		13B07FC11A68108700A75B9A /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB71A68108700A75B9A /* main.m */; };
@@ -18,6 +17,7 @@
 		446A3CC73D1D48539206CE2D /* BalooChettan2-SemiBold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 29290B54055E4DC9AA9E859D /* BalooChettan2-SemiBold.ttf */; };
 		52CAC30A5B8F45DC9545EF0A /* Mali-SemiBold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 65F11644265E4CD99C4A0348 /* Mali-SemiBold.ttf */; };
 		57A27DFDC98D435D8819E568 /* Mali-Medium.ttf in Resources */ = {isa = PBXBuildFile; fileRef = A049C07CEFBC42328D3EC6E8 /* Mali-Medium.ttf */; };
+		6283D52D30470FFF258F90F9 /* libPods-PetConnect.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 16B29A87975D520B79E1038E /* libPods-PetConnect.a */; };
 		6657B9EA2A2E012200A6A69F /* Fontisto.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 6657B9DA2A2E012200A6A69F /* Fontisto.ttf */; };
 		6657B9EB2A2E012200A6A69F /* Octicons.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 6657B9DB2A2E012200A6A69F /* Octicons.ttf */; };
 		6657B9EC2A2E012200A6A69F /* Feather.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 6657B9DC2A2E012200A6A69F /* Feather.ttf */; };
@@ -35,11 +35,11 @@
 		6657B9F82A2E012200A6A69F /* SimpleLineIcons.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 6657B9E82A2E012200A6A69F /* SimpleLineIcons.ttf */; };
 		6657B9F92A2E012200A6A69F /* MaterialIcons.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 6657B9E92A2E012200A6A69F /* MaterialIcons.ttf */; };
 		676C1A05FC5C4BFD821659EC /* BalooChettan2-ExtraBold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 773CDFB81EAB4AB399722C44 /* BalooChettan2-ExtraBold.ttf */; };
-		7699B88040F8A987B510C191 /* libPods-PetConnect-PetConnectTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 19F6CBCC0A4E27FBF8BF4A61 /* libPods-PetConnect-PetConnectTests.a */; };
 		7BAC07D00C134D5D9136373A /* Mali-Light.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 04AB17F0E7A24ABE90B81928 /* Mali-Light.ttf */; };
 		7BF1F07802E14D5ABB959DDA /* Mali-ExtraLightItalic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 322C76F3D2604DD7AB5BADCF /* Mali-ExtraLightItalic.ttf */; };
 		7CA2E717A4E14EA7ACFC75DC /* BalooChettan2-Bold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 300B792BA1EA404CA7D76D01 /* BalooChettan2-Bold.ttf */; };
 		81AB9BB82411601600AC10FF /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */; };
+		9531554131FD21D57F81A84D /* libPods-PetConnect-PetConnectTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = C9EF531ECFBB7BED004E4979 /* libPods-PetConnect-PetConnectTests.a */; };
 		9AEEC4A7BBFD4C95A7E4353E /* Mali-MediumItalic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = EC30FD85C795433EA3422BC8 /* Mali-MediumItalic.ttf */; };
 		CCA57DBFAEA74B7EA4FCCB13 /* Mali-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = FEA8CF577F4047B7A07DDA10 /* Mali-Regular.ttf */; };
 		D85586E8AEC04DFABAFE134C /* BalooChettan2-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = CE9B88D232004A13A80D7EAA /* BalooChettan2-Regular.ttf */; };
@@ -72,18 +72,15 @@
 		13B07FB51A68108700A75B9A /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = Images.xcassets; path = PetConnect/Images.xcassets; sourceTree = "<group>"; };
 		13B07FB61A68108700A75B9A /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Info.plist; path = PetConnect/Info.plist; sourceTree = "<group>"; };
 		13B07FB71A68108700A75B9A /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = main.m; path = PetConnect/main.m; sourceTree = "<group>"; };
-		19F6CBCC0A4E27FBF8BF4A61 /* libPods-PetConnect-PetConnectTests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-PetConnect-PetConnectTests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		16B29A87975D520B79E1038E /* libPods-PetConnect.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-PetConnect.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		1712002BD4F7A604DB5A4EE5 /* Pods-PetConnect.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-PetConnect.debug.xcconfig"; path = "Target Support Files/Pods-PetConnect/Pods-PetConnect.debug.xcconfig"; sourceTree = "<group>"; };
 		1C57ED85434149CDA7348ECA /* Mali-Bold.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Mali-Bold.ttf"; path = "../assets/fonts/Mali-Bold.ttf"; sourceTree = "<group>"; };
 		29290B54055E4DC9AA9E859D /* BalooChettan2-SemiBold.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "BalooChettan2-SemiBold.ttf"; path = "../assets/fonts/BalooChettan2-SemiBold.ttf"; sourceTree = "<group>"; };
 		2B57CEE874434CF08D6071F9 /* Mali-LightItalic.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Mali-LightItalic.ttf"; path = "../assets/fonts/Mali-LightItalic.ttf"; sourceTree = "<group>"; };
 		300B792BA1EA404CA7D76D01 /* BalooChettan2-Bold.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "BalooChettan2-Bold.ttf"; path = "../assets/fonts/BalooChettan2-Bold.ttf"; sourceTree = "<group>"; };
 		322C76F3D2604DD7AB5BADCF /* Mali-ExtraLightItalic.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Mali-ExtraLightItalic.ttf"; path = "../assets/fonts/Mali-ExtraLightItalic.ttf"; sourceTree = "<group>"; };
-		3B4392A12AC88292D35C810B /* Pods-PetConnect.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-PetConnect.debug.xcconfig"; path = "Target Support Files/Pods-PetConnect/Pods-PetConnect.debug.xcconfig"; sourceTree = "<group>"; };
 		527C6DD0CF054233ACAEB6CA /* Itim-Regular.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Itim-Regular.ttf"; path = "../assets/fonts/Itim-Regular.ttf"; sourceTree = "<group>"; };
 		532E083E956E4B3AB73892E9 /* Mali-SemiBoldItalic.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Mali-SemiBoldItalic.ttf"; path = "../assets/fonts/Mali-SemiBoldItalic.ttf"; sourceTree = "<group>"; };
-		5709B34CF0A7D63546082F79 /* Pods-PetConnect.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-PetConnect.release.xcconfig"; path = "Target Support Files/Pods-PetConnect/Pods-PetConnect.release.xcconfig"; sourceTree = "<group>"; };
-		5B7EB9410499542E8C5724F5 /* Pods-PetConnect-PetConnectTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-PetConnect-PetConnectTests.debug.xcconfig"; path = "Target Support Files/Pods-PetConnect-PetConnectTests/Pods-PetConnect-PetConnectTests.debug.xcconfig"; sourceTree = "<group>"; };
-		5DCACB8F33CDC322A6C60F78 /* libPods-PetConnect.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-PetConnect.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		60B8EC2D478548A3BAB1C607 /* Mali-Italic.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Mali-Italic.ttf"; path = "../assets/fonts/Mali-Italic.ttf"; sourceTree = "<group>"; };
 		65F11644265E4CD99C4A0348 /* Mali-SemiBold.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Mali-SemiBold.ttf"; path = "../assets/fonts/Mali-SemiBold.ttf"; sourceTree = "<group>"; };
 		6657B9DA2A2E012200A6A69F /* Fontisto.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = Fontisto.ttf; sourceTree = "<group>"; };
@@ -104,11 +101,14 @@
 		6657B9E92A2E012200A6A69F /* MaterialIcons.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = MaterialIcons.ttf; sourceTree = "<group>"; };
 		773CDFB81EAB4AB399722C44 /* BalooChettan2-ExtraBold.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "BalooChettan2-ExtraBold.ttf"; path = "../assets/fonts/BalooChettan2-ExtraBold.ttf"; sourceTree = "<group>"; };
 		81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = LaunchScreen.storyboard; path = PetConnect/LaunchScreen.storyboard; sourceTree = "<group>"; };
-		89C6BE57DB24E9ADA2F236DE /* Pods-PetConnect-PetConnectTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-PetConnect-PetConnectTests.release.xcconfig"; path = "Target Support Files/Pods-PetConnect-PetConnectTests/Pods-PetConnect-PetConnectTests.release.xcconfig"; sourceTree = "<group>"; };
 		9DA7AFC59B62484DACD7748E /* BalooChettan2-Medium.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "BalooChettan2-Medium.ttf"; path = "../assets/fonts/BalooChettan2-Medium.ttf"; sourceTree = "<group>"; };
 		A049C07CEFBC42328D3EC6E8 /* Mali-Medium.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Mali-Medium.ttf"; path = "../assets/fonts/Mali-Medium.ttf"; sourceTree = "<group>"; };
+		A244EED8769F127700131DBB /* Pods-PetConnect-PetConnectTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-PetConnect-PetConnectTests.release.xcconfig"; path = "Target Support Files/Pods-PetConnect-PetConnectTests/Pods-PetConnect-PetConnectTests.release.xcconfig"; sourceTree = "<group>"; };
 		AD5D40620FB342CC964A97E3 /* Mali-BoldItalic.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Mali-BoldItalic.ttf"; path = "../assets/fonts/Mali-BoldItalic.ttf"; sourceTree = "<group>"; };
+		B263CE73C91472CAB36213EC /* Pods-PetConnect-PetConnectTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-PetConnect-PetConnectTests.debug.xcconfig"; path = "Target Support Files/Pods-PetConnect-PetConnectTests/Pods-PetConnect-PetConnectTests.debug.xcconfig"; sourceTree = "<group>"; };
+		C9EF531ECFBB7BED004E4979 /* libPods-PetConnect-PetConnectTests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-PetConnect-PetConnectTests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		CE9B88D232004A13A80D7EAA /* BalooChettan2-Regular.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "BalooChettan2-Regular.ttf"; path = "../assets/fonts/BalooChettan2-Regular.ttf"; sourceTree = "<group>"; };
+		DAA30E3E1EA10536BEAD1DE4 /* Pods-PetConnect.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-PetConnect.release.xcconfig"; path = "Target Support Files/Pods-PetConnect/Pods-PetConnect.release.xcconfig"; sourceTree = "<group>"; };
 		DB77A657F4BF4A0E8C1A700D /* Mali-ExtraLight.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Mali-ExtraLight.ttf"; path = "../assets/fonts/Mali-ExtraLight.ttf"; sourceTree = "<group>"; };
 		DD6305252A230F750022E7DA /* RNReactNativeHapticFeedback.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RNReactNativeHapticFeedback.xcodeproj; path = "../node_modules/react-native-haptic-feedback/ios/RNReactNativeHapticFeedback.xcodeproj"; sourceTree = "<group>"; };
 		DD6305282A2311E40022E7DA /* libRNReactNativeHapticFeedback.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; path = libRNReactNativeHapticFeedback.a; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -122,7 +122,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				7699B88040F8A987B510C191 /* libPods-PetConnect-PetConnectTests.a in Frameworks */,
+				9531554131FD21D57F81A84D /* libPods-PetConnect-PetConnectTests.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -131,7 +131,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				DD6305292A2311E40022E7DA /* libRNReactNativeHapticFeedback.a in Frameworks */,
-				0C80B921A6F3F58F76C31292 /* libPods-PetConnect.a in Frameworks */,
+				6283D52D30470FFF258F90F9 /* libPods-PetConnect.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -199,8 +199,8 @@
 			children = (
 				DD6305282A2311E40022E7DA /* libRNReactNativeHapticFeedback.a */,
 				ED297162215061F000B7C4FE /* JavaScriptCore.framework */,
-				5DCACB8F33CDC322A6C60F78 /* libPods-PetConnect.a */,
-				19F6CBCC0A4E27FBF8BF4A61 /* libPods-PetConnect-PetConnectTests.a */,
+				16B29A87975D520B79E1038E /* libPods-PetConnect.a */,
+				C9EF531ECFBB7BED004E4979 /* libPods-PetConnect-PetConnectTests.a */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -265,10 +265,10 @@
 		BBD78D7AC51CEA395F1C20DB /* Pods */ = {
 			isa = PBXGroup;
 			children = (
-				3B4392A12AC88292D35C810B /* Pods-PetConnect.debug.xcconfig */,
-				5709B34CF0A7D63546082F79 /* Pods-PetConnect.release.xcconfig */,
-				5B7EB9410499542E8C5724F5 /* Pods-PetConnect-PetConnectTests.debug.xcconfig */,
-				89C6BE57DB24E9ADA2F236DE /* Pods-PetConnect-PetConnectTests.release.xcconfig */,
+				1712002BD4F7A604DB5A4EE5 /* Pods-PetConnect.debug.xcconfig */,
+				DAA30E3E1EA10536BEAD1DE4 /* Pods-PetConnect.release.xcconfig */,
+				B263CE73C91472CAB36213EC /* Pods-PetConnect-PetConnectTests.debug.xcconfig */,
+				A244EED8769F127700131DBB /* Pods-PetConnect-PetConnectTests.release.xcconfig */,
 			);
 			path = Pods;
 			sourceTree = "<group>";
@@ -287,12 +287,12 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 00E357021AD99517003FC87E /* Build configuration list for PBXNativeTarget "PetConnectTests" */;
 			buildPhases = (
-				A55EABD7B0C7F3A422A6CC61 /* [CP] Check Pods Manifest.lock */,
+				93752AE70FB29086C400EA77 /* [CP] Check Pods Manifest.lock */,
 				00E356EA1AD99517003FC87E /* Sources */,
 				00E356EB1AD99517003FC87E /* Frameworks */,
 				00E356EC1AD99517003FC87E /* Resources */,
-				C59DA0FBD6956966B86A3779 /* [CP] Embed Pods Frameworks */,
-				F6A41C54EA430FDDC6A6ED99 /* [CP] Copy Pods Resources */,
+				B54C4D8D45D4C13871269E3B /* [CP] Embed Pods Frameworks */,
+				64CEA571C0A026BFF7DA9619 /* [CP] Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -308,14 +308,14 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 13B07F931A680F5B00A75B9A /* Build configuration list for PBXNativeTarget "PetConnect" */;
 			buildPhases = (
-				C38B50BA6285516D6DCD4F65 /* [CP] Check Pods Manifest.lock */,
+				E2F74014711F70C0285B2609 /* [CP] Check Pods Manifest.lock */,
 				FD10A7F022414F080027D42C /* Start Packager */,
 				13B07F871A680F5B00A75B9A /* Sources */,
 				13B07F8C1A680F5B00A75B9A /* Frameworks */,
 				13B07F8E1A680F5B00A75B9A /* Resources */,
 				00DD1BFF1BD5951E006B06BC /* Bundle React Native code and images */,
-				00EEFC60759A1932668264C0 /* [CP] Embed Pods Frameworks */,
-				E235C05ADACE081382539298 /* [CP] Copy Pods Resources */,
+				0AAF1823A72CE03D308759D6 /* [CP] Embed Pods Frameworks */,
+				D9AA009740CA135733E065D8 /* [CP] Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -438,7 +438,7 @@
 			shellPath = /bin/sh;
 			shellScript = "set -e\n\nWITH_ENVIRONMENT=\"../node_modules/react-native/scripts/xcode/with-environment.sh\"\nREACT_NATIVE_XCODE=\"../node_modules/react-native/scripts/react-native-xcode.sh\"\n\n/bin/sh -c \"$WITH_ENVIRONMENT $REACT_NATIVE_XCODE\"\n";
 		};
-		00EEFC60759A1932668264C0 /* [CP] Embed Pods Frameworks */ = {
+		0AAF1823A72CE03D308759D6 /* [CP] Embed Pods Frameworks */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -455,7 +455,24 @@
 			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-PetConnect/Pods-PetConnect-frameworks.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
-		A55EABD7B0C7F3A422A6CC61 /* [CP] Check Pods Manifest.lock */ = {
+		64CEA571C0A026BFF7DA9619 /* [CP] Copy Pods Resources */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-PetConnect-PetConnectTests/Pods-PetConnect-PetConnectTests-resources-${CONFIGURATION}-input-files.xcfilelist",
+			);
+			name = "[CP] Copy Pods Resources";
+			outputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-PetConnect-PetConnectTests/Pods-PetConnect-PetConnectTests-resources-${CONFIGURATION}-output-files.xcfilelist",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-PetConnect-PetConnectTests/Pods-PetConnect-PetConnectTests-resources.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		93752AE70FB29086C400EA77 /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -477,7 +494,41 @@
 			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
 			showEnvVarsInLog = 0;
 		};
-		C38B50BA6285516D6DCD4F65 /* [CP] Check Pods Manifest.lock */ = {
+		B54C4D8D45D4C13871269E3B /* [CP] Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-PetConnect-PetConnectTests/Pods-PetConnect-PetConnectTests-frameworks-${CONFIGURATION}-input-files.xcfilelist",
+			);
+			name = "[CP] Embed Pods Frameworks";
+			outputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-PetConnect-PetConnectTests/Pods-PetConnect-PetConnectTests-frameworks-${CONFIGURATION}-output-files.xcfilelist",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-PetConnect-PetConnectTests/Pods-PetConnect-PetConnectTests-frameworks.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		D9AA009740CA135733E065D8 /* [CP] Copy Pods Resources */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-PetConnect/Pods-PetConnect-resources-${CONFIGURATION}-input-files.xcfilelist",
+			);
+			name = "[CP] Copy Pods Resources";
+			outputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-PetConnect/Pods-PetConnect-resources-${CONFIGURATION}-output-files.xcfilelist",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-PetConnect/Pods-PetConnect-resources.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		E2F74014711F70C0285B2609 /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -497,57 +548,6 @@
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
-			showEnvVarsInLog = 0;
-		};
-		C59DA0FBD6956966B86A3779 /* [CP] Embed Pods Frameworks */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-PetConnect-PetConnectTests/Pods-PetConnect-PetConnectTests-frameworks-${CONFIGURATION}-input-files.xcfilelist",
-			);
-			name = "[CP] Embed Pods Frameworks";
-			outputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-PetConnect-PetConnectTests/Pods-PetConnect-PetConnectTests-frameworks-${CONFIGURATION}-output-files.xcfilelist",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-PetConnect-PetConnectTests/Pods-PetConnect-PetConnectTests-frameworks.sh\"\n";
-			showEnvVarsInLog = 0;
-		};
-		E235C05ADACE081382539298 /* [CP] Copy Pods Resources */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-PetConnect/Pods-PetConnect-resources-${CONFIGURATION}-input-files.xcfilelist",
-			);
-			name = "[CP] Copy Pods Resources";
-			outputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-PetConnect/Pods-PetConnect-resources-${CONFIGURATION}-output-files.xcfilelist",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-PetConnect/Pods-PetConnect-resources.sh\"\n";
-			showEnvVarsInLog = 0;
-		};
-		F6A41C54EA430FDDC6A6ED99 /* [CP] Copy Pods Resources */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-PetConnect-PetConnectTests/Pods-PetConnect-PetConnectTests-resources-${CONFIGURATION}-input-files.xcfilelist",
-			);
-			name = "[CP] Copy Pods Resources";
-			outputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-PetConnect-PetConnectTests/Pods-PetConnect-PetConnectTests-resources-${CONFIGURATION}-output-files.xcfilelist",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-PetConnect-PetConnectTests/Pods-PetConnect-PetConnectTests-resources.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
 		FD10A7F022414F080027D42C /* Start Packager */ = {
@@ -602,7 +602,7 @@
 /* Begin XCBuildConfiguration section */
 		00E356F61AD99517003FC87E /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 5B7EB9410499542E8C5724F5 /* Pods-PetConnect-PetConnectTests.debug.xcconfig */;
+			baseConfigurationReference = B263CE73C91472CAB36213EC /* Pods-PetConnect-PetConnectTests.debug.xcconfig */;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				DEVELOPMENT_TEAM = V42DC5RQ48;
@@ -630,7 +630,7 @@
 		};
 		00E356F71AD99517003FC87E /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 89C6BE57DB24E9ADA2F236DE /* Pods-PetConnect-PetConnectTests.release.xcconfig */;
+			baseConfigurationReference = A244EED8769F127700131DBB /* Pods-PetConnect-PetConnectTests.release.xcconfig */;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				COPY_PHASE_STRIP = NO;
@@ -655,7 +655,7 @@
 		};
 		13B07F941A680F5B00A75B9A /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 3B4392A12AC88292D35C810B /* Pods-PetConnect.debug.xcconfig */;
+			baseConfigurationReference = 1712002BD4F7A604DB5A4EE5 /* Pods-PetConnect.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
@@ -687,7 +687,7 @@
 		};
 		13B07F951A680F5B00A75B9A /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 5709B34CF0A7D63546082F79 /* Pods-PetConnect.release.xcconfig */;
+			baseConfigurationReference = DAA30E3E1EA10536BEAD1DE4 /* Pods-PetConnect.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
