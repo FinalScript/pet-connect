@@ -2,7 +2,7 @@ import { useMutation } from '@apollo/client';
 import ReactNativeFile from 'apollo-upload-client/public/ReactNativeFile';
 import { uniqueId } from 'lodash';
 import React, { useCallback, useMemo, useState } from 'react';
-import { ActivityIndicator, Image, ModalProps, Pressable, TextInput, View } from 'react-native';
+import { ActivityIndicator, Image, Keyboard, ModalProps, Pressable, TextInput, View } from 'react-native';
 import ImageCropPicker from 'react-native-image-crop-picker';
 import { PressableOpacity } from 'react-native-pressable-opacity';
 import { useDispatch } from 'react-redux';
@@ -107,6 +107,8 @@ const EditProfileModal = ({ closeModal, profile }: Props) => {
 
   const getOwnerEditView = () => {
     return (
+      <Pressable onPress={Keyboard.dismiss}>
+
       <View className='mt-3 px-2'>
         <View className='mb-5 flex flex-col justify-center items-center'>
           <PressableOpacity
@@ -193,6 +195,7 @@ const EditProfileModal = ({ closeModal, profile }: Props) => {
           <Text className='text-center text-red-600 font-bold text-lg'>{error}</Text>
         </View>
       </View>
+      </Pressable>
     );
   };
 
