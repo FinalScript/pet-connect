@@ -1,9 +1,10 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
-import { View, ScrollView, ActivityIndicator, TouchableHighlight, KeyboardAvoidingView, Platform, Image } from 'react-native';
+import { View, ScrollView, ActivityIndicator, TouchableHighlight, KeyboardAvoidingView, Platform, Image, Pressable } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Text from '../components/Text';
 import { TextInput } from 'react-native-gesture-handler';
 import { HapticFeedbackTypes, HapticOptions, trigger } from 'react-native-haptic-feedback';
+import { Keyboard } from 'react-native';
 import UsernameInput from '../components/UsernameInput';
 import { uploadOwnerProfilePicture } from '../api';
 import { useNavigation } from '@react-navigation/native';
@@ -99,97 +100,96 @@ export default function AccountCreation() {
   };
 
   return (
-    <SafeAreaView className='bg-themeBg h-full p-5 flex flex-col justify-between'>
-      <View>
-        <Text className='text-themeText font-semibold text-3xl'>We need more details about you to finish up your account!</Text>
-
-        <View className='mt-5 px-2'>
-          <View>
-            <View className='mb-5 flex flex-col justify-center items-center'>
-              <Text className='mb-2 text-xl font-bold text-themeText'>Profile Picture</Text>
-              <TouchableHighlight
-                className='w-[160px] h-[160px] bg-themeInput rounded-3xl shadow-sm shadow-themeShadow'
-                underlayColor={'#d6cbcb'}
-                onPress={pickProfilePicture}
-                disabled={loading}>
-                <View className=''>
-                  {profilePicture ? (
-                    <Image className='flex w-full h-full rounded-3xl' source={{ uri: profilePicture?.path }} />
-                  ) : (
-                    <View className='flex flex-row justify-center items-center h-full'>
-                      <FontAwesome name='plus-square-o' size={50} color={'#362013'} />
-                    </View>
-                  )}
-                </View>
-              </TouchableHighlight>
-            </View>
+    <Pressable onPress={Keyboard.dismiss}>
+      <SafeAreaView className='bg-themeBg h-full p-5 flex flex-col justify-between'>
+        <View>
+          <Text className='text-themeText font-semibold text-3xl'>We need more details about you to finish up your account!</Text>
+          <View className='mt-5 px-2'>
             <View>
-              <Text className='mb-2 pl-4 text-lg font-bold text-themeText'>Username *</Text>
-              <UsernameInput
-                value={username}
-                setValue={setUsername}
-                isValid={isUsernameValid}
-                setIsValid={setIsUsernameValid}
-                focusNext={focusNameInput}
+              <View className='mb-5 flex flex-col justify-center items-center'>
+                <Text className='mb-2 text-xl font-bold text-themeText'>Profile Picture</Text>
+                <TouchableHighlight
+                  className='w-[160px] h-[160px] bg-themeInput rounded-3xl shadow-sm shadow-themeShadow'
+                  underlayColor={'#d6cbcb'}
+                  onPress={pickProfilePicture}
+                  disabled={loading}>
+                  <View className=''>
+                    {profilePicture ? (
+                      <Image className='flex w-full h-full rounded-3xl' source={{ uri: profilePicture?.path }} />
+                    ) : (
+                      <View className='flex flex-row justify-center items-center h-full'>
+                        <FontAwesome name='plus-square-o' size={50} color={'#362013'} />
+                      </View>
+                    )}
+                  </View>
+                </TouchableHighlight>
+              </View>
+              <View>
+                <Text className='mb-2 pl-4 text-lg font-bold text-themeText'>Username *</Text>
+                <UsernameInput
+                  value={username}
+                  setValue={setUsername}
+                  isValid={isUsernameValid}
+                  setIsValid={setIsUsernameValid}
+                  focusNext={focusNameInput}
+                  maxLength={30}
+                  placeholder='Enter your username'
+                  returnKeyType='next'
+                  forOwner
+                />
+              </View>
+              <View>
+                <Text className='text-xs pl-3'>- No spaces</Text>
+                <Text className='text-xs pl-3'>- Dashes, underscores, and periods allowed</Text>
+              </View>
+            </View>
+            <View className='mt-5'>
+              <Text className='mb-2 pl-4 text-lg font-bold text-themeText'>Name</Text>
+              <TextInput
+                ref={nameRef}
+                className={
+                  (focus.name === true ? 'border-themeActive' : 'border-transparent') +
+                  ' bg-themeInput border-[5px] shadow-sm shadow-themeShadow w-full rounded-3xl px-5 py-3 text-lg'
+                }
+                style={{ fontFamily: 'BalooChettan2-Regular' }}
+                placeholderTextColor={'#444444bb'}
+                value={name}
+                onChangeText={setName}
+                onFocus={() => {
+                  setFocus((prev) => {
+                    return { ...prev, name: true };
+                  });
+                }}
+                onBlur={() => {
+                  setFocus((prev) => {
+                    return { ...prev, name: false };
+                  });
+                }}
+                autoCorrect={false}
+                autoComplete='name'
                 maxLength={30}
-                placeholder='Enter your username'
-                returnKeyType='next'
-                forOwner
+                returnKeyType='done'
+                placeholder='Enter your name'
+                editable={!loading}
               />
             </View>
-            <View>
-              <Text className='text-xs pl-3'>- No spaces</Text>
-              <Text className='text-xs pl-3'>- Dashes, underscores, and periods allowed</Text>
-            </View>
-          </View>
-
-          <View className='mt-5'>
-            <Text className='mb-2 pl-4 text-lg font-bold text-themeText'>Name</Text>
-            <TextInput
-              ref={nameRef}
-              className={
-                (focus.name === true ? 'border-themeActive' : 'border-transparent') +
-                ' bg-themeInput border-[5px] shadow-sm shadow-themeShadow w-full rounded-3xl px-5 py-3 text-lg'
-              }
-              style={{ fontFamily: 'BalooChettan2-Regular' }}
-              placeholderTextColor={'#444444bb'}
-              value={name}
-              onChangeText={setName}
-              onFocus={() => {
-                setFocus((prev) => {
-                  return { ...prev, name: true };
-                });
-              }}
-              onBlur={() => {
-                setFocus((prev) => {
-                  return { ...prev, name: false };
-                });
-              }}
-              autoCorrect={false}
-              autoComplete='name'
-              maxLength={30}
-              returnKeyType='done'
-              placeholder='Enter your name'
-              editable={!loading}
-            />
           </View>
         </View>
-      </View>
-
-      {isUsernameValid && (
-        <View className='mb-2 mx-2 flex flex-row justify-end items-center'>
-          <TouchableHighlight
-            className='bg-themeBtn rounded-3xl shadow-sm shadow-themeShadow'
-            underlayColor={'#c59071'}
-            onPress={nextOnPress}
-            disabled={loading}>
-            <View className='px-6 py-1 flex flex-row justify-center items-center'>
-              {loading && <ActivityIndicator className='mr-2 -ml-2' size='small' color={'#321411'} />}
-              <Text className='text-xl font-semibold text-themeText'>Next</Text>
-            </View>
-          </TouchableHighlight>
-        </View>
-      )}
-    </SafeAreaView>
+        {isUsernameValid && (
+          <View className='mb-2 mx-2 flex flex-row justify-end items-center'>
+            <TouchableHighlight
+              className='bg-themeBtn rounded-3xl shadow-sm shadow-themeShadow'
+              underlayColor={'#c59071'}
+              onPress={nextOnPress}
+              disabled={loading}>
+              <View className='px-6 py-1 flex flex-row justify-center items-center'>
+                {loading && <ActivityIndicator className='mr-2 -ml-2' size='small' color={'#321411'} />}
+                <Text className='text-xl font-semibold text-themeText'>Next</Text>
+              </View>
+            </TouchableHighlight>
+          </View>
+        )}
+      </SafeAreaView>
+    </Pressable>
   );
 }
