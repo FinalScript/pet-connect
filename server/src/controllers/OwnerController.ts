@@ -51,7 +51,7 @@ export const createOwner = async ({ authId, username, name, location }: OwnerCre
 };
 
 export const updateOwner = async (authId: string, data: OwnerUpdateDAO) => {
-  const owner = await Owner.update(data, { where: { authId } });
+  const owner = await Owner.update(data, { where: { authId }});
 
   // Return the updated owner object
   return owner;

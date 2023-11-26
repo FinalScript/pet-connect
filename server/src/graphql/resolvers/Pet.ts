@@ -81,7 +81,7 @@ export const PetResolver = {
       try {
         newPet = await createPet({ name, type, description, location, username });
 
-        if (profilePicture?.file) {
+        if (profilePicture.file) {
           const { filename, filePath, mimetype, root } = await storeUpload(profilePicture.file);
 
           const profilePictureDAO = ProfilePicture.build({
@@ -152,50 +152,48 @@ export const PetResolver = {
           },
         });
       }
-      if (type) {
-        if (!Pet.getAttributes().type.values.includes(type.toUpperCase())) {
-          throw new GraphQLError('Incorrect type provided', {
+
+      if (!Pet.getAttributes().type.values.includes(type.toUpperCase())) {
+        throw new GraphQLError('Incorrect type provided', {
+          extensions: {
+            code: 'BAD_USER_INPUT',
+          },
+        });
+      }
+
+      type = type.toUpperCase();
+
+      if (username) {
+        if (username.match('[^a-zA-Z0-9._\\-]')) {
+          throw new GraphQLError('Username Invalid', {
             extensions: {
               code: 'BAD_USER_INPUT',
             },
           });
         }
-        type = type.toUpperCase();
-      }
 
-      if (username) {
-        if (username !== pet.username) {
-          if (username.match('[^a-zA-Z0-9._\\-]')) {
-            throw new GraphQLError('Username Invalid', {
-              extensions: {
-                code: 'BAD_USER_INPUT',
-              },
-            });
-          }
+        if (username.length > 30) {
+          throw new GraphQLError('Username is too long (Max 30)', {
+            extensions: {
+              code: 'BAD_USER_INPUT',
+            },
+          });
+        }
 
-          if (username.length > 30) {
-            throw new GraphQLError('Username is too long (Max 30)', {
-              extensions: {
-                code: 'BAD_USER_INPUT',
-              },
-            });
-          }
+        if (username.length < 2) {
+          throw new GraphQLError('Username is too short (Min 2)', {
+            extensions: {
+              code: 'BAD_USER_INPUT',
+            },
+          });
+        }
 
-          if (username.length < 2) {
-            throw new GraphQLError('Username is too short (Min 2)', {
-              extensions: {
-                code: 'BAD_USER_INPUT',
-              },
-            });
-          }
-
-          if (await getPetByUsername(username)) {
-            throw new GraphQLError('Username taken', {
-              extensions: {
-                code: 'BAD_USER_INPUT',
-              },
-            });
-          }
+        if (await getPetByUsername(username)) {
+          throw new GraphQLError('Username taken', {
+            extensions: {
+              code: 'BAD_USER_INPUT',
+            },
+          });
         }
       }
 

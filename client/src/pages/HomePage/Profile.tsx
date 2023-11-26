@@ -1,11 +1,13 @@
-import { useCallback, useEffect, useMemo, useState } from 'react';
-import { Image, Modal, Pressable, SafeAreaView, ScrollView, Share, View } from 'react-native';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { Image, Modal, Pressable, SafeAreaView, ScrollView, Share, StyleSheet, View } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
 import { OwnerDAO, PetDAO, ProfileReducer } from '../../redux/reducers/profileReducer';
 
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { Dimensions } from 'react-native';
 import { useAuth0 } from 'react-native-auth0';
+import { Portal } from 'react-native-portalize';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import { RootStackParamList } from '../../../App';
 import Text from '../../components/Text';
@@ -13,11 +15,14 @@ import AccountSwitcherModal from '../../components/modals/AccountSwitcherModal';
 import SettingsModal from '../../components/modals/SettingsModal';
 import { LOGOUT } from '../../redux/constants';
 
+import { BottomSheetBackdrop, BottomSheetModal } from '@gorhom/bottom-sheet';
+import { HapticFeedbackTypes, trigger } from 'react-native-haptic-feedback';
 import { PressableOpacity } from 'react-native-pressable-opacity';
 import { getApiBaseUrl } from '../../api';
 import PetTypeImage from '../../components/PetTypeImage';
 import EditProfileModal from '../../components/modals/EditProfileModal';
 import { Ionicon } from '../../utils/Icons';
+import { options } from '../../utils/hapticFeedbackOptions';
 
 type NavigationProp = NativeStackNavigationProp<RootStackParamList, 'Home'>;
 
@@ -137,7 +142,7 @@ const Profile = () => {
         </View>
         <View className='mt-3'>
           <Text className='text-xl font-bold'>{currentUser?.name}</Text>
-          {currentUser?.location && <Text className='text-md'>📍 {currentUser?.location}</Text>}
+          <Text className='text-md'>{currentUser?.description}</Text>
         </View>
         <View className='mt-5 flex-row gap-x-3'>
           <PressableOpacity
@@ -226,7 +231,7 @@ const Profile = () => {
           </View>
         </View>
         <View className='mt-2'>
-          <Text className='text-base'>{(currentUser as PetDAO)?.description}</Text>
+          <Text className='text-base'>{currentUser?.description}</Text>
         </View>
         <View className='mt-5 flex-row gap-x-3'>
           <PressableOpacity
@@ -256,7 +261,7 @@ const Profile = () => {
 
   return (
     <SafeAreaView className='flex-1 h-full items-center bg-themeBg'>
-      {currentUser && (
+     
         <Modal
           visible={modals.editProfile}
           presentationStyle='pageSheet'
@@ -271,37 +276,36 @@ const Profile = () => {
             }}
           />
         </Modal>
-      )}
-      <Modal
-        style={{ justifyContent: 'center', alignItems: 'center', margin: 0 }}
-        visible={modals.accountSwitcher}
-        presentationStyle='pageSheet'
-        animationType='slide'
-        onRequestClose={() => {
-          setAccountSwitchModalVisible(false);
-        }}>
-        <AccountSwitcherModal
-          navigateNewPet={navigateNewPet}
-          currentUser={currentUser}
-          closeModal={() => {
+        <Modal
+          style={{ justifyContent: 'center', alignItems: 'center', margin: 0 }}
+          visible={modals.accountSwitcher}
+          presentationStyle='pageSheet'
+          animationType='slide'
+          onRequestClose={() => {
             setAccountSwitchModalVisible(false);
-          }}
-        />
-      </Modal>
-      <Modal
-        visible={modals.settings}
-        presentationStyle='pageSheet'
-        animationType='slide'
-        onRequestClose={() => {
-          setSettingsModalVisible(false);
-        }}>
-        <SettingsModal
-          logout={logout}
-          closeModal={() => {
+          }}>
+          <AccountSwitcherModal
+            navigateNewPet={navigateNewPet}
+            currentUser={currentUser}
+            closeModal={() => {
+              setAccountSwitchModalVisible(false);
+            }}
+          />
+        </Modal>
+        <Modal
+          visible={modals.settings}
+          presentationStyle='pageSheet'
+          animationType='slide'
+          onRequestClose={() => {
             setSettingsModalVisible(false);
-          }}
-        />
-      </Modal>
+          }}>
+          <SettingsModal
+            logout={logout}
+            closeModal={() => {
+              setSettingsModalVisible(false);
+            }}
+          />
+        </Modal>
       <View className='flex-row items-center justify-between w-full px-5'>
         <Pressable onPress={() => setAccountSwitchModalVisible(true)}>
           <View className='flex-row items-center gap-2'>

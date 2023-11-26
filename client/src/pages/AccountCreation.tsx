@@ -1,24 +1,26 @@
-import { useMutation } from '@apollo/client';
+import React, { useState, useRef, useEffect, useCallback } from 'react';
+import { View, ScrollView, ActivityIndicator, TouchableHighlight, KeyboardAvoidingView, Platform, Image, Pressable } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import Text from '../components/Text';
+import { TextInput } from 'react-native-gesture-handler';
+import { HapticFeedbackTypes, HapticOptions, trigger } from 'react-native-haptic-feedback';
+import { Keyboard } from 'react-native';
+import UsernameInput from '../components/UsernameInput';
+import { uploadOwnerProfilePicture } from '../api';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { RootStackParamList } from '../../App';
+import { options } from '../utils/hapticFeedbackOptions';
+import { useDispatch, useSelector } from 'react-redux';
+import { GeneralReducer } from '../redux/reducers/generalReducer';
+import { CURRENT_USER, LOADING, OWNER_DATA, PET_DATA } from '../redux/constants';
+import ImageCropPicker, { Image as ImageType } from 'react-native-image-crop-picker';
+import { FontAwesome } from '../utils/Icons';
+import { useAuth0 } from 'react-native-auth0';
+import { useMutation } from '@apollo/client';
+import { SIGNUP } from '../graphql/Owner';
 import ReactNativeFile from 'apollo-upload-client/public/ReactNativeFile';
 import { uniqueId } from 'lodash';
-import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { ActivityIndicator, Image, Keyboard, Pressable, TouchableHighlight, View } from 'react-native';
-import { TextInput } from 'react-native-gesture-handler';
-import { HapticFeedbackTypes, trigger } from 'react-native-haptic-feedback';
-import ImageCropPicker, { Image as ImageType } from 'react-native-image-crop-picker';
-import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import { useDispatch, useSelector } from 'react-redux';
-import { RootStackParamList } from '../../App';
-import Text from '../components/Text';
-import UsernameInput from '../components/UsernameInput';
-import { SIGNUP } from '../graphql/Owner';
-import { CURRENT_USER, LOADING, OWNER_DATA } from '../redux/constants';
-import { GeneralReducer } from '../redux/reducers/generalReducer';
-import { FontAwesome } from '../utils/Icons';
-import { options } from '../utils/hapticFeedbackOptions';
 
 type NavigationProp = NativeStackNavigationProp<RootStackParamList, 'Account Creation'>;
 
@@ -100,10 +102,10 @@ export default function AccountCreation() {
   return (
     <Pressable onPress={Keyboard.dismiss}>
       <SafeAreaView className='bg-themeBg h-full p-5 flex flex-col justify-between'>
-        <KeyboardAwareScrollView enableAutomaticScroll enableOnAndroid keyboardOpeningTime={450}>
-          <View>
-            <Text className='text-themeText font-semibold text-3xl'>We need more details about you to finish up your account!</Text>
-            <View className='mt-5 px-2'>
+        <View>
+          <Text className='text-themeText font-semibold text-3xl'>We need more details about you to finish up your account!</Text>
+          <View className='mt-5 px-2'>
+            <View>
               <View className='mb-5 flex flex-col justify-center items-center'>
                 <Text className='mb-2 text-xl font-bold text-themeText'>Profile Picture</Text>
                 <TouchableHighlight
@@ -123,58 +125,56 @@ export default function AccountCreation() {
                 </TouchableHighlight>
               </View>
               <View>
-                <View>
-                  <Text className='mb-2 pl-4 text-lg font-bold text-themeText'>Username *</Text>
-                  <UsernameInput
-                    value={username}
-                    setValue={setUsername}
-                    isValid={isUsernameValid}
-                    setIsValid={setIsUsernameValid}
-                    focusNext={focusNameInput}
-                    maxLength={30}
-                    placeholder='Enter your username'
-                    returnKeyType='next'
-                    forOwner
-                  />
-                </View>
-                <View>
-                  <Text className='text-xs pl-3'>- No spaces</Text>
-                  <Text className='text-xs pl-3'>- Dashes, underscores, and periods allowed</Text>
-                </View>
-              </View>
-              <View className='mt-5'>
-                <Text className='mb-2 pl-4 text-lg font-bold text-themeText'>Name</Text>
-                <TextInput
-                  ref={nameRef}
-                  className={
-                    (focus.name === true ? 'border-themeActive' : 'border-transparent') +
-                    ' bg-themeInput border-[5px] shadow-sm shadow-themeShadow w-full rounded-3xl px-5 py-3 text-lg'
-                  }
-                  style={{ fontFamily: 'BalooChettan2-Regular' }}
-                  placeholderTextColor={'#444444bb'}
-                  value={name}
-                  onChangeText={setName}
-                  onFocus={() => {
-                    setFocus((prev) => {
-                      return { ...prev, name: true };
-                    });
-                  }}
-                  onBlur={() => {
-                    setFocus((prev) => {
-                      return { ...prev, name: false };
-                    });
-                  }}
-                  autoCorrect={false}
-                  autoComplete='name'
+                <Text className='mb-2 pl-4 text-lg font-bold text-themeText'>Username *</Text>
+                <UsernameInput
+                  value={username}
+                  setValue={setUsername}
+                  isValid={isUsernameValid}
+                  setIsValid={setIsUsernameValid}
+                  focusNext={focusNameInput}
                   maxLength={30}
-                  returnKeyType='done'
-                  placeholder='Enter your name'
-                  editable={!loading}
+                  placeholder='Enter your username'
+                  returnKeyType='next'
+                  forOwner
                 />
               </View>
+              <View>
+                <Text className='text-xs pl-3'>- No spaces</Text>
+                <Text className='text-xs pl-3'>- Dashes, underscores, and periods allowed</Text>
+              </View>
+            </View>
+            <View className='mt-5'>
+              <Text className='mb-2 pl-4 text-lg font-bold text-themeText'>Name</Text>
+              <TextInput
+                ref={nameRef}
+                className={
+                  (focus.name === true ? 'border-themeActive' : 'border-transparent') +
+                  ' bg-themeInput border-[5px] shadow-sm shadow-themeShadow w-full rounded-3xl px-5 py-3 text-lg'
+                }
+                style={{ fontFamily: 'BalooChettan2-Regular' }}
+                placeholderTextColor={'#444444bb'}
+                value={name}
+                onChangeText={setName}
+                onFocus={() => {
+                  setFocus((prev) => {
+                    return { ...prev, name: true };
+                  });
+                }}
+                onBlur={() => {
+                  setFocus((prev) => {
+                    return { ...prev, name: false };
+                  });
+                }}
+                autoCorrect={false}
+                autoComplete='name'
+                maxLength={30}
+                returnKeyType='done'
+                placeholder='Enter your name'
+                editable={!loading}
+              />
             </View>
           </View>
-        </KeyboardAwareScrollView>
+        </View>
         {isUsernameValid && (
           <View className='mb-2 mx-2 flex flex-row justify-end items-center'>
             <TouchableHighlight
