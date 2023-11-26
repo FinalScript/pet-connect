@@ -1,14 +1,14 @@
 import axios from 'axios';
 
-let api = axios.create({ baseURL: 'http://172.20.10.6:3000' });
+let api = axios.create({ baseURL: 'http://localhost:3000' });
 
-export const setApiBaseUrl = (url: string) => {
+export const setAxiosBaseURL = (url: string) => {
   api.defaults.baseURL = url;
 };
 
 export const getApiBaseUrl = () => {
   return api.defaults.baseURL;
-}
+};
 
 export const setBearerToken = (token: string) => {
   api.defaults.headers.common = { Authorization: token };
