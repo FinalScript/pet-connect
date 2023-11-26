@@ -53,6 +53,7 @@ const EditProfileModal = ({ closeModal, profile }: Props) => {
       compressImageMaxWidth: 500,
     })
       .then((image) => {
+        console.log(image);
         if (profile?.__typename === 'Owner') {
           setOwnerFormData((prev) => {
             return { ...prev, profilePicture: image };
@@ -66,7 +67,7 @@ const EditProfileModal = ({ closeModal, profile }: Props) => {
       .catch((err) => {
         console.log(err);
       });
-  }, [profile?.__typename]);  
+  }, [profile?.__typename]);
 
   const hasChanged = useMemo(() => {
     if (profile?.__typename === 'Owner') {
@@ -85,32 +86,33 @@ const EditProfileModal = ({ closeModal, profile }: Props) => {
       );
     }
   }, [ownerFormData, petFormData, profile]);
-  
+
   const onSubmit = useCallback(async () => {
     setError('');
-  
+
     if (hasChanged) {
       setLoading(true);
-  
+
       setTimeout(async () => {
         const isOwnerProfile = profile?.__typename === 'Owner';
         const formData = isOwnerProfile ? ownerFormData : petFormData;
         const currentProfilePicturePath = isOwnerProfile ? profile?.ProfilePicture?.path : (profile as PetDAO)?.ProfilePicture?.path;
-  
-        const profilePictureFile = formData.profilePicture &&
+
+        const profilePictureFile =
+          formData.profilePicture &&
           formData.profilePicture.path !== currentProfilePicturePath &&
           new ReactNativeFile({
             uri: formData.profilePicture.path,
             name: formData.profilePicture.filename || uniqueId(),
             type: formData.profilePicture.mime,
           });
-  
+
         if (isOwnerProfile) {
           updateOwner({ variables: { ...formData, profilePicture: profilePictureFile } })
             .then(({ data }) => {
               if (data?.updateOwner) {
                 dispatch({ type: OWNER_DATA, payload: { ...profile, ...data.updateOwner } });
-  
+
                 setTimeout(() => {
                   closeModal();
                 }, 500);
@@ -122,12 +124,12 @@ const EditProfileModal = ({ closeModal, profile }: Props) => {
               setLoading(false);
             });
         } else {
-          updatePet({ variables: { ...formData, profilePicture: profilePictureFile, updatePetId: profile.id} })
+          updatePet({ variables: { ...formData, profilePicture: profilePictureFile, updatePetId: profile.id } })
             .then(({ data }) => {
               if (data?.updatePet) {
-                console.log(data.updatePet)
+                console.log(data.updatePet);
                 dispatch({ type: UPDATE_PET_REDUX, payload: { ...profile, ...data.updatePet } });
-  
+
                 setTimeout(() => {
                   closeModal();
                 }, 500);
@@ -144,98 +146,96 @@ const EditProfileModal = ({ closeModal, profile }: Props) => {
       closeModal();
     }
   }, [ownerFormData, petFormData, profile, hasChanged, updateOwner, updatePet, dispatch, closeModal]);
-  
 
   const getOwnerEditView = () => {
     return (
       <Pressable onPress={Keyboard.dismiss}>
+        <View className='mt-3 px-2'>
+          <View className='mb-5 flex flex-col justify-center items-center'>
+            <PressableOpacity
+              disabled={loading}
+              onPress={() => {
+                pickProfilePicture();
+              }}
+              disabledOpacity={1}
+              activeOpacity={0.8}
+              className='w-[160px] h-[160px] bg-themeInput flex items-center justify-center rounded-3xl shadow-sm shadow-themeShadow'>
+              {ownerFormData?.profilePicture?.path ? (
+                <Image
+                  className='w-full h-full rounded-3xl'
+                  source={{
+                    uri: ownerFormData.profilePicture.width ? ownerFormData.profilePicture.path : `${env.API_URL}/${ownerFormData.profilePicture.path}`,
+                  }}
+                />
+              ) : (
+                <Ionicon name='person' size={55} />
+              )}
+            </PressableOpacity>
+          </View>
 
-      <View className='mt-3 px-2'>
-        <View className='mb-5 flex flex-col justify-center items-center'>
-          <PressableOpacity
-            disabled={loading}
-            onPress={() => {
-              pickProfilePicture();
-            }}
-            disabledOpacity={1}
-            activeOpacity={0.8}
-            className='w-[160px] h-[160px] bg-themeInput flex items-center justify-center rounded-3xl shadow-sm shadow-themeShadow'>
-            {ownerFormData?.profilePicture?.path ? (
-              <Image
-                className='w-full h-full rounded-3xl'
-                source={{
-                  uri: ownerFormData.profilePicture.width ? ownerFormData.profilePicture.path : env.API_URL + '/' + ownerFormData.profilePicture.path,
-                }}
-              />
-            ) : (
-              <Ionicon name='person' size={55} />
-            )}
-          </PressableOpacity>
-        </View>
-
-        <View>
           <View>
-            <Text className='mb-2 pl-4 text-xl font-bold text-themeText'>Username</Text>
-            <UsernameInput
-              editable={!loading}
-              maxLength={30}
-              returnKeyType='next'
-              placeholder='New Username'
-              placeholderTextColor={'#444444bb'}
-              value={ownerFormData.username}
-              setValue={(e: any) => {
-                setOwnerFormData((prev) => {
-                  return { ...prev, username: e };
-                });
-              }}
-              isValid={isUsernameValid}
-              setIsValid={setIsUsernameValid}
-              forOwner
-            />
-          </View>
+            <View>
+              <Text className='mb-2 pl-4 text-xl font-bold text-themeText'>Username</Text>
+              <UsernameInput
+                editable={!loading}
+                maxLength={30}
+                returnKeyType='next'
+                placeholder='New Username'
+                placeholderTextColor={'#444444bb'}
+                value={ownerFormData.username}
+                setValue={(e: any) => {
+                  setOwnerFormData((prev) => {
+                    return { ...prev, username: e };
+                  });
+                }}
+                isValid={isUsernameValid}
+                setIsValid={setIsUsernameValid}
+                forOwner
+              />
+            </View>
 
-          <View className='mt-3'>
-            <Text className='mb-2 pl-4 text-xl font-bold text-themeText'>Name</Text>
-            <TextInput
-              editable={!loading}
-              className={'border-transparent bg-themeInput border-[5px] shadow-sm shadow-themeShadow w-full rounded-3xl px-5 py-3 text-lg'}
-              style={{ fontFamily: 'BalooChettan2-Regular' }}
-              placeholderTextColor={'#444444bb'}
-              value={ownerFormData.name}
-              onChangeText={(e) => {
-                setOwnerFormData((prev) => {
-                  return { ...prev, name: e };
-                });
-              }}
-              maxLength={30}
-              returnKeyType='next'
-              placeholder='New Name'
-            />
-          </View>
+            <View className='mt-3'>
+              <Text className='mb-2 pl-4 text-xl font-bold text-themeText'>Name</Text>
+              <TextInput
+                editable={!loading}
+                className={'border-transparent bg-themeInput border-[5px] shadow-sm shadow-themeShadow w-full rounded-3xl px-5 py-3 text-lg'}
+                style={{ fontFamily: 'BalooChettan2-Regular' }}
+                placeholderTextColor={'#444444bb'}
+                value={ownerFormData.name}
+                onChangeText={(e) => {
+                  setOwnerFormData((prev) => {
+                    return { ...prev, name: e };
+                  });
+                }}
+                maxLength={30}
+                returnKeyType='next'
+                placeholder='New Name'
+              />
+            </View>
 
-          <View className='mt-3'>
-            <Text className='mb-2 pl-4 text-xl font-bold text-themeText'>Location</Text>
-            <TextInput
-              editable={!loading}
-              className={'border-transparent bg-themeInput border-[5px] shadow-sm shadow-themeShadow w-full rounded-3xl px-5 py-3 text-lg'}
-              style={{ fontFamily: 'BalooChettan2-Regular' }}
-              placeholderTextColor={'#444444bb'}
-              value={ownerFormData.location}
-              onChangeText={(e) => {
-                setOwnerFormData((prev) => {
-                  return { ...prev, location: e };
-                });
-              }}
-              maxLength={30}
-              returnKeyType='next'
-              placeholder='New Location'
-            />
+            <View className='mt-3'>
+              <Text className='mb-2 pl-4 text-xl font-bold text-themeText'>Location</Text>
+              <TextInput
+                editable={!loading}
+                className={'border-transparent bg-themeInput border-[5px] shadow-sm shadow-themeShadow w-full rounded-3xl px-5 py-3 text-lg'}
+                style={{ fontFamily: 'BalooChettan2-Regular' }}
+                placeholderTextColor={'#444444bb'}
+                value={ownerFormData.location}
+                onChangeText={(e) => {
+                  setOwnerFormData((prev) => {
+                    return { ...prev, location: e };
+                  });
+                }}
+                maxLength={30}
+                returnKeyType='next'
+                placeholder='New Location'
+              />
+            </View>
+          </View>
+          <View className='mt-20'>
+            <Text className='text-center text-red-600 font-bold text-lg'>{error}</Text>
           </View>
         </View>
-        <View className='mt-20'>
-          <Text className='text-center text-red-600 font-bold text-lg'>{error}</Text>
-        </View>
-      </View>
       </Pressable>
     );
   };
@@ -255,7 +255,7 @@ const EditProfileModal = ({ closeModal, profile }: Props) => {
                 <Image
                   className='w-full h-full rounded-3xl'
                   source={{
-                    uri: petFormData.profilePicture.path,
+                    uri: petFormData.profilePicture.width ? petFormData.profilePicture.path : `${env.API_URL}/${petFormData.profilePicture.path}`,
                   }}
                 />
               ) : (
@@ -266,23 +266,29 @@ const EditProfileModal = ({ closeModal, profile }: Props) => {
 
           <View>
             <Text className='mb-2 pl-4 text-xl font-bold text-themeText'>Username</Text>
-            <TextInput
+            <UsernameInput
               editable={!loading}
-              className={'border-transparent bg-themeInput border-[5px] shadow-sm shadow-themeShadow w-full rounded-3xl px-5 py-3 text-lg'}
-              placeholderTextColor={'#444444bb'}
-              value={petFormData.username}
-              onChangeText={(e) => setPetFormData((prev) => ({ ...prev, username: e }))}
               maxLength={30}
               returnKeyType='next'
               placeholder='New Username'
+              placeholderTextColor={'#444444bb'}
+              value={petFormData.username}
+              setValue={(e: any) => {
+                setPetFormData((prev) => {
+                  return { ...prev, username: e };
+                });
+              }}
+              isValid={isUsernameValid}
+              setIsValid={setIsUsernameValid}
             />
           </View>
-  
+
           <View className='mt-3'>
             <Text className='mb-2 pl-4 text-xl font-bold text-themeText'>Name</Text>
             <TextInput
               editable={!loading}
               className={'border-transparent bg-themeInput border-[5px] shadow-sm shadow-themeShadow w-full rounded-3xl px-5 py-3 text-lg'}
+              style={{ fontFamily: 'BalooChettan2-Regular' }}
               placeholderTextColor={'#444444bb'}
               value={petFormData.name}
               onChangeText={(e) => setPetFormData((prev) => ({ ...prev, name: e }))}
@@ -291,13 +297,14 @@ const EditProfileModal = ({ closeModal, profile }: Props) => {
               placeholder='New Name'
             />
           </View>
-  
+
           <View className='mt-3'>
             <Text className='mb-2 pl-4 text-xl font-bold text-themeText'>Description</Text>
             <TextInput
               editable={!loading}
               className={'border-transparent bg-themeInput border-[5px] shadow-sm shadow-themeShadow w-full rounded-3xl px-5 py-3 text-lg'}
               placeholderTextColor={'#444444bb'}
+              style={{ fontFamily: 'BalooChettan2-Regular' }}
               value={petFormData.description}
               onChangeText={(e) => setPetFormData((prev) => ({ ...prev, description: e }))}
               maxLength={100}
@@ -305,7 +312,7 @@ const EditProfileModal = ({ closeModal, profile }: Props) => {
               placeholder='About the Pet'
             />
           </View>
-  
+
           <View className='mt-20'>
             <Text className='text-center text-red-600 font-bold text-lg'>{error}</Text>
           </View>
@@ -325,7 +332,7 @@ const EditProfileModal = ({ closeModal, profile }: Props) => {
           <Text className='text-xl py-5 px-5'>Cancel</Text>
         </Pressable>
         <Text className='text-xl font-bold pt-5'>Edit Profile</Text>
-        <Pressable disabled={ loading } onPress={onSubmit} className='flex-row items-center py-5 px-5'>
+        <Pressable disabled={loading} onPress={onSubmit} className='flex-row items-center py-5 px-5'>
           {loading && <ActivityIndicator className='mr-2.5' size='small' color={'#321411'} />}
 
           <Text className='text-xl text-blue-500'>{hasChanged ? 'Save' : 'Done'}</Text>
