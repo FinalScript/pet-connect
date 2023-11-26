@@ -1,13 +1,12 @@
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import React, { useCallback, useState } from 'react';
-import { Image, NativeSyntheticEvent, Platform, SafeAreaView, View } from 'react-native';
-import { PressableOpacity } from 'react-native-pressable-opacity';
-import { AntDesign, Ionicon } from '../../utils/Icons';
-import { HomeStackParamList } from './HomeNavigator';
-import Text from '../../components/Text';
+import { Image, NativeSyntheticEvent, SafeAreaView, View } from 'react-native';
 import ContextMenu, { ContextMenuOnPressNativeEvent } from 'react-native-context-menu-view';
-import { launchCamera, launchImageLibrary } from 'react-native-image-picker';
 import ImagePicker, { Image as ImageType } from 'react-native-image-crop-picker';
+import { PressableOpacity } from 'react-native-pressable-opacity';
+import Text from '../../components/Text';
+import { Ionicon } from '../../utils/Icons';
+import { HomeStackParamList } from './HomeNavigator';
 
 type Props = NativeStackScreenProps<HomeStackParamList, 'PostPage'>;
 
