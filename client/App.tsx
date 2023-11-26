@@ -9,12 +9,15 @@ import { useLazyQuery } from '@apollo/client';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { NavigationContainer, RouteProp, StackActions } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import React, { useCallback, useEffect } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { StatusBar, View } from 'react-native';
 import { useAuth0 } from 'react-native-auth0';
 import { HapticFeedbackTypes, trigger } from 'react-native-haptic-feedback';
 import { Host } from 'react-native-portalize';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { useDispatch, useSelector } from 'react-redux';
+import { ping } from './src/api';
+import Text from './src/components/Text';
 import { VERIFY_TOKEN } from './src/graphql/Auth';
 import { GET_OWNER } from './src/graphql/Owner';
 import AppLoader from './src/hoc/AppLoader';
@@ -44,10 +47,27 @@ const Stack = createNativeStackNavigator<RootStackParamList>();
 
 const App = () => {
   const dispatch = useDispatch();
+  const [apiStatus, setApiStatus] = useState(true);
   const [getUserData] = useLazyQuery(GET_OWNER);
   const [verifyToken] = useLazyQuery(VERIFY_TOKEN);
   const { user, getCredentials } = useAuth0();
   const owner = useSelector((state: ProfileReducer) => state.profile.owner);
+
+  useEffect(() => {
+    pingApi();
+  }, []);
+
+  const pingApi = async () => {
+    ping()
+      .then((res) => {
+        if (res.status !== 200) {
+          setApiStatus(false);
+        }
+      })
+      .catch((err) => {
+        setApiStatus(false);
+      });
+  };
 
   useEffect(() => {
     const timeoutId = setTimeout(() => {
@@ -143,6 +163,14 @@ const App = () => {
       dispatch({ type: LOADING, payload: false });
     }
   }, [getUserData, navigationRef, dispatch]);
+
+  if (!apiStatus) {
+    return (
+      <SafeAreaView className='bg-themeBg h-full flex justify-center items-center'>
+        <Text className='text-themeText font-semibold text-3xl'>Error contacting server</Text>
+      </SafeAreaView>
+    );
+  }
 
   return (
     <View className='bg-themeBg h-full'>

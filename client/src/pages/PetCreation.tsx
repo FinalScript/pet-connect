@@ -26,24 +26,10 @@ import UsernameInput from '../components/UsernameInput';
 import { CREATE_PET } from '../graphql/Pet';
 import { ADD_PET, CURRENT_USER, LOADING } from '../redux/constants';
 import { GeneralReducer } from '../redux/reducers/generalReducer';
-import { ProfileReducer } from '../redux/reducers/profileReducer';
+import { PetType, ProfileReducer } from '../redux/reducers/profileReducer';
 import { options } from '../utils/hapticFeedbackOptions';
 import ReactNativeFile from 'apollo-upload-client/public/ReactNativeFile';
 import { uniqueId } from 'lodash';
-
-enum PetType {
-  Bird = 'BIRD',
-  Cat = 'CAT',
-  Dog = 'DOG',
-  Fish = 'FISH',
-  GuineaPig = 'GUINEA_PIG',
-  Hamster = 'HAMSTER',
-  Horse = 'HORSE',
-  Mouse = 'MOUSE',
-  Other = 'OTHER',
-  Rabbit = 'RABBIT',
-  Snake = 'SNAKE',
-}
 
 const petTypes = [
   { type: PetType.Dog, img: require('../../assets/img/dog.png') },

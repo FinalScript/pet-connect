@@ -43,6 +43,7 @@
     "react-native-haptic-feedback": "^2.0.3",
     "react-native-image-crop-picker": "^0.40.0",
     "react-native-image-picker": "^5.4.0",
+    "react-native-keyboard-aware-scroll-view": "^0.9.5",
     "react-native-modalize": "^2.1.1",
     "react-native-portalize": "^1.0.7",
     "react-native-pressable-opacity": "^1.0.10",

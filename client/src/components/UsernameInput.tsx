@@ -5,6 +5,7 @@ import Text from './Text';
 import { useLazyQuery } from '@apollo/client';
 import { OWNER_USERNAME_EXISTS } from '../graphql/Owner';
 import { PET_USERNAME_EXISTS } from '../graphql/Pet';
+import { useFirstRender } from '../hooks/useFirstRender';
 
 interface Props extends TextInputProps {
   setValue: Function;
@@ -23,15 +24,16 @@ export default function UsernameInput({ className, value, setValue, isValid, set
   const [isError, setIsError] = useState(false);
   const [message, setMessage] = useState('');
   const [isChecking, setChecking] = useState(false);
+  const firstRender = useFirstRender();
 
   useEffect(() => {
-    if (value && value.length > 0) {
+    if (value && !firstRender) {
       setChecking(true);
     }
 
     const timeoutId = setTimeout(() => {
       // value === "" will prevent an infinite load from occuring when a username is entered then deleted quickly
-      if (value) {
+      if (value && !firstRender) {
         validateUsername(value);
         setChecking(false);
       }
@@ -77,30 +79,26 @@ export default function UsernameInput({ className, value, setValue, isValid, set
       if (forOwner) {
         const ownerUsername = await ownerUsernameExists({ variables: { username } });
 
-        if (ownerUsername.error) {
-          setIsValid(false);
-          setIsError(true);
-          setMessage(ownerUsername.error.message);
-        }
-
         if (ownerUsername?.data?.validateUsername.isAvailable) {
           setIsValid(true);
           setMessage('Username Available');
           return;
+        } else {
+          setIsValid(false);
+          setIsError(true);
+          setMessage('Username Taken');
         }
       } else {
         const petUsername = await petUsernameExists({ variables: { username } });
-
-        if (petUsername.error) {
-          setIsValid(false);
-          setIsError(true);
-          setMessage(petUsername.error.message);
-        }
 
         if (petUsername?.data?.validatePetUsername.isAvailable) {
           setIsValid(true);
           setMessage('Username Available');
           return;
+        } else {
+          setIsValid(false);
+          setIsError(true);
+          setMessage('Username Taken');
         }
       }
     },
@@ -108,7 +106,7 @@ export default function UsernameInput({ className, value, setValue, isValid, set
   );
 
   const messageStyles = useCallback(() => {
-    return isValid ? 'bg-success mb-2' : isError && message ? 'bg-danger mb-2' : 'bg-transparent';
+    return isValid ? 'bg-success' : isError && message ? 'bg-danger' : 'bg-transparent';
   }, [isError, message]);
 
   return (
@@ -135,7 +133,7 @@ export default function UsernameInput({ className, value, setValue, isValid, set
         />
         {isChecking && <ActivityIndicator className='absolute right-5' size='small' color={'#321411'} />}
       </View>
-      <View className={messageStyles() + ' rounded-b-xl px-3 pb-1 text-sm'}>
+      <View className={messageStyles() + ' rounded-b-xl px-3 pb-1'}>
         <Text className='text-xs text-[#000000bb]'>{message}</Text>
       </View>
     </View>

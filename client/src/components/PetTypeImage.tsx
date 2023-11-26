@@ -1,27 +1,34 @@
 import { View, Text } from 'react-native';
-import React from 'react';
+import React, { useMemo } from 'react';
 import { ViewProps } from 'react-native-svg/lib/typescript/fabric/utils';
 import { Image } from 'react-native';
+import { PetType } from '../redux/reducers/profileReducer';
 
-const petTypes = {
-  DOG: require('../../assets/img/dog.png'),
-  CAT: require('../../assets/img/cat.png'),
-  BIRD: require('../../assets/img/bird.png'),
-  FISH: require('../../assets/img/fish.png'),
-  RABBIT: require('../../assets/img/rabbit.png'),
-  HAMSTER: require('../../assets/img/hamster.png'),
-  REPTILE: require('../../assets/img/reptile.png'),
-  OTHER: require('../../assets/img/other.png'),
-};
+const petTypes = [
+  { type: PetType.Dog, img: require('../../assets/img/dog.png') },
+  { type: PetType.Cat, img: require('../../assets/img/cat.png') },
+  { type: PetType.Bird, img: require('../../assets/img/bird.png') },
+  { type: PetType.Fish, img: require('../../assets/img/fish.png') },
+  { type: PetType.Rabbit, img: require('../../assets/img/rabbit.png') },
+  { type: PetType.Hamster, img: require('../../assets/img/hamster.png') },
+  { type: PetType.Snake, img: require('../../assets/img/reptile.png') },
+  { type: PetType.Other, img: require('../../assets/img/other.png') },
+];
 
 interface Props extends ViewProps {
-  type: 'DOG' | 'CAT' | 'BIRD' | 'FISH' | 'RABBIT' | 'HAMSTER' | 'REPTILE' | 'OTHER';
+  type: PetType;
 }
 
 const PetTypeImage = ({ type, ...rest }: Props) => {
+  const source = useMemo(() => {
+    return petTypes.find((i) => {
+      return i.type === type;
+    })?.img;
+  }, [type]);
+
   return (
     <View {...rest}>
-      <Image className='h-full w-full opacity-70' source={petTypes[type]} />
+      <Image className='h-full w-full opacity-70' source={source} />
     </View>
   );
 };

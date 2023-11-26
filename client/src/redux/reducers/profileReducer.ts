@@ -9,22 +9,37 @@ export interface OwnerDAO {
   username: string;
   name?: string;
   ProfilePicture?: any;
-  description?: string;
   location?: string;
-  dateCreated: Date;
-  updateTimestamp: Date;
+  dateCreated?: Date;
+  updateTimestamp?: Date;
+  __typename: string;
+}
+
+export enum PetType {
+  Bird = 'BIRD',
+  Cat = 'CAT',
+  Dog = 'DOG',
+  Fish = 'FISH',
+  GuineaPig = 'GUINEA_PIG',
+  Hamster = 'HAMSTER',
+  Horse = 'HORSE',
+  Mouse = 'MOUSE',
+  Other = 'OTHER',
+  Rabbit = 'RABBIT',
+  Snake = 'SNAKE',
 }
 
 export interface PetDAO {
   id: string;
   username: string;
   name: string;
-  type: 'DOG' | 'CAT' | 'BIRD' | 'FISH' | 'RABBIT' | 'HAMSTER' | 'REPTILE' | 'OTHER';
+  type: PetType;
   ProfilePicture?: any;
   description?: string;
   location?: string;
-  dateCreated: Date;
-  updateTimestamp: Date;
+  dateCreated?: Date;
+  updateTimestamp?: Date;
+  __typename: string;
   OwnerPets?: any;
 }
 
@@ -66,16 +81,10 @@ const profileReducer: ProfileReducerFn = (state = initialState, action: any) => 
     case ADD_PET:
       return { ...state, pets: [...state.pets, action.payload] };
     case UPDATE_PET:
-      const petToUpdateIndex = state.pets.findIndex((pet) => {
-        pet.id === action.payload.id;
-      });
-
-      if (petToUpdateIndex) {
-        state.pets[petToUpdateIndex] = action.payload;
-      }
-
-      return { ...state };
-
+      return {
+        ...state,
+        pets: state.pets.map((pet, i) => (pet.id === action.payload.id ? action.payload : pet)),
+      };
     case REMOVE_PET:
       return { ...state, storeData: state.pets.filter((store: any) => store.id !== action.payload) };
 

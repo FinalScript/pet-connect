@@ -1,10 +1,9 @@
-import { DEVELOPER_PANEL_OPEN, LOADING } from '../constants';
+import { LOADING } from '../constants';
 
-const initialState: GeneralState = { loading: true, developerPanelOpen: false };
+const initialState: GeneralState = { loading: true };
 
 export interface GeneralState {
   loading: boolean;
-  developerPanelOpen: boolean;
 }
 
 export interface GeneralReducer {
@@ -13,8 +12,6 @@ export interface GeneralReducer {
 
 const generalReducer = (state = initialState, action: any) => {
   switch (action.type) {
-    case DEVELOPER_PANEL_OPEN:
-      return { ...state, developerPanelOpen: action.payload };
     case LOADING:
       return {
         ...state,

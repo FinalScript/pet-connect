@@ -1,11 +1,18 @@
 import { PetUpdateDAO } from './../models/Pet';
 import { Pet, PetCreationDAO } from '../models/Pet';
+import { ProfilePicture } from '../models/ProfilePicture';
 
 export const getPetById = async (id: string) => {
   const pet = await Pet.findOne({
     where: {
       id,
     },
+    include: [
+      {
+        model: ProfilePicture,
+        as: 'ProfilePicture',
+      },
+    ],
   });
 
   return pet;
@@ -16,6 +23,12 @@ export const getPetByUsername = async (username: string) => {
     where: {
       username,
     },
+    include: [
+      {
+        model: ProfilePicture,
+        as: 'ProfilePicture',
+      },
+    ],
   });
 
   return pet;
@@ -39,7 +52,7 @@ export const deletePet = async (id: string) => {
 };
 
 export const updatePet = async (id: string, data: PetUpdateDAO) => {
-  const pet = Pet.update(data, { where: { id } });
+  const pet = await Pet.update(data, { where: { id } });
 
   // Return the updated pet object
   return pet;

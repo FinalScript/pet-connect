@@ -1,8 +1,8 @@
 import axios from 'axios';
 
-let api = axios.create({ baseURL: 'http://localhost:3000' });
+let api = axios.create({ baseURL: 'http://172.20.10.6:3000' });
 
-export const setAxiosBaseURL = (url: string) => {
+export const setApiBaseUrl = (url: string) => {
   api.defaults.baseURL = url;
 };
 
