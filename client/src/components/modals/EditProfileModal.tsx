@@ -4,13 +4,13 @@ import { uniqueId } from 'lodash';
 import React, { useCallback, useMemo, useState } from 'react';
 import { ActivityIndicator, Image, Keyboard, ModalProps, Pressable, TextInput, View } from 'react-native';
 import ImageCropPicker from 'react-native-image-crop-picker';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import { PressableOpacity } from 'react-native-pressable-opacity';
 import { useDispatch } from 'react-redux';
 import * as env from '../../../env.json';
 import { UPDATE_OWNER } from '../../graphql/Owner';
-import { OWNER_DATA } from '../../redux/constants';
 import { UPDATE_PET } from '../../graphql/Pet';
-import { UPDATE_PET as UPDATE_PET_REDUX } from '../../redux/constants';
+import { OWNER_DATA, UPDATE_PET as UPDATE_PET_REDUX } from '../../redux/constants';
 import { OwnerDAO, PetDAO } from '../../redux/reducers/profileReducer';
 import { Ionicon } from '../../utils/Icons';
 import Text from '../Text';
@@ -194,7 +194,7 @@ const EditProfileModal = ({ closeModal, profile }: Props) => {
               />
             </View>
 
-            <View className='mt-3'>
+            <View className=''>
               <Text className='mb-2 pl-4 text-xl font-bold text-themeText'>Name</Text>
               <TextInput
                 editable={!loading}
@@ -265,54 +265,56 @@ const EditProfileModal = ({ closeModal, profile }: Props) => {
           </View>
 
           <View>
-            <Text className='mb-2 pl-4 text-xl font-bold text-themeText'>Username</Text>
-            <UsernameInput
-              editable={!loading}
-              maxLength={30}
-              returnKeyType='next'
-              placeholder='New Username'
-              placeholderTextColor={'#444444bb'}
-              value={petFormData.username}
-              setValue={(e: any) => {
-                setPetFormData((prev) => {
-                  return { ...prev, username: e };
-                });
-              }}
-              isValid={isUsernameValid}
-              setIsValid={setIsUsernameValid}
-            />
-          </View>
+            <View>
+              <Text className='mb-2 pl-4 text-xl font-bold text-themeText'>Username</Text>
+              <UsernameInput
+                editable={!loading}
+                maxLength={30}
+                returnKeyType='next'
+                placeholder='New Username'
+                placeholderTextColor={'#444444bb'}
+                value={petFormData.username}
+                setValue={(e: any) => {
+                  setPetFormData((prev) => {
+                    return { ...prev, username: e };
+                  });
+                }}
+                isValid={isUsernameValid}
+                setIsValid={setIsUsernameValid}
+              />
+            </View>
 
-          <View className='mt-3'>
-            <Text className='mb-2 pl-4 text-xl font-bold text-themeText'>Name</Text>
-            <TextInput
-              editable={!loading}
-              className={'border-transparent bg-themeInput border-[5px] shadow-sm shadow-themeShadow w-full rounded-3xl px-5 py-3 text-lg'}
-              style={{ fontFamily: 'BalooChettan2-Regular' }}
-              placeholderTextColor={'#444444bb'}
-              value={petFormData.name}
-              onChangeText={(e) => setPetFormData((prev) => ({ ...prev, name: e }))}
-              maxLength={30}
-              returnKeyType='next'
-              placeholder='New Name'
-            />
-          </View>
+            <View className=''>
+              <Text className='mb-2 pl-4 text-xl font-bold text-themeText'>Name</Text>
+              <TextInput
+                editable={!loading}
+                className={'border-transparent bg-themeInput border-[5px] shadow-sm shadow-themeShadow w-full rounded-3xl px-5 py-3 text-lg'}
+                style={{ fontFamily: 'BalooChettan2-Regular' }}
+                placeholderTextColor={'#444444bb'}
+                value={petFormData.name}
+                onChangeText={(e) => setPetFormData((prev) => ({ ...prev, name: e }))}
+                maxLength={30}
+                returnKeyType='next'
+                placeholder='New Name'
+              />
+            </View>
 
-          <View className='mt-3'>
-            <Text className='mb-2 pl-4 text-xl font-bold text-themeText'>Description</Text>
-            <TextInput
-              editable={!loading}
-              className={'border-transparent bg-themeInput border-[5px] shadow-sm shadow-themeShadow w-full rounded-3xl px-5 py-3 text-lg'}
-              placeholderTextColor={'#444444bb'}
-              style={{ fontFamily: 'BalooChettan2-Regular' }}
-              value={petFormData.description}
-              onChangeText={(e) => setPetFormData((prev) => ({ ...prev, description: e }))}
-              maxLength={100}
-              multiline
-              placeholder='About the Pet'
-            />
+            <View className='mt-3'>
+              <Text className='mb-2 pl-4 text-xl font-bold text-themeText'>Description</Text>
+              <TextInput
+                editable={!loading}
+                className={'border-transparent bg-themeInput border-[5px] shadow-sm shadow-themeShadow w-full rounded-3xl px-5 py-3 text-lg'}
+                placeholderTextColor={'#444444bb'}
+                style={{ fontFamily: 'BalooChettan2-Regular' }}
+                value={petFormData.description}
+                onChangeText={(e) => setPetFormData((prev) => ({ ...prev, description: e }))}
+                maxLength={100}
+                multiline
+                placeholder='About the pet'
+                scrollEnabled={false}
+              />
+            </View>
           </View>
-
           <View className='mt-20'>
             <Text className='text-center text-red-600 font-bold text-lg'>{error}</Text>
           </View>
@@ -339,7 +341,9 @@ const EditProfileModal = ({ closeModal, profile }: Props) => {
         </Pressable>
       </View>
 
-      {profile?.__typename === 'Owner' ? getOwnerEditView() : getPetEditView()}
+      <KeyboardAwareScrollView enableAutomaticScroll enableOnAndroid>
+        {profile?.__typename === 'Owner' ? getOwnerEditView() : getPetEditView()}
+      </KeyboardAwareScrollView>
     </View>
   );
 };
