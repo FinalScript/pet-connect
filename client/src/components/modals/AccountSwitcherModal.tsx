@@ -65,10 +65,13 @@ const AccountSwitcherModal = ({ navigateNewPet, currentUser, closeModal }: Props
               <Ionicon name='person' size={50} style={{ opacity: 0.8 }} />
             )}
           </View>
-          <Text className='text-xl'>{owner?.username}</Text>
+          <View className='flex'>
+            <Text className='text-2xl -mb-1'>{owner?.name}</Text>
+            <Text className='text-sm'>@{owner?.username}</Text>
+          </View>
           {owner?.id === currentUser?.id && (
-            <View className='absolute right-10'>
-              <Ionicon name='checkmark-circle' size={25} color={'#FFBA93'} />
+            <View className='absolute right-5'>
+              <Ionicon name='checkmark-circle' size={30} color={'#FFBA93'} />
             </View>
           )}
         </Pressable>
@@ -97,32 +100,35 @@ const AccountSwitcherModal = ({ navigateNewPet, currentUser, closeModal }: Props
                     <PetTypeImage type={pet.type} className='w-full h-full' />
                   )}
                 </View>
-                <Text className='text-xl'>{pet.username}</Text>
+                <View className='flex'>
+                  <Text className='text-2xl -mb-1'>{pet?.name}</Text>
+                  <Text className='text-sm'>@{pet?.username}</Text>
+                </View>
                 {pet.id === currentUser?.id && (
-                  <View className='absolute right-10'>
-                    <Ionicon name='checkmark-circle' size={25} color={'#FFBA93'} />
+                  <View className='absolute right-5'>
+                    <Ionicon name='checkmark-circle' size={30} color={'#FFBA93'} />
                   </View>
                 )}
               </Pressable>
             </View>
           );
         })}
-      </ScrollView>
 
-      <View className='flex flex-row justify-center py-5'>
-        <TouchableHighlight
-          className='bg-themeBtn rounded-3xl shadow-sm shadow-themeShadow'
-          underlayColor={'#c59071'}
-          onPress={() => {
-            closeModal();
-            navigateNewPet();
-          }}>
-          <View className='px-5 py-2 flex flex-row justify-center items-center'>
-            <Feather name='plus' size={20} />
-            <Text className='text-lg font-semibold text-themeText ml-2'>Create Pet Profile</Text>
-          </View>
-        </TouchableHighlight>
-      </View>
+        <View className='flex-row items-center mt-5 ml-5'>
+          <View className='h-[2px] w-5 bg-themeText'></View>
+          <Pressable
+            className={'flex flex-row flex-1 items-center rounded-3xl bg-themeInput border-4 border-transparent shadow-sm shadow-themeShadow py-1 px-1'}
+            onPress={() => {
+              closeModal();
+              navigateNewPet();
+            }}>
+            <View className='h-16 w-16 flex justify-center items-center mr-5 border-dashed border-2 rounded-2xl'>
+              <Feather name='plus' size={30} />
+            </View>
+            <Text className='text-xl'>Create Pet Profile</Text>
+          </Pressable>
+        </View>
+      </ScrollView>
     </View>
   );
 };
