@@ -86,7 +86,7 @@ const profileReducer: ProfileReducerFn = (state = initialState, action: any) => 
         pets: state.pets.map((pet, i) => (pet.id === action.payload.id ? action.payload : pet)),
       };
     case REMOVE_PET:
-      return { ...state, storeData: state.pets.filter((store: any) => store.id !== action.payload) };
+      return { ...state, pets: state.pets.filter((store: any) => store.id !== action.payload) };
 
     case LOGOUT:
       AsyncStorage.removeItem('@token');

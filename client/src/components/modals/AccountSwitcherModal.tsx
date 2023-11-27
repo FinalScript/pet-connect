@@ -3,7 +3,7 @@ import { HapticFeedbackTypes, trigger } from 'react-native-haptic-feedback';
 import { useDispatch, useSelector } from 'react-redux';
 import { OwnerDAO, PetDAO, ProfileReducer } from '../../redux/reducers/profileReducer';
 
-import { useCallback } from 'react';
+import { useCallback, useMemo } from 'react';
 import { Pressable } from 'react-native';
 import { ScrollView } from 'react-native-gesture-handler';
 import { getApiBaseUrl } from '../../api';
@@ -36,8 +36,28 @@ const AccountSwitcherModal = ({ navigateNewPet, currentUser, closeModal }: Props
     [dispatch]
   );
 
+  const getHeight = useMemo(() => {
+    if (pets.length === 0) {
+      return 45;
+    }
+
+    if (pets.length === 1) {
+      return 50;
+    }
+
+    if (pets.length === 2) {
+      return 55;
+    }
+
+    if (pets.length === 3) {
+      return 65;
+    }
+
+    return 70;
+  }, [pets.length]);
+
   return (
-    <View className='flex w-full h-[70%] bottom-0 absolute shadow-lg px-5 pb-5 rounded-t-xl bg-themeBg'>
+    <View className={'flex w-full bottom-0 absolute shadow-lg px-5 pb-7 rounded-t-xl bg-themeBg ' + `h-[${getHeight}%]`}>
       <View className='flex-row justify-center'>
         <View className='bg-themeText w-16 h-1 rounded-xl mt-2'></View>
       </View>
