@@ -18,6 +18,8 @@ import { getApiBaseUrl } from '../../api';
 import PetTypeImage from '../../components/PetTypeImage';
 import EditProfileModal from '../../components/modals/EditProfileModal';
 import { Ionicon } from '../../utils/Icons';
+import { LogBox } from 'react-native';
+LogBox.ignoreLogs(["Modal with 'pageSheet' presentation style and 'transparent' value is not supported."]); // Ignore log notification by message
 
 type NavigationProp = NativeStackNavigationProp<RootStackParamList, 'Home'>;
 
@@ -274,9 +276,10 @@ const Profile = () => {
       )}
       <Modal
         style={{ justifyContent: 'center', alignItems: 'center', margin: 0 }}
-        visible={modals.accountSwitcher}
         presentationStyle='pageSheet'
+        visible={modals.accountSwitcher}
         animationType='slide'
+        transparent
         onRequestClose={() => {
           setAccountSwitchModalVisible(false);
         }}>

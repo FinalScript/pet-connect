@@ -122,28 +122,8 @@ export default function AccountCreation() {
                   </View>
                 </TouchableHighlight>
               </View>
-              <View>
-                <View>
-                  <Text className='mb-2 pl-4 text-lg font-bold text-themeText'>Username *</Text>
-                  <UsernameInput
-                    value={username}
-                    setValue={setUsername}
-                    isValid={isUsernameValid}
-                    setIsValid={setIsUsernameValid}
-                    focusNext={focusNameInput}
-                    maxLength={30}
-                    placeholder='Enter your username'
-                    returnKeyType='next'
-                    forOwner
-                  />
-                </View>
-                <View>
-                  <Text className='text-xs pl-3'>- No spaces</Text>
-                  <Text className='text-xs pl-3'>- Dashes, underscores, and periods allowed</Text>
-                </View>
-              </View>
-              <View className='mt-5'>
-                <Text className='mb-2 pl-4 text-lg font-bold text-themeText'>Name</Text>
+              <View className='mt-3'>
+                <Text className='mb-2 pl-4 text-lg font-bold text-themeText'>What is your name?</Text>
                 <TextInput
                   ref={nameRef}
                   className={
@@ -171,6 +151,27 @@ export default function AccountCreation() {
                   placeholder='Enter your name'
                   editable={!loading}
                 />
+              </View>
+              <View className='mt-5'>
+                <View>
+                  <Text className='mb-2 pl-4 text-lg font-bold text-themeText'>Give yourself a username.</Text>
+                  <UsernameInput
+                    value={username}
+                    setValue={setUsername}
+                    isValid={isUsernameValid}
+                    setIsValid={setIsUsernameValid}
+                    focusNext={focusNameInput}
+                    maxLength={30}
+                    placeholder='Enter your username'
+                    returnKeyType='next'
+                    forOwner
+                    prefix
+                  />
+                </View>
+                <View className='mt-4'>
+                  <Text className='text-xs pl-3'>- No spaces</Text>
+                  <Text className='text-xs pl-3'>- Dashes, underscores, and periods allowed</Text>
+                </View>
               </View>
             </View>
           </View>

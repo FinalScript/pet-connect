@@ -30,7 +30,7 @@ export const PET_USERNAME_EXISTS = gql(`
 `);
 
 export const UPDATE_PET = gql(`
-  mutation Mutation($updatePetId: String, $username: String, $name: String, $type: PetType, $description: String, $location: String, $profilePicture: Upload) {
+  mutation UpdatePet($updatePetId: String, $username: String, $name: String, $type: PetType, $description: String, $location: String, $profilePicture: Upload) {
     updatePet(
       id: $updatePetId
       username: $username
@@ -52,6 +52,14 @@ export const UPDATE_PET = gql(`
         path
         type
       }
+    }
+  }
+`);
+
+export const DELETE_PET = gql(`
+  mutation DeletePet($deletePetId: String!) {
+    deletePet(id: $deletePetId) {
+      message
     }
   }
 `);
