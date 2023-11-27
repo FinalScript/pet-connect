@@ -37,15 +37,13 @@ const AccountSwitcherModal = ({ navigateNewPet, currentUser, closeModal }: Props
   );
 
   return (
-    <View className='flex w-full h-full px-5 py-5 pt-10 bg-themeBg'>
-      <Text className='text-3xl font-bold text-center'>Switch Profile</Text>
-      <ScrollView className='flex-grow'>
-        <View className='flex flex-row items-center my-4 px-3'>
-          <View className='flex-1 h-[1px] bg-themeText rounded-xl' />
-          <View>
-            <Text className='text-center px-5'>Owner</Text>
-          </View>
-          <View className='flex-1 h-[1px] bg-themeText rounded-xl' />
+    <View className='flex w-full h-[70%] bottom-0 absolute shadow-lg px-5 pb-5 rounded-t-xl bg-themeBg'>
+      <View className='flex-row justify-center'>
+        <View className='bg-themeText w-16 h-1 rounded-xl mt-2'></View>
+      </View>
+      <ScrollView className='flex-grow relative mt-5'>
+        <View className='absolute h-full py-10'>
+          <View className='bg-themeText h-full w-[2px] ml-5'></View>
         </View>
         <Pressable
           className={
@@ -75,45 +73,38 @@ const AccountSwitcherModal = ({ navigateNewPet, currentUser, closeModal }: Props
           )}
         </Pressable>
 
-        {pets.length !== 0 && (
-          <View className='flex flex-row items-center my-4 px-3'>
-            <View className='flex-1 h-[1px] bg-themeText rounded-xl' />
-            <View>
-              <Text className='text-center px-5'>Pets</Text>
-            </View>
-            <View className='flex-1 h-[1px] bg-themeText rounded-xl' />
-          </View>
-        )}
         {pets.map((pet) => {
           return (
-            <Pressable
-              key={pet.id}
-              className={
-                (pet?.id === currentUser?.id ? 'border-themeActive' : 'border-transparent') +
-                ' flex flex-row items-center mb-5 rounded-3xl bg-themeInput border-4 shadow-sm shadow-themeShadow py-1 px-1'
-              }
-              onPress={() => {
-                switchProfile(pet?.id, true);
-              }}>
-              <View className='h-16 w-16 flex justify-center items-center mr-5'>
-                {pet?.ProfilePicture?.path ? (
-                  <Image
-                    className='w-full h-full rounded-2xl'
-                    source={{
-                      uri: `${getApiBaseUrl()}/${pet.ProfilePicture.path}?${Date.now()}`,
-                    }}
-                  />
-                ) : (
-                  <PetTypeImage type={pet.type} className='w-full h-full' />
-                )}
-              </View>
-              <Text className='text-xl'>{pet.username}</Text>
-              {pet.id === currentUser?.id && (
-                <View className='absolute right-10'>
-                  <Ionicon name='checkmark-circle' size={25} color={'#FFBA93'} />
+            <View key={pet.id} className='flex-row items-center mt-5 ml-5'>
+              <View className='h-[2px] w-5 bg-themeText'></View>
+              <Pressable
+                className={
+                  (pet?.id === currentUser?.id ? 'border-themeActive' : 'border-transparent') +
+                  ' flex flex-row flex-1 items-center rounded-3xl bg-themeInput border-4 shadow-sm shadow-themeShadow py-1 px-1'
+                }
+                onPress={() => {
+                  switchProfile(pet?.id, true);
+                }}>
+                <View className='h-16 w-16 flex justify-center items-center mr-5'>
+                  {pet?.ProfilePicture?.path ? (
+                    <Image
+                      className='w-full h-full rounded-2xl'
+                      source={{
+                        uri: `${getApiBaseUrl()}/${pet.ProfilePicture.path}?${Date.now()}`,
+                      }}
+                    />
+                  ) : (
+                    <PetTypeImage type={pet.type} className='w-full h-full' />
+                  )}
                 </View>
-              )}
-            </Pressable>
+                <Text className='text-xl'>{pet.username}</Text>
+                {pet.id === currentUser?.id && (
+                  <View className='absolute right-10'>
+                    <Ionicon name='checkmark-circle' size={25} color={'#FFBA93'} />
+                  </View>
+                )}
+              </Pressable>
+            </View>
           );
         })}
       </ScrollView>

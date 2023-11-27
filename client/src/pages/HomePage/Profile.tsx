@@ -274,9 +274,10 @@ const Profile = () => {
       )}
       <Modal
         style={{ justifyContent: 'center', alignItems: 'center', margin: 0 }}
-        visible={modals.accountSwitcher}
         presentationStyle='pageSheet'
+        visible={modals.accountSwitcher}
         animationType='slide'
+        transparent
         onRequestClose={() => {
           setAccountSwitchModalVisible(false);
         }}>
