@@ -284,7 +284,7 @@ const EditProfileModal = ({ closeModal, profile }: Props) => {
               />
             </View>
 
-            <View className=''>
+            <View className='mt-3'>
               <Text className='mb-2 pl-4 text-xl font-bold text-themeText'>Name</Text>
               <TextInput
                 editable={!loading}

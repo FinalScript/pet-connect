@@ -6,6 +6,7 @@ import { useLazyQuery } from '@apollo/client';
 import { OWNER_USERNAME_EXISTS } from '../graphql/Owner';
 import { PET_USERNAME_EXISTS } from '../graphql/Pet';
 import { useFirstRender } from '../hooks/useFirstRender';
+import { Feather } from '../utils/Icons';
 
 interface Props extends TextInputProps {
   setValue: Function;
@@ -15,9 +16,10 @@ interface Props extends TextInputProps {
   className?: string | undefined;
   focusNext?: Function;
   forOwner?: boolean;
+  prefix?: boolean;
 }
 
-export default function UsernameInput({ className, value, setValue, isValid, setIsValid, focusNext, forOwner = false, ...rest }: Props) {
+export default function UsernameInput({ className, value, setValue, isValid, setIsValid, focusNext, forOwner = false, prefix = false, ...rest }: Props) {
   const [ownerUsernameExists] = useLazyQuery(OWNER_USERNAME_EXISTS);
   const [petUsernameExists] = useLazyQuery(PET_USERNAME_EXISTS);
   const [inFocus, setInFocus] = useState(false);
@@ -68,9 +70,12 @@ export default function UsernameInput({ className, value, setValue, isValid, set
   const onBlur = () => {
     setInFocus(false);
 
-    if (value === undefined || value.length === 0) {
-      setIsError(true);
-      setMessage('Field cannot be empty');
+    if (value && value.trim().length !== 0) {
+      checkUsernameExists(value);
+    }
+
+    if (isValid) {
+      setMessage('');
     }
   };
 
@@ -112,30 +117,40 @@ export default function UsernameInput({ className, value, setValue, isValid, set
   return (
     <View className='flex flex-col items-center justify-center w-full relative'>
       <View className='flex flex-row items-center'>
-        <TextInput
-          className={
-            (isValid ? 'border-success' : isError ? 'border-danger' : inFocus ? 'border-themeActive' : 'border-transparent') +
-            ' bg-themeInput border-[5px] shadow-sm shadow-themeShadow w-full rounded-3xl px-5 py-3 pr-10 text-lg ' +
-            className
-          }
-          style={{ fontFamily: 'BalooChettan2-Regular' }}
-          placeholderTextColor={'#444444bb'}
-          value={value}
-          onChangeText={onChange}
-          onFocus={onFocus}
-          onBlur={onBlur}
-          autoCorrect={false}
-          autoCapitalize={'none'}
-          onSubmitEditing={() => {
-            if (focusNext) focusNext();
-          }}
-          {...rest}
-        />
+        <View className='w-full relative flex-row items-center'>
+          {prefix && (
+            <View className='absolute z-10 left-5'>
+              <Text className='text-lg'>@</Text>
+            </View>
+          )}
+          <TextInput
+            className={
+              (isValid ? 'border-success' : isError ? 'border-danger' : inFocus ? 'border-themeActive' : 'border-transparent') +
+              ' bg-themeInput border-[5px] text-themeText shadow-sm shadow-themeShadow w-full rounded-3xl px-5 py-3 pr-10 text-lg ' +
+              (prefix && ' !pl-9 ') +
+              className
+            }
+            style={{ fontFamily: 'BalooChettan2-Regular' }}
+            placeholderTextColor={'#444444bb'}
+            value={value}
+            onChangeText={onChange}
+            onFocus={onFocus}
+            onBlur={onBlur}
+            autoCorrect={false}
+            autoCapitalize={'none'}
+            onSubmitEditing={() => {
+              if (focusNext) focusNext();
+            }}
+            {...rest}
+          />
+        </View>
         {isChecking && <ActivityIndicator className='absolute right-5' size='small' color={'#321411'} />}
       </View>
-      <View className={messageStyles() + ' rounded-b-xl px-3 pb-1'}>
-        <Text className='text-xs text-[#000000bb]'>{message}</Text>
-      </View>
+      {message && (
+        <View className={messageStyles() + ' rounded-b-xl px-3 pb-1'}>
+          <Text className='text-xs text-[#000000bb]'>{message}</Text>
+        </View>
+      )}
     </View>
   );
 }
