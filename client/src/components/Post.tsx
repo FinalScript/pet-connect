@@ -1,11 +1,11 @@
+import React, { useCallback, useState } from 'react';
 import { Image, Modal, View } from 'react-native';
-import React, { useCallback, useEffect, useState } from 'react';
-import Text from './Text';
+import { TapGestureHandler } from 'react-native-gesture-handler';
+import { HapticFeedbackTypes, trigger } from 'react-native-haptic-feedback';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import Ionicon from 'react-native-vector-icons/Ionicons';
-import { trigger, HapticFeedbackTypes } from 'react-native-haptic-feedback';
 import { options } from '../utils/hapticFeedbackOptions';
-import { Gesture, GestureDetector, TapGestureHandler } from 'react-native-gesture-handler';
+import Text from './Text';
 import CommentsModel from './modals/CommentsModal';
 
 interface Props {
@@ -15,6 +15,24 @@ interface Props {
   postImage: any;
   caption?: string | undefined;
 }
+
+const comments = [
+  {
+    text: 'nascetur ridiculus mus. Donec dignissim magna a tortor. Nunc commodo',
+  },
+  {
+    text: 'eu, odio. Phasellus at augue id ante dictum cursus. Nunc',
+  },
+  {
+    text: 'suscipit, est ac facilisis facilisis, magna tellus faucibus leo, in',
+  },
+  {
+    text: 'vitae purus gravida sagittis. Duis gravida. Praesent eu nulla at',
+  },
+  {
+    text: 'massa. Mauris vestibulum, neque sed dictum eleifend, nunc risus varius',
+  },
+];
 
 export default function Post({ name, username, petImage, postImage, caption }: Props) {
   const [postLiked, setPostLiked] = useState(false);
@@ -58,7 +76,7 @@ export default function Post({ name, username, petImage, postImage, caption }: P
           onRequestClose={() => {
             setCommentsModalVisible(false);
           }}>
-          <CommentsModel />
+          <CommentsModel comments={comments} />
         </Modal>
         <View className='w-14 h-14 mr-2 aspect-square'>
           <Image className='flex w-full h-full rounded-full' source={require('../../assets/img/catphoto.jpeg')} />
@@ -92,7 +110,7 @@ export default function Post({ name, username, petImage, postImage, caption }: P
       </View>
 
       <View className='px-3 py-1'>
-        {caption &&
+        {caption && (
           <View className='flex flex-row min-h-[7rem]'>
             <Text className='text-lg leading-5' numberOfLines={moreCaption ? 0 : CAPTION_LINES}>
               <Text className='font-semibold text-sky-600'>{name} </Text>
@@ -102,7 +120,7 @@ export default function Post({ name, username, petImage, postImage, caption }: P
               </Text>
             </Text>
           </View>
-        }
+        )}
       </View>
     </View>
   );
