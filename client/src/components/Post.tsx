@@ -18,18 +18,27 @@ interface Props {
 
 const comments = [
   {
+    username: 'petguy',
     text: 'nascetur ridiculus mus. Donec dignissim magna a tortor. Nunc commodo',
   },
   {
+    username: 'catwoman',
     text: 'eu, odio. Phasellus at augue id ante dictum cursus. Nunc',
   },
   {
+    username: 'bakrsdog',
     text: 'suscipit, est ac facilisis facilisis, magna tellus faucibus leo, in',
   },
   {
+    username: 'minecraftsnake',
     text: 'vitae purus gravida sagittis. Duis gravida. Praesent eu nulla at',
   },
   {
+    username: 'catdogthing',
+    text: 'massa. Mauris vestibulum, neque sed dictum eleifend, nunc risus varius',
+  },
+  {
+    username: 'catdogthing',
     text: 'massa. Mauris vestibulum, neque sed dictum eleifend, nunc risus varius',
   },
 ];
