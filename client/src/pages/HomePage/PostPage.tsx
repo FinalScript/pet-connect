@@ -6,13 +6,13 @@ import { AntDesign, Ionicon } from '../../utils/Icons';
 import { HomeStackParamList } from './HomeNavigator';
 import Text from '../../components/Text';
 import ContextMenu, { ContextMenuOnPressNativeEvent } from 'react-native-context-menu-view';
-import { launchCamera, launchImageLibrary } from 'react-native-image-picker';
-import ImagePicker, { Image as ImageType } from 'react-native-image-crop-picker';
+import { Asset, ImagePickerResponse, launchCamera, launchImageLibrary } from 'react-native-image-picker';
+import { uploadToFirebase } from '../../utils/firebaseStorage';
 
 type Props = NativeStackScreenProps<HomeStackParamList, 'PostPage'>;
 
 interface FormData {
-  media?: ImageType | null | undefined;
+  media?: Asset | null | undefined;
   description: string;
 }
 
@@ -21,27 +21,29 @@ const PostPage = ({ navigation }: Props) => {
 
   const handleMediaContextOnPress = useCallback(async (e: NativeSyntheticEvent<ContextMenuOnPressNativeEvent>) => {
     if (e.nativeEvent.index === 0) {
-      ImagePicker.openPicker({
-        width: 500,
-        height: 500,
-        cropping: true,
+      launchImageLibrary({
         mediaType: 'photo',
-        compressImageMaxHeight: 500,
-        compressImageMaxWidth: 500,
       })
         .then((image) => {
-          setFormData((prev) => {
-            return { ...prev, media: image };
-          });
+          if (image.assets && image.assets[0]) {
+            uploadToFirebase(image.assets[0]);
+            setFormData((prev) => {
+              return { ...prev, media: image.assets?.[0] };
+            });
+          }
         })
         .catch((err) => {
           console.log(err);
         });
     } else {
-      ImagePicker.openCamera({ width: 500, height: 500, cropping: true, mediaType: 'photo', compressImageMaxHeight: 500, compressImageMaxWidth: 500 })
+      launchCamera({ mediaType: 'photo' })
         .then((image) => {
+          if (!image.assets) {
+            return;
+          }
+          uploadToFirebase(image.assets[0]);
           setFormData((prev) => {
-            return { ...prev, media: image };
+            return { ...prev, media: image.assets?.[0] };
           });
         })
         .catch((err) => {
@@ -72,7 +74,7 @@ const PostPage = ({ navigation }: Props) => {
           onPress={handleMediaContextOnPress}>
           <View className='rounded-lg aspect-square'>
             {formData.media ? (
-              <Image className='flex w-full h-full rounded-3xl' source={{ uri: formData.media?.path }} />
+              <Image className='flex w-full h-full rounded-3xl' source={{ uri: formData.media?.uri }} />
             ) : (
               <View className='border-dashed border-[4px] border-themeText opacity-60 flex justify-center items-center h-full'>
                 <View className='flex items-center gap-10'>
