@@ -1,11 +1,12 @@
-import { Image, View } from 'react-native';
-import React, { useEffect, useState } from 'react';
-import Text from './Text';
+import React, { useCallback, useState } from 'react';
+import { Image, Modal, View } from 'react-native';
+import { TapGestureHandler } from 'react-native-gesture-handler';
+import { HapticFeedbackTypes, trigger } from 'react-native-haptic-feedback';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import Ionicon from 'react-native-vector-icons/Ionicons';
-import { trigger, HapticFeedbackTypes } from 'react-native-haptic-feedback';
 import { options } from '../utils/hapticFeedbackOptions';
-import { Gesture, GestureDetector, TapGestureHandler } from 'react-native-gesture-handler';
+import Text from './Text';
+import CommentsModel from './modals/CommentsModal';
 
 interface Props {
   name: string | undefined;
@@ -15,10 +16,48 @@ interface Props {
   caption?: string | undefined;
 }
 
+const comments = [
+  {
+    username: 'petguy',
+    text: 'nascetur ridiculus mus. Donec dignissim magna a tortor. Nunc commodo',
+  },
+  {
+    username: 'catwoman',
+    text: 'eu, odio. Phasellus at augue id ante dictum cursus. Nunc',
+  },
+  {
+    username: 'bakrsdog',
+    text: 'suscipit, est ac facilisis facilisis, magna tellus faucibus leo, in',
+  },
+  {
+    username: 'minecraftsnake',
+    text: 'vitae purus gravida sagittis. Duis gravida. Praesent eu nulla at',
+  },
+  {
+    username: 'catdogthing',
+    text: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Maecenas aliquam ex a tortor pretium, id finibus elit viverra. Suspendisse aliquam lectus vitae lectus bibendum porta. Phasellus non nisi vitae odio eleifend sodales. Fusce ac eros vitae orci molestie lacinia mattis quis dolor. Nunc viverra nibh dictum, sodales neque eu, pulvinar nibh.',
+  },
+  {
+    username: 'catdogthing',
+    text: 'massa. Mauris vestibulum, neque sed dictum eleifend, nunc risus varius',
+  },
+];
+
 export default function Post({ name, username, petImage, postImage, caption }: Props) {
   const [postLiked, setPostLiked] = useState(false);
   const CAPTION_LINES = 2;
   const [moreCaption, setMoreCaption] = useState(false);
+  const [modal, setModal] = useState({ comments: false });
+
+  const setCommentsModalVisible = useCallback((bool: boolean) => {
+    setModal((prev) => {
+      return { ...prev, comments: bool };
+    });
+  }, []);
+
+  const openCommentsModal = () => {
+    setCommentsModalVisible(true);
+  };
 
   const handleLike = () => {
     if (!postLiked) {
@@ -37,6 +76,17 @@ export default function Post({ name, username, petImage, postImage, caption }: P
   return (
     <View className='bg-white mb-5 w-full shadow-sm shadow-themeShadow rounded-2xl'>
       <View className='flex-row w-full items-center px-3 py-2'>
+        <Modal
+          style={{ justifyContent: 'center', alignItems: 'center', margin: 0 }}
+          presentationStyle='pageSheet'
+          visible={modal.comments}
+          animationType='slide'
+          transparent
+          onRequestClose={() => {
+            setCommentsModalVisible(false);
+          }}>
+          <CommentsModel comments={comments} />
+        </Modal>
         <View className='w-14 h-14 mr-2 aspect-square'>
           <Image className='flex w-full h-full rounded-full' source={require('../../assets/img/catphoto.jpeg')} />
         </View>
@@ -63,13 +113,13 @@ export default function Post({ name, username, petImage, postImage, caption }: P
         <View className='mt-1' onTouchEnd={handleLike}>
           {postLiked === true ? <AntDesign name='heart' size={25} color={'#ff1000'} /> : <AntDesign name='hearto' size={25} color={'#000000'} />}
         </View>
-        <View className=''>
+        <View className='' onTouchEnd={openCommentsModal}>
           <Ionicon name='chatbubble-outline' size={25} color={'#000000'} />
         </View>
       </View>
 
       <View className='px-3 py-1'>
-        {caption &&
+        {caption && (
           <View className='flex flex-row min-h-[7rem]'>
             <Text className='text-lg leading-5' numberOfLines={moreCaption ? 0 : CAPTION_LINES}>
               <Text className='font-semibold text-sky-600'>{name} </Text>
@@ -79,7 +129,7 @@ export default function Post({ name, username, petImage, postImage, caption }: P
               </Text>
             </Text>
           </View>
-        }
+        )}
       </View>
     </View>
   );
