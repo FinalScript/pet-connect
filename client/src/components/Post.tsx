@@ -41,6 +41,22 @@ const comments = [
     username: 'catdogthing',
     text: 'massa. Mauris vestibulum, neque sed dictum eleifend, nunc risus varius',
   },
+  {
+    username: 'bakrsdog',
+    text: 'suscipit, est ac facilisis facilisis, magna tellus faucibus leo, in',
+  },
+  {
+    username: 'minecraftsnake',
+    text: 'vitae purus gravida sagittis. Duis gravida. Praesent eu nulla at',
+  },
+  {
+    username: 'catdogthing',
+    text: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Maecenas aliquam ex a tortor pretium, id finibus elit viverra. Suspendisse aliquam lectus vitae lectus bibendum porta. Phasellus non nisi vitae odio eleifend sodales. Fusce ac eros vitae orci molestie lacinia mattis quis dolor. Nunc viverra nibh dictum, sodales neque eu, pulvinar nibh.',
+  },
+  {
+    username: 'catdogthing',
+    text: 'massa. Mauris vestibulum, neque sed dictum eleifend, nunc risus varius',
+  },
 ];
 
 export default function Post({ name, username, petImage, postImage, caption }: Props) {
@@ -85,7 +101,7 @@ export default function Post({ name, username, petImage, postImage, caption }: P
           onRequestClose={() => {
             setCommentsModalVisible(false);
           }}>
-          <CommentsModel comments={comments} />
+          <CommentsModel comments={comments} closeModal={() => setCommentsModalVisible(false)} />
         </Modal>
         <View className='w-14 h-14 mr-2 aspect-square'>
           <Image className='flex w-full h-full rounded-full' source={require('../../assets/img/catphoto.jpeg')} />
