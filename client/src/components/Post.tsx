@@ -35,7 +35,7 @@ const comments = [
   },
   {
     username: 'catdogthing',
-    text: 'massa. Mauris vestibulum, neque sed dictum eleifend, nunc risus varius',
+    text: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Maecenas aliquam ex a tortor pretium, id finibus elit viverra. Suspendisse aliquam lectus vitae lectus bibendum porta. Phasellus non nisi vitae odio eleifend sodales. Fusce ac eros vitae orci molestie lacinia mattis quis dolor. Nunc viverra nibh dictum, sodales neque eu, pulvinar nibh.',
   },
   {
     username: 'catdogthing',
