@@ -247,11 +247,11 @@ const EditProfileModal = ({ closeModal, profile, forPet = false }: Props) => {
               disabledOpacity={1}
               activeOpacity={0.8}
               className='w-[160px] h-[160px] bg-themeInput flex items-center justify-center rounded-3xl shadow-sm shadow-themeShadow'>
-              {petFormData?.profilePicture?.path ? (
+              {petFormData?.profilePicture ? (
                 <Image
                   className='w-full h-full rounded-3xl'
                   source={{
-                    uri: petFormData.profilePicture.width ? petFormData.profilePicture.path : `${env.API_URL}/${petFormData.profilePicture.path}`,
+                    uri: petFormData.profilePicture.width ? petFormData.profilePicture.uri : petFormData.profilePicture.url,
                   }}
                 />
               ) : (
