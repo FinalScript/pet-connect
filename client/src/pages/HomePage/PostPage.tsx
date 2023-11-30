@@ -1,13 +1,12 @@
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import React, { useCallback, useState } from 'react';
-import { Image, NativeSyntheticEvent, Platform, SafeAreaView, View } from 'react-native';
-import { PressableOpacity } from 'react-native-pressable-opacity';
-import { AntDesign, Ionicon } from '../../utils/Icons';
-import { HomeStackParamList } from './HomeNavigator';
-import Text from '../../components/Text';
+import { Image, NativeSyntheticEvent, SafeAreaView, View } from 'react-native';
 import ContextMenu, { ContextMenuOnPressNativeEvent } from 'react-native-context-menu-view';
-import { Asset, ImagePickerResponse, launchCamera, launchImageLibrary } from 'react-native-image-picker';
-import { uploadToFirebase } from '../../utils/firebaseStorage';
+import { Asset, launchCamera, launchImageLibrary } from 'react-native-image-picker';
+import { PressableOpacity } from 'react-native-pressable-opacity';
+import Text from '../../components/Text';
+import { Ionicon } from '../../utils/Icons';
+import { HomeStackParamList } from './HomeNavigator';
 
 type Props = NativeStackScreenProps<HomeStackParamList, 'PostPage'>;
 
@@ -26,7 +25,6 @@ const PostPage = ({ navigation }: Props) => {
       })
         .then((image) => {
           if (image.assets && image.assets[0]) {
-            uploadToFirebase(image.assets[0]);
             setFormData((prev) => {
               return { ...prev, media: image.assets?.[0] };
             });
@@ -41,7 +39,6 @@ const PostPage = ({ navigation }: Props) => {
           if (!image.assets) {
             return;
           }
-          uploadToFirebase(image.assets[0]);
           setFormData((prev) => {
             return { ...prev, media: image.assets?.[0] };
           });

@@ -62,6 +62,7 @@ export default function AppLoader({ children }: Props) {
 
     const withToken = setContext(async () => {
       const token = await AsyncStorage.getItem('@token');
+      console.log(token)
       return { token };
     });
 

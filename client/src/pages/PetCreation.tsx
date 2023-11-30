@@ -2,35 +2,22 @@ import { useMutation } from '@apollo/client';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useCallback, useState } from 'react';
-import { Keyboard } from 'react-native';
-import {
-  ActivityIndicator,
-  Image,
-  KeyboardAvoidingView,
-  Platform,
-  Pressable,
-  TextInput,
-  TouchableHighlight,
-  TouchableOpacity,
-  TouchableWithoutFeedback,
-  View,
-} from 'react-native';
+import { ActivityIndicator, Image, Keyboard, Pressable, TextInput, TouchableHighlight, TouchableOpacity, TouchableWithoutFeedback, View } from 'react-native';
 import { HapticFeedbackTypes, trigger } from 'react-native-haptic-feedback';
-import ImagePicker, { Image as ImageType } from 'react-native-image-crop-picker';
+import { Asset, launchImageLibrary } from 'react-native-image-picker';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootRouteProps, RootStackParamList } from '../../App';
 import Text from '../components/Text';
 import UsernameInput from '../components/UsernameInput';
+import { UploadToFirebaseResult, storageFolders, uploadToFirebase } from '../firebase/firebaseStorage';
 import { CREATE_PET } from '../graphql/Pet';
 import { ADD_PET, CURRENT_USER, LOADING } from '../redux/constants';
 import { GeneralReducer } from '../redux/reducers/generalReducer';
 import { PetType, ProfileReducer } from '../redux/reducers/profileReducer';
 import { options } from '../utils/hapticFeedbackOptions';
-import ReactNativeFile from 'apollo-upload-client/public/ReactNativeFile';
-import { uniqueId } from 'lodash';
-import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 
 const petTypes = [
   { type: PetType.Dog, img: require('../../assets/img/dog.png') },
@@ -50,7 +37,7 @@ interface FormData {
   type: PetType;
   name: string;
   description: string;
-  profilePicture?: ImageType | null | undefined;
+  profilePicture?: Asset | null | undefined;
 }
 
 export default function PetCreation() {
@@ -67,7 +54,7 @@ export default function PetCreation() {
   const [isUsernameValid, setIsUsernameValid] = useState(false);
   const [optionsShuffle, setShuffle] = useState(0);
 
-  const submit = useCallback(() => {
+  const submit = useCallback(async () => {
     dispatch({ type: LOADING, payload: true });
 
     if (!(formData.username && isUsernameValid)) {
@@ -76,16 +63,18 @@ export default function PetCreation() {
       return;
     }
 
-    const profilePictureFile =
-      formData.profilePicture &&
-      new ReactNativeFile({
-        uri: formData.profilePicture.path,
-        name: formData.profilePicture.filename || uniqueId(),
-        type: formData.profilePicture.mime,
-      });
+    let profilePictureData: UploadToFirebaseResult;
+
+    if (formData.profilePicture) {
+      const uploadRes = await uploadToFirebase(formData.profilePicture, storageFolders.PROFILE_PICTURES);
+
+      if (uploadRes) {
+        profilePictureData = uploadRes;
+      }
+    }
 
     setTimeout(() => {
-      createPet({ variables: { ...formData, profilePicture: profilePictureFile } })
+      createPet({ variables: { ...formData, profilePicture: profilePictureData } })
         .then(async ({ data }) => {
           if (data?.createPet.pet) {
             dispatch({ type: ADD_PET, payload: data.createPet.pet });
@@ -104,7 +93,7 @@ export default function PetCreation() {
         .finally(() => {
           dispatch({ type: LOADING, payload: false });
         });
-    }, 1500);
+    }, 500);
   }, [formData, dispatch, isUsernameValid]);
 
   const petTypeOnPress = useCallback((type: PetType) => {
@@ -133,17 +122,12 @@ export default function PetCreation() {
   }, [optionsShuffle]);
 
   const pickProfilePicture = useCallback(async () => {
-    ImagePicker.openPicker({
-      width: 500,
-      height: 500,
-      cropping: true,
+    launchImageLibrary({
       mediaType: 'photo',
-      compressImageMaxHeight: 500,
-      compressImageMaxWidth: 500,
     })
-      .then((image) => {
+      .then((res) => {
         setFormData((prev) => {
-          return { ...prev, profilePicture: image };
+          return { ...prev, profilePicture: res.assets?.[0] };
         });
       })
       .catch((err) => {
@@ -238,7 +222,7 @@ export default function PetCreation() {
                 disabled={loading}>
                 <View className=''>
                   {formData.profilePicture ? (
-                    <Image className='flex w-full h-full rounded-3xl' source={{ uri: formData.profilePicture?.path }} />
+                    <Image className='flex w-full h-full rounded-3xl' source={{ uri: formData.profilePicture?.uri }} />
                   ) : (
                     <View className='flex flex-row justify-center items-center h-full'>
                       <Icon name='plus-square-o' size={50} color={'#362013'} />

@@ -74,11 +74,11 @@ const AccountSwitcherModal = ({ navigateNewPet, currentUser, closeModal }: Props
             switchProfile(owner?.id, false);
           }}>
           <View className='h-16 w-16 flex justify-center items-center mr-5'>
-            {owner?.ProfilePicture?.path ? (
+            {owner?.ProfilePicture?.url ? (
               <Image
                 className='w-full h-full rounded-2xl'
                 source={{
-                  uri: `${getApiBaseUrl()}/${owner.ProfilePicture.path}?${Date.now()}`,
+                  uri: owner.ProfilePicture.url,
                 }}
               />
             ) : (

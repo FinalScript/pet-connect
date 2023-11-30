@@ -1,5 +1,5 @@
 import { getStorage } from 'firebase/storage';
-import * as env from './env.json';
+import * as env from '../../env.json';
 // Import the functions you need from the SDKs you need
 import { initializeApp } from 'firebase/app';
 // TODO: Add SDKs for Firebase products that you want to use

@@ -106,11 +106,11 @@ const Profile = () => {
           <View className='relative'>
             <Pressable onPress={() => {}}>
               <View className='w-28 h-28 rounded-full border-2 border-themeActive flex items-center justify-center'>
-                {currentUser?.ProfilePicture?.path ? (
+                {currentUser?.ProfilePicture?.url ? (
                   <Image
                     className='w-full h-full rounded-full'
                     source={{
-                      uri: `${getApiBaseUrl()}/${currentUser.ProfilePicture.path}?${Date.now()}`,
+                      uri: currentUser.ProfilePicture.url,
                     }}
                   />
                 ) : (
@@ -169,11 +169,11 @@ const Profile = () => {
             return (
               <View key={pet.id} className='bg-themeTabBg rounded-3xl w-5/12'>
                 <View className='aspect-square w-full flex justify-center items-center'>
-                  {pet?.ProfilePicture?.path ? (
+                  {pet?.ProfilePicture?.url ? (
                     <Image
                       className='w-full h-full rounded-t-2xl'
                       source={{
-                        uri: getApiBaseUrl() + '/' + pet.ProfilePicture.path,
+                        uri: pet.ProfilePicture.url,
                       }}
                     />
                   ) : (
@@ -268,6 +268,7 @@ const Profile = () => {
           }}>
           <EditProfileModal
             profile={currentUser}
+            forPet={currentUserId.isPet}
             closeModal={() => {
               setEditProfileModalVisible(false);
             }}

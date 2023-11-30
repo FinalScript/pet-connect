@@ -3,12 +3,14 @@ import { sequelize } from '../db/connection';
 
 export interface ProfilePictureCreationDAO {
   path: string;
+  url: string;
   name: string;
   type: string;
 }
 export class ProfilePicture extends Model<InferAttributes<ProfilePicture>, InferCreationAttributes<ProfilePicture>> {
   declare id: CreationOptional<number>;
   declare name: string;
+  declare url: string;
   declare path: string;
   declare type: string;
 }
@@ -22,6 +24,10 @@ ProfilePicture.init(
       primaryKey: true,
     },
     name: {
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
+    url: {
       type: DataTypes.STRING,
       allowNull: false,
     },
