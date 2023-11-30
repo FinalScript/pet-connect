@@ -1,19 +1,18 @@
 import { useMutation } from '@apollo/client';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import ReactNativeFile from 'apollo-upload-client/public/ReactNativeFile';
-import { uniqueId } from 'lodash';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { ActivityIndicator, Image, Keyboard, Pressable, TouchableHighlight, View } from 'react-native';
 import { TextInput } from 'react-native-gesture-handler';
 import { HapticFeedbackTypes, trigger } from 'react-native-haptic-feedback';
-import ImageCropPicker, { Image as ImageType } from 'react-native-image-crop-picker';
+import { Asset, launchImageLibrary } from 'react-native-image-picker';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootStackParamList } from '../../App';
 import Text from '../components/Text';
 import UsernameInput from '../components/UsernameInput';
+import { UploadToFirebaseResult, storageFolders, uploadToFirebase } from '../firebase/firebaseStorage';
 import { SIGNUP } from '../graphql/Owner';
 import { CURRENT_USER, LOADING, OWNER_DATA } from '../redux/constants';
 import { GeneralReducer } from '../redux/reducers/generalReducer';
@@ -30,7 +29,7 @@ export default function AccountCreation() {
   const [username, setUsername] = useState<string>();
   const [isUsernameValid, setIsUsernameValid] = useState(false);
   const [name, setName] = useState<string>();
-  const [profilePicture, setProfilePicture] = useState<ImageType>();
+  const [profilePicture, setProfilePicture] = useState<Asset>();
   const nameRef = useRef<TextInput>(null);
   const [focus, setFocus] = useState({ username: false, name: false });
 
@@ -39,41 +38,38 @@ export default function AccountCreation() {
   }, []);
 
   const pickProfilePicture = useCallback(async () => {
-    ImageCropPicker.openPicker({
-      width: 500,
-      height: 500,
-      cropping: true,
+    launchImageLibrary({
       mediaType: 'photo',
-      compressImageMaxHeight: 500,
-      compressImageMaxWidth: 500,
     })
       .then((image) => {
-        setProfilePicture(image);
+        setProfilePicture(image.assets?.[0]);
       })
       .catch((err) => {
         console.log(err);
       });
   }, []);
 
-  const nextOnPress = useCallback(() => {
+  const nextOnPress = useCallback(async () => {
     if (isUsernameValid && username) {
       trigger(HapticFeedbackTypes.impactMedium, options);
       dispatch({ type: LOADING, payload: true });
 
-      const profilePictureFile =
-        profilePicture &&
-        new ReactNativeFile({
-          uri: profilePicture.path,
-          name: profilePicture.filename || uniqueId(),
-          type: profilePicture.mime,
-        });
+      let profilePictureData: UploadToFirebaseResult;
+
+      if (profilePicture) {
+        const uploadRes = await uploadToFirebase(profilePicture, storageFolders.PROFILE_PICTURES);
+
+        if (uploadRes) {
+          profilePictureData = uploadRes;
+        }
+      }
 
       setTimeout(() => {
         signUp({
           variables: {
             username: username.toLowerCase(),
             name,
-            profilePicture: profilePictureFile,
+            profilePicture: profilePictureData,
           },
         })
           .then(async ({ data }) => {
@@ -89,7 +85,7 @@ export default function AccountCreation() {
           .finally(() => {
             dispatch({ type: LOADING, payload: false });
           });
-      }, 1500);
+      }, 500);
     }
   }, [isUsernameValid, username, name, profilePicture, loading]);
 
@@ -113,7 +109,7 @@ export default function AccountCreation() {
                   disabled={loading}>
                   <View className=''>
                     {profilePicture ? (
-                      <Image className='flex w-full h-full rounded-3xl' source={{ uri: profilePicture?.path }} />
+                      <Image className='flex w-full h-full rounded-3xl' source={{ uri: profilePicture?.uri }} />
                     ) : (
                       <View className='flex flex-row justify-center items-center h-full'>
                         <FontAwesome name='plus-square-o' size={50} color={'#362013'} />

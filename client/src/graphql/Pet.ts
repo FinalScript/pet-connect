@@ -1,7 +1,7 @@
 import { gql } from '../__generated__';
 
 export const CREATE_PET = gql(`
-  mutation CreatePet($username: String!, $name: String!, $type: PetType!, $description: String, $location: String, $profilePicture: Upload) {
+  mutation CreatePet($username: String!, $name: String!, $type: PetType!, $description: String, $location: String, $profilePicture: Media) {
     createPet(username: $username, name: $name, type: $type, description: $description, location: $location, profilePicture: $profilePicture) {
       pet {
         id
@@ -13,6 +13,7 @@ export const CREATE_PET = gql(`
         ProfilePicture {
           id
           name
+          url
           path
           type
         }
@@ -30,7 +31,7 @@ export const PET_USERNAME_EXISTS = gql(`
 `);
 
 export const UPDATE_PET = gql(`
-  mutation UpdatePet($updatePetId: String, $username: String, $name: String, $type: PetType, $description: String, $location: String, $profilePicture: Upload) {
+  mutation UpdatePet($updatePetId: String, $username: String, $name: String, $type: PetType, $description: String, $location: String, $profilePicture: Media) {
     updatePet(
       id: $updatePetId
       username: $username
@@ -49,6 +50,7 @@ export const UPDATE_PET = gql(`
       ProfilePicture {
         id
         name
+        url
         path
         type
       }

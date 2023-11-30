@@ -1,7 +1,7 @@
 export const MediaTypeDef = `#graphql
-  type Media {
-    id: String!
+  input Media {
     name: String!
+    url: String!
     path: String!
     type: String!
   }

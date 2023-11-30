@@ -73,10 +73,9 @@ const init = async () => {
     });
 
     await sequelize.sync({});
-    // fs.rmSync('uploads/', { recursive: true, force: true });
   });
 
-  const port = process.env.PORT || 3000;
+  const port = process.env.PORT || 54321;
 
   await new Promise<void>((resolve) => app.listen({ port }, resolve));
   console.log(`🚀 Server ready at http://localhost:${port}/graphql`);
