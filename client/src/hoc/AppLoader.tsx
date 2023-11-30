@@ -18,6 +18,8 @@ import Loading from '../pages/Loading';
 import { DEVELOPER_PANEL_OPEN } from '../redux/constants';
 import { store } from '../redux/store';
 import { Feather } from '../utils/Icons';
+import { HapticFeedbackTypes, trigger } from 'react-native-haptic-feedback';
+import { options } from '../utils/hapticFeedbackOptions';
 
 LogBox.ignoreLogs([
   'socketDidDisconnect with nil clientDelegate for ',
@@ -41,11 +43,47 @@ export default function AppLoader({ children }: Props) {
 
   useEffect(() => {
     load();
-    searchForNearbyConnections();
+
+    //Returns `LSNetworkInfo`
+
+    let cancelScanHandle: any;
+
+    LanPortScanner.getNetworkInfo().then((networkInfo) => {
+      const config1: LSScanConfig = {
+        networkInfo: networkInfo,
+        ports: [54321], //Specify port here
+        timeout: 1000, //Timeout for each thread in ms
+        threads: 10, //Number of threads
+        logging: false,
+      };
+
+      //Either config1 or config2 required
+      cancelScanHandle = LanPortScanner.startScan(
+        config1, //or config2
+        (totalHosts: number, hostScanned: number) => {},
+        (result) => {
+          if (result?.ip && !availableConnections.includes(result)) {
+            setAvailableConnections((prev) => [...prev, result]);
+          }
+        },
+        (results) => {}
+      );
+    });
+
+    //You can cancel scan later
+    setTimeout(() => {
+      cancelScanHandle();
+    }, 30000);
+
+    return () => {
+      cancelScanHandle();
+    };
   }, []);
 
   useEffect(() => {
     if (availableConnections[0]?.ip) {
+      trigger(HapticFeedbackTypes.rigid, options);
+
       setAvailableConnectionModal(true);
     }
   }, [availableConnections]);
@@ -77,7 +115,6 @@ export default function AppLoader({ children }: Props) {
 
     const withToken = setContext(async () => {
       const token = await AsyncStorage.getItem('@token');
-      console.log(token);
       return { token };
     });
 
@@ -122,7 +159,7 @@ export default function AppLoader({ children }: Props) {
     //You can cancel scan later
     setTimeout(() => {
       cancelScanHandle();
-    }, 10000);
+    }, 20000);
   }, [LanPortScanner, setAvailableConnections]);
 
   const load = async () => {
@@ -135,11 +172,11 @@ export default function AppLoader({ children }: Props) {
 
     const fetchedApiUrl = await AsyncStorage.getItem('@API_URL');
 
-    if (fetchedApiUrl) {
-      setApiUrl(fetchedApiUrl);
-    } else {
-      setApiUrl('http://localhost:54321');
-    }
+    // if (fetchedApiUrl) {
+    //   setApiUrl(fetchedApiUrl);
+    // } else {
+    setApiUrl('http://localhost:54321');
+    // }
 
     setDomain(Config.AUTH0_DOMAIN);
 
@@ -161,12 +198,14 @@ export default function AppLoader({ children }: Props) {
         <Auth0Provider domain={domain} clientId={clientId}>
           <GestureHandlerRootView>
             <BottomSheetModalProvider>
-              <AvailableConnection
-                modalOpen={availableConnectionModal}
-                setModalOpen={setAvailableConnectionModal}
-                availableConnections={availableConnections}
-                setApiUrl={setApiUrl}
-              />
+              {!apiStatus && (
+                <AvailableConnection
+                  modalOpen={availableConnectionModal}
+                  setModalOpen={setAvailableConnectionModal}
+                  availableConnections={availableConnections}
+                  setApiUrl={setApiUrl}
+                />
+              )}
               <DeveloperPanel apiUrl={{ set: setApiUrl, value: apiUrl }} />
 
               {!apiStatus ? <ErrorContactingServer /> : <>{children}</>}
@@ -202,7 +241,9 @@ const AvailableConnection = ({ modalOpen, setModalOpen, availableConnections, se
         </View>
 
         <Pressable
-          onPress={() => {
+          onPress={async () => {
+            trigger(HapticFeedbackTypes.impactMedium, options);
+            await AsyncStorage.setItem('@API_URL', `http://${availableConnections[0]?.ip}:54321`);
             setModalOpen(false);
             setApiUrl(`http://${availableConnections[0]?.ip}:54321`);
           }}
