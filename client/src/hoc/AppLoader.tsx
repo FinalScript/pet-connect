@@ -82,7 +82,7 @@ export default function AppLoader({ children }: Props) {
 
   useEffect(() => {
     if (availableConnections[0]?.ip) {
-      trigger(HapticFeedbackTypes.rigid, options);
+      trigger(HapticFeedbackTypes.impactMedium, options);
 
       setAvailableConnectionModal(true);
     }
@@ -133,35 +133,6 @@ export default function AppLoader({ children }: Props) {
     setLink(ApolloLink.from([withToken, authMiddleware.concat(httpLink)]));
   }, [apiUrl]);
 
-  const searchForNearbyConnections = useCallback(async () => {
-    //Returns `LSNetworkInfo`
-    const networkInfo = await LanPortScanner.getNetworkInfo();
-    const config1: LSScanConfig = {
-      networkInfo: networkInfo,
-      ports: [54321], //Specify port here
-      timeout: 1000, //Timeout for each thread in ms
-      threads: 10, //Number of threads
-      logging: false,
-    };
-
-    //Either config1 or config2 required
-    const cancelScanHandle = LanPortScanner.startScan(
-      config1, //or config2
-      (totalHosts: number, hostScanned: number) => {},
-      (result) => {
-        if (result?.ip && !availableConnections.includes(result)) {
-          setAvailableConnections((prev) => [...prev, result]);
-        }
-      },
-      (results) => {}
-    );
-
-    //You can cancel scan later
-    setTimeout(() => {
-      cancelScanHandle();
-    }, 20000);
-  }, [LanPortScanner, setAvailableConnections]);
-
   const load = async () => {
     const fetchedToken = await AsyncStorage.getItem('@token');
 
@@ -172,11 +143,11 @@ export default function AppLoader({ children }: Props) {
 
     const fetchedApiUrl = await AsyncStorage.getItem('@API_URL');
 
-    // if (fetchedApiUrl) {
-    //   setApiUrl(fetchedApiUrl);
-    // } else {
-    setApiUrl('http://localhost:54321');
-    // }
+    if (fetchedApiUrl) {
+      setApiUrl(fetchedApiUrl);
+    } else {
+      setApiUrl('http://localhost:54321');
+    }
 
     setDomain(Config.AUTH0_DOMAIN);
 
