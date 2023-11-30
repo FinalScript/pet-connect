@@ -31,6 +31,7 @@
     "@types/react-native-global-props": "^1.1.3",
     "apollo-upload-client": "^17.0.0",
     "axios": "^1.4.0",
+    "firebase": "^10.7.0",
     "graphql": "^16.8.1",
     "lodash": "^4.17.21",
     "nativewind": "^2.0.11",

@@ -1,6 +1,4 @@
 export const OwnerTypeDef = `#graphql
-  scalar Upload
-
   type Owner {
     id: String!
     authId: String!
@@ -51,8 +49,8 @@ export const OwnerTypeDef = `#graphql
   }
 
   type Mutation { 
-    signup(username: String!, name: String, location: String, profilePicture: Upload): SignUpResponse!
-    updateOwner(username: String, name: String, location: String, profilePicture: Upload): OwnerUpdatedResponse!
+    signup(username: String!, name: String, location: String, profilePicture: Media): SignUpResponse!
+    updateOwner(username: String, name: String, location: String, profilePicture: Media): OwnerUpdatedResponse!
     deleteOwner: DeleteOwnerResponse!
   }
 `;

@@ -73,7 +73,6 @@ const init = async () => {
     });
 
     await sequelize.sync({});
-    // fs.rmSync('uploads/', { recursive: true, force: true });
   });
 
   const port = process.env.PORT || 3000;
