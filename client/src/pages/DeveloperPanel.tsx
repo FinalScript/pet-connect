@@ -5,7 +5,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useDispatch, useSelector } from 'react-redux';
 import { GeneralReducer } from '../redux/reducers/generalReducer';
 import { DEVELOPER_PANEL_OPEN } from '../redux/constants';
-import DropDownPicker from 'react-native-dropdown-picker';
+import { throttle } from 'lodash';
 
 interface Props {
   apiUrl: { set: Dispatch<SetStateAction<string | undefined>>; value?: string };
