@@ -199,11 +199,11 @@ const Profile = () => {
           <View className='relative'>
             <Pressable onPress={() => {}}>
               <View className='w-44 h-44 rounded-full border-2 border-themeActive flex items-center justify-center'>
-                {currentUser?.ProfilePicture?.path ? (
+                {currentUser?.ProfilePicture?.url ? (
                   <Image
                     className='w-full h-full rounded-full'
                     source={{
-                      uri: `${getApiBaseUrl()}/${currentUser.ProfilePicture.path}?${Date.now()}`,
+                      uri: currentUser.ProfilePicture.url,
                     }}
                   />
                 ) : (
