@@ -1,6 +1,6 @@
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
-import React from 'react';
+import React, { useState } from 'react';
 import Feed from './Feed';
 import Explore from './Explore';
 import Inbox from './Inbox';
@@ -8,6 +8,10 @@ import Profile from './Profile';
 import { RouteProp } from '@react-navigation/native';
 import { Ionicon } from '../../utils/Icons';
 import PostPage from './PostPage';
+import { Text, BottomNavigation } from 'react-native-paper';
+import colors from '../../../config/tailwind/colors';
+import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
+import { Modal, View } from 'react-native';
 
 export type HomeStackParamList = {
   Feed: undefined;
@@ -19,98 +23,127 @@ export type HomeStackParamList = {
 
 export type HomeRouteProps<RouteName extends keyof HomeStackParamList> = RouteProp<HomeStackParamList, RouteName>;
 
-const Tab = createBottomTabNavigator<HomeStackParamList>();
+const Tab = createMaterialTopTabNavigator<HomeStackParamList>();
 
 const HomeNavigator = () => {
+  const [postPageModal, setPostPageModal] = useState(false);
+
   return (
-    <Tab.Navigator
-      screenOptions={({ route }) => ({
-        headerShown: false,
-        tabBarStyle: {
-          height: 90,
-          paddingHorizontal: 5,
-          paddingTop: 0,
-          backgroundColor: '#fde1da',
-          borderTopWidth: 2,
-          borderTopColor: '#FF8770',
-        },
-        tabBarShowLabel: false,
-        tabBarActiveTintColor: '#FF8770',
-        tabBarInactiveTintColor: 'gray',
-      })}>
-      <Tab.Screen
-        name='Feed'
-        component={Feed}
-        options={{
-          tabBarIcon: ({ focused, color, size }) => {
-            let iconName = '';
+    <>
+      <Modal animationType='slide' visible={postPageModal} presentationStyle='pageSheet' onRequestClose={() => setPostPageModal(false)}>
+        <PostPage closeModal={() => setPostPageModal(false)} />
+      </Modal>
+      <Tab.Navigator
+        tabBarPosition='bottom'
+        screenOptions={{ animationEnabled: false, swipeEnabled: false, lazy: true }}
+        tabBar={({ navigation, state, descriptors }) => (
+          <BottomNavigation.Bar
+            navigationState={state}
+            onTabPress={({ route, preventDefault }) => {
+              const event = navigation.emit({
+                type: 'tabPress',
+                target: route.key,
+                canPreventDefault: true,
+              });
 
-            iconName = focused ? 'home' : 'home-outline';
+              if (event.defaultPrevented) {
+                preventDefault();
+              } else {
+                navigation.navigate(route.name, route.params);
+              }
+            }}
+            renderIcon={({ route, focused, color }) => {
+              const { options } = descriptors[route.key];
+              if (options.tabBarIcon) {
+                return options.tabBarIcon({ focused, color, size: 30 });
+              }
 
-            return <Ionicon name={iconName} size={size} color={color} />;
-          },
-        }}
-      />
-      <Tab.Screen
-        name='Explore'
-        component={Explore}
-        options={{
-          tabBarIcon: ({ focused, color, size }) => {
-            let iconName = '';
+              return null;
+            }}
+            theme={{ colors: { secondaryContainer: 'transparent' } }}
+            style={{ height: 90, backgroundColor: colors.themeBg, borderTopColor: '#FF8770', borderTopWidth: 2 }}
+          />
+        )}>
+        <Tab.Screen
+          name='Feed'
+          component={Feed}
+          options={{
+            tabBarIcon: ({ focused, color, size }) => {
+              let iconName = '';
 
-            iconName = focused ? 'search' : 'search-outline';
+              iconName = focused ? 'home' : 'home-outline';
 
-            return <Ionicon name={iconName} size={size} color={color} />;
-          },
-        }}
-      />
+              return <Ionicon name={iconName} size={size} color={color} />;
+            },
+          }}
+        />
+        <Tab.Screen
+          name='Explore'
+          component={Explore}
+          options={{
+            tabBarIcon: ({ focused, color, size }) => {
+              let iconName = '';
 
-      <Tab.Screen
-        name='PostPage'
-        component={PostPage}
-        options={{
-          tabBarIcon: ({ focused, color, size }) => {
-            let iconName = '';
+              iconName = focused ? 'search' : 'search-outline';
 
-            iconName = focused ? 'plus-square-o' : 'plus-square-o';
+              return <Ionicon name={iconName} size={size} color={color} />;
+            },
+          }}
+        />
 
-            return <FontAwesome name={iconName} size={size + 15} color={color} />;
-          },
-          unmountOnBlur: true,
-          tabBarStyle: {
-            display: 'none',
-          },
-        }}
-      />
+        <Tab.Screen
+          name='PostPage'
+          listeners={{
+            tabPress: (e) => {
+              e.preventDefault();
+              setPostPageModal(true);
+            },
+          }}
+          component={PostPage}
+          options={{
+            tabBarIcon: ({ focused, color, size }) => {
+              let iconName = '';
 
-      <Tab.Screen
-        name='Inbox'
-        component={Inbox}
-        options={{
-          tabBarIcon: ({ focused, color, size }) => {
-            let iconName = '';
+              iconName = focused ? 'plus-square-o' : 'plus-square-o';
 
-            iconName = focused ? 'file-tray' : 'file-tray-outline';
+              return <FontAwesome name={iconName} size={size} color={color} />;
+            },
 
-            return <Ionicon name={iconName} size={size} color={color} />;
-          },
-        }}
-      />
+            tabBarStyle: {
+              display: 'none',
+            },
+          }}
+        />
 
-      <Tab.Screen
-        name='Profile'
-        component={Profile}
-        options={{
-          tabBarIcon: ({ focused, color, size }) => {
-            let iconName = '';
+        <Tab.Screen
+          name='Inbox'
+          component={Inbox}
+          options={{
+            tabBarIcon: ({ focused, color, size }) => {
+              let iconName = '';
 
-            iconName = focused ? 'person-circle' : 'person-circle-outline';
+              iconName = focused ? 'file-tray' : 'file-tray-outline';
 
-            return <Ionicon name={iconName} size={size} color={color} />;
-          },
-        }}
-      />
-    </Tab.Navigator>
+              return <Ionicon name={iconName} size={size} color={color} />;
+            },
+          }}
+        />
+
+        <Tab.Screen
+          name='Profile'
+          component={Profile}
+          options={{
+            tabBarIcon: ({ focused, color, size }) => {
+              let iconName = '';
+
+              iconName = focused ? 'person-circle' : 'person-circle-outline';
+
+              return <Ionicon name={iconName} size={size} color={color} />;
+            },
+          }}
+        />
+      </Tab.Navigator>
+    </>
   );
 };
 

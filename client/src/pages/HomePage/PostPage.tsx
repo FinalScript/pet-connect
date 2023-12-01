@@ -27,8 +27,7 @@ import { AntDesign, Ionicon } from '../../utils/Icons';
 import { options } from '../../utils/hapticFeedbackOptions';
 import { HomeStackParamList } from './HomeNavigator';
 import { Dropdown } from 'react-native-element-dropdown';
-
-type Props = NativeStackScreenProps<HomeStackParamList, 'PostPage'>;
+import Animated, { SlideInUp, SlideOutDown, useSharedValue } from 'react-native-reanimated';
 
 interface FormData {
   media?: Asset | null | undefined;
@@ -36,7 +35,11 @@ interface FormData {
   petId: string;
 }
 
-const PostPage = ({ navigation }: Props) => {
+interface Props {
+  closeModal: () => void;
+}
+
+const PostPage = ({ closeModal }: Props) => {
   const dispatch = useDispatch();
   const [loading, setLoading] = useState(false);
   const pets = useSelector((state: ProfileReducer) => state.profile.pets);
@@ -81,7 +84,7 @@ const PostPage = ({ navigation }: Props) => {
       submitPost({ variables: { ...formData, media: mediaData } })
         .then(async ({ data }) => {
           if (data?.createPost.post) {
-            navigation.goBack();
+            closeModal();
           }
         })
         .catch((err) => {
@@ -131,10 +134,10 @@ const PostPage = ({ navigation }: Props) => {
   return (
     <Pressable onPress={Keyboard.dismiss}>
       <SafeAreaView className='h-full w-full bg-themeBg'>
-        <View className='px-5 flex-row items-center relative'>
-          <PressableOpacity className='p-4 -m-4' onPress={() => navigation.goBack()} disabledOpacity={0.4}>
+        <View className='px-5 flex-row items-center relative mt-10'>
+          {/* <PressableOpacity className='p-4 -m-4' onPress={() => closeModal()} disabledOpacity={0.4}>
             <Ionicon name='ios-close' color='black' size={30} />
-          </PressableOpacity>
+          </PressableOpacity> */}
 
           <Text className='-z-10 text-2xl font-bold absolute text-center w-full mx-5'>New Post</Text>
         </View>

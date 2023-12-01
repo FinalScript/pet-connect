@@ -119,7 +119,6 @@ export const OwnerResolver = {
         }
       }
 
-      console.log(profilePicture)
       if (profilePicture) {
         let profilePictureDAO = owner.ProfilePicture;
 

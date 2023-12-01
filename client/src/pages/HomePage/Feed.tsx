@@ -26,9 +26,9 @@ const Feed = () => {
 
   const onRefresh = useCallback(async () => {
     setRefreshing(true);
-    await getPosts();
 
     setTimeout(() => {
+      getPosts();
       setRefreshing(false);
     }, 600);
   }, [getPosts]);
@@ -41,6 +41,11 @@ const Feed = () => {
           {posts.map((post, i) => {
             return <Post key={i} post={post} />;
           })}
+          {posts.length === 0 && (
+            <>
+              <Text>Nothing to see here...</Text>
+            </>
+          )}
         </View>
       </ScrollView>
     </SafeAreaView>

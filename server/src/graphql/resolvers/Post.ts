@@ -52,7 +52,6 @@ export const PostResolver = {
             { model: Pet, as: 'author' },
           ],
         });
-        console.log(post);
       } catch (e) {
         console.error(e);
 
