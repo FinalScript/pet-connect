@@ -43,7 +43,12 @@ export default function AppLoader({ children }: Props) {
 
   useEffect(() => {
     load();
+  }, []);
 
+  useEffect(() => {
+    if (apiStatus) {
+      return;
+    }
     //Returns `LSNetworkInfo`
 
     let cancelScanHandle: any;
@@ -64,6 +69,7 @@ export default function AppLoader({ children }: Props) {
         (result) => {
           if (result?.ip && !availableConnections.includes(result)) {
             setAvailableConnections((prev) => [...prev, result]);
+            cancelScanHandle();
           }
         },
         (results) => {}
@@ -78,7 +84,7 @@ export default function AppLoader({ children }: Props) {
     return () => {
       cancelScanHandle();
     };
-  }, []);
+  }, [apiStatus]);
 
   useEffect(() => {
     if (availableConnections[0]?.ip) {

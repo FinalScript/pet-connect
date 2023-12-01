@@ -1,19 +1,19 @@
-import express from 'express';
-import dotenv from 'dotenv';
-import cors from 'cors';
-import { auth } from 'express-oauth2-jwt-bearer';
-import { connectToDB, sequelize } from './src/db/connection';
-import { Owner } from './src/models/Owner';
-import { Pet } from './src/models/Pet';
-import { ProfilePicture } from './src/models/ProfilePicture';
+import { ApolloServer } from '@apollo/server';
 import { expressMiddleware } from '@apollo/server/express4';
 import { json } from 'body-parser';
-import { Post } from './src/models/Post';
-import { Like } from './src/models/Like';
-import { Comment } from './src/models/Comment';
-import { ApolloServer } from '@apollo/server';
+import cors from 'cors';
+import dotenv from 'dotenv';
+import express from 'express';
+import { auth } from 'express-oauth2-jwt-bearer';
+import { connectToDB, sequelize } from './src/db/connection';
 import { schema } from './src/graphql/schemas/index';
-import fs from 'fs';
+import { Comment } from './src/models/Comment';
+import { Like } from './src/models/Like';
+import { Media } from './src/models/Media';
+import { Owner } from './src/models/Owner';
+import { Pet } from './src/models/Pet';
+import { Post } from './src/models/Post';
+import { ProfilePicture } from './src/models/ProfilePicture';
 import { OwnerRouter } from './src/routes/OwnerRoute';
 import { PetRouter } from './src/routes/PetRoute';
 
@@ -59,6 +59,8 @@ const init = async () => {
     Owner.hasMany(Pet, { onDelete: 'cascade' });
     Pet.hasOne(ProfilePicture);
     Owner.hasOne(ProfilePicture);
+    
+    Post.hasOne(Media, { as: 'Media' });
 
     Post.hasMany(Comment, {
       sourceKey: 'id',
@@ -72,7 +74,7 @@ const init = async () => {
       as: 'likes',
     });
 
-    await sequelize.sync({});
+    await sequelize.sync({ alter: true });
   });
 
   const port = process.env.PORT || 54321;

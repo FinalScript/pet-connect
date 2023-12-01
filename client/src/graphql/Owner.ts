@@ -37,7 +37,7 @@ export const GET_OWNER = gql(`
 `);
 
 export const SIGNUP = gql(`
-  mutation Signup($username: String!, $name: String, $location: String, $profilePicture: Media) {
+  mutation Signup($username: String!, $name: String, $location: String, $profilePicture: MediaInput) {
     signup(username: $username, name: $name, location: $location, profilePicture: $profilePicture) {
       owner {
         id
@@ -66,7 +66,7 @@ export const OWNER_USERNAME_EXISTS = gql(`
 `);
 
 export const UPDATE_OWNER = gql(`
-  mutation UpdateOwner($username: String, $name: String, $location: String, $profilePicture: Media) {
+  mutation UpdateOwner($username: String, $name: String, $location: String, $profilePicture: MediaInput) {
     updateOwner(username: $username, name: $name, location: $location, profilePicture: $profilePicture) {
       name
       username

@@ -3,7 +3,7 @@ export const MediaTypeDef = `#graphql
     name: String!
     url: String!
     path: String!
-    type: String!
+    type: String
   }
 
   type Media {
@@ -11,6 +11,6 @@ export const MediaTypeDef = `#graphql
     name: String!
     url: String!
     path: String!
-    type: String!
+    type: String
   }
 `;

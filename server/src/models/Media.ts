@@ -3,12 +3,14 @@ import { sequelize } from '../db/connection';
 
 export interface MediaCreationDAO {
   path: string;
+  url: string;
   name: string;
   type: string;
 }
 export class Media extends Model<InferAttributes<Media>, InferCreationAttributes<Media>> {
   declare id: CreationOptional<number>;
   declare name: string;
+  declare url: string;
   declare path: string;
   declare type: string;
 }
@@ -23,6 +25,9 @@ Media.init(
     },
     name: {
       type: DataTypes.STRING,
+    },
+    url: {
+      type: DataTypes.STRING,
       allowNull: false,
     },
     path: {
@@ -31,7 +36,6 @@ Media.init(
     },
     type: {
       type: DataTypes.STRING,
-      allowNull: false,
     },
   },
   {

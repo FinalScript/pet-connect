@@ -1,7 +1,8 @@
 import { GraphQLError } from 'graphql/error';
 import { getPetById } from '../../controllers/PetController';
-import { createPost, deletePost, getPostById, updatePost } from '../../controllers/PostController';
+import { createPost, deletePost, getAllPosts, getPostById, updatePost } from '../../controllers/PostController';
 import { Post } from '../../models/Post';
+import { Media } from '../../models/Media';
 
 export const PostResolver = {
   Mutation: {
@@ -36,6 +37,19 @@ export const PostResolver = {
 
       try {
         post = await createPost({ petId, description, media });
+
+        const mediaDAO = Media.build(media);
+
+        await post.setMedia(mediaDAO);
+        await post.save();
+        await post.reload({
+          include: [
+            {
+              model: Media,
+              as: 'Media',
+            },
+          ],
+        });
       } catch (e) {
         console.error(e);
 
@@ -125,6 +139,12 @@ export const PostResolver = {
   },
 
   Query: {
+    getAllPosts: async (_, {}, context) => {
+      const posts = await getAllPosts();
+
+      return { posts };
+    },
+
     getPostById: async (_, { id }, context) => {
       if (!id) {
         throw new GraphQLError('ID missing', {

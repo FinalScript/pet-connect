@@ -9,14 +9,14 @@ export interface PostAttributes {
   id: string;
   petId: string;
   description: string;
-  media: Media;
+  media?: Media;
 }
 
 export class Post extends Model<InferAttributes<Post>, InferCreationAttributes<Post>> {
   declare id: string;
   declare petId: string;
   declare description: string;
-  declare media?: Media;
+  declare Media?: Media;
   declare setMedia: HasOneSetAssociationMixin<Media, 'id'>;
 }
 
