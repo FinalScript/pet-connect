@@ -14,6 +14,21 @@ export const GET_ALL_POSTS = gql(`
           path
           type
         }
+        author {
+          id
+          username
+          name
+          type
+          description
+          location
+          ProfilePicture {
+            id
+            name
+            url
+            path
+            type
+          }
+        }
       }
     }
   }
@@ -32,6 +47,19 @@ export const CREATE_POST = gql(`
           url
           path
           type
+        }
+        author {
+          id
+          username
+          name
+          type
+          ProfilePicture {
+            id
+            name
+            url
+            path
+            type
+          }
         }
       }
     }

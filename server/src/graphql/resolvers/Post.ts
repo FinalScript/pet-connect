@@ -3,6 +3,7 @@ import { getPetById } from '../../controllers/PetController';
 import { createPost, deletePost, getAllPosts, getPostById, updatePost } from '../../controllers/PostController';
 import { Post } from '../../models/Post';
 import { Media } from '../../models/Media';
+import { Pet } from '../../models/Pet';
 
 export const PostResolver = {
   Mutation: {
@@ -48,8 +49,10 @@ export const PostResolver = {
               model: Media,
               as: 'Media',
             },
+            { model: Pet, as: 'author' },
           ],
         });
+        console.log(post);
       } catch (e) {
         console.error(e);
 
@@ -59,7 +62,8 @@ export const PostResolver = {
           },
         });
       }
-      return { post };
+
+      return { post: { ...post.dataValues, Media: post.dataValues.Media.dataValues, author: post.dataValues.author.dataValues } };
     },
 
     updatePost: async (_, { id, description, media }, context) => {
@@ -141,7 +145,7 @@ export const PostResolver = {
   Query: {
     getAllPosts: async (_, {}, context) => {
       const posts = await getAllPosts();
-
+      
       return { posts };
     },
 

@@ -1,13 +1,11 @@
-import React, { useEffect, useState } from 'react';
-import { Keyboard, Pressable, Image, SafeAreaView, ScrollView, TextInput, View } from 'react-native';
-import Ionicon from 'react-native-vector-icons/Ionicons';
-import { useSelector } from 'react-redux';
-import { getApiBaseUrl } from '../../api';
-import { ProfileReducer } from '../../redux/reducers/profileReducer';
-import Text from '../Text';
+import { VibrancyView } from '@react-native-community/blur';
+import React, { useMemo } from 'react';
+import { Image, SafeAreaView, ScrollView, TextInput, View } from 'react-native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
-import { BlurView, VibrancyView } from '@react-native-community/blur';
+import { useSelector } from 'react-redux';
+import { ProfileReducer } from '../../redux/reducers/profileReducer';
 import { AntDesign } from '../../utils/Icons';
+import Text from '../Text';
 
 interface Props {
   comments: { username: string; text: string }[];
@@ -17,35 +15,20 @@ const CommentsModel = ({ comments }: Props) => {
   const currentUser = useSelector((state: ProfileReducer) => state.profile.currentUser);
   const owner = useSelector((state: ProfileReducer) => state.profile.owner);
   const pets = useSelector((state: ProfileReducer) => state.profile.pets);
-  const [isKeyboardVisible, setKeyboardVisible] = useState(false);
 
-  useEffect(() => {
-    const keyboardDidShowListener = Keyboard.addListener('keyboardDidShow', () => {
-      setKeyboardVisible(true); // or some other action
-    });
-    const keyboardDidHideListener = Keyboard.addListener('keyboardWillHide', () => {
-      setKeyboardVisible(false); // or some other action
-    });
-
-    return () => {
-      keyboardDidHideListener.remove();
-      keyboardDidShowListener.remove();
-    };
-  }, []);
-
-  const getCurrentUserProfileImage = () => {
-    if (currentUser) {
-      if (currentUser.isPet) {
-        const currentPet = pets.find((pet) => pet.id === currentUser.id);
-        return currentPet && currentPet.ProfilePicture ? `${getApiBaseUrl()}/${currentPet.ProfilePicture.path}?${Date.now()}` : null;
-      } else {
-        return owner && owner.ProfilePicture ? `${getApiBaseUrl()}/${owner.ProfilePicture.path}?${Date.now()}` : null;
-      }
+  const profileImage = useMemo(() => {
+    if (!currentUser) {
+      return null;
     }
-    return null;
-  };
 
-  const profileImage = getCurrentUserProfileImage();
+    if (currentUser.isPet) {
+      const currentPet = pets.find((pet) => pet.id === currentUser.id);
+
+      return currentPet && currentPet.ProfilePicture ? currentPet.ProfilePicture.url : null;
+    } else {
+      return owner && owner.ProfilePicture ? owner.ProfilePicture.url : null;
+    }
+  }, [currentUser]);
 
   return (
     <View className='flex w-full bottom-0 absolute shadow-lg pb-4 rounded-t-xl h-[85%] '>
@@ -94,18 +77,9 @@ const CommentsModel = ({ comments }: Props) => {
         </ScrollView>
         <View className='absolute top-0 bottom-0 left-0 right-0'>
           <KeyboardAwareScrollView enableAutomaticScroll enableOnAndroid contentContainerStyle={{ flex: 1 }} className='h-full w-full'>
-            <View
-              className={
-                (isKeyboardVisible ? 'bg-white border-none rounded-t-xl' : 'bg-transparent border-t-[.5px] border-gray-400') +
-                ' mt-auto transition-all duration-300 flex-row items-center px-5 pt-3  pb-3'
-              }>
+            <View className={'bg-transparent border-t-[.5px] border-gray-400 mt-auto transition-all duration-300 flex-row items-center px-5 pt-3  pb-3'}>
               <Image className='w-10 h-10 rounded-full mr-3' source={{ uri: profileImage || undefined }} />
-              <TextInput
-                className='flex-1 h-12 shadow-sm rounded-2xl px-5'
-                placeholderTextColor='#444444bb'
-                maxLength={30}
-                placeholder='Add a comment...'
-              />
+              <TextInput className='flex-1 h-12 shadow-sm rounded-2xl px-5' placeholderTextColor='#444444bb' maxLength={30} placeholder='Add a comment...' />
             </View>
           </KeyboardAwareScrollView>
         </View>

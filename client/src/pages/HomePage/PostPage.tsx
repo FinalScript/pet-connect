@@ -61,7 +61,7 @@ const PostPage = ({ navigation }: Props) => {
   const handlePost = useCallback(async () => {
     setLoading(true);
 
-    if (!formData.media || !currentUserId.isPet) {
+    if (!formData.media || !formData.petId) {
       trigger(HapticFeedbackTypes.notificationError, options);
       setLoading(false);
       return;
@@ -90,7 +90,7 @@ const PostPage = ({ navigation }: Props) => {
         .finally(() => {
           setLoading(false);
         });
-    }, 500);
+    }, 200);
   }, [formData, dispatch, submitPost, currentUserId, setLoading, loading]);
 
   const handleDescriptionChange = (text: string) => {

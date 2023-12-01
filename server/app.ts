@@ -61,6 +61,7 @@ const init = async () => {
     Owner.hasOne(ProfilePicture);
 
     Post.hasOne(Media, { as: 'Media' });
+    Post.belongsTo(Pet, { as: 'author', foreignKey: 'petId' });
 
     Post.hasMany(Comment, {
       sourceKey: 'id',

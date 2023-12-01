@@ -5,10 +5,11 @@ type Post {
     petId: String!
     description: String
     Media: Media!
+    author: Pet!
 }
 
 type AllPostsResponse {
-    posts: [Post]!
+    posts: [Post!]!
 }
 
 type PostResponse {

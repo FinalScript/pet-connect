@@ -1,5 +1,7 @@
 import { Media } from '../models/Media';
+import { Pet } from '../models/Pet';
 import { Post, PostCreationAttributes, PostAttributes } from '../models/Post';
+import { ProfilePicture } from '../models/ProfilePicture';
 
 export const createPost = async (data: PostCreationAttributes) => {
   const newPost = await Post.create(data, {
@@ -15,13 +17,20 @@ export const createPost = async (data: PostCreationAttributes) => {
 
 export const getAllPosts = async () => {
   const posts = await Post.findAll({
+    order: [['dateCreated', 'DESC']],
     include: [
       {
         model: Media,
         as: 'Media',
       },
+      {
+        model: Pet,
+        as: 'author',
+        include: [{ all: true }],
+      },
     ],
   });
+
   return posts;
 };
 

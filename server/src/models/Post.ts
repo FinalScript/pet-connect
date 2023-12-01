@@ -17,6 +17,7 @@ export class Post extends Model<InferAttributes<Post>, InferCreationAttributes<P
   declare petId: string;
   declare description: string;
   declare Media?: Media;
+  declare author?: Pet;
   declare setMedia: HasOneSetAssociationMixin<Media, 'id'>;
 }
 
