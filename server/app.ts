@@ -59,7 +59,7 @@ const init = async () => {
     Owner.hasMany(Pet, { onDelete: 'cascade' });
     Pet.hasOne(ProfilePicture);
     Owner.hasOne(ProfilePicture);
-    
+
     Post.hasOne(Media, { as: 'Media' });
 
     Post.hasMany(Comment, {

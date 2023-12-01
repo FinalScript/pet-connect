@@ -52,9 +52,10 @@ const PostPage = ({ navigation }: Props) => {
   }, [pets]);
 
   useEffect(() => {
-    setFormData((prev) => {
-      return { ...prev, petId: pets[0].id };
-    });
+    pets[0] &&
+      setFormData((prev) => {
+        return { ...prev, petId: pets[0].id };
+      });
   }, [pets]);
 
   const handlePost = useCallback(async () => {
@@ -220,9 +221,11 @@ const PetsDropdown = ({ value, setValue, data }: any) => {
         data={data}
         labelField='label'
         valueField='value'
-        placeholder={!isFocus ? 'Select item' : '...'}
+        placeholder={!isFocus ? 'Select pet to post as' : 'No pets found'}
         searchPlaceholder='Search...'
         value={value}
+        itemTextStyle={{ fontFamily: 'BalooChettan2-Regular' }}
+        placeholderStyle={{ fontFamily: 'BalooChettan2-Regular' }}
         onFocus={() => setIsFocus(true)}
         onBlur={() => setIsFocus(false)}
         onChange={(item) => {
