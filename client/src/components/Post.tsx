@@ -15,8 +15,8 @@ interface Props {
 
 const comments = [
   {
-    username: 'petguy',
-    text: 'nascetur ridiculus mus. Donec dignissim magna a tortor. Nunc commodo',
+    username: 'jimmy16',
+    text: 'Wow so cute OMG 😍🥹',
   },
   {
     username: 'catwoman',
@@ -25,34 +25,6 @@ const comments = [
   {
     username: 'bakrsdog',
     text: 'suscipit, est ac facilisis facilisis, magna tellus faucibus leo, in',
-  },
-  {
-    username: 'minecraftsnake',
-    text: 'vitae purus gravida sagittis. Duis gravida. Praesent eu nulla at',
-  },
-  {
-    username: 'catdogthing',
-    text: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Maecenas aliquam ex a tortor pretium, id finibus elit viverra. Suspendisse aliquam lectus vitae lectus bibendum porta. Phasellus non nisi vitae odio eleifend sodales. Fusce ac eros vitae orci molestie lacinia mattis quis dolor. Nunc viverra nibh dictum, sodales neque eu, pulvinar nibh.',
-  },
-  {
-    username: 'catdogthing',
-    text: 'massa. Mauris vestibulum, neque sed dictum eleifend, nunc risus varius',
-  },
-  {
-    username: 'bakrsdog',
-    text: 'suscipit, est ac facilisis facilisis, magna tellus faucibus leo, in',
-  },
-  {
-    username: 'minecraftsnake',
-    text: 'vitae purus gravida sagittis. Duis gravida. Praesent eu nulla at',
-  },
-  {
-    username: 'catdogthing',
-    text: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Maecenas aliquam ex a tortor pretium, id finibus elit viverra. Suspendisse aliquam lectus vitae lectus bibendum porta. Phasellus non nisi vitae odio eleifend sodales. Fusce ac eros vitae orci molestie lacinia mattis quis dolor. Nunc viverra nibh dictum, sodales neque eu, pulvinar nibh.',
-  },
-  {
-    username: 'catdogthing',
-    text: 'massa. Mauris vestibulum, neque sed dictum eleifend, nunc risus varius',
   },
 ];
 
