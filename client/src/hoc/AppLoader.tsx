@@ -26,6 +26,7 @@ LogBox.ignoreLogs([
   'socketDidDisconnect with nil clientDelegate for ',
   "Module TcpSockets requires main queue setup since it overrides `init` but doesn't implement `requiresMainQueueSetup`. In a future release React Native will default to initializing all native modules on a background thread unless explicitly opted-out of.",
   "Modal with 'formSheet' presentation style and 'transparent' value is not supported.",
+  "Modal with 'pageSheet' presentation style and 'transparent' value is not supported.",
 ]);
 
 interface Props {

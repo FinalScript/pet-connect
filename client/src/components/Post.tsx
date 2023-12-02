@@ -1,5 +1,5 @@
 import React, { useCallback, useState } from 'react';
-import { Image, Modal, View } from 'react-native';
+import { Modal, View } from 'react-native';
 import { TapGestureHandler } from 'react-native-gesture-handler';
 import { HapticFeedbackTypes, trigger } from 'react-native-haptic-feedback';
 import AntDesign from 'react-native-vector-icons/AntDesign';
@@ -8,6 +8,7 @@ import { Post as PostType } from '../__generated__/graphql';
 import { options } from '../utils/hapticFeedbackOptions';
 import Text from './Text';
 import CommentsModel from './modals/CommentsModal';
+import Image from './Image';
 
 interface Props {
   post: PostType;

@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { Image, Modal, Pressable, SafeAreaView, ScrollView, Share, View } from 'react-native';
+import { Modal, Pressable, SafeAreaView, ScrollView, Share, View } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
 import { OwnerDAO, PetDAO, ProfileReducer } from '../../redux/reducers/profileReducer';
 import { useNavigation } from '@react-navigation/native';
@@ -15,8 +15,10 @@ import { PressableOpacity } from 'react-native-pressable-opacity';
 import { getApiBaseUrl } from '../../api';
 import PetTypeImage from '../../components/PetTypeImage';
 import EditProfileModal from '../../components/modals/EditProfileModal';
-import { Ionicon } from '../../utils/Icons';
+import { FontAwesome, Ionicon } from '../../utils/Icons';
 import { LogBox } from 'react-native';
+import colors from '../../../config/tailwind/colors';
+import Image from '../../components/Image';
 LogBox.ignoreLogs(["Modal with 'pageSheet' presentation style and 'transparent' value is not supported."]); // Ignore log notification by message
 
 type NavigationProp = NativeStackNavigationProp<RootStackParamList, 'Home'>;
@@ -307,8 +309,8 @@ const Profile = () => {
       </Modal>
       <View className='flex-row items-center justify-between w-full px-5'>
         <Pressable onPress={() => setAccountSwitchModalVisible(true)}>
-          <View className='flex-row items-center gap-2'>
-            <Ionicon name='lock-closed-outline' size={15} />
+          <View className='flex-row items-center gap-x-2'>
+            <FontAwesome name='lock' style={{ marginBottom: 5 }} size={25} color={colors.themeText} />
             <Text className='font-bold text-3xl'>{currentUser?.username}</Text>
             <Ionicon name='chevron-down' size={15} />
           </View>

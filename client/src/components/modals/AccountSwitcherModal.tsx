@@ -1,17 +1,16 @@
-import { Image, ModalProps, TouchableHighlight, View } from 'react-native';
+import { ModalProps, View } from 'react-native';
 import { HapticFeedbackTypes, trigger } from 'react-native-haptic-feedback';
 import { useDispatch, useSelector } from 'react-redux';
 import { OwnerDAO, PetDAO, ProfileReducer } from '../../redux/reducers/profileReducer';
-
 import { useCallback, useMemo } from 'react';
 import { Pressable } from 'react-native';
 import { ScrollView } from 'react-native-gesture-handler';
-import { getApiBaseUrl } from '../../api';
 import { CURRENT_USER } from '../../redux/constants';
 import { Feather, Ionicon } from '../../utils/Icons';
 import { options } from '../../utils/hapticFeedbackOptions';
 import PetTypeImage from '../PetTypeImage';
 import Text from '../Text';
+import Image from '../Image';
 
 interface Props extends ModalProps {
   navigateNewPet: () => void;

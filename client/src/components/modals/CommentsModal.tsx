@@ -1,12 +1,11 @@
-import { VibrancyView } from '@react-native-community/blur';
 import React, { useEffect, useMemo } from 'react';
-import { Animated, Image, Keyboard, KeyboardAvoidingView, Platform, SafeAreaView, ScrollView, TextInput, View } from 'react-native';
-import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
+import { Animated, KeyboardAvoidingView, Platform, ScrollView, TextInput, View } from 'react-native';
 import { useSelector } from 'react-redux';
+import { useKeyboard } from '../../hooks/useKeyboard';
 import { ProfileReducer } from '../../redux/reducers/profileReducer';
 import { AntDesign } from '../../utils/Icons';
 import Text from '../Text';
-import { useKeyboard } from '../../hooks/useKeyboard';
+import Image from '../Image';
 
 interface Props {
   comments: { username: string; text: string }[];

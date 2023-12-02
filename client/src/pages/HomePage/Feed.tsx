@@ -1,13 +1,12 @@
 import { useLazyQuery } from '@apollo/client';
 import React, { useCallback, useEffect, useState } from 'react';
 import { RefreshControl, SafeAreaView, ScrollView, View } from 'react-native';
-import { Post as PostType } from '../../__generated__/graphql';
+import { useDispatch, useSelector } from 'react-redux';
 import Post from '../../components/Post';
 import Text from '../../components/Text';
 import { GET_ALL_POSTS } from '../../graphql/Post';
-import { useDispatch, useSelector } from 'react-redux';
-import { GeneralReducer } from '../../redux/reducers/generalReducer';
 import { REPLACE_FEED } from '../../redux/constants';
+import { GeneralReducer } from '../../redux/reducers/generalReducer';
 
 const Feed = () => {
   const dispatch = useDispatch();

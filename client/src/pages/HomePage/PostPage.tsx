@@ -1,6 +1,6 @@
 import { useMutation } from '@apollo/client';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { ActivityIndicator, Image, Keyboard, NativeSyntheticEvent, Pressable, StyleSheet, TextInput, TouchableHighlight, View } from 'react-native';
+import { ActivityIndicator, Keyboard, NativeSyntheticEvent, Pressable, StyleSheet, TextInput, TouchableHighlight, View } from 'react-native';
 import ContextMenu, { ContextMenuOnPressNativeEvent } from 'react-native-context-menu-view';
 import { Dropdown } from 'react-native-element-dropdown';
 import { HapticFeedbackTypes, trigger } from 'react-native-haptic-feedback';
@@ -13,8 +13,9 @@ import { UploadToFirebaseResult, storageFolders, uploadToFirebase } from '../../
 import { CREATE_POST } from '../../graphql/Post';
 import { ADDING_POST_TO_FEED } from '../../redux/constants';
 import { ProfileReducer } from '../../redux/reducers/profileReducer';
-import { FontAwesome, Ionicon, MaterialIcons } from '../../utils/Icons';
+import { MaterialIcons } from '../../utils/Icons';
 import { options } from '../../utils/hapticFeedbackOptions';
+import Image from '../../components/Image';
 
 interface FormData {
   media?: Asset | null | undefined;

@@ -2,7 +2,7 @@ import { useMutation } from '@apollo/client';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useCallback, useState } from 'react';
-import { ActivityIndicator, Image, Keyboard, Pressable, TextInput, TouchableHighlight, TouchableOpacity, TouchableWithoutFeedback, View } from 'react-native';
+import { ActivityIndicator, Keyboard, Pressable, TextInput, TouchableHighlight, TouchableOpacity, TouchableWithoutFeedback, View } from 'react-native';
 import { HapticFeedbackTypes, trigger } from 'react-native-haptic-feedback';
 import { Asset, launchImageLibrary } from 'react-native-image-picker';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
@@ -18,6 +18,7 @@ import { ADD_PET, CURRENT_USER, LOADING } from '../redux/constants';
 import { GeneralReducer } from '../redux/reducers/generalReducer';
 import { PetType, ProfileReducer } from '../redux/reducers/profileReducer';
 import { options } from '../utils/hapticFeedbackOptions';
+import Image from '../components/Image';
 
 const petTypes = [
   { type: PetType.Dog, img: require('../../assets/img/dog.png') },
