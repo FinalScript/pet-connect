@@ -28,6 +28,7 @@ import { options } from '../../utils/hapticFeedbackOptions';
 import { HomeStackParamList } from './HomeNavigator';
 import { Dropdown } from 'react-native-element-dropdown';
 import Animated, { SlideInUp, SlideOutDown, useSharedValue } from 'react-native-reanimated';
+import { ADDING_POST_TO_FEED } from '../../redux/constants';
 
 interface FormData {
   media?: Asset | null | undefined;
@@ -84,6 +85,7 @@ const PostPage = ({ closeModal }: Props) => {
       submitPost({ variables: { ...formData, media: mediaData } })
         .then(async ({ data }) => {
           if (data?.createPost.post) {
+            dispatch({ type: ADDING_POST_TO_FEED, payload: data?.createPost.post});
             closeModal();
           }
         })

@@ -5,21 +5,25 @@ import { Post as PostType } from '../../__generated__/graphql';
 import Post from '../../components/Post';
 import Text from '../../components/Text';
 import { GET_ALL_POSTS } from '../../graphql/Post';
+import { useDispatch, useSelector } from 'react-redux';
+import { GeneralReducer } from '../../redux/reducers/generalReducer';
+import { REPLACE_FEED } from '../../redux/constants';
 
 const Feed = () => {
-  const [posts, setPosts] = useState<PostType[]>([]);
+  const dispatch = useDispatch();
   const [refreshing, setRefreshing] = useState(false);
   const [getAllPosts] = useLazyQuery(GET_ALL_POSTS, { fetchPolicy: 'network-only' });
+  const posts = useSelector((state: GeneralReducer) => state.general.feedPosts)
 
   useEffect(() => {
     getPosts();
-  }, []);
+  }, [])
 
   const getPosts = async () => {
     const fetchedPosts = await getAllPosts();
 
     if (fetchedPosts.data?.getAllPosts.posts) {
-      setPosts(fetchedPosts.data.getAllPosts.posts);
+      dispatch({ type: REPLACE_FEED, payload: fetchedPosts.data.getAllPosts.posts});
       return;
     }
   };
