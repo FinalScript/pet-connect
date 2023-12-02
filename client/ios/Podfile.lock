@@ -365,6 +365,9 @@ PODS:
   - react-native-lan-port-scanner (1.4.1):
     - RCT-Folly (= 2021.07.22.00)
     - React-Core
+  - react-native-pager-view (6.2.3):
+    - RCT-Folly (= 2021.07.22.00)
+    - React-Core
   - react-native-restart (0.0.27):
     - React-Core
   - react-native-safe-area-context (4.5.3):
@@ -600,6 +603,7 @@ DEPENDENCIES:
   - react-native-context-menu-view (from `../node_modules/react-native-context-menu-view`)
   - react-native-image-picker (from `../node_modules/react-native-image-picker`)
   - react-native-lan-port-scanner (from `../node_modules/react-native-lan-port-scanner`)
+  - react-native-pager-view (from `../node_modules/react-native-pager-view`)
   - react-native-restart (from `../node_modules/react-native-restart`)
   - react-native-safe-area-context (from `../node_modules/react-native-safe-area-context`)
   - react-native-sensitive-info (from `../node_modules/react-native-sensitive-info`)
@@ -711,6 +715,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native-image-picker"
   react-native-lan-port-scanner:
     :path: "../node_modules/react-native-lan-port-scanner"
+  react-native-pager-view:
+    :path: "../node_modules/react-native-pager-view"
   react-native-restart:
     :path: "../node_modules/react-native-restart"
   react-native-safe-area-context:
@@ -822,6 +828,7 @@ SPEC CHECKSUMS:
   react-native-context-menu-view: c13b66d44f85b7e7d791a6fbc1e6218c6047eb90
   react-native-image-picker: 709d04e7df67bd3a90f376c3eedb2e8b8334dd04
   react-native-lan-port-scanner: 1d27cea2c686a0241f41cde6ebdcce5e35d7466a
+  react-native-pager-view: e26d35e382d86950c936f8917e3beb9188115ccc
   react-native-restart: 7595693413fe3ca15893702f2c8306c62a708162
   react-native-safe-area-context: b8979f5eda6ed5903d4dbc885be3846ea3daa753
   react-native-sensitive-info: 400c6e3d27945e15c8cddb5b4b92233c85ee06f8

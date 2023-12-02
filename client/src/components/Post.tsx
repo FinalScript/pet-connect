@@ -4,16 +4,13 @@ import { TapGestureHandler } from 'react-native-gesture-handler';
 import { HapticFeedbackTypes, trigger } from 'react-native-haptic-feedback';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import Ionicon from 'react-native-vector-icons/Ionicons';
+import { Post as PostType } from '../__generated__/graphql';
 import { options } from '../utils/hapticFeedbackOptions';
 import Text from './Text';
 import CommentsModel from './modals/CommentsModal';
 
 interface Props {
-  name: string | undefined;
-  username: string | undefined;
-  petImage: any;
-  postImage: any;
-  caption?: string | undefined;
+  post: PostType;
 }
 
 const comments = [
@@ -43,7 +40,7 @@ const comments = [
   },
 ];
 
-export default function Post({ name, username, petImage, postImage, caption }: Props) {
+export default function Post({ post }: Props) {
   const [postLiked, setPostLiked] = useState(false);
   const CAPTION_LINES = 2;
   const [moreCaption, setMoreCaption] = useState(false);
@@ -74,7 +71,7 @@ export default function Post({ name, username, petImage, postImage, caption }: P
   };
 
   return (
-    <View className='bg-white mb-5 w-full shadow-sm shadow-themeShadow rounded-2xl'>
+    <View className='bg-white mb-5 pb-2 w-full shadow-sm shadow-themeShadow rounded-2xl'>
       <View className='flex-row w-full items-center px-3 py-2'>
         <Modal
           style={{ justifyContent: 'center', alignItems: 'center', margin: 0 }}
@@ -88,11 +85,11 @@ export default function Post({ name, username, petImage, postImage, caption }: P
           <CommentsModel comments={comments} />
         </Modal>
         <View className='w-14 h-14 mr-2 aspect-square'>
-          <Image className='flex w-full h-full rounded-full' source={require('../../assets/img/catphoto.jpeg')} />
+          <Image className='flex w-full h-full rounded-full' source={{ uri: post.author.ProfilePicture?.url }} />
         </View>
         <View className='flex justify-center'>
-          <Text className='text-2xl font-semibold text-sky-700 -mb-2'>{name}</Text>
-          <Text className='text-base font-light text-sky-500'>{username}</Text>
+          <Text className='text-2xl font-semibold text-sky-700 -mb-2'>{post.author.name}</Text>
+          <Text className='text-base font-light text-sky-500'>@{post.author.username}</Text>
         </View>
       </View>
 
@@ -105,7 +102,7 @@ export default function Post({ name, username, petImage, postImage, caption }: P
         numberOfTaps={2}>
         <View className='w-full h-[400px]'>
           {/* postImage would be used in source below */}
-          <Image className='flex w-full h-full' source={postImage} />
+          <Image className='flex w-full h-full' source={{ uri: post.Media.url }} />
         </View>
       </TapGestureHandler>
 
@@ -119,13 +116,13 @@ export default function Post({ name, username, petImage, postImage, caption }: P
       </View>
 
       <View className='px-3 py-1'>
-        {caption && (
+        {post.description && (
           <View className='flex flex-row min-h-[7rem]'>
             <Text className='text-lg leading-5' numberOfLines={moreCaption ? 0 : CAPTION_LINES}>
-              <Text className='font-semibold text-sky-600'>{name} </Text>
+              <Text className='font-semibold text-sky-600'>{post.author.name} </Text>
 
               <Text className='text-themeText' onPress={handleMoreCaption} suppressHighlighting>
-                {caption}
+                {post.description}
               </Text>
             </Text>
           </View>

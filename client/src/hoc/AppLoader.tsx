@@ -17,9 +17,10 @@ import DeveloperPanel from '../pages/DeveloperPanel';
 import Loading from '../pages/Loading';
 import { DEVELOPER_PANEL_OPEN } from '../redux/constants';
 import { store } from '../redux/store';
-import { Feather } from '../utils/Icons';
+import { Feather, FontAwesome, Ionicon } from '../utils/Icons';
 import { HapticFeedbackTypes, trigger } from 'react-native-haptic-feedback';
 import { options } from '../utils/hapticFeedbackOptions';
+import { PaperProvider } from 'react-native-paper';
 
 LogBox.ignoreLogs([
   'socketDidDisconnect with nil clientDelegate for ',
@@ -43,7 +44,12 @@ export default function AppLoader({ children }: Props) {
 
   useEffect(() => {
     load();
+  }, []);
 
+  useEffect(() => {
+    if (apiStatus) {
+      return;
+    }
     //Returns `LSNetworkInfo`
 
     let cancelScanHandle: any;
@@ -64,6 +70,7 @@ export default function AppLoader({ children }: Props) {
         (result) => {
           if (result?.ip && !availableConnections.includes(result)) {
             setAvailableConnections((prev) => [...prev, result]);
+            cancelScanHandle();
           }
         },
         (results) => {}
@@ -78,7 +85,7 @@ export default function AppLoader({ children }: Props) {
     return () => {
       cancelScanHandle();
     };
-  }, []);
+  }, [apiStatus]);
 
   useEffect(() => {
     if (availableConnections[0]?.ip) {
@@ -167,21 +174,26 @@ export default function AppLoader({ children }: Props) {
     <ApolloProvider client={client}>
       <Provider store={store}>
         <Auth0Provider domain={domain} clientId={clientId}>
-          <GestureHandlerRootView>
-            <BottomSheetModalProvider>
-              {!apiStatus && (
-                <AvailableConnection
-                  modalOpen={availableConnectionModal}
-                  setModalOpen={setAvailableConnectionModal}
-                  availableConnections={availableConnections}
-                  setApiUrl={setApiUrl}
-                />
-              )}
-              <DeveloperPanel apiUrl={{ set: setApiUrl, value: apiUrl }} />
+          <PaperProvider
+            settings={{
+              icon: (props) => <Ionicon {...props} />,
+            }}>
+            <GestureHandlerRootView>
+              <BottomSheetModalProvider>
+                {!apiStatus && (
+                  <AvailableConnection
+                    modalOpen={availableConnectionModal}
+                    setModalOpen={setAvailableConnectionModal}
+                    availableConnections={availableConnections}
+                    setApiUrl={setApiUrl}
+                  />
+                )}
+                <DeveloperPanel apiUrl={{ set: setApiUrl, value: apiUrl }} />
 
-              {!apiStatus ? <ErrorContactingServer /> : <>{children}</>}
-            </BottomSheetModalProvider>
-          </GestureHandlerRootView>
+                {!apiStatus ? <ErrorContactingServer /> : <>{children}</>}
+              </BottomSheetModalProvider>
+            </GestureHandlerRootView>
+          </PaperProvider>
         </Auth0Provider>
       </Provider>
     </ApolloProvider>

@@ -288,7 +288,7 @@ export default function PetCreation() {
                 <TextInput
                   className={
                     (focus.description === true ? 'border-themeActive' : 'border-transparent') +
-                    ' bg-themeInput border-[5px] shadow-sm shadow-themeShadow h-28 max-h-44 overflow-hidden w-full rounded-3xl px-5 py-3 text-lg'
+                    ' bg-themeInput border-[5px] shadow-sm shadow-themeShadow h-28 max-h-44 w-full rounded-3xl px-5 py-3 text-lg'
                   }
                   style={{ fontFamily: 'BalooChettan2-Regular' }}
                   placeholderTextColor={'#444444bb'}

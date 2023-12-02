@@ -4,7 +4,12 @@ type Post {
     id: String!
     petId: String!
     description: String
-    media: [String!]!
+    Media: Media!
+    author: Pet!
+}
+
+type AllPostsResponse {
+    posts: [Post!]!
 }
 
 type PostResponse {
@@ -14,7 +19,7 @@ type PostResponse {
 type PostUpdatedResponse {
     petId: String
     description: String
-    media: [String!]!
+    Media: Media
     id: String
 }
 
@@ -23,14 +28,14 @@ type DeletePostResponse {
 }
 
 type Query{
+    getAllPosts: AllPostsResponse! 
     getPostById(id: String!): PostResponse!
     getPostsByPetId(petId: String!): PostResponse!
 }
 
 type Mutation {
-    createPost( petId: String!, description: String, media: [String!]! ): PostResponse!
-    updatePost( id: String,  description: String, media: [String!]! ): PostUpdatedResponse!
+    createPost( petId: String!, description: String, media: MediaInput! ): PostResponse!
+    updatePost( id: String,  description: String, media: MediaInput! ): PostUpdatedResponse!
     deletePost( id: String! ): DeletePostResponse!
 }
-
 `;

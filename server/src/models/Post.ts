@@ -1,28 +1,24 @@
-import { DataTypes, Sequelize, Model, Optional } from 'sequelize';
+import { DataTypes, HasOneSetAssociationMixin, InferAttributes, InferCreationAttributes, Model, Optional } from 'sequelize';
 import { sequelize } from '../db/connection';
 import { Pet } from './Pet';
-import { Comment } from './Comment';
-import { Like } from './Like';
+import { Media } from './Media';
 
-export interface PostCreationAttributes extends Optional<PostAttributes, 'id'> {
-
-}
+export interface PostCreationAttributes extends Optional<PostAttributes, 'id'> {}
 
 export interface PostAttributes {
   id: string;
   petId: string;
   description: string;
-  media: Blob[];
+  media?: Media;
 }
 
-export class Post extends Model<PostAttributes, PostCreationAttributes> {
-  public id: string;
-  public petId: string;
-  public description: string;
-  public media: Blob[];
-
-  public readonly createdAt!: Date;
-  public readonly updatedAt!: Date;
+export class Post extends Model<InferAttributes<Post>, InferCreationAttributes<Post>> {
+  declare id: string;
+  declare petId: string;
+  declare description: string;
+  declare Media?: Media;
+  declare author?: Pet;
+  declare setMedia: HasOneSetAssociationMixin<Media, 'id'>;
 }
 
 Post.init(
@@ -44,11 +40,6 @@ Post.init(
     description: {
       type: DataTypes.TEXT,
       allowNull: true,
-    },
-    media: {
-      //type: DataTypes.ARRAY(DataTypes.BLOB),
-      type: DataTypes.JSON,
-      allowNull: false,
     },
   },
   {

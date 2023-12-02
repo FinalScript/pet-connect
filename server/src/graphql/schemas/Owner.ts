@@ -49,8 +49,8 @@ export const OwnerTypeDef = `#graphql
   }
 
   type Mutation { 
-    signup(username: String!, name: String, location: String, profilePicture: Media): SignUpResponse!
-    updateOwner(username: String, name: String, location: String, profilePicture: Media): OwnerUpdatedResponse!
+    signup(username: String!, name: String, location: String, profilePicture: MediaInput): SignUpResponse!
+    updateOwner(username: String, name: String, location: String, profilePicture: MediaInput): OwnerUpdatedResponse!
     deleteOwner: DeleteOwnerResponse!
   }
 `;
