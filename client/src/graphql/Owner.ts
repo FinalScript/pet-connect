@@ -12,6 +12,7 @@ export const GET_OWNER = gql(`
         ProfilePicture {
           id
           name
+          url
           path
           type
         }
@@ -26,6 +27,7 @@ export const GET_OWNER = gql(`
         ProfilePicture {
           id
           name
+          url
           path
           type
         }
@@ -35,7 +37,7 @@ export const GET_OWNER = gql(`
 `);
 
 export const SIGNUP = gql(`
-  mutation SignUp($username: String!, $name: String, $location: String, $profilePicture: Upload) {
+  mutation Signup($username: String!, $name: String, $location: String, $profilePicture: MediaInput) {
     signup(username: $username, name: $name, location: $location, profilePicture: $profilePicture) {
       owner {
         id
@@ -46,6 +48,7 @@ export const SIGNUP = gql(`
         ProfilePicture {
           id
           name
+          url
           path
           type
         }
@@ -63,7 +66,7 @@ export const OWNER_USERNAME_EXISTS = gql(`
 `);
 
 export const UPDATE_OWNER = gql(`
-  mutation UpdateOwner($username: String, $name: String, $location: String, $profilePicture: Upload) {
+  mutation UpdateOwner($username: String, $name: String, $location: String, $profilePicture: MediaInput) {
     updateOwner(username: $username, name: $name, location: $location, profilePicture: $profilePicture) {
       name
       username
@@ -71,6 +74,7 @@ export const UPDATE_OWNER = gql(`
       ProfilePicture {
         id
         name
+        url
         path
         type
       }

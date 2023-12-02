@@ -1,13 +1,12 @@
 import { useMutation } from '@apollo/client';
-import ReactNativeFile from 'apollo-upload-client/public/ReactNativeFile';
-import { uniqueId } from 'lodash';
-import React, { useCallback, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { ActivityIndicator, Image, Keyboard, ModalProps, Pressable, TextInput, View } from 'react-native';
-import ImageCropPicker from 'react-native-image-crop-picker';
+import { launchImageLibrary } from 'react-native-image-picker';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import { PressableOpacity } from 'react-native-pressable-opacity';
 import { useDispatch } from 'react-redux';
 import * as env from '../../../env.json';
+import { UploadToFirebaseResult, storageFolders, updateFileInFirebase, uploadToFirebase } from '../../firebase/firebaseStorage';
 import { UPDATE_OWNER } from '../../graphql/Owner';
 import { UPDATE_PET } from '../../graphql/Pet';
 import { OWNER_DATA, UPDATE_PET as UPDATE_PET_REDUX } from '../../redux/constants';
@@ -15,13 +14,16 @@ import { OwnerDAO, PetDAO } from '../../redux/reducers/profileReducer';
 import { Ionicon } from '../../utils/Icons';
 import Text from '../Text';
 import UsernameInput from '../UsernameInput';
+import { ProfilePicture } from '../../__generated__/graphql';
 
 interface Props extends ModalProps {
   closeModal: () => void;
   profile: OwnerDAO | PetDAO;
+  forPet: boolean;
 }
 
-const EditProfileModal = ({ closeModal, profile }: Props) => {
+const EditProfileModal = ({ closeModal, profile, forPet = false }: Props) => {
+  const initialProfilePicture: ProfilePicture = profile.ProfilePicture;
   const dispatch = useDispatch();
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
@@ -44,73 +46,70 @@ const EditProfileModal = ({ closeModal, profile }: Props) => {
   });
 
   const pickProfilePicture = useCallback(async () => {
-    ImageCropPicker.openPicker({
-      width: 500,
-      height: 500,
-      cropping: true,
+    launchImageLibrary({
       mediaType: 'photo',
-      compressImageMaxHeight: 500,
-      compressImageMaxWidth: 500,
     })
       .then((image) => {
         console.log(image);
-        if (profile?.__typename === 'Owner') {
+        if (!forPet) {
           setOwnerFormData((prev) => {
-            return { ...prev, profilePicture: image };
+            return { ...prev, profilePicture: image.assets?.[0] };
           });
         } else {
           setPetFormData((prev) => {
-            return { ...prev, profilePicture: image };
+            return { ...prev, profilePicture: image.assets?.[0] };
           });
         }
       })
       .catch((err) => {
         console.log(err);
       });
-  }, [profile?.__typename]);
+  }, [forPet, setPetFormData, setOwnerFormData]);
 
   const hasChanged = useMemo(() => {
-    if (profile?.__typename === 'Owner') {
-      return (
-        ownerFormData.name !== profile?.name ||
-        ownerFormData.username !== profile?.username ||
-        ownerFormData.profilePicture?.path !== profile?.ProfilePicture?.path ||
-        ownerFormData.location !== profile?.location
-      );
-    } else {
+    if (forPet) {
       return (
         petFormData.name !== profile?.name ||
         petFormData.username !== profile?.username ||
-        petFormData.profilePicture?.path !== profile?.ProfilePicture?.path ||
+        petFormData.profilePicture !== profile?.ProfilePicture ||
         petFormData.description !== (profile as PetDAO)?.description
       );
+    } else {
+      return (
+        ownerFormData.name !== profile?.name ||
+        ownerFormData.username !== profile?.username ||
+        ownerFormData.profilePicture !== profile?.ProfilePicture ||
+        ownerFormData.location !== profile?.location
+      );
     }
-  }, [ownerFormData, petFormData, profile]);
+  }, [ownerFormData, petFormData, profile, forPet]);
 
   const onSubmit = useCallback(async () => {
     setError('');
 
     if (hasChanged) {
       setLoading(true);
+      const formData = forPet ? petFormData : ownerFormData;
+
+      let profilePictureData: UploadToFirebaseResult;
+
+      if (formData.profilePicture) {
+        const uploadRes =
+          formData.profilePicture.path && formData.profilePicture.path !== initialProfilePicture.path
+            ? await updateFileInFirebase(formData.profilePicture, initialProfilePicture.path)
+            : await uploadToFirebase(formData.profilePicture, storageFolders.PROFILE_PICTURES);
+
+        if (uploadRes) {
+          profilePictureData = uploadRes;
+        }
+      }
 
       setTimeout(async () => {
-        const isOwnerProfile = profile?.__typename === 'Owner';
-        const formData = isOwnerProfile ? ownerFormData : petFormData;
-        const currentProfilePicturePath = isOwnerProfile ? profile?.ProfilePicture?.path : (profile as PetDAO)?.ProfilePicture?.path;
-
-        const profilePictureFile =
-          formData.profilePicture &&
-          formData.profilePicture.path !== currentProfilePicturePath &&
-          new ReactNativeFile({
-            uri: formData.profilePicture.path,
-            name: formData.profilePicture.filename || uniqueId(),
-            type: formData.profilePicture.mime,
-          });
-
-        if (isOwnerProfile) {
-          updateOwner({ variables: { ...formData, profilePicture: profilePictureFile } })
+        if (!forPet) {
+          updateOwner({ variables: { ...formData, profilePicture: profilePictureData } })
             .then(({ data }) => {
               if (data?.updateOwner) {
+                console.log(data);
                 dispatch({ type: OWNER_DATA, payload: { ...profile, ...data.updateOwner } });
 
                 setTimeout(() => {
@@ -124,7 +123,7 @@ const EditProfileModal = ({ closeModal, profile }: Props) => {
               setLoading(false);
             });
         } else {
-          updatePet({ variables: { ...formData, profilePicture: profilePictureFile, updatePetId: profile.id } })
+          updatePet({ variables: { ...formData, profilePicture: profilePictureData, updatePetId: profile.id } })
             .then(({ data }) => {
               if (data?.updatePet) {
                 console.log(data.updatePet);
@@ -141,11 +140,11 @@ const EditProfileModal = ({ closeModal, profile }: Props) => {
               setLoading(false);
             });
         }
-      }, 1500);
+      }, 500);
     } else {
       closeModal();
     }
-  }, [ownerFormData, petFormData, profile, hasChanged, updateOwner, updatePet, dispatch, closeModal]);
+  }, [ownerFormData, petFormData, profile, hasChanged, updateOwner, updatePet, dispatch, closeModal, forPet]);
 
   const getOwnerEditView = () => {
     return (
@@ -160,11 +159,11 @@ const EditProfileModal = ({ closeModal, profile }: Props) => {
               disabledOpacity={1}
               activeOpacity={0.8}
               className='w-[160px] h-[160px] bg-themeInput flex items-center justify-center rounded-3xl shadow-sm shadow-themeShadow'>
-              {ownerFormData?.profilePicture?.path ? (
+              {ownerFormData?.profilePicture ? (
                 <Image
                   className='w-full h-full rounded-3xl'
                   source={{
-                    uri: ownerFormData.profilePicture.width ? ownerFormData.profilePicture.path : `${env.API_URL}/${ownerFormData.profilePicture.path}`,
+                    uri: ownerFormData.profilePicture.width ? ownerFormData.profilePicture.uri : ownerFormData.profilePicture.url,
                   }}
                 />
               ) : (
@@ -251,11 +250,11 @@ const EditProfileModal = ({ closeModal, profile }: Props) => {
               disabledOpacity={1}
               activeOpacity={0.8}
               className='w-[160px] h-[160px] bg-themeInput flex items-center justify-center rounded-3xl shadow-sm shadow-themeShadow'>
-              {petFormData?.profilePicture?.path ? (
+              {petFormData?.profilePicture ? (
                 <Image
                   className='w-full h-full rounded-3xl'
                   source={{
-                    uri: petFormData.profilePicture.width ? petFormData.profilePicture.path : `${env.API_URL}/${petFormData.profilePicture.path}`,
+                    uri: petFormData.profilePicture.width ? petFormData.profilePicture.uri : petFormData.profilePicture.url,
                   }}
                 />
               ) : (
@@ -342,7 +341,7 @@ const EditProfileModal = ({ closeModal, profile }: Props) => {
       </View>
 
       <KeyboardAwareScrollView enableAutomaticScroll enableOnAndroid>
-        {profile?.__typename === 'Owner' ? getOwnerEditView() : getPetEditView()}
+        {forPet ? getPetEditView() : getOwnerEditView()}
       </KeyboardAwareScrollView>
     </View>
   );

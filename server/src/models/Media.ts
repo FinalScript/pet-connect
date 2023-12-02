@@ -1,13 +1,13 @@
 import { CreationOptional, DataTypes, InferAttributes, InferCreationAttributes, Model } from 'sequelize';
 import { sequelize } from '../db/connection';
 
-export interface ProfilePictureCreationDAO {
+export interface MediaCreationDAO {
   path: string;
   url: string;
   name: string;
   type: string;
 }
-export class ProfilePicture extends Model<InferAttributes<ProfilePicture>, InferCreationAttributes<ProfilePicture>> {
+export class Media extends Model<InferAttributes<Media>, InferCreationAttributes<Media>> {
   declare id: CreationOptional<number>;
   declare name: string;
   declare url: string;
@@ -15,7 +15,7 @@ export class ProfilePicture extends Model<InferAttributes<ProfilePicture>, Infer
   declare type: string;
 }
 
-ProfilePicture.init(
+Media.init(
   {
     id: {
       type: DataTypes.UUID,
@@ -25,7 +25,6 @@ ProfilePicture.init(
     },
     name: {
       type: DataTypes.STRING,
-      allowNull: false,
     },
     url: {
       type: DataTypes.STRING,
@@ -37,7 +36,6 @@ ProfilePicture.init(
     },
     type: {
       type: DataTypes.STRING,
-      allowNull: false,
     },
   },
   {
