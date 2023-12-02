@@ -119,7 +119,7 @@ const Feed = () => {
                   onScroll={Animated.event([{ nativeEvent: { contentOffset: { y: scrollY } } }], { useNativeDriver: true })}
                   className='w-full pt-10'
                   refreshControl={<RefreshControl tintColor={'black'} refreshing={refreshing} onRefresh={onRefresh} />}>
-                  <View className='flex justify-center items-center h-full pb-5'>
+                  <View className='flex justify-center items-center h-full pb-[100px]'>
                     {posts.map((post, i) => {
                       return <Post key={i} post={post} />;
                     })}
