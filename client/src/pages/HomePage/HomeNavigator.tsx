@@ -11,6 +11,8 @@ import Feed from './Feed';
 import Inbox from './Inbox';
 import PostPage from './PostPage';
 import Profile from './Profile';
+import { NativeStackScreenProps } from '@react-navigation/native-stack';
+import { RootStackParamList } from '../../../App';
 
 export type HomeStackParamList = {
   Feed: undefined;
@@ -22,9 +24,9 @@ export type HomeStackParamList = {
 
 export type HomeRouteProps<RouteName extends keyof HomeStackParamList> = RouteProp<HomeStackParamList, RouteName>;
 
-const Tab = createBottomTabNavigator<HomeStackParamList>();
+type HomeScreenProps = NativeStackScreenProps<RootStackParamList, 'Home'>;
 
-const HomeNavigator = () => {
+const HomeNavigator = ({ navigation }: HomeScreenProps) => {
   const [postPageModal, setPostPageModal] = useState(false);
 
   const _renderIcon = (routeName: string, selectedTab: string) => {
@@ -82,7 +84,7 @@ const HomeNavigator = () => {
           <CurvedBottomBar.Screen name='Feed' position='LEFT' component={() => <Feed />} />
           <CurvedBottomBar.Screen name='Explore' component={() => <Explore />} position='LEFT' />
           <CurvedBottomBar.Screen name='Inbox' component={() => <Inbox />} position='RIGHT' />
-          <CurvedBottomBar.Screen name='Profile' component={() => <Profile />} position='RIGHT' />
+          <CurvedBottomBar.Screen name='Profile' component={() => <Profile navigation={navigation} />} position='RIGHT' />
         </CurvedBottomBar.Navigator>
       </NavigationContainer>
     </>
