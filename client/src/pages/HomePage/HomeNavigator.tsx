@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import { Animated, Modal, StyleSheet, TouchableOpacity } from 'react-native';
 import { CurvedBottomBar } from 'react-native-curved-bottom-bar';
 import colors from '../../../config/tailwind/colors';
+import tailwind from 'tailwindcss/colors';
 import { Ionicon } from '../../utils/Icons';
 import Explore from './Explore';
 import Feed from './Feed';
@@ -31,13 +32,13 @@ const HomeNavigator = () => {
 
     switch (routeName) {
       case 'Feed':
-        return <Ionicon name='home' size={20} />;
+        return <Ionicon name='home' size={25} color={colors.themeText} />;
       case 'Explore':
-        return <Ionicon name='search' size={20} />;
+        return <Ionicon name='search' size={25} color={colors.themeText} />;
       case 'Inbox':
-        return <Ionicon name='file-tray' size={20} />;
+        return <Ionicon name='file-tray' size={25} color={colors.themeText} />;
       case 'Profile':
-        return <Ionicon name='person-circle' size={20} />;
+        return <Ionicon name='person-circle' size={25} color={colors.themeText} />;
     }
 
     return <Ionicon name={icon} size={25} color={routeName === selectedTab ? 'black' : 'gray'} />;
@@ -65,15 +66,15 @@ const HomeNavigator = () => {
           type='UP'
           style={styles.bottomBar}
           shadowStyle={styles.shadow}
-          height={66}
+          height={75}
           circleWidth={50}
-          bgColor={colors.themeBg}
+          bgColor={colors.themeInput}
           initialRouteName='Feed'
           borderTopLeftRight
           renderCircle={({ selectedTab, navigate }) => (
             <Animated.View style={styles.btnCircleUp}>
               <TouchableOpacity style={styles.button} onPress={() => setPostPageModal(true)}>
-                <Ionicon name={'add'} color={colors.themeText} size={30} />
+                <Ionicon name={'paw'} color={colors.themeText} size={25} />
               </TouchableOpacity>
             </Animated.View>
           )}
@@ -204,7 +205,7 @@ const styles = StyleSheet.create({
     padding: 20,
   },
   shadow: {
-    shadowColor: '#FF8770',
+    shadowColor: colors.themeBtn,
     shadowOffset: {
       width: 0,
       height: 1,
@@ -223,15 +224,15 @@ const styles = StyleSheet.create({
     borderRadius: 30,
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: colors.themeTabBg,
+    backgroundColor: colors.themeBtn,
     bottom: 18,
-    shadowColor: '#000',
+    shadowColor: colors.themeShadowLight,
     shadowOffset: {
       width: 0,
       height: 1,
     },
-    shadowOpacity: 0.2,
-    shadowRadius: 1.41,
+    shadowOpacity: 0.8,
+    shadowRadius: 3,
     elevation: 1,
   },
   imgCircle: {

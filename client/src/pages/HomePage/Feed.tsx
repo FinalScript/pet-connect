@@ -12,17 +12,17 @@ const Feed = () => {
   const dispatch = useDispatch();
   const [refreshing, setRefreshing] = useState(false);
   const [getAllPosts] = useLazyQuery(GET_ALL_POSTS, { fetchPolicy: 'network-only' });
-  const posts = useSelector((state: GeneralReducer) => state.general.feedPosts)
+  const posts = useSelector((state: GeneralReducer) => state.general.feedPosts);
 
   useEffect(() => {
     getPosts();
-  }, [])
+  }, []);
 
   const getPosts = async () => {
     const fetchedPosts = await getAllPosts();
 
     if (fetchedPosts.data?.getAllPosts.posts) {
-      dispatch({ type: REPLACE_FEED, payload: fetchedPosts.data.getAllPosts.posts});
+      dispatch({ type: REPLACE_FEED, payload: fetchedPosts.data.getAllPosts.posts });
       return;
     }
   };
