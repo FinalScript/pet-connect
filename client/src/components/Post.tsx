@@ -106,7 +106,7 @@ export default function Post({ post }: Props) {
       <View className='px-3 py-1'>
         {post.description && (
           <View className='flex flex-row min-h-[7rem]'>
-            <Text className='text-lg leading-5' numberOfLines={moreCaption ? 0 : CAPTION_LINES}>
+            <Text className='text-lg' numberOfLines={moreCaption ? 0 : CAPTION_LINES}>
               <Text className='font-semibold text-sky-600'>{post.author.name} </Text>
 
               <Text className='text-themeText' onPress={handleMoreCaption} suppressHighlighting>

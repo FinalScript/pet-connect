@@ -1,34 +1,20 @@
 import { useMutation } from '@apollo/client';
-import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import {
-  ActivityIndicator,
-  Image,
-  Keyboard,
-  NativeSyntheticEvent,
-  Pressable,
-  SafeAreaView,
-  StyleSheet,
-  TextInput,
-  TouchableHighlight,
-  View,
-} from 'react-native';
+import { ActivityIndicator, Image, Keyboard, NativeSyntheticEvent, Pressable, StyleSheet, TextInput, TouchableHighlight, View } from 'react-native';
 import ContextMenu, { ContextMenuOnPressNativeEvent } from 'react-native-context-menu-view';
+import { Dropdown } from 'react-native-element-dropdown';
 import { HapticFeedbackTypes, trigger } from 'react-native-haptic-feedback';
 import { Asset, launchCamera, launchImageLibrary } from 'react-native-image-picker';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
-import { PressableOpacity } from 'react-native-pressable-opacity';
 import { useDispatch, useSelector } from 'react-redux';
+import colors from '../../../config/tailwind/colors';
 import Text from '../../components/Text';
 import { UploadToFirebaseResult, storageFolders, uploadToFirebase } from '../../firebase/firebaseStorage';
 import { CREATE_POST } from '../../graphql/Post';
-import { ProfileReducer } from '../../redux/reducers/profileReducer';
-import { AntDesign, Ionicon } from '../../utils/Icons';
-import { options } from '../../utils/hapticFeedbackOptions';
-import { HomeStackParamList } from './HomeNavigator';
-import { Dropdown } from 'react-native-element-dropdown';
-import Animated, { SlideInUp, SlideOutDown, useSharedValue } from 'react-native-reanimated';
 import { ADDING_POST_TO_FEED } from '../../redux/constants';
+import { ProfileReducer } from '../../redux/reducers/profileReducer';
+import { FontAwesome, Ionicon } from '../../utils/Icons';
+import { options } from '../../utils/hapticFeedbackOptions';
 
 interface FormData {
   media?: Asset | null | undefined;
@@ -85,7 +71,7 @@ const PostPage = ({ closeModal }: Props) => {
       submitPost({ variables: { ...formData, media: mediaData } })
         .then(async ({ data }) => {
           if (data?.createPost.post) {
-            dispatch({ type: ADDING_POST_TO_FEED, payload: data?.createPost.post});
+            dispatch({ type: ADDING_POST_TO_FEED, payload: data?.createPost.post });
             closeModal();
           }
         })
@@ -135,7 +121,7 @@ const PostPage = ({ closeModal }: Props) => {
 
   return (
     <Pressable onPress={Keyboard.dismiss}>
-      <SafeAreaView className='h-full w-full bg-themeBg'>
+      <View className='h-full w-full bg-themeBg'>
         <View className='px-5 flex-row items-center relative mt-10'>
           {/* <PressableOpacity className='p-4 -m-4' onPress={() => closeModal()} disabledOpacity={0.4}>
             <Ionicon name='ios-close' color='black' size={30} />
@@ -153,13 +139,13 @@ const PostPage = ({ closeModal }: Props) => {
                 { title: 'Take Photo', systemIcon: 'camera' },
               ]}
               onPress={handleMediaContextOnPress}>
-              <View className='bg-themeInput rounded-3xl shadow-sm shadow-themeShadow aspect-square'>
+              <View className='bg-themeInput flex items-center justify-center rounded-3xl shadow-sm shadow-themeShadow aspect-square'>
                 {formData.media ? (
                   <Image className='w-full h-full rounded-3xl' source={{ uri: formData.media?.uri }} />
                 ) : (
-                  <View className=' flex justify-center items-center h-full'>
-                    <Ionicon name='image' color='black' size={50} />
-                    <Text className='text-themeText text-3xl'>Upload</Text>
+                  <View className=' flex justify-center items-center p-10 rounded-3xl'>
+                    <FontAwesome name='plus-square-o' size={50} color={'#362013'} />
+                    <Text className='text-themeText text-3xl mt-3'>Upload</Text>
                   </View>
                 )}
               </View>
@@ -208,7 +194,7 @@ const PostPage = ({ closeModal }: Props) => {
             </View>
           </TouchableHighlight>
         </View>
-      </SafeAreaView>
+      </View>
     </Pressable>
   );
 };
@@ -231,6 +217,13 @@ const PetsDropdown = ({ value, setValue, data }: any) => {
         value={value}
         itemTextStyle={{ fontFamily: 'BalooChettan2-Regular' }}
         placeholderStyle={{ fontFamily: 'BalooChettan2-Regular' }}
+        selectedTextStyle={{ fontFamily: 'BalooChettan2-Regular' }}
+        containerStyle={{ borderRadius: 24, marginBottom: 10, backgroundColor: colors.themeInput }}
+        itemContainerStyle={{ borderRadius: 24 }}
+        activeColor='transparent'
+        dropdownPosition='top'
+        autoScroll
+        showsVerticalScrollIndicator
         onFocus={() => setIsFocus(true)}
         onBlur={() => setIsFocus(false)}
         onChange={(item) => {
