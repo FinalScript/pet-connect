@@ -60,7 +60,7 @@ export default function Post({ post }: Props) {
   };
 
   return (
-    <View className='bg-white mb-5 pb-2 w-full shadow-sm shadow-themeShadow rounded-2xl'>
+    <View className='bg-white mb-5 pb-2 w-full shadow-sm shadow-themeShadow'>
       <View className='flex-row w-full items-center px-3 py-2'>
         <Modal
           style={{ justifyContent: 'center', alignItems: 'center', margin: 0 }}
@@ -74,7 +74,7 @@ export default function Post({ post }: Props) {
           <CommentsModel comments={comments} closeModal={() => setCommentsModalVisible(false)} />
         </Modal>
         <View className='w-14 h-14 mr-2 aspect-square'>
-          <Image className='flex w-full h-full rounded-full' source={{ uri: post.author.ProfilePicture?.url }} />
+          <Image className='flex w-full h-full rounded-lg' source={{ uri: post.author.ProfilePicture?.url }} />
         </View>
         <View className='flex justify-center'>
           <Text className='text-2xl font-semibold text-sky-700 -mb-2'>{post.author.name}</Text>
@@ -89,13 +89,13 @@ export default function Post({ post }: Props) {
           }
         }}
         numberOfTaps={2}>
-        <View className='w-full h-[400px]'>
+        <View className='h-[400px] w-full'>
           {/* postImage would be used in source below */}
-          <Image className='flex w-full h-full' source={{ uri: post.Media.url }} />
+          <Image className='w-full h-full object-contain' source={{ uri: post.Media.url }} />
         </View>
       </TapGestureHandler>
 
-      <View className='flex flex-row items-center gap-x-4 px-4 py-1'>
+      <View className='flex-row items-center gap-x-4 px-4 py-1'>
         <View className='mt-1' onTouchEnd={handleLike}>
           {postLiked === true ? <AntDesign name='heart' size={25} color={'#ff1000'} /> : <AntDesign name='hearto' size={25} color={'#000000'} />}
         </View>
@@ -104,8 +104,8 @@ export default function Post({ post }: Props) {
         </View>
       </View>
 
-      <View className='px-3 py-1'>
-        {post.description && (
+      {post.description && (
+        <View className='px-3 py-1'>
           <View className='flex flex-row min-h-[7rem]'>
             <Text className='text-lg' numberOfLines={moreCaption ? 0 : CAPTION_LINES}>
               <Text className='font-semibold text-sky-600'>{post.author.name} </Text>
@@ -115,8 +115,8 @@ export default function Post({ post }: Props) {
               </Text>
             </Text>
           </View>
-        )}
-      </View>
+        </View>
+      )}
     </View>
   );
 }

@@ -1,7 +1,7 @@
 import React from 'react';
-import FastImage from 'react-native-fast-image';
+import FastImage, { FastImageProps } from 'react-native-fast-image';
 
-const Image = ({ ...rest }) => {
+const Image = ({ ...rest }: FastImageProps) => {
   return <FastImage {...rest} />;
 };
 

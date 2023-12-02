@@ -1,7 +1,7 @@
 import { useLazyQuery } from '@apollo/client';
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
-import React, { useCallback, useEffect, useState } from 'react';
-import { RefreshControl, SafeAreaView, ScrollView, View } from 'react-native';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import { Animated, RefreshControl, SafeAreaView, ScrollView, View } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
 import colors from '../../../config/tailwind/colors';
 import Post from '../../components/Post';
@@ -17,6 +17,19 @@ const Feed = () => {
   const [refreshing, setRefreshing] = useState(false);
   const [getAllPosts] = useLazyQuery(GET_ALL_POSTS, { fetchPolicy: 'network-only' });
   const posts = useSelector((state: GeneralReducer) => state.general.feedPosts);
+  const scrollY = new Animated.Value(0);
+
+  const clampedTranslateY = scrollY.interpolate({
+    inputRange: [20, 100],
+    outputRange: [0, -100],
+    extrapolateLeft: 'clamp',
+  });
+
+  const clampedOpacity = scrollY.interpolate({
+    inputRange: [0, 40],
+    outputRange: [1, 0],
+    extrapolateLeft: 'clamp',
+  });
 
   useEffect(() => {
     getPosts();
@@ -41,7 +54,7 @@ const Feed = () => {
   }, [getPosts]);
 
   return (
-    <SafeAreaView className='flex-1 h-full bg-themeBg'>
+    <SafeAreaView className={'flex-1 h-full bg-themeBg'}>
       <Tab.Navigator
         initialRouteName='For You'
         screenOptions={{
@@ -67,6 +80,13 @@ const Feed = () => {
           tabBarStyle: {
             width: 'auto',
             backgroundColor: 'transparent',
+            position: 'absolute',
+            top: 0,
+            left: 50,
+            right: 50,
+            height: 20,
+            opacity: clampedOpacity,
+            transform: [{ translateY: clampedTranslateY }],
           },
         }}>
         <Tab.Screen
@@ -74,13 +94,17 @@ const Feed = () => {
           children={() => {
             return (
               <View className='flex-1 h-full bg-themeBg'>
-                <ScrollView className='w-screen mt-5' refreshControl={<RefreshControl tintColor={'black'} refreshing={refreshing} onRefresh={onRefresh} />}>
+                <Animated.ScrollView
+                  scrollEventThrottle={16}
+                  onScroll={Animated.event([{ nativeEvent: { contentOffset: { y: scrollY } } }], { useNativeDriver: true })}
+                  className='w-full pt-10'
+                  refreshControl={<RefreshControl tintColor={'black'} refreshing={refreshing} onRefresh={onRefresh} />}>
                   <View className='flex justify-center items-center h-full pb-5 px-3'>
                     <>
                       <Text>Nothing to see here...</Text>
                     </>
                   </View>
-                </ScrollView>
+                </Animated.ScrollView>
               </View>
             );
           }}
@@ -90,8 +114,12 @@ const Feed = () => {
           children={() => {
             return (
               <View className='flex-1 h-full bg-themeBg'>
-                <ScrollView className='w-screen mt-5' refreshControl={<RefreshControl tintColor={'black'} refreshing={refreshing} onRefresh={onRefresh} />}>
-                  <View className='flex justify-center items-center h-full pb-5 px-3'>
+                <Animated.ScrollView
+                  scrollEventThrottle={16}
+                  onScroll={Animated.event([{ nativeEvent: { contentOffset: { y: scrollY } } }], { useNativeDriver: true })}
+                  className='w-full pt-10'
+                  refreshControl={<RefreshControl tintColor={'black'} refreshing={refreshing} onRefresh={onRefresh} />}>
+                  <View className='flex justify-center items-center h-full pb-5'>
                     {posts.map((post, i) => {
                       return <Post key={i} post={post} />;
                     })}
@@ -101,7 +129,7 @@ const Feed = () => {
                       </>
                     )}
                   </View>
-                </ScrollView>
+                </Animated.ScrollView>
               </View>
             );
           }}
