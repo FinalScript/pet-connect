@@ -25,15 +25,16 @@ import { GET_POSTS_BY_PET_ID } from '../../graphql/Post';
 
 LogBox.ignoreLogs(["Modal with 'pageSheet' presentation style and 'transparent' value is not supported."]); // Ignore log notification by message
 
-type NavigationProp = NativeStackNavigationProp<RootStackParamList, 'Home'>;
+interface Props {
+  navigation: NativeStackNavigationProp<RootStackParamList, 'Home', undefined>;
+}
 
-const Profile = () => {
+const Profile = ({ navigation }: Props) => {
   const dispatch = useDispatch();
   const owner = useSelector((state: ProfileReducer) => state.profile.owner);
   const pets = useSelector((state: ProfileReducer) => state.profile.pets);
   const currentUserId = useSelector((state: ProfileReducer) => state.profile.currentUser);
   const [currentUser, setCurrentUser] = useState<OwnerDAO | PetDAO>();
-  const navigation = useNavigation<NavigationProp>();
   const { clearSession } = useAuth0();
   const [modals, setModals] = useState({ accountSwitcher: false, settings: false, editProfile: false });
 
