@@ -116,21 +116,13 @@ const Profile = ({ navigation }: Props) => {
 
   const renderPostsGrid = () => {
     return (
-      <View style={{ flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'flex-start' }}>
+      <View className="flex-row flex-wrap justify-start mt-5">
         {gridPosts.map((post, index) => {
           return (
             <View
               key={index}
-              style={{
-                width: '32%',
-                margin: '1%',
-                backgroundColor: '#fff',
-                borderRadius: 10,
-                overflow: 'hidden',
-                elevation: 3,
-                marginBottom: 10,
-              }}>
-              <Image style={{ width: '100%', height: undefined, aspectRatio: 1 }} source={{ uri: post.Media.url }} resizeMode='cover' />
+              className="w-1/3 p-1 rounded-lg overflow-hidden ">
+              <Image className="w-full h-auto aspect-square" source={{ uri: post.Media.url }} resizeMode='cover' />
             </View>
           );
         })}
@@ -138,12 +130,7 @@ const Profile = ({ navigation }: Props) => {
           [...Array(3 - (gridPosts.length % 3))].map((_, index) => (
             <View
               key={`placeholder-${index}`}
-              style={{
-                width: '32%',
-                margin: '1%',
-                backgroundColor: 'transparent',
-                marginBottom: 10,
-              }}
+              className="w-1/3 p-1 bg-transparent mb-2.5"
             />
           ))}
       </View>
