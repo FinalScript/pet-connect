@@ -19,6 +19,10 @@ import { FontAwesome, Ionicon } from '../../utils/Icons';
 import { LogBox } from 'react-native';
 import colors from '../../../config/tailwind/colors';
 import Image from '../../components/Image';
+import { GeneralReducer } from '../../redux/reducers/generalReducer';
+import { useLazyQuery } from '@apollo/client';
+import { GET_POSTS_BY_PET_ID } from '../../graphql/Post';
+
 LogBox.ignoreLogs(["Modal with 'pageSheet' presentation style and 'transparent' value is not supported."]); // Ignore log notification by message
 
 type NavigationProp = NativeStackNavigationProp<RootStackParamList, 'Home'>;
@@ -33,6 +37,15 @@ const Profile = () => {
   const { clearSession } = useAuth0();
   const [modals, setModals] = useState({ accountSwitcher: false, settings: false, editProfile: false });
 
+  const [getPostsByPetId, { data: postsData }] = useLazyQuery(GET_POSTS_BY_PET_ID, {
+    fetchPolicy: 'network-only',
+  });
+
+  const gridPosts = useMemo(() => {
+    console.log(postsData?.getPostsByPetId?.posts);
+    return postsData?.getPostsByPetId?.posts || [];
+  }, [postsData]);
+
   useEffect(() => {
     if (owner?.id === currentUserId?.id) {
       setCurrentUser(owner);
@@ -43,6 +56,7 @@ const Profile = () => {
 
     if (pet) {
       setCurrentUser(pet);
+      getPostsByPetId({ variables: { petId: pet.id } });
     }
   }, [currentUserId, owner, pets]);
 
@@ -98,6 +112,40 @@ const Profile = () => {
       console.log(error.message);
     }
   }, []);
+
+  const renderPostsGrid = () => {
+    return (
+      <View style={{ flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'flex-start' }}>
+        {gridPosts.map((post, index) => (
+          <View
+            key={index}
+            style={{
+              width: '32%',
+              margin: '1%',
+              backgroundColor: '#fff',
+              borderRadius: 10,
+              overflow: 'hidden',
+              elevation: 3,
+              marginBottom: 10,
+            }}>
+            <Image style={{ width: '100%', height: undefined, aspectRatio: 1 }} source={{ uri: post.Media.url }} resizeMode='cover' />
+          </View>
+        ))}
+        {gridPosts.length % 3 !== 0 &&
+          [...Array(3 - (gridPosts.length % 3))].map((_, index) => (
+            <View
+              key={`placeholder-${index}`}
+              style={{
+                width: '32%',
+                margin: '1%',
+                backgroundColor: 'transparent',
+                marginBottom: 10,
+              }}
+            />
+          ))}
+      </View>
+    );
+  };
 
   const ownerProfile = useMemo(() => {
     return (
@@ -253,6 +301,7 @@ const Profile = () => {
             </View>
           </PressableOpacity>
         </View>
+        <View>{renderPostsGrid()}</View>
       </ScrollView>
     );
   }, [currentUser, setEditProfileModalVisible, getApiBaseUrl]);

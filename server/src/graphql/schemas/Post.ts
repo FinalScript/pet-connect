@@ -16,6 +16,10 @@ type PostResponse {
     post: Post
 }
 
+type PostsResponse {
+    posts: [Post!]!
+}
+
 type PostUpdatedResponse {
     petId: String
     description: String
@@ -30,7 +34,7 @@ type DeletePostResponse {
 type Query{
     getAllPosts: AllPostsResponse! 
     getPostById(id: String!): PostResponse!
-    getPostsByPetId(petId: String!): PostResponse!
+    getPostsByPetId(petId: String!): PostsResponse!
 }
 
 type Mutation {

@@ -10,6 +10,11 @@ export const createPost = async (data: PostCreationAttributes) => {
         model: Media,
         as: 'Media',
       },
+      {
+        model: Pet,
+        as: 'author',
+        include: [{ all: true }],
+      },
     ],
   });
   return newPost;
@@ -71,6 +76,11 @@ export const getPostsByPetId = async (petId: string) => {
       {
         model: Media,
         as: 'Media',
+      },
+      {
+        model: Pet,
+        as: 'author',
+        include: [{ all: true }],
       },
     ],
   });
