@@ -2,7 +2,6 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Image, Modal, Pressable, SafeAreaView, ScrollView, Share, View } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
 import { OwnerDAO, PetDAO, ProfileReducer } from '../../redux/reducers/profileReducer';
-
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useAuth0 } from 'react-native-auth0';
@@ -12,7 +11,6 @@ import Text from '../../components/Text';
 import AccountSwitcherModal from '../../components/modals/AccountSwitcherModal';
 import SettingsModal from '../../components/modals/SettingsModal';
 import { LOGOUT } from '../../redux/constants';
-
 import { PressableOpacity } from 'react-native-pressable-opacity';
 import { getApiBaseUrl } from '../../api';
 import PetTypeImage from '../../components/PetTypeImage';
@@ -216,6 +214,7 @@ const Profile = () => {
             </View>
           </View>
           <Text className='text-4xl font-semibold mt-5'>{currentUser?.name}</Text>
+          <Text className='text-lg'>@{currentUser?.username}</Text>
           <View className='px-5 flex flex-row gap-x-5 mt-2'>
             <View className='flex items-center'>
               <Text className='text-xl font-semibold'>5</Text>

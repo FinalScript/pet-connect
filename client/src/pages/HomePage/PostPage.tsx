@@ -13,7 +13,7 @@ import { UploadToFirebaseResult, storageFolders, uploadToFirebase } from '../../
 import { CREATE_POST } from '../../graphql/Post';
 import { ADDING_POST_TO_FEED } from '../../redux/constants';
 import { ProfileReducer } from '../../redux/reducers/profileReducer';
-import { FontAwesome, Ionicon } from '../../utils/Icons';
+import { FontAwesome, Ionicon, MaterialIcons } from '../../utils/Icons';
 import { options } from '../../utils/hapticFeedbackOptions';
 
 interface FormData {
@@ -144,7 +144,7 @@ const PostPage = ({ closeModal }: Props) => {
                   <Image className='w-full h-full rounded-3xl' source={{ uri: formData.media?.uri }} />
                 ) : (
                   <View className=' flex justify-center items-center p-10 rounded-3xl'>
-                    <FontAwesome name='plus-square-o' size={50} color={'#362013'} />
+                    <MaterialIcons name='photo-library' size={50} color={'#362013'} />
                     <Text className='text-themeText text-3xl mt-3'>Upload</Text>
                   </View>
                 )}

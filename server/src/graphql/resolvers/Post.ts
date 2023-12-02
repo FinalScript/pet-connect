@@ -49,7 +49,11 @@ export const PostResolver = {
               model: Media,
               as: 'Media',
             },
-            { model: Pet, as: 'author' },
+            {
+              model: Pet,
+              as: 'author',
+              include: [{ all: true }],
+            },
           ],
         });
       } catch (e) {
@@ -144,7 +148,7 @@ export const PostResolver = {
   Query: {
     getAllPosts: async (_, {}, context) => {
       const posts = await getAllPosts();
-      
+
       return { posts };
     },
 

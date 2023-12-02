@@ -54,7 +54,7 @@ const HomeNavigator = () => {
             renderIcon={({ route, focused, color }) => {
               const { options } = descriptors[route.key];
               if (options.tabBarIcon) {
-                return options.tabBarIcon({ focused, color, size: 30 });
+                return options.tabBarIcon({ focused, color: colors.themeText, size: 30 });
               }
 
               return null;
