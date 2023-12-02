@@ -1,12 +1,16 @@
 import { useLazyQuery } from '@apollo/client';
+import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
 import React, { useCallback, useEffect, useState } from 'react';
 import { RefreshControl, SafeAreaView, ScrollView, View } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
+import colors from '../../../config/tailwind/colors';
 import Post from '../../components/Post';
 import Text from '../../components/Text';
 import { GET_ALL_POSTS } from '../../graphql/Post';
 import { REPLACE_FEED } from '../../redux/constants';
 import { GeneralReducer } from '../../redux/reducers/generalReducer';
+
+const Tab = createMaterialTopTabNavigator();
 
 const Feed = () => {
   const dispatch = useDispatch();
@@ -38,19 +42,71 @@ const Feed = () => {
 
   return (
     <SafeAreaView className='flex-1 h-full bg-themeBg'>
-      <Text className='font-bold text-3xl px-10'>Pet Connect</Text>
-      <ScrollView className='w-screen mt-5' refreshControl={<RefreshControl tintColor={'black'} refreshing={refreshing} onRefresh={onRefresh} />}>
-        <View className='flex justify-center items-center h-full pb-5 px-3'>
-          {posts.map((post, i) => {
-            return <Post key={i} post={post} />;
-          })}
-          {posts.length === 0 && (
-            <>
-              <Text>Nothing to see here...</Text>
-            </>
-          )}
-        </View>
-      </ScrollView>
+      <Tab.Navigator
+        initialRouteName='For You'
+        screenOptions={{
+          tabBarPressOpacity: 1,
+          tabBarPressColor: 'rgba(0,0,0,0)',
+          tabBarActiveTintColor: colors.themeText,
+          tabBarContentContainerStyle: {
+            alignItems: 'center',
+            justifyContent: 'center',
+          },
+          tabBarIndicatorStyle: { display: 'none' },
+          tabBarItemStyle: {
+            width: 100,
+            paddingHorizontal: 0,
+            position: 'relative',
+            padding: 0,
+            height: 45,
+          },
+          tabBarLabelStyle: {
+            fontSize: 18,
+            fontFamily: 'BalooChettan2-Regular',
+          },
+          tabBarStyle: {
+            width: 'auto',
+            backgroundColor: 'transparent',
+          },
+        }}>
+        <Tab.Screen
+          name='Following'
+          children={() => {
+            return (
+              <View className='flex-1 h-full bg-themeBg'>
+                <ScrollView className='w-screen mt-5' refreshControl={<RefreshControl tintColor={'black'} refreshing={refreshing} onRefresh={onRefresh} />}>
+                  <View className='flex justify-center items-center h-full pb-5 px-3'>
+                    <>
+                      <Text>Nothing to see here...</Text>
+                    </>
+                  </View>
+                </ScrollView>
+              </View>
+            );
+          }}
+        />
+        <Tab.Screen
+          name='For You'
+          children={() => {
+            return (
+              <View className='flex-1 h-full bg-themeBg'>
+                <ScrollView className='w-screen mt-5' refreshControl={<RefreshControl tintColor={'black'} refreshing={refreshing} onRefresh={onRefresh} />}>
+                  <View className='flex justify-center items-center h-full pb-5 px-3'>
+                    {posts.map((post, i) => {
+                      return <Post key={i} post={post} />;
+                    })}
+                    {posts.length === 0 && (
+                      <>
+                        <Text>Nothing to see here...</Text>
+                      </>
+                    )}
+                  </View>
+                </ScrollView>
+              </View>
+            );
+          }}
+        />
+      </Tab.Navigator>
     </SafeAreaView>
   );
 };
