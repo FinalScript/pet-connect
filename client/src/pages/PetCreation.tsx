@@ -27,7 +27,7 @@ const petTypes = [
   { type: PetType.Fish, img: require('../../assets/img/fish.png') },
   { type: PetType.Rabbit, img: require('../../assets/img/rabbit.png') },
   { type: PetType.Hamster, img: require('../../assets/img/hamster.png') },
-  { type: PetType.Snake, img: require('../../assets/img/reptile.png') },
+  { type: PetType.Snake, img: require('../../assets/img/snake.png') },
   { type: PetType.Other, img: require('../../assets/img/other.png') },
 ];
 

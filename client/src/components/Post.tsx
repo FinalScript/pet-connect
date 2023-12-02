@@ -9,6 +9,7 @@ import { options } from '../utils/hapticFeedbackOptions';
 import Text from './Text';
 import CommentsModel from './modals/CommentsModal';
 import Image from './Image';
+import PetTypeImage from './PetTypeImage';
 
 interface Props {
   post: PostType;
@@ -77,7 +78,10 @@ export default function Post({ post }: Props) {
           <Image className='flex w-full h-full rounded-lg' source={{ uri: post.author.ProfilePicture?.url }} />
         </View>
         <View className='flex justify-center'>
-          <Text className='text-2xl font-semibold text-sky-700 -mb-2'>{post.author.name}</Text>
+          <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+            <Text className='text-2xl font-semibold text-sky-700 -mb-2'>{post.author.name}</Text>
+            <PetTypeImage type={post.author.type} style={{ width: 20, height: 20, marginLeft: 5, marginTop: 5 }} />
+          </View>
           <Text className='text-base font-light text-sky-500'>@{post.author.username}</Text>
         </View>
       </View>
