@@ -117,21 +117,23 @@ const Profile = ({ navigation }: Props) => {
   const renderPostsGrid = () => {
     return (
       <View style={{ flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'flex-start' }}>
-        {gridPosts.map((post, index) => (
-          <View
-            key={index}
-            style={{
-              width: '32%',
-              margin: '1%',
-              backgroundColor: '#fff',
-              borderRadius: 10,
-              overflow: 'hidden',
-              elevation: 3,
-              marginBottom: 10,
-            }}>
-            <Image style={{ width: '100%', height: undefined, aspectRatio: 1 }} source={{ uri: post.Media.url }} resizeMode='cover' />
-          </View>
-        ))}
+        {gridPosts.map((post, index) => {
+          return (
+            <View
+              key={index}
+              style={{
+                width: '32%',
+                margin: '1%',
+                backgroundColor: '#fff',
+                borderRadius: 10,
+                overflow: 'hidden',
+                elevation: 3,
+                marginBottom: 10,
+              }}>
+              <Image style={{ width: '100%', height: undefined, aspectRatio: 1 }} source={{ uri: post.Media.url }} resizeMode='cover' />
+            </View>
+          );
+        })}
         {gridPosts.length % 3 !== 0 &&
           [...Array(3 - (gridPosts.length % 3))].map((_, index) => (
             <View
