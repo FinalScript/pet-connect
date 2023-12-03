@@ -13,6 +13,7 @@ import PetTypeImage from './PetTypeImage';
 import { Modalize } from 'react-native-modalize';
 import { Portal } from 'react-native-portalize';
 import colors from '../../config/tailwind/colors';
+import { Easing } from 'react-native-reanimated';
 
 interface Props {
   post: PostType;
@@ -69,8 +70,9 @@ export default function Post({ post }: Props) {
             ref={modalizeRef}
             handlePosition='inside'
             handleStyle={{ backgroundColor: colors.themeText }}
-            modalHeight={Dimensions.get('screen').height * 0.85}
             scrollViewProps={{ scrollEnabled: false }}
+            adjustToContentHeight
+            keyboardAvoidingBehavior=''
             useNativeDriver>
             <CommentsModel comments={comments} closeModal={() => closeCommentsModal()} />
           </Modalize>

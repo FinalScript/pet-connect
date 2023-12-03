@@ -319,7 +319,7 @@ const Profile = ({ navigation }: Props) => {
           ref={accountSwitcherModalRef}
           handlePosition='inside'
           handleStyle={{ backgroundColor: colors.themeText }}
-          modalHeight={Dimensions.get('screen').height * 0.55}
+          adjustToContentHeight
           scrollViewProps={{ scrollEnabled: false }}
           useNativeDriver>
           <AccountSwitcherModal

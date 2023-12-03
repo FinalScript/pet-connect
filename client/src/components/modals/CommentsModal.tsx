@@ -20,9 +20,8 @@ const CommentsModel = ({ comments, closeModal }: Props) => {
   const inputAnimatedValue = new Animated.Value(0);
 
   useEffect(() => {
-    console.log(keyboardHeight);
     Animated.timing(inputAnimatedValue, {
-      toValue: -keyboardHeight + 5,
+      toValue: -keyboardHeight + 10,
       duration: 300,
       useNativeDriver: true,
     }).start();
@@ -67,17 +66,13 @@ const CommentsModel = ({ comments, closeModal }: Props) => {
             </View>
           ))}
         </ScrollView>
-        <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} className='flex-1'>
-          <Animated.View
-            className={'absolute w-full -bottom-5 pb-5 bg-themeInput duration-75 transition-all'}
-            style={{ transform: [{ translateY: inputAnimatedValue }] }}>
-            <View className={' border-t-[.5px] border-gray-400 mt-auto transition-all duration-300 flex-row items-center px-5 pt-3  pb-3'}>
-              <Image className='w-10 h-10 rounded-full mr-3' source={{ uri: profileImage || undefined }} />
-              <TextInput className='flex-1 h-12 shadow-sm rounded-2xl px-5' placeholderTextColor='#444444bb' maxLength={30} placeholder='Add a comment...' />
-            </View>
-          </Animated.View>
-        </KeyboardAvoidingView>
       </View>
+      <Animated.View className={'absolute w-full bottom-0 pb-5 bg-themeInput'} style={{ transform: [{ translateY: inputAnimatedValue }] }}>
+        <View className={'border-t-[.5px] border-gray-400 flex-row items-center px-5 pt-3  pb-3'}>
+          <Image className='w-10 h-10 rounded-full mr-3' source={{ uri: profileImage || undefined }} />
+          <TextInput className='flex-1 h-12 shadow-sm rounded-2xl px-5' placeholderTextColor='#444444bb' maxLength={30} placeholder='Add a comment...' />
+        </View>
+      </Animated.View>
     </View>
   );
 };
