@@ -1,27 +1,24 @@
-import { useCallback, useEffect, useMemo, useState } from 'react';
-import { Modal, Pressable, SafeAreaView, ScrollView, Share, View } from 'react-native';
-import { useDispatch, useSelector } from 'react-redux';
-import { OwnerDAO, PetDAO, ProfileReducer } from '../../redux/reducers/profileReducer';
-import { useNavigation } from '@react-navigation/native';
+import { useLazyQuery } from '@apollo/client';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { useCallback, useEffect, useMemo, useState } from 'react';
+import { LogBox, Modal, Pressable, SafeAreaView, ScrollView, Share, View } from 'react-native';
 import { useAuth0 } from 'react-native-auth0';
+import { PressableOpacity } from 'react-native-pressable-opacity';
 import AntDesign from 'react-native-vector-icons/AntDesign';
+import { useDispatch, useSelector } from 'react-redux';
 import { RootStackParamList } from '../../../App';
+import colors from '../../../config/tailwind/colors';
+import { getApiBaseUrl } from '../../api';
+import Image from '../../components/Image';
+import PetTypeImage from '../../components/PetTypeImage';
 import Text from '../../components/Text';
 import AccountSwitcherModal from '../../components/modals/AccountSwitcherModal';
-import SettingsModal from '../../components/modals/SettingsModal';
-import { LOGOUT } from '../../redux/constants';
-import { PressableOpacity } from 'react-native-pressable-opacity';
-import { getApiBaseUrl } from '../../api';
-import PetTypeImage from '../../components/PetTypeImage';
 import EditProfileModal from '../../components/modals/EditProfileModal';
-import { FontAwesome, Ionicon } from '../../utils/Icons';
-import { LogBox } from 'react-native';
-import colors from '../../../config/tailwind/colors';
-import Image from '../../components/Image';
-import { GeneralReducer } from '../../redux/reducers/generalReducer';
-import { useLazyQuery } from '@apollo/client';
+import SettingsModal from '../../components/modals/SettingsModal';
 import { GET_POSTS_BY_PET_ID } from '../../graphql/Post';
+import { LOGOUT } from '../../redux/constants';
+import { OwnerDAO, PetDAO, ProfileReducer } from '../../redux/reducers/profileReducer';
+import { FontAwesome, Ionicon } from '../../utils/Icons';
 
 LogBox.ignoreLogs(["Modal with 'pageSheet' presentation style and 'transparent' value is not supported."]); // Ignore log notification by message
 
@@ -43,9 +40,8 @@ const Profile = ({ navigation }: Props) => {
   });
 
   const gridPosts = useMemo(() => {
-    console.log(postsData?.getPostsByPetId?.posts);
     return postsData?.getPostsByPetId?.posts || [];
-  }, [postsData]);
+  }, [postsData, pets]);
 
   useEffect(() => {
     if (owner?.id === currentUserId?.id) {
@@ -59,6 +55,7 @@ const Profile = ({ navigation }: Props) => {
       setCurrentUser(pet);
       getPostsByPetId({ variables: { petId: pet.id } });
     }
+
   }, [currentUserId, owner, pets]);
 
   const setEditProfileModalVisible = useCallback((bool: boolean) => {
@@ -294,7 +291,7 @@ const Profile = ({ navigation }: Props) => {
         <View>{renderPostsGrid()}</View>
       </ScrollView>
     );
-  }, [currentUser, setEditProfileModalVisible, getApiBaseUrl]);
+  }, [currentUser, setEditProfileModalVisible, getApiBaseUrl, gridPosts]);
 
   return (
     <SafeAreaView className='flex-1 h-full items-center bg-themeBg'>
