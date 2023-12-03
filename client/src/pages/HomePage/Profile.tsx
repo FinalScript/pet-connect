@@ -115,24 +115,24 @@ const Profile = ({ navigation }: Props) => {
   }, []);
 
   const renderPostsGrid = () => {
+    console.log('Rendering grid with posts:', gridPosts);
+
+    if (gridPosts.length === 0) {
+      return (
+        <View className='flex-1 items-center justify-center mt-10'>
+          <Text className='text-lg text-center text-gray-500 px-4'>No posts available</Text>
+        </View>
+      );
+    }
     return (
-      <View className="flex-row flex-wrap justify-start mt-5">
+      <View className='flex-row flex-wrap justify-start mt-5 -mx-1'>
         {gridPosts.map((post, index) => {
           return (
-            <View
-              key={index}
-              className="w-1/3 p-1 rounded-lg overflow-hidden ">
-              <Image className="w-full h-auto aspect-square" source={{ uri: post.Media.url }} resizeMode='cover' />
+            <View key={index} className='w-1/3 p-0.5'>
+              <Image className='w-full h-auto aspect-square' source={{ uri: post.Media.url }} resizeMode='cover' />
             </View>
           );
         })}
-        {gridPosts.length % 3 !== 0 &&
-          [...Array(3 - (gridPosts.length % 3))].map((_, index) => (
-            <View
-              key={`placeholder-${index}`}
-              className="w-1/3 p-1 bg-transparent mb-2.5"
-            />
-          ))}
       </View>
     );
   };
@@ -232,7 +232,7 @@ const Profile = ({ navigation }: Props) => {
 
   const petProfile = useMemo(() => {
     return (
-      <ScrollView className='w-full px-5'>
+      <ScrollView className='w-full '>
         <View className='mt-5 flex items-center justify-between'>
           <View className='relative'>
             <Pressable onPress={() => {}}>
@@ -266,10 +266,10 @@ const Profile = ({ navigation }: Props) => {
             </View>
           </View>
         </View>
-        <View className='mt-2'>
+        <View className='mt-2 px-5'>
           <Text className='text-base'>{(currentUser as PetDAO)?.description}</Text>
         </View>
-        <View className='mt-5 flex-row gap-x-3'>
+        <View className='mt-5 flex-row gap-x-3 px-5'>
           <PressableOpacity
             className='flex-1'
             activeOpacity={0.6}
