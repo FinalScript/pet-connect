@@ -1,5 +1,5 @@
-import React, { useCallback, useState } from 'react';
-import { Modal, View } from 'react-native';
+import React, { useCallback, useRef, useState } from 'react';
+import { Dimensions, View } from 'react-native';
 import { TapGestureHandler } from 'react-native-gesture-handler';
 import { HapticFeedbackTypes, trigger } from 'react-native-haptic-feedback';
 import AntDesign from 'react-native-vector-icons/AntDesign';
@@ -10,6 +10,9 @@ import Text from './Text';
 import CommentsModel from './modals/CommentsModal';
 import Image from './Image';
 import PetTypeImage from './PetTypeImage';
+import { Modalize } from 'react-native-modalize';
+import { Portal } from 'react-native-portalize';
+import colors from '../../config/tailwind/colors';
 
 interface Props {
   post: PostType;
@@ -34,16 +37,14 @@ export default function Post({ post }: Props) {
   const [postLiked, setPostLiked] = useState(false);
   const CAPTION_LINES = 2;
   const [moreCaption, setMoreCaption] = useState(false);
-  const [modal, setModal] = useState({ comments: false });
-
-  const setCommentsModalVisible = useCallback((bool: boolean) => {
-    setModal((prev) => {
-      return { ...prev, comments: bool };
-    });
-  }, []);
+  const modalizeRef = useRef<Modalize>(null);
 
   const openCommentsModal = () => {
-    setCommentsModalVisible(true);
+    modalizeRef.current?.open();
+  };
+
+  const closeCommentsModal = () => {
+    modalizeRef.current?.close();
   };
 
   const handleLike = () => {
@@ -63,17 +64,18 @@ export default function Post({ post }: Props) {
   return (
     <View className='bg-white mb-5 pb-2 w-full shadow-sm shadow-themeShadow'>
       <View className='flex-row w-full items-center px-3 py-2'>
-        <Modal
-          style={{ justifyContent: 'center', alignItems: 'center', margin: 0 }}
-          presentationStyle='pageSheet'
-          visible={modal.comments}
-          animationType='slide'
-          transparent
-          onRequestClose={() => {
-            setCommentsModalVisible(false);
-          }}>
-          <CommentsModel comments={comments} closeModal={() => setCommentsModalVisible(false)} />
-        </Modal>
+        <Portal>
+          <Modalize
+            ref={modalizeRef}
+            handlePosition='inside'
+            handleStyle={{ backgroundColor: colors.themeText }}
+            modalHeight={Dimensions.get('screen').height * 0.85}
+            scrollViewProps={{ scrollEnabled: false }}
+            useNativeDriver>
+            <CommentsModel comments={comments} closeModal={() => closeCommentsModal()} />
+          </Modalize>
+        </Portal>
+
         <View className='w-14 h-14 mr-2 aspect-square'>
           <Image className='flex w-full h-full rounded-lg' source={{ uri: post.author.ProfilePicture?.url }} />
         </View>

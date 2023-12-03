@@ -72,6 +72,7 @@ export const deletePost = async (id: string) => {
 export const getPostsByPetId = async (petId: string) => {
   const posts = await Post.findAll({
     where: { petId },
+    order: [['dateCreated', 'DESC']],
     include: [
       {
         model: Media,

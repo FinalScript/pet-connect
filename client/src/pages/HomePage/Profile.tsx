@@ -1,7 +1,7 @@
 import { useLazyQuery } from '@apollo/client';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { useCallback, useEffect, useMemo, useState } from 'react';
-import { LogBox, Modal, Pressable, SafeAreaView, ScrollView, Share, View } from 'react-native';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { Dimensions, LogBox, Modal, Pressable, SafeAreaView, ScrollView, Share, View } from 'react-native';
 import { useAuth0 } from 'react-native-auth0';
 import { PressableOpacity } from 'react-native-pressable-opacity';
 import AntDesign from 'react-native-vector-icons/AntDesign';
@@ -19,6 +19,8 @@ import { GET_POSTS_BY_PET_ID } from '../../graphql/Post';
 import { LOGOUT } from '../../redux/constants';
 import { OwnerDAO, PetDAO, ProfileReducer } from '../../redux/reducers/profileReducer';
 import { FontAwesome, Ionicon } from '../../utils/Icons';
+import { Portal } from 'react-native-portalize';
+import { Modalize } from 'react-native-modalize';
 
 LogBox.ignoreLogs(["Modal with 'pageSheet' presentation style and 'transparent' value is not supported."]); // Ignore log notification by message
 
@@ -34,6 +36,7 @@ const Profile = ({ navigation }: Props) => {
   const [currentUser, setCurrentUser] = useState<OwnerDAO | PetDAO>();
   const { clearSession } = useAuth0();
   const [modals, setModals] = useState({ accountSwitcher: false, settings: false, editProfile: false });
+  const accountSwitcherModalRef = useRef<Modalize>(null);
 
   const [getPostsByPetId, { data: postsData }] = useLazyQuery(GET_POSTS_BY_PET_ID, {
     fetchPolicy: 'network-only',
@@ -55,7 +58,6 @@ const Profile = ({ navigation }: Props) => {
       setCurrentUser(pet);
       getPostsByPetId({ variables: { petId: pet.id } });
     }
-
   }, [currentUserId, owner, pets]);
 
   const setEditProfileModalVisible = useCallback((bool: boolean) => {
@@ -312,23 +314,23 @@ const Profile = ({ navigation }: Props) => {
           />
         </Modal>
       )}
-      <Modal
-        style={{ justifyContent: 'center', alignItems: 'center', margin: 0 }}
-        presentationStyle='pageSheet'
-        visible={modals.accountSwitcher}
-        animationType='slide'
-        transparent
-        onRequestClose={() => {
-          setAccountSwitchModalVisible(false);
-        }}>
-        <AccountSwitcherModal
-          navigateNewPet={navigateNewPet}
-          currentUser={currentUser}
-          closeModal={() => {
-            setAccountSwitchModalVisible(false);
-          }}
-        />
-      </Modal>
+      <Portal>
+        <Modalize
+          ref={accountSwitcherModalRef}
+          handlePosition='inside'
+          handleStyle={{ backgroundColor: colors.themeText }}
+          modalHeight={Dimensions.get('screen').height * 0.55}
+          scrollViewProps={{ scrollEnabled: false }}
+          useNativeDriver>
+          <AccountSwitcherModal
+            navigateNewPet={navigateNewPet}
+            currentUser={currentUser}
+            closeModal={() => {
+              accountSwitcherModalRef.current?.close();
+            }}
+          />
+        </Modalize>
+      </Portal>
       <Modal
         visible={modals.settings}
         presentationStyle='pageSheet'
@@ -344,7 +346,7 @@ const Profile = ({ navigation }: Props) => {
         />
       </Modal>
       <View className='flex-row items-center justify-between w-full px-5'>
-        <Pressable onPress={() => setAccountSwitchModalVisible(true)}>
+        <Pressable onPress={() => accountSwitcherModalRef.current?.open()}>
           <View className='flex-row items-center gap-x-2'>
             <FontAwesome name='lock' style={{ marginBottom: 5 }} size={25} color={colors.themeText} />
             <Text className='font-bold text-3xl'>{currentUser?.username}</Text>
