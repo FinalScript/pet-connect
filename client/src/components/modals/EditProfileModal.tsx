@@ -93,7 +93,7 @@ const EditProfileModal = ({ closeModal, profile, forPet = false }: Props) => {
 
       let profilePictureData: UploadToFirebaseResult;
 
-      if (formData.profilePicture) {
+      if (formData.profilePicture && formData.profilePicture !== initialProfilePicture) {
         const uploadRes =
           formData.profilePicture.path && formData.profilePicture.path !== initialProfilePicture.path
             ? await updateFileInFirebase(formData.profilePicture, initialProfilePicture.path)
@@ -193,7 +193,7 @@ const EditProfileModal = ({ closeModal, profile, forPet = false }: Props) => {
               />
             </View>
 
-            <View className=''>
+            <View className='mt-3'>
               <Text className='mb-2 pl-4 text-xl font-bold text-themeText'>Name</Text>
               <TextInput
                 editable={!loading}

@@ -257,23 +257,21 @@ const ErrorContactingServer = () => {
     <SafeAreaView className='bg-themeBg h-full flex justify-center items-center'>
       <Text className='text-themeText font-bold text-3xl'>Error contacting server</Text>
 
-      {__DEV__ && (
-        <>
-          <PressableOpacity
-            activeOpacity={0.8}
-            className='mt-14 bg-green-400 px-6 py-3 rounded-xl'
-            onPress={() => {
-              dispatch({ type: DEVELOPER_PANEL_OPEN, payload: true });
-            }}>
-            <Text className='text-xl font-bold text-themeText text-center'>Open Developer Panel</Text>
-          </PressableOpacity>
+      <>
+        <PressableOpacity
+          activeOpacity={0.8}
+          className='mt-14 bg-green-400 px-6 py-3 rounded-xl'
+          onPress={() => {
+            dispatch({ type: DEVELOPER_PANEL_OPEN, payload: true });
+          }}>
+          <Text className='text-xl font-bold text-themeText text-center'>Open Developer Panel</Text>
+        </PressableOpacity>
 
-          <View className='absolute bottom-10'>
-            <ActivityIndicator size={'small'} />
-            <Text className='mt-5'>Searching for local devices with port 54321</Text>
-          </View>
-        </>
-      )}
+        <View className='absolute bottom-10'>
+          <ActivityIndicator size={'small'} />
+          <Text className='mt-5'>Searching for local devices with port 54321</Text>
+        </View>
+      </>
     </SafeAreaView>
   );
 };

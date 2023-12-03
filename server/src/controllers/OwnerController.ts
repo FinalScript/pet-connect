@@ -1,6 +1,7 @@
 import { Owner, OwnerCreationDAO, OwnerUpdateDAO } from '../models/Owner';
 import { Pet } from '../models/Pet';
 import { ProfilePicture } from '../models/ProfilePicture';
+import { Op } from 'sequelize';
 
 export const getOwner = async (authId: string) => {
   const owner = await Owner.findOne({
@@ -63,4 +64,31 @@ export const deleteOwner = async (authId: string) => {
   await owner.destroy();
 
   return { message: 'Owner and pets deleted' };
+};
+
+export const searchForOwners = async (searchValue: string) => {
+  const owners = await Owner.findAll({
+    where: {
+      [Op.or]: [{ name: { [Op.like]: '%' + searchValue + '%' } }, { username: { [Op.like]: '%' + searchValue + '%' } }],
+    },
+    limit: 20,
+    include: [
+      {
+        model: ProfilePicture,
+        as: 'ProfilePicture',
+      },
+      {
+        model: Pet,
+        as: 'Pets',
+        include: [
+          {
+            model: ProfilePicture,
+            as: 'ProfilePicture',
+          },
+        ],
+      },
+    ],
+  });
+
+  return owners;
 };

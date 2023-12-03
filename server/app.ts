@@ -75,7 +75,7 @@ const init = async () => {
       as: 'likes',
     });
 
-    await sequelize.sync({ alter: true });
+    await sequelize.sync({  });
   });
 
   const port = process.env.PORT || 54321;

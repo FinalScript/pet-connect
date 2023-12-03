@@ -1,6 +1,7 @@
 import { PetUpdateDAO } from './../models/Pet';
 import { Pet, PetCreationDAO } from '../models/Pet';
 import { ProfilePicture } from '../models/ProfilePicture';
+import { Op } from 'sequelize';
 
 export const getPetById = async (id: string) => {
   const pet = await Pet.findOne({
@@ -56,4 +57,21 @@ export const updatePet = async (id: string, data: PetUpdateDAO) => {
 
   // Return the updated pet object
   return pet;
+};
+
+export const searchForPets = async (searchValue: string) => {
+  const pets = await Pet.findAll({
+    where: {
+      [Op.or]: [{ name: { [Op.like]: '%' + searchValue + '%' } }, { username: { [Op.like]: '%' + searchValue + '%' } }],
+    },
+    limit: 20,
+    include: [
+      {
+        model: ProfilePicture,
+        as: 'ProfilePicture',
+      },
+    ],
+  });
+
+  return pets;
 };
