@@ -1,7 +1,7 @@
 import { useLazyQuery } from '@apollo/client';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { Dimensions, LogBox, Modal, Pressable, SafeAreaView, ScrollView, Share, View } from 'react-native';
+import { Animated, Dimensions, LogBox, Modal, Pressable, SafeAreaView, ScrollView, Share, View } from 'react-native';
 import { useAuth0 } from 'react-native-auth0';
 import { PressableOpacity } from 'react-native-pressable-opacity';
 import AntDesign from 'react-native-vector-icons/AntDesign';
@@ -21,6 +21,7 @@ import { OwnerDAO, PetDAO, ProfileReducer } from '../../redux/reducers/profileRe
 import { FontAwesome, Ionicon } from '../../utils/Icons';
 import { Portal } from 'react-native-portalize';
 import { Modalize } from 'react-native-modalize';
+import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
 
 LogBox.ignoreLogs(["Modal with 'pageSheet' presentation style and 'transparent' value is not supported."]); // Ignore log notification by message
 
@@ -37,6 +38,7 @@ const Profile = ({ navigation }: Props) => {
   const { clearSession } = useAuth0();
   const [modals, setModals] = useState({ accountSwitcher: false, settings: false, editProfile: false });
   const accountSwitcherModalRef = useRef<Modalize>(null);
+  const Tab = createMaterialTopTabNavigator();
 
   const [getPostsByPetId, { data: postsData }] = useLazyQuery(GET_POSTS_BY_PET_ID, {
     fetchPolicy: 'network-only',
@@ -115,7 +117,6 @@ const Profile = ({ navigation }: Props) => {
 
   const renderPostsGrid = () => {
     console.log('Rendering grid with posts:', gridPosts);
-
     if (gridPosts.length === 0) {
       return (
         <View className='flex-1 items-center justify-center mt-10'>
@@ -134,6 +135,14 @@ const Profile = ({ navigation }: Props) => {
         })}
       </View>
     );
+  };
+
+  const PostsTab = () => {
+    return <View className='flex-1 w-full h-full'>{renderPostsGrid()}</View>;
+  };
+
+  const LikesTab = () => {
+    return <View>{renderPostsGrid()}</View>;
   };
 
   const ownerProfile = useMemo(() => {
@@ -290,7 +299,51 @@ const Profile = ({ navigation }: Props) => {
             </View>
           </PressableOpacity>
         </View>
-        <View>{renderPostsGrid()}</View>
+        <View>
+          <ScrollView>
+            <Tab.Navigator
+              initialRouteName='Posts'
+              screenOptions={{
+                tabBarPressOpacity: 100,
+                tabBarPressColor: 'rgba(0,0,0,0)',
+                tabBarActiveTintColor: colors.themeText,
+                tabBarContentContainerStyle: {
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                },
+                tabBarIndicatorStyle: { display: 'none' },
+                tabBarItemStyle: { width: 100, paddingHorizontal: 0, position: 'relative', padding: 0, height: 45 },
+                tabBarLabelStyle: {
+                  fontSize: 18,
+                  fontFamily: 'BalooChettan2-Regular',
+                },
+                tabBarStyle: {
+                  width: 'auto',
+                  height: 'auto',
+                  backgroundColor: 'transparent',
+                },
+              }}>
+              <Tab.Screen
+                name='Posts'
+                children={() => {
+                  return (
+                    <View className='flex-1 h-full bg-themeBg'>
+                      <Animated.ScrollView
+                        scrollEventThrottle={16}
+                        className='w-full pt-10'/>
+                        <View className='flex justify-center items-center h-full pb-5 px-3'>
+                          <>
+                            <View className='flex-1 w-full h-full'>{renderPostsGrid()}</View>
+                          </>
+                        </View>                      
+                    </View>
+                  );
+                }}
+              />
+              <Tab.Screen name='Likes' component={LikesTab} />
+            </Tab.Navigator>
+          </ScrollView>
+        </View>
       </ScrollView>
     );
   }, [currentUser, setEditProfileModalVisible, getApiBaseUrl, gridPosts]);
