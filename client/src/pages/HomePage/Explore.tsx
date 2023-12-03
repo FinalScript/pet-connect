@@ -16,30 +16,39 @@ const Explore = () => {
   const [searchResultsPets, setSearchResultsPets] = useState<Pet[]>([]);
   const [searchResultsOwners, setSearchResultsOwners] = useState<Owner[]>([]);
   const [loading, setLoading] = useState(false);
+  const [message, setMessage] = useState('Type in a keyword');
 
   useEffect(() => {
-    if (formData.search && formData.search.trim() !== '') {
-      setLoading(true);
-      // make delayed requests everytime search or filter parameters are changed
-      const delayDebounceFn = setTimeout(async () => {
-        const results = await executeSearch({ variables: { search: formData.search.trim() } });
+    setMessage('');
+    setLoading(true);
 
-        if (results.data?.search.results) {
-          const data = results.data?.search.results;
-
-          setSearchResultsOwners(data.owners);
-          setSearchResultsPets(data.pets);
-        }
-
-        setLoading(false);
-      }, 450);
-
-      return () => clearTimeout(delayDebounceFn);
-    } else {
-      setLoading(false);
+    if (formData.search?.trim() === '') {
+      setMessage('Type in a keyword');
       setSearchResultsOwners([]);
       setSearchResultsPets([]);
+      setLoading(false);
+      return;
     }
+
+    // make delayed requests everytime search or filter parameters are changed
+    const delayDebounceFn = setTimeout(async () => {
+      const results = await executeSearch({ variables: { search: formData.search.trim() } });
+
+      if (results.data?.search.results) {
+        const data = results.data?.search.results;
+
+        setSearchResultsOwners(data.owners);
+        setSearchResultsPets(data.pets);
+
+        if (data.owners.length === 0 && data.pets.length === 0) {
+          setMessage('No results found');
+        }
+      }
+
+      setLoading(false);
+    }, 450);
+
+    return () => clearTimeout(delayDebounceFn);
   }, [formData.search]);
 
   return (
@@ -81,7 +90,7 @@ const Explore = () => {
       </View>
 
       <View className='w-full px-5 mt-5'>
-        {searchResultsOwners.length === 0 && searchResultsPets.length === 0 && <Text className='text-center'>Nothing to see here...</Text>}
+        {message && <Text className='text-center'>{message}</Text>}
 
         {searchResultsOwners.length > 0 && <Text className='text-center'>Owners</Text>}
 
