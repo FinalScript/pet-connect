@@ -8,6 +8,7 @@ import { Ionicon } from '../../utils/Icons';
 import Image from '../../components/Image';
 import Text from '../../components/Text';
 import PetTypeImage from '../../components/PetTypeImage';
+import { ScrollView } from 'react-native-gesture-handler';
 
 const Explore = () => {
   const [executeSearch] = useLazyQuery(SEARCH, { fetchPolicy: 'cache-first' });
@@ -89,7 +90,7 @@ const Explore = () => {
         {loading && <ActivityIndicator className='pr-10 mr-5 absolute right-0' size='small' color={'#321411'} />}
       </View>
 
-      <View className='w-full px-5 mt-5'>
+      <ScrollView className='w-full px-5 mt-5'>
         {message && <Text className='text-center'>{message}</Text>}
 
         {searchResultsOwners.length > 0 && <Text className='text-center'>Owners</Text>}
@@ -153,7 +154,7 @@ const Explore = () => {
             </View>
           );
         })}
-      </View>
+      </ScrollView>
     </SafeAreaView>
   );
 };
