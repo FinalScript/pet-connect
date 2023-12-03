@@ -72,6 +72,7 @@ export default function Post({ post }: Props) {
             handleStyle={{ backgroundColor: colors.themeText }}
             scrollViewProps={{ scrollEnabled: false }}
             adjustToContentHeight
+            //@ts-expect-error
             keyboardAvoidingBehavior=''
             useNativeDriver>
             <CommentsModel comments={comments} closeModal={() => closeCommentsModal()} />
