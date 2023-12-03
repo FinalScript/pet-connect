@@ -1,10 +1,150 @@
-import { View, Text, SafeAreaView } from 'react-native';
-import React from 'react';
+import { useLazyQuery } from '@apollo/client';
+import React, { useEffect, useState } from 'react';
+import { ActivityIndicator, Pressable, SafeAreaView, TextInput, View } from 'react-native';
+import colors from '../../../config/tailwind/colors';
+import { Owner, Pet } from '../../__generated__/graphql';
+import { SEARCH } from '../../graphql/Search';
+import { Ionicon } from '../../utils/Icons';
+import Image from '../../components/Image';
+import Text from '../../components/Text';
+import PetTypeImage from '../../components/PetTypeImage';
 
 const Explore = () => {
+  const [executeSearch] = useLazyQuery(SEARCH);
+  const [formData, setFormData] = useState({ search: '' });
+  const [focus, setFocus] = useState({ search: false });
+  const [searchResultsPets, setSearchResultsPets] = useState<Pet[]>([]);
+  const [searchResultsOwners, setSearchResultsOwners] = useState<Owner[]>([]);
+  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    if (formData.search) {
+      setLoading(true);
+      // make delayed requests everytime search or filter parameters are changed
+      const delayDebounceFn = setTimeout(async () => {
+        const results = await executeSearch({ variables: { search: formData.search } });
+
+        if (results.data?.search.results) {
+          const data = results.data?.search.results;
+
+          setSearchResultsOwners(data.owners);
+          setSearchResultsPets(data.pets);
+        }
+
+        setLoading(false);
+      }, 450);
+
+      return () => clearTimeout(delayDebounceFn);
+    } else {
+      setLoading(false);
+      setSearchResultsOwners([]);
+      setSearchResultsPets([]);
+    }
+  }, [formData.search]);
+
   return (
-    <SafeAreaView className='flex justify-center items-center h-full bg-themeBg'>
-      <Text>Explore</Text>
+    <SafeAreaView className='flex-1 h-full items-center bg-themeBg'>
+      <View className='mt-3 w-full flex-row items-center px-10 relative'>
+        <View className='absolute px-10 ml-5 z-10'>
+          <Ionicon name='search' size={25} color={colors.themeText} />
+        </View>
+        <TextInput
+          className={
+            (focus.search === true ? 'border-themeActive' : 'border-transparent') +
+            ' bg-themeInput border-[5px] shadow-sm shadow-themeShadow w-full rounded-3xl px-5 py-3 pl-14 text-lg'
+          }
+          style={{ fontFamily: 'BalooChettan2-Regular' }}
+          placeholderTextColor={'#444444bb'}
+          value={formData.search}
+          onChangeText={(e) => {
+            setFormData((prev) => {
+              return { ...prev, search: e };
+            });
+          }}
+          onFocus={() => {
+            setFocus((prev) => {
+              return { ...prev, search: true };
+            });
+          }}
+          onBlur={() => {
+            setFocus((prev) => {
+              return { ...prev, search: false };
+            });
+          }}
+          maxLength={100}
+          returnKeyType={'search'}
+          blurOnSubmit={true}
+          placeholder='Search'
+          scrollEnabled={false}
+        />
+        {loading && <ActivityIndicator className='pr-10 mr-5 absolute right-0' size='small' color={'#321411'} />}
+      </View>
+
+      <View className='w-full px-5 mt-5'>
+        {searchResultsOwners.length === 0 && searchResultsPets.length === 0 && <Text className='text-center'>Nothing to see here...</Text>}
+
+        {searchResultsOwners.length > 0 && <Text className='text-center'>Owners</Text>}
+
+        {searchResultsOwners.map((result) => {
+          return (
+            <View key={result.id} className='flex-row items-center mt-5'>
+              <Pressable
+                className={'border-transparent flex flex-row flex-1 items-center rounded-3xl bg-themeInput border-4 shadow-sm shadow-themeShadow py-1 px-1'}
+                onPress={() => {
+                  //
+                }}>
+                <View className='h-16 w-16 flex justify-center items-center mr-5'>
+                  {result?.ProfilePicture?.url ? (
+                    <Image
+                      className='w-full h-full rounded-2xl'
+                      source={{
+                        uri: result.ProfilePicture.url,
+                      }}
+                    />
+                  ) : (
+                    <Ionicon name='person' size={50} style={{ opacity: 0.8 }} />
+                  )}
+                </View>
+                <View className='flex'>
+                  <Text className='text-2xl -mb-1'>{result?.name}</Text>
+                  <Text className='text-sm'>@{result?.username}</Text>
+                </View>
+              </Pressable>
+            </View>
+          );
+        })}
+
+        {searchResultsPets.length > 0 && <Text className='mt-5 text-center'>Pets</Text>}
+
+        {searchResultsPets.map((result) => {
+          return (
+            <View key={result.id} className='flex-row items-center mt-5'>
+              <Pressable
+                className={'border-transparent flex flex-row flex-1 items-center rounded-3xl bg-themeInput border-4 shadow-sm shadow-themeShadow py-1 px-1'}
+                onPress={() => {
+                  //
+                }}>
+                <View className='h-16 w-16 flex justify-center items-center mr-5'>
+                  {result?.ProfilePicture?.url ? (
+                    <Image
+                      className='w-full h-full rounded-2xl'
+                      source={{
+                        uri: result.ProfilePicture.url,
+                      }}
+                    />
+                  ) : (
+                    <PetTypeImage type={result.type} className='w-full h-full' />
+                  )}
+                </View>
+                <View className='flex'>
+                  <Text className='text-2xl -mb-1'>{result?.name}</Text>
+                  <Text className='text-sm'>@{result?.username}</Text>
+                </View>
+              </Pressable>
+            </View>
+          );
+        })}
+      </View>
     </SafeAreaView>
   );
 };
