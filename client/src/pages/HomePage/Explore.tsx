@@ -10,7 +10,7 @@ import Text from '../../components/Text';
 import PetTypeImage from '../../components/PetTypeImage';
 
 const Explore = () => {
-  const [executeSearch] = useLazyQuery(SEARCH);
+  const [executeSearch] = useLazyQuery(SEARCH, { fetchPolicy: 'cache-first' });
   const [formData, setFormData] = useState({ search: '' });
   const [focus, setFocus] = useState({ search: false });
   const [searchResultsPets, setSearchResultsPets] = useState<Pet[]>([]);
@@ -18,11 +18,11 @@ const Explore = () => {
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    if (formData.search) {
+    if (formData.search && formData.search.trim() !== '') {
       setLoading(true);
       // make delayed requests everytime search or filter parameters are changed
       const delayDebounceFn = setTimeout(async () => {
-        const results = await executeSearch({ variables: { search: formData.search } });
+        const results = await executeSearch({ variables: { search: formData.search.trim() } });
 
         if (results.data?.search.results) {
           const data = results.data?.search.results;
