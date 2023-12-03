@@ -65,3 +65,36 @@ export const CREATE_POST = gql(`
     }
   }
 `);
+
+export const GET_POSTS_BY_PET_ID = gql(`
+query getPostsByPetId($petId: String!) {
+  getPostsByPetId(petId: $petId) {
+    posts {
+      id
+      petId
+      description
+      Media {
+        id
+        name
+        url
+        path
+        type
+      }
+      author {
+        id
+        username
+        name
+        type
+        description
+        location
+        ProfilePicture {
+          id
+          name
+          url
+          path
+          type
+        }
+      }
+    }
+  }
+}`);

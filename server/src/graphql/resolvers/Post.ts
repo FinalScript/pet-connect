@@ -1,6 +1,6 @@
 import { GraphQLError } from 'graphql/error';
 import { getPetById } from '../../controllers/PetController';
-import { createPost, deletePost, getAllPosts, getPostById, updatePost } from '../../controllers/PostController';
+import { createPost, deletePost, getAllPosts, getPostById, getPostsByPetId, updatePost } from '../../controllers/PostController';
 import { Post } from '../../models/Post';
 import { Media } from '../../models/Media';
 import { Pet } from '../../models/Pet';
@@ -49,7 +49,11 @@ export const PostResolver = {
               model: Media,
               as: 'Media',
             },
-            { model: Pet, as: 'author' },
+            {
+              model: Pet,
+              as: 'author',
+              include: [{ all: true }],
+            },
           ],
         });
       } catch (e) {
@@ -144,8 +148,30 @@ export const PostResolver = {
   Query: {
     getAllPosts: async (_, {}, context) => {
       const posts = await getAllPosts();
-      
+
       return { posts };
+    },
+    
+    getPostsByPetId: async (_, { petId }, context) => {
+      if (!petId) {
+        throw new GraphQLError('Pet ID missing', {
+          extensions: {
+            code: 'BAD_USER_INPUT',
+          },
+        });
+      }
+
+      try {
+        const posts = await getPostsByPetId(petId);
+        return {posts};
+      } catch (error) {
+        console.error(error);
+        throw new GraphQLError('Error fetching posts', {
+          extensions: {
+            code: 'INTERNAL_SERVER_ERROR',
+          },
+        });
+      }
     },
 
     getPostById: async (_, { id }, context) => {

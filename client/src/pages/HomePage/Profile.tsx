@@ -1,37 +1,50 @@
-import { useCallback, useEffect, useMemo, useState } from 'react';
-import { Image, Modal, Pressable, SafeAreaView, ScrollView, Share, View } from 'react-native';
-import { useDispatch, useSelector } from 'react-redux';
-import { OwnerDAO, PetDAO, ProfileReducer } from '../../redux/reducers/profileReducer';
-
-import { useNavigation } from '@react-navigation/native';
+import { useLazyQuery } from '@apollo/client';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { Dimensions, LogBox, Modal, Pressable, SafeAreaView, ScrollView, Share, View } from 'react-native';
 import { useAuth0 } from 'react-native-auth0';
+import { PressableOpacity } from 'react-native-pressable-opacity';
 import AntDesign from 'react-native-vector-icons/AntDesign';
+import { useDispatch, useSelector } from 'react-redux';
 import { RootStackParamList } from '../../../App';
+import colors from '../../../config/tailwind/colors';
+import { getApiBaseUrl } from '../../api';
+import Image from '../../components/Image';
+import PetTypeImage from '../../components/PetTypeImage';
 import Text from '../../components/Text';
 import AccountSwitcherModal from '../../components/modals/AccountSwitcherModal';
-import SettingsModal from '../../components/modals/SettingsModal';
-import { LOGOUT } from '../../redux/constants';
-
-import { PressableOpacity } from 'react-native-pressable-opacity';
-import { getApiBaseUrl } from '../../api';
-import PetTypeImage from '../../components/PetTypeImage';
 import EditProfileModal from '../../components/modals/EditProfileModal';
-import { Ionicon } from '../../utils/Icons';
-import { LogBox } from 'react-native';
+import SettingsModal from '../../components/modals/SettingsModal';
+import { GET_POSTS_BY_PET_ID } from '../../graphql/Post';
+import { LOGOUT } from '../../redux/constants';
+import { OwnerDAO, PetDAO, ProfileReducer } from '../../redux/reducers/profileReducer';
+import { FontAwesome, Ionicon } from '../../utils/Icons';
+import { Portal } from 'react-native-portalize';
+import { Modalize } from 'react-native-modalize';
+
 LogBox.ignoreLogs(["Modal with 'pageSheet' presentation style and 'transparent' value is not supported."]); // Ignore log notification by message
 
-type NavigationProp = NativeStackNavigationProp<RootStackParamList, 'Home'>;
+interface Props {
+  navigation: NativeStackNavigationProp<RootStackParamList, 'Home', undefined>;
+}
 
-const Profile = () => {
+const Profile = ({ navigation }: Props) => {
   const dispatch = useDispatch();
   const owner = useSelector((state: ProfileReducer) => state.profile.owner);
   const pets = useSelector((state: ProfileReducer) => state.profile.pets);
   const currentUserId = useSelector((state: ProfileReducer) => state.profile.currentUser);
   const [currentUser, setCurrentUser] = useState<OwnerDAO | PetDAO>();
-  const navigation = useNavigation<NavigationProp>();
   const { clearSession } = useAuth0();
   const [modals, setModals] = useState({ accountSwitcher: false, settings: false, editProfile: false });
+  const accountSwitcherModalRef = useRef<Modalize>(null);
+
+  const [getPostsByPetId, { data: postsData }] = useLazyQuery(GET_POSTS_BY_PET_ID, {
+    fetchPolicy: 'network-only',
+  });
+
+  const gridPosts = useMemo(() => {
+    return postsData?.getPostsByPetId?.posts || [];
+  }, [postsData, pets]);
 
   useEffect(() => {
     if (owner?.id === currentUserId?.id) {
@@ -43,6 +56,7 @@ const Profile = () => {
 
     if (pet) {
       setCurrentUser(pet);
+      getPostsByPetId({ variables: { petId: pet.id } });
     }
   }, [currentUserId, owner, pets]);
 
@@ -98,6 +112,29 @@ const Profile = () => {
       console.log(error.message);
     }
   }, []);
+
+  const renderPostsGrid = () => {
+    console.log('Rendering grid with posts:', gridPosts);
+
+    if (gridPosts.length === 0) {
+      return (
+        <View className='flex-1 items-center justify-center mt-10'>
+          <Text className='text-lg text-center text-gray-500 px-4'>No posts available</Text>
+        </View>
+      );
+    }
+    return (
+      <View className='flex-row flex-wrap justify-start mt-5 -mx-1'>
+        {gridPosts.map((post, index) => {
+          return (
+            <View key={index} className='w-1/3 p-0.5'>
+              <Image className='w-full h-auto aspect-square' source={{ uri: post.Media.url }} resizeMode='cover' />
+            </View>
+          );
+        })}
+      </View>
+    );
+  };
 
   const ownerProfile = useMemo(() => {
     return (
@@ -194,7 +231,7 @@ const Profile = () => {
 
   const petProfile = useMemo(() => {
     return (
-      <ScrollView className='w-full px-5'>
+      <ScrollView className='w-full '>
         <View className='mt-5 flex items-center justify-between'>
           <View className='relative'>
             <Pressable onPress={() => {}}>
@@ -216,6 +253,7 @@ const Profile = () => {
             </View>
           </View>
           <Text className='text-4xl font-semibold mt-5'>{currentUser?.name}</Text>
+          <Text className='text-lg'>@{currentUser?.username}</Text>
           <View className='px-5 flex flex-row gap-x-5 mt-2'>
             <View className='flex items-center'>
               <Text className='text-xl font-semibold'>5</Text>
@@ -227,10 +265,10 @@ const Profile = () => {
             </View>
           </View>
         </View>
-        <View className='mt-2'>
+        <View className='mt-2 px-5'>
           <Text className='text-base'>{(currentUser as PetDAO)?.description}</Text>
         </View>
-        <View className='mt-5 flex-row gap-x-3'>
+        <View className='mt-5 flex-row gap-x-3 px-5'>
           <PressableOpacity
             className='flex-1'
             activeOpacity={0.6}
@@ -252,9 +290,10 @@ const Profile = () => {
             </View>
           </PressableOpacity>
         </View>
+        <View>{renderPostsGrid()}</View>
       </ScrollView>
     );
-  }, [currentUser, setEditProfileModalVisible, getApiBaseUrl]);
+  }, [currentUser, setEditProfileModalVisible, getApiBaseUrl, gridPosts]);
 
   return (
     <SafeAreaView className='flex-1 h-full items-center bg-themeBg'>
@@ -275,23 +314,23 @@ const Profile = () => {
           />
         </Modal>
       )}
-      <Modal
-        style={{ justifyContent: 'center', alignItems: 'center', margin: 0 }}
-        presentationStyle='pageSheet'
-        visible={modals.accountSwitcher}
-        animationType='slide'
-        transparent
-        onRequestClose={() => {
-          setAccountSwitchModalVisible(false);
-        }}>
-        <AccountSwitcherModal
-          navigateNewPet={navigateNewPet}
-          currentUser={currentUser}
-          closeModal={() => {
-            setAccountSwitchModalVisible(false);
-          }}
-        />
-      </Modal>
+      <Portal>
+        <Modalize
+          ref={accountSwitcherModalRef}
+          handlePosition='inside'
+          handleStyle={{ backgroundColor: colors.themeText }}
+          adjustToContentHeight
+          scrollViewProps={{ scrollEnabled: false }}
+          useNativeDriver>
+          <AccountSwitcherModal
+            navigateNewPet={navigateNewPet}
+            currentUser={currentUser}
+            closeModal={() => {
+              accountSwitcherModalRef.current?.close();
+            }}
+          />
+        </Modalize>
+      </Portal>
       <Modal
         visible={modals.settings}
         presentationStyle='pageSheet'
@@ -307,9 +346,9 @@ const Profile = () => {
         />
       </Modal>
       <View className='flex-row items-center justify-between w-full px-5'>
-        <Pressable onPress={() => setAccountSwitchModalVisible(true)}>
-          <View className='flex-row items-center gap-2'>
-            <Ionicon name='lock-closed-outline' size={15} />
+        <Pressable onPress={() => accountSwitcherModalRef.current?.open()}>
+          <View className='flex-row items-center gap-x-2'>
+            <FontAwesome name='lock' style={{ marginBottom: 5 }} size={25} color={colors.themeText} />
             <Text className='font-bold text-3xl'>{currentUser?.username}</Text>
             <Ionicon name='chevron-down' size={15} />
           </View>

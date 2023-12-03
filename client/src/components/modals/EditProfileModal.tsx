@@ -1,11 +1,11 @@
 import { useMutation } from '@apollo/client';
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { ActivityIndicator, Image, Keyboard, ModalProps, Pressable, TextInput, View } from 'react-native';
+import React, { useCallback, useMemo, useState } from 'react';
+import { ActivityIndicator, Keyboard, ModalProps, Pressable, TextInput, View } from 'react-native';
 import { launchImageLibrary } from 'react-native-image-picker';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import { PressableOpacity } from 'react-native-pressable-opacity';
 import { useDispatch } from 'react-redux';
-import * as env from '../../../env.json';
+import { ProfilePicture } from '../../__generated__/graphql';
 import { UploadToFirebaseResult, storageFolders, updateFileInFirebase, uploadToFirebase } from '../../firebase/firebaseStorage';
 import { UPDATE_OWNER } from '../../graphql/Owner';
 import { UPDATE_PET } from '../../graphql/Pet';
@@ -14,7 +14,7 @@ import { OwnerDAO, PetDAO } from '../../redux/reducers/profileReducer';
 import { Ionicon } from '../../utils/Icons';
 import Text from '../Text';
 import UsernameInput from '../UsernameInput';
-import { ProfilePicture } from '../../__generated__/graphql';
+import Image from '../Image';
 
 interface Props extends ModalProps {
   closeModal: () => void;

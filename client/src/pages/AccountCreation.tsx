@@ -2,7 +2,7 @@ import { useMutation } from '@apollo/client';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { ActivityIndicator, Image, Keyboard, Pressable, TouchableHighlight, View } from 'react-native';
+import { ActivityIndicator, Keyboard, Pressable, TouchableHighlight, View } from 'react-native';
 import { TextInput } from 'react-native-gesture-handler';
 import { HapticFeedbackTypes, trigger } from 'react-native-haptic-feedback';
 import { Asset, launchImageLibrary } from 'react-native-image-picker';
@@ -18,6 +18,7 @@ import { CURRENT_USER, LOADING, OWNER_DATA } from '../redux/constants';
 import { GeneralReducer } from '../redux/reducers/generalReducer';
 import { FontAwesome } from '../utils/Icons';
 import { options } from '../utils/hapticFeedbackOptions';
+import Image from '../components/Image';
 
 type NavigationProp = NativeStackNavigationProp<RootStackParamList, 'Account Creation'>;
 

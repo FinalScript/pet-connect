@@ -10,6 +10,11 @@ export const createPost = async (data: PostCreationAttributes) => {
         model: Media,
         as: 'Media',
       },
+      {
+        model: Pet,
+        as: 'author',
+        include: [{ all: true }],
+      },
     ],
   });
   return newPost;
@@ -67,10 +72,16 @@ export const deletePost = async (id: string) => {
 export const getPostsByPetId = async (petId: string) => {
   const posts = await Post.findAll({
     where: { petId },
+    order: [['dateCreated', 'DESC']],
     include: [
       {
         model: Media,
         as: 'Media',
+      },
+      {
+        model: Pet,
+        as: 'author',
+        include: [{ all: true }],
       },
     ],
   });

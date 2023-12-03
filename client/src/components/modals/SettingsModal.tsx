@@ -1,14 +1,13 @@
-import { Dimensions, ModalProps, View } from 'react-native';
-
+import { ModalProps, View } from 'react-native';
+import { useMutation } from '@apollo/client';
+import { useCallback } from 'react';
 import { Button } from 'react-native';
-import Text from '../Text';
 import { PressableOpacity } from 'react-native-pressable-opacity';
 import { useDispatch, useSelector } from 'react-redux';
+import { DELETE_PET } from '../../graphql/Pet';
 import { CURRENT_USER, DEVELOPER_PANEL_OPEN, REMOVE_PET } from '../../redux/constants';
 import { ProfileReducer } from '../../redux/reducers/profileReducer';
-import { useMutation } from '@apollo/client';
-import { DELETE_PET } from '../../graphql/Pet';
-import { useCallback } from 'react';
+import Text from '../Text';
 
 interface Props extends ModalProps {
   logout: () => void;
