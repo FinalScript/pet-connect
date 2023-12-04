@@ -12,8 +12,9 @@ interface Props {
   pet: PetDAO;
   isSelected: boolean;
   setIsSelected: Dispatch<SetStateAction<string | undefined>>;
+  goToProfile: () => void;
 }
-const PetCard = ({ pet, isSelected, setIsSelected }: Props) => {
+const PetCard = ({ pet, goToProfile, isSelected, setIsSelected }: Props) => {
   const height = useSharedValue(80);
 
   useEffect(() => {
@@ -26,7 +27,11 @@ const PetCard = ({ pet, isSelected, setIsSelected }: Props) => {
 
   return (
     <Animated.View style={{ height }} className={'flex-1 rounded-2xl bg-themeInput shadow-sm shadow-themeShadow ' + (isSelected ? 'mb-6' : 'mb-3')}>
-      <Pressable className={'flex flex-row flex-1'} onPress={() => {}}>
+      <Pressable
+        className={'flex flex-row flex-1'}
+        onPress={() => {
+          goToProfile();
+        }}>
         <Animated.View style={{ width: height, minWidth: 80 }} className={'aspect-square flex justify-center items-center mr-5 p-1'}>
           {pet?.ProfilePicture?.url ? (
             <Image
