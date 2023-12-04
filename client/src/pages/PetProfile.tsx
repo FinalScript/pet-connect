@@ -23,10 +23,11 @@ const PetProfile = ({
   const ownerId = useSelector((state: ProfileReducer) => state.profile.owner?.id);
   const isOwner = useMemo(() => ownerId === pet.OwnerId, [ownerId, pet]);
   const [getPostsByPetId, { data: postsData }] = useLazyQuery(GET_POSTS_BY_PET_ID, {
-    fetchPolicy: 'cache-first',
+    fetchPolicy: 'network-only',
   });
   const [modals, setModals] = useState({ accountSwitcher: false, settings: false, editProfile: false });
   const gridPosts = useMemo(() => {
+    console.log(postsData?.getPostsByPetId.posts);
     return postsData?.getPostsByPetId?.posts || [];
   }, [postsData]);
 

@@ -9,10 +9,16 @@ import Text from '../../components/Text';
 import { GET_ALL_POSTS } from '../../graphql/Post';
 import { REPLACE_FEED } from '../../redux/constants';
 import { GeneralReducer } from '../../redux/reducers/generalReducer';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { RootStackParamList } from '../../../App';
 
 const Tab = createMaterialTopTabNavigator();
 
-const Feed = () => {
+interface Props {
+  navigation: NativeStackNavigationProp<RootStackParamList, 'Home', undefined>;
+}
+
+const Feed = ({ navigation }: Props) => {
   const dispatch = useDispatch();
   const [refreshing, setRefreshing] = useState(false);
   const [getAllPosts] = useLazyQuery(GET_ALL_POSTS, { fetchPolicy: 'network-only' });
@@ -67,14 +73,14 @@ const Feed = () => {
           },
           tabBarIndicatorStyle: { display: 'none' },
           tabBarItemStyle: {
-            width: 100,
+            width: 120,
             paddingHorizontal: 0,
             position: 'relative',
             padding: 0,
             height: 45,
           },
           tabBarLabelStyle: {
-            fontSize: 18,
+            fontSize: 15,
             fontFamily: 'BalooChettan2-Regular',
           },
           tabBarStyle: {
@@ -121,7 +127,15 @@ const Feed = () => {
                   refreshControl={<RefreshControl tintColor={'black'} refreshing={refreshing} onRefresh={onRefresh} />}>
                   <View className='flex justify-center items-center h-full pb-[100px]'>
                     {posts.map((post, i) => {
-                      return <Post key={i} post={post} />;
+                      return (
+                        <Post
+                          key={i}
+                          post={post}
+                          goToProfile={() => {
+                            navigation.navigate('Pet Profile', { pet: post.author });
+                          }}
+                        />
+                      );
                     })}
                     {posts.length === 0 && (
                       <>
