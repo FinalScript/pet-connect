@@ -27,7 +27,6 @@ const PetProfile = ({
   });
   const [modals, setModals] = useState({ accountSwitcher: false, settings: false, editProfile: false });
   const gridPosts = useMemo(() => {
-    console.log(postsData?.getPostsByPetId.posts);
     return postsData?.getPostsByPetId?.posts || [];
   }, [postsData]);
 
