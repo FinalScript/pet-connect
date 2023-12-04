@@ -119,30 +119,22 @@ const Profile = ({ navigation }: Props) => {
     console.log('Rendering grid with posts:', gridPosts);
     if (gridPosts.length === 0) {
       return (
-        <View className='flex-1 items-center justify-center mt-10'>
+        <View className='flex-1 items-center justify-center'>
           <Text className='text-lg text-center text-gray-500 px-4'>No posts available</Text>
         </View>
       );
     }
     return (
-      <View className='flex-row flex-wrap justify-start mt-5 -mx-1'>
+      <View className='flex-row flex-wrap justify-start -mx-[1px]'>
         {gridPosts.map((post, index) => {
           return (
-            <View key={index} className='w-1/3 p-0.5'>
+            <View key={index} className='w-1/3 p-[1px]'>
               <Image className='w-full h-auto aspect-square' source={{ uri: post.Media.url }} resizeMode='cover' />
             </View>
           );
         })}
       </View>
     );
-  };
-
-  const PostsTab = () => {
-    return <View className='flex-1 w-full h-full'>{renderPostsGrid()}</View>;
-  };
-
-  const LikesTab = () => {
-    return <View>{renderPostsGrid()}</View>;
   };
 
   const ownerProfile = useMemo(() => {
@@ -240,7 +232,7 @@ const Profile = ({ navigation }: Props) => {
 
   const petProfile = useMemo(() => {
     return (
-      <ScrollView className='w-full '>
+      <ScrollView className='w-full mb-12'>
         <View className='mt-5 flex items-center justify-between'>
           <View className='relative'>
             <Pressable onPress={() => {}}>
@@ -299,51 +291,7 @@ const Profile = ({ navigation }: Props) => {
             </View>
           </PressableOpacity>
         </View>
-        <View>
-          <ScrollView>
-            <Tab.Navigator
-              initialRouteName='Posts'
-              screenOptions={{
-                tabBarPressOpacity: 100,
-                tabBarPressColor: 'rgba(0,0,0,0)',
-                tabBarActiveTintColor: colors.themeText,
-                tabBarContentContainerStyle: {
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                },
-                tabBarIndicatorStyle: { display: 'none' },
-                tabBarItemStyle: { width: 100, paddingHorizontal: 0, position: 'relative', padding: 0, height: 45 },
-                tabBarLabelStyle: {
-                  fontSize: 18,
-                  fontFamily: 'BalooChettan2-Regular',
-                },
-                tabBarStyle: {
-                  width: 'auto',
-                  height: 'auto',
-                  backgroundColor: 'transparent',
-                },
-              }}>
-              <Tab.Screen
-                name='Posts'
-                children={() => {
-                  return (
-                    <View className='flex-1 h-full bg-themeBg'>
-                      <Animated.ScrollView
-                        scrollEventThrottle={16}
-                        className='w-full pt-10'/>
-                        <View className='flex justify-center items-center h-full pb-5 px-3'>
-                          <>
-                            <View className='flex-1 w-full h-full'>{renderPostsGrid()}</View>
-                          </>
-                        </View>                      
-                    </View>
-                  );
-                }}
-              />
-              <Tab.Screen name='Likes' component={LikesTab} />
-            </Tab.Navigator>
-          </ScrollView>
-        </View>
+        <View className='border-t-themeActive border-t-2 mt-5'>{renderPostsGrid()}</View>
       </ScrollView>
     );
   }, [currentUser, setEditProfileModalVisible, getApiBaseUrl, gridPosts]);
