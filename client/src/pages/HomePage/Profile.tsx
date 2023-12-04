@@ -22,6 +22,7 @@ import { FontAwesome, Ionicon } from '../../utils/Icons';
 import { Portal } from 'react-native-portalize';
 import { Modalize } from 'react-native-modalize';
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
+import PetCard from '../../components/PetCard';
 
 LogBox.ignoreLogs(["Modal with 'pageSheet' presentation style and 'transparent' value is not supported."]); // Ignore log notification by message
 
@@ -41,7 +42,7 @@ const Profile = ({ navigation }: Props) => {
   const [getPostsByPetId, { data: postsData }] = useLazyQuery(GET_POSTS_BY_PET_ID, {
     fetchPolicy: 'network-only',
   });
-  const [selectedPetId, setSelectedPetId] = useState('');
+  const [selectedPetId, setSelectedPetId] = useState<string>();
 
   const gridPosts = useMemo(() => {
     return postsData?.getPostsByPetId?.posts || [];
@@ -140,63 +141,7 @@ const Profile = ({ navigation }: Props) => {
     return (
       <View className='mt-10 flex-col justify-center'>
         {pets.map((pet) => {
-          return (
-            <Pressable
-              key={pet.id}
-              className={
-                'border-transparent flex flex-row flex-1 rounded-3xl bg-themeInput border-4 shadow-sm shadow-themeShadow py-1 px-1 ' +
-                (pet.id === selectedPetId ? 'h-32 flex-row items-center mb-6' : 'h-20 flex-row items-center mb-6')
-              }
-              onPress={() => {
-                console.log('I clciekd it');
-                setSelectedPetId((prev) => {
-                  if (prev === pet.id) {
-                    return '';
-                  } else {
-                    return pet.id;
-                  }
-                });
-              }}>
-              <View className={'aspect-square flex justify-center items-center mr-5 ' + (pet.id === selectedPetId ? 'w-28' : 'w-16')}>
-                {pet?.ProfilePicture?.url ? (
-                  <Image
-                    className='w-full h-full rounded-2xl'
-                    source={{
-                      uri: pet.ProfilePicture.url,
-                    }}
-                  />
-                ) : (
-                  (pet as PetDAO)?.type && <PetTypeImage type={(pet as PetDAO)?.type} className='w-10 h-10' />
-                )}
-              </View>
-              <View className='flex justify-between'>
-                <View className='flex'>
-                  <View className='flex-row items-center'>
-                    <Text className='text-xl font-medium'>{pet?.name}</Text>
-                    {(pet as PetDAO)?.type && <PetTypeImage type={(pet as PetDAO)?.type} className='w-5 h-5 ml-2' />}
-                  </View>
-                  <Text className='text-sm'>@{pet?.username}</Text>
-                </View>
-
-                {pet.id === selectedPetId && (
-                  <View className='flex-row'>
-                    <View className='flex items-center mr-3'>
-                      <Text className='text-base'>{pets.length}</Text>
-                      <Text className='text-xs'>Posts</Text>
-                    </View>
-                    <View className='flex items-center mr-3'>
-                      <Text className='text-base'>20</Text>
-                      <Text className='text-xs'>Followers</Text>
-                    </View>
-                    <View className='flex items-center mr-3'>
-                      <Text className='text-base'>25</Text>
-                      <Text className='text-xs'>Likes</Text>
-                    </View>
-                  </View>
-                )}
-              </View>
-            </Pressable>
-          );
+          return <PetCard key={pet.id} pet={pet} isSelected={selectedPetId === pet.id} setIsSelected={setSelectedPetId} />;
         })}
       </View>
     );
