@@ -4,6 +4,7 @@ import { createPet, deletePet, getPetById, getPetByUsername, updatePet } from '.
 import { isTokenValid } from '../../middleware/token';
 import { Pet } from '../../models/Pet';
 import { ProfilePicture } from '../../models/ProfilePicture';
+import { Owner } from '../../models/Owner';
 
 export const PetResolver = {
   Mutation: {
@@ -89,6 +90,7 @@ export const PetResolver = {
                 model: ProfilePicture,
                 as: 'ProfilePicture',
               },
+              { model: Owner, attributes: ['id'], as: 'Owner' },
             ],
           });
         }
