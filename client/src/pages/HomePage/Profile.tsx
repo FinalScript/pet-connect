@@ -41,6 +41,7 @@ const Profile = ({ navigation }: Props) => {
   const [getPostsByPetId, { data: postsData }] = useLazyQuery(GET_POSTS_BY_PET_ID, {
     fetchPolicy: 'network-only',
   });
+  const [selectedPetId, setSelectedPetId] = useState('');
 
   const gridPosts = useMemo(() => {
     return postsData?.getPostsByPetId?.posts || [];
@@ -135,6 +136,72 @@ const Profile = ({ navigation }: Props) => {
     );
   };
 
+  const renderOwnerPets = useMemo(() => {
+    return (
+      <View className='mt-10 flex-col justify-center'>
+        {pets.map((pet) => {
+          return (
+            <Pressable
+              key={pet.id}
+              className={
+                'border-transparent flex flex-row flex-1 rounded-3xl bg-themeInput border-4 shadow-sm shadow-themeShadow py-1 px-1 ' +
+                (pet.id === selectedPetId ? 'h-32 flex-row items-center mb-6' : 'h-20 flex-row items-center mb-6')
+              }
+              onPress={() => {
+                console.log('I clciekd it');
+                setSelectedPetId((prev) => {
+                  if (prev === pet.id) {
+                    return '';
+                  } else {
+                    return pet.id;
+                  }
+                });
+              }}>
+              <View className={'aspect-square flex justify-center items-center mr-5 ' + (pet.id === selectedPetId ? 'w-28' : 'w-16')}>
+                {pet?.ProfilePicture?.url ? (
+                  <Image
+                    className='w-full h-full rounded-2xl'
+                    source={{
+                      uri: pet.ProfilePicture.url,
+                    }}
+                  />
+                ) : (
+                  (pet as PetDAO)?.type && <PetTypeImage type={(pet as PetDAO)?.type} className='w-10 h-10' />
+                )}
+              </View>
+              <View className='flex justify-between'>
+                <View className='flex'>
+                  <View className='flex-row items-center'>
+                    <Text className='text-xl font-medium'>{pet?.name}</Text>
+                    {(pet as PetDAO)?.type && <PetTypeImage type={(pet as PetDAO)?.type} className='w-5 h-5 ml-2' />}
+                  </View>
+                  <Text className='text-sm'>@{pet?.username}</Text>
+                </View>
+
+                {pet.id === selectedPetId && (
+                  <View className='flex-row'>
+                    <View className='flex items-center mr-3'>
+                      <Text className='text-base'>{pets.length}</Text>
+                      <Text className='text-xs'>Posts</Text>
+                    </View>
+                    <View className='flex items-center mr-3'>
+                      <Text className='text-base'>20</Text>
+                      <Text className='text-xs'>Followers</Text>
+                    </View>
+                    <View className='flex items-center mr-3'>
+                      <Text className='text-base'>25</Text>
+                      <Text className='text-xs'>Likes</Text>
+                    </View>
+                  </View>
+                )}
+              </View>
+            </Pressable>
+          );
+        })}
+      </View>
+    );
+  }, [pets, selectedPetId, setSelectedPetId]);
+
   const ownerProfile = useMemo(() => {
     return (
       <ScrollView className='w-full px-5'>
@@ -196,60 +263,10 @@ const Profile = ({ navigation }: Props) => {
             </View>
           </PressableOpacity>
         </View>
-
-        <View className='mt-10 flex-col justify-center'>
-          {pets.map((pet) => {
-            return (
-              <View key={pet.id} className='h-28 flex-row items-center mb-6'>
-                <Pressable
-                  className={'border-transparent flex flex-row flex-1 rounded-3xl bg-themeInput border-4 shadow-sm shadow-themeShadow py-1 px-1'}
-                  onPress={() => {
-                    //
-                  }}>
-                  <View className='w-28 aspect-square flex justify-center items-center mr-5'>
-                    {pet?.ProfilePicture?.url ? (
-                      <Image
-                        className='w-full h-full rounded-2xl'
-                        source={{
-                          uri: pet.ProfilePicture.url,
-                        }}
-                      />
-                    ) : (
-                      (pet as PetDAO)?.type && <PetTypeImage type={(pet as PetDAO)?.type} className='w-10 h-10' />
-                    )}
-                  </View>
-                  <View className='h-full flex justify-between'>
-                    <View className='flex'>
-                      <View className='flex-row items-center'>
-                        <Text className='text-xl font-medium'>{pet?.name}</Text>
-                        {(pet as PetDAO)?.type && <PetTypeImage type={(pet as PetDAO)?.type} className='w-5 h-5 ml-2' />}
-                      </View>
-                      <Text className='text-sm'>@{pet?.username}</Text>
-                    </View>
-
-                    <View className='flex-row -mb-2'>
-                      <View className='flex items-center mr-3'>
-                        <Text className='text-base'>{pets.length}</Text>
-                        <Text className='text-xs'>Posts</Text>
-                      </View>
-                      <View className='flex items-center mr-3'>
-                        <Text className='text-base'>20</Text>
-                        <Text className='text-xs'>Followers</Text>
-                      </View>
-                      <View className='flex items-center mr-3'>
-                        <Text className='text-base'>25</Text>
-                        <Text className='text-xs'>Likes</Text>
-                      </View>
-                    </View>
-                  </View>
-                </Pressable>
-              </View>
-            );
-          })}
-        </View>
+        <View>{renderOwnerPets}</View>
       </ScrollView>
     );
-  }, [currentUser, pets, setEditProfileModalVisible, getApiBaseUrl]);
+  }, [currentUser, pets, setEditProfileModalVisible, getApiBaseUrl, renderOwnerPets]);
 
   const petProfile = useMemo(() => {
     return (
@@ -324,6 +341,7 @@ const Profile = ({ navigation }: Props) => {
       </ScrollView>
     );
   }, [currentUser, setEditProfileModalVisible, getApiBaseUrl, gridPosts]);
+
   return (
     <SafeAreaView className='flex-1 h-full items-center bg-themeBg'>
       {currentUser && (
