@@ -21,7 +21,7 @@ export const PetTypeDef = `#graphql
         description: String
         location: String
         ProfilePicture: ProfilePicture
-        OwnerId: String!
+        Owner: Owner
     }
     
     type PetResponse {

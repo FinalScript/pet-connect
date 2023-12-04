@@ -132,7 +132,7 @@ const Feed = ({ navigation }: Props) => {
                           key={i}
                           post={post}
                           goToProfile={() => {
-                            navigation.navigate('Pet Profile', { pet: post.author });
+                            navigation.navigate('Pet Profile', { petId: post.author.id });
                           }}
                         />
                       );

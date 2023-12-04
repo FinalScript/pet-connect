@@ -24,7 +24,13 @@ export const SEARCH = gql(`
             type
             description
             location
-            OwnerId
+            Owner {
+              id
+              authId
+              name
+              username
+              location
+            }
             ProfilePicture {
               id
               name
@@ -41,7 +47,13 @@ export const SEARCH = gql(`
           type
           description
           location
-          OwnerId
+          Owner {
+            id
+            authId
+            name
+            username
+            location
+          }
           ProfilePicture {
             id
             name

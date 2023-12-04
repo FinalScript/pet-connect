@@ -1,5 +1,5 @@
 import { GraphQLError } from 'graphql';
-import { deleteOwner, getOwner, getOwnerByUsername, updateOwner } from '../../controllers/OwnerController';
+import { deleteOwner, getOwner, getOwnerById, getOwnerByUsername, updateOwner } from '../../controllers/OwnerController';
 import { isTokenValid } from '../../middleware/token';
 import { Owner } from '../../models/Owner';
 import { ProfilePicture } from '../../models/ProfilePicture';
@@ -217,6 +217,28 @@ export const OwnerResolver = {
       }
 
       const owner = await getOwner(jwtResult.id);
+
+      if (!owner) {
+        throw new GraphQLError('Owner not found');
+      }
+
+      return { owner };
+    },
+
+    getOwnerById: async (_, { id }, context) => {
+      const { token } = context;
+
+      const jwtResult = await isTokenValid(token);
+
+      if (jwtResult?.error || !jwtResult?.id) {
+        throw new GraphQLError(jwtResult?.error.toString(), {
+          extensions: {
+            code: 'UNAUTHORIZED',
+          },
+        });
+      }
+
+      const owner = await getOwnerById(id);
 
       if (!owner) {
         throw new GraphQLError('Owner not found');

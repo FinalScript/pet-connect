@@ -11,29 +11,36 @@ import { GET_POSTS_BY_PET_ID } from '../graphql/Post';
 import EditProfileModal from '../components/modals/EditProfileModal';
 import { PetDAO, ProfileReducer } from '../redux/reducers/profileReducer';
 import { useSelector } from 'react-redux';
+import { GET_PET_BY_ID } from '../graphql/Pet';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Pet Profile'>;
 
 const PetProfile = ({
   navigation,
   route: {
-    params: { pet },
+    params: { petId },
   },
 }: Props) => {
   const ownerId = useSelector((state: ProfileReducer) => state.profile.owner?.id);
-  const isOwner = useMemo(() => ownerId === pet.OwnerId, [ownerId, pet]);
+  const [getPet, { data: petData }] = useLazyQuery(GET_PET_BY_ID);
   const [getPostsByPetId, { data: postsData }] = useLazyQuery(GET_POSTS_BY_PET_ID, {
     fetchPolicy: 'network-only',
   });
+  const pet = useMemo(() => petData?.getPetById.pet, [petData, petId]);
+  const isOwner = useMemo(() => ownerId === pet?.Owner?.id, [ownerId, pet?.Owner?.id]);
   const [modals, setModals] = useState({ accountSwitcher: false, settings: false, editProfile: false });
   const gridPosts = useMemo(() => {
     return postsData?.getPostsByPetId?.posts || [];
   }, [postsData]);
 
   useEffect(() => {
-    navigation.setOptions({ title: pet.username });
-    getPostsByPetId({ variables: { petId: pet.id } });
-  }, [pet]);
+    getPet({ variables: { id: petId } });
+    getPostsByPetId({ variables: { petId } });
+  }, [petId]);
+
+  useEffect(() => {
+    navigation.setOptions({ title: pet?.username });
+  }, [pet, petData]);
 
   const setEditProfileModalVisible = useCallback((bool: boolean) => {
     setModals((prev) => {
@@ -81,6 +88,10 @@ const PetProfile = ({
     );
   }, [gridPosts]);
 
+  if (!pet || !pet.Owner) {
+    return <View></View>;
+  }
+
   return (
     <SafeAreaView className='bg-themeBg h-full p-5 flex flex-col flew-grow'>
       {isOwner && (
@@ -114,7 +125,7 @@ const PetProfile = ({
                     }}
                   />
                 ) : (
-                  pet.type && <PetTypeImage type={pet.type} className='w-10 h-10' />
+                  pet?.type && <PetTypeImage type={pet?.type} className='w-10 h-10' />
                 )}
               </View>
             </Pressable>
@@ -134,16 +145,28 @@ const PetProfile = ({
                 <Text className='text-md'>Following</Text>
               </View>
             </View>
-            {pet.type && (
+            {pet?.type && (
               <View className='flex-row items-center mt-4 bg-themeShadow px-3 rounded-xl'>
-                <Text className='text-base mr-2'>{pet.type.charAt(0) + pet.type.substring(1).toLowerCase()}</Text>
-                <PetTypeImage type={pet.type} className='w-5 h-5' />
+                <Text className='text-sm mr-2'>{pet.type.charAt(0) + pet.type.substring(1).toLowerCase()}</Text>
+                <PetTypeImage type={pet.type} className='w-4 h-4' />
               </View>
             )}
           </View>
         </View>
         <View className='mt-3'>
-          <Text className='text-xl font-bold'>{pet.name}</Text>
+          <Text className='text-xl font-bold'>{pet?.name}</Text>
+
+          <View className='flex-row gap-x-1'>
+            <Text>Owned by</Text>
+            <Pressable
+              onPress={() => {
+                console.log(pet.Owner?.id)
+                pet.Owner?.id && navigation.navigate('Owner Profile', { ownerId: pet.Owner.id });
+              }}>
+              <Text className='font-medium text-blue-500'>@{pet.Owner.username}</Text>
+            </Pressable>
+          </View>
+
           {pet.description && <Text className='text-md'>{pet.description}</Text>}
         </View>
         <View className='mt-5 flex-row gap-x-3'>

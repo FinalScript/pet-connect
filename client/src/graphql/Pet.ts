@@ -10,7 +10,13 @@ export const CREATE_PET = gql(`
         type
         description
         location
-        OwnerId
+        Owner {
+          id
+          authId
+          name
+          username
+          location
+        }
         ProfilePicture {
           id
           name
@@ -66,4 +72,42 @@ export const DELETE_PET = gql(`
       message
     }
   }
+`);
+
+export const GET_PET_BY_ID = gql(`
+  query GetPetById($id: String!) {
+    getPetById(id: $id) {
+      pet {
+        id
+        username
+        name
+        type
+        description
+        location
+        ProfilePicture {
+          id
+          name
+          url
+          path
+          type
+        }
+        Owner {
+          id
+          authId
+          name
+          username
+          location
+          Pets {
+            id
+            username
+            name
+            type
+            description
+            location
+          }
+        }
+      }
+    }
+  }
+
 `);

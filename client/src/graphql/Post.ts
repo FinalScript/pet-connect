@@ -21,7 +21,13 @@ export const GET_ALL_POSTS = gql(`
           type
           description
           location
-          OwnerId
+          Owner {
+            id
+            authId
+            name
+            username
+            location
+          }
           ProfilePicture {
             id
             name
@@ -54,7 +60,13 @@ export const CREATE_POST = gql(`
           username
           name
           type
-          OwnerId
+          Owner {
+            id
+            authId
+            name
+            username
+            location
+          }
           ProfilePicture {
             id
             name
@@ -89,7 +101,13 @@ query getPostsByPetId($petId: String!) {
         type
         description
         location
-        OwnerId
+        Owner {
+          id
+          authId
+          name
+          username
+          location
+        }
         ProfilePicture {
           id
           name

@@ -57,7 +57,7 @@ const init = async () => {
 
   connectToDB().then(async () => {
     Owner.hasMany(Pet, { onDelete: 'cascade' });
-    Pet.hasOne(Owner, { as: 'Owner' });
+    Pet.belongsTo(Owner, { as: 'Owner' });
     Pet.hasOne(ProfilePicture);
     Owner.hasOne(ProfilePicture);
 
@@ -76,7 +76,7 @@ const init = async () => {
       as: 'likes',
     });
 
-    await sequelize.sync({ alter: true });
+    await sequelize.sync({});
   });
 
   const port = process.env.PORT || 54321;

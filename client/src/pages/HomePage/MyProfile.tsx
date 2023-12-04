@@ -92,7 +92,7 @@ const MyProfile = ({ navigation }: Props) => {
               key={pet.id}
               pet={pet}
               goToProfile={() => {
-                navigation.navigate('Pet Profile', { pet: pet });
+                navigation.navigate('Pet Profile', { petId: pet.id });
               }}
               isSelected={selectedPetId === pet.id}
               setIsSelected={setSelectedPetId}

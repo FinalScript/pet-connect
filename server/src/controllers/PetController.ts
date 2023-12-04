@@ -16,7 +16,6 @@ export const getPetById = async (id: string) => {
       },
       {
         model: Owner,
-        attributes: ['id'],
         as: 'Owner',
       },
     ],
@@ -37,7 +36,6 @@ export const getPetByUsername = async (username: string) => {
       },
       {
         model: Owner,
-        attributes: ['id'],
         as: 'Owner',
       },
     ],
@@ -83,7 +81,6 @@ export const searchForPets = async (searchValue: string) => {
       },
       {
         model: Owner,
-        attributes: ['id'],
         as: 'Owner',
       },
     ],

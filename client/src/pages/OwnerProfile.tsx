@@ -12,7 +12,7 @@ import EditProfileModal from '../components/modals/EditProfileModal';
 import { OwnerDAO, PetDAO, ProfileReducer } from '../redux/reducers/profileReducer';
 import { useSelector } from 'react-redux';
 import { Ionicon } from '../utils/Icons';
-import { GET_OWNER } from '../graphql/Owner';
+import { GET_OWNER, GET_OWNER_BY_ID } from '../graphql/Owner';
 import PetCard from '../components/PetCard';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Owner Profile'>;
@@ -20,20 +20,26 @@ type Props = NativeStackScreenProps<RootStackParamList, 'Owner Profile'>;
 const OwnerProfile = ({
   navigation,
   route: {
-    params: { owner },
+    params: { ownerId },
   },
 }: Props) => {
-  const ownerId = useSelector((state: ProfileReducer) => state.profile.owner?.id);
-  const isOwner = useMemo(() => ownerId === owner.id, [ownerId, owner]);
+  const currentOwnerId = useSelector((state: ProfileReducer) => state.profile.owner?.id);
+  const [getOwner, { data: ownerData }] = useLazyQuery(GET_OWNER_BY_ID);
+  const owner = useMemo(() => ownerData?.getOwnerById.owner, [ownerData]);
+  const isOwner = useMemo(() => currentOwnerId === ownerId, [ownerId, currentOwnerId]);
   const [modals, setModals] = useState({ editProfile: false });
   const [selectedPetId, setSelectedPetId] = useState<string>();
 
   const pets = useMemo(() => {
-    return owner.Pets || [];
+    return owner?.Pets || [];
   }, [owner]);
 
   useEffect(() => {
-    navigation.setOptions({ title: owner.username });
+    getOwner({ variables: { id: ownerId } });
+  }, [ownerId, getOwner]);
+
+  useEffect(() => {
+    navigation.setOptions({ title: owner?.username });
   }, [owner]);
 
   const setEditProfileModalVisible = useCallback((bool: boolean) => {
@@ -75,7 +81,7 @@ const OwnerProfile = ({
               key={pet?.id}
               pet={pet}
               goToProfile={() => {
-                navigation.navigate('Pet Profile', { pet: pet });
+                navigation.navigate('Pet Profile', { petId: pet.id });
               }}
               isSelected={selectedPetId === pet.id}
               setIsSelected={setSelectedPetId}

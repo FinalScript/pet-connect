@@ -32,8 +32,8 @@ export type RootStackParamList = {
     initial?: boolean;
   };
   'Account Creation': undefined;
-  'Pet Profile': { pet: Pet };
-  'Owner Profile': { owner: Owner };
+  'Pet Profile': { petId: string };
+  'Owner Profile': { ownerId: string };
 };
 
 export type RootRouteProps<RouteName extends keyof RootStackParamList> = RouteProp<RootStackParamList, RouteName>;
