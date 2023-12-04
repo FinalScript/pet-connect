@@ -1,18 +1,16 @@
-import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { NavigationContainer, RouteProp } from '@react-navigation/native';
+import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import React, { useState } from 'react';
 import { Animated, Modal, StyleSheet, TouchableOpacity } from 'react-native';
 import { CurvedBottomBar } from 'react-native-curved-bottom-bar';
+import { RootStackParamList } from '../../../App';
 import colors from '../../../config/tailwind/colors';
-import tailwind from 'tailwindcss/colors';
 import { Ionicon } from '../../utils/Icons';
 import Explore from './Explore';
 import Feed from './Feed';
 import Inbox from './Inbox';
+import MyProfile from './MyProfile';
 import PostPage from './PostPage';
-import Profile from './Profile';
-import { NativeStackScreenProps } from '@react-navigation/native-stack';
-import { RootStackParamList } from '../../../App';
 
 export type HomeStackParamList = {
   Feed: undefined;
@@ -84,7 +82,7 @@ const HomeNavigator = ({ navigation }: HomeScreenProps) => {
           <CurvedBottomBar.Screen name='Feed' position='LEFT' component={() => <Feed />} />
           <CurvedBottomBar.Screen name='Explore' component={() => <Explore />} position='LEFT' />
           <CurvedBottomBar.Screen name='Inbox' component={() => <Inbox />} position='RIGHT' />
-          <CurvedBottomBar.Screen name='Profile' component={() => <Profile navigation={navigation} />} position='RIGHT' />
+          <CurvedBottomBar.Screen name='Profile' component={() => <MyProfile navigation={navigation} />} position='RIGHT' />
         </CurvedBottomBar.Navigator>
       </NavigationContainer>
     </>

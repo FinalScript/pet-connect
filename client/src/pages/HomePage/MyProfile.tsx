@@ -1,7 +1,7 @@
 import { useLazyQuery } from '@apollo/client';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { Dimensions, LogBox, Modal, Pressable, SafeAreaView, ScrollView, Share, View } from 'react-native';
+import { Animated, Dimensions, LogBox, Modal, Pressable, SafeAreaView, ScrollView, Share, View } from 'react-native';
 import { useAuth0 } from 'react-native-auth0';
 import { PressableOpacity } from 'react-native-pressable-opacity';
 import AntDesign from 'react-native-vector-icons/AntDesign';
@@ -21,6 +21,8 @@ import { OwnerDAO, PetDAO, ProfileReducer } from '../../redux/reducers/profileRe
 import { FontAwesome, Ionicon } from '../../utils/Icons';
 import { Portal } from 'react-native-portalize';
 import { Modalize } from 'react-native-modalize';
+import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
+import PetCard from '../../components/PetCard';
 
 LogBox.ignoreLogs(["Modal with 'pageSheet' presentation style and 'transparent' value is not supported."]); // Ignore log notification by message
 
@@ -28,47 +30,20 @@ interface Props {
   navigation: NativeStackNavigationProp<RootStackParamList, 'Home', undefined>;
 }
 
-const Profile = ({ navigation }: Props) => {
+const MyProfile = ({ navigation }: Props) => {
   const dispatch = useDispatch();
   const owner = useSelector((state: ProfileReducer) => state.profile.owner);
   const pets = useSelector((state: ProfileReducer) => state.profile.pets);
   const currentUserId = useSelector((state: ProfileReducer) => state.profile.currentUser);
-  const [currentUser, setCurrentUser] = useState<OwnerDAO | PetDAO>();
   const { clearSession } = useAuth0();
   const [modals, setModals] = useState({ accountSwitcher: false, settings: false, editProfile: false });
   const accountSwitcherModalRef = useRef<Modalize>(null);
-
-  const [getPostsByPetId, { data: postsData }] = useLazyQuery(GET_POSTS_BY_PET_ID, {
-    fetchPolicy: 'network-only',
-  });
-
-  const gridPosts = useMemo(() => {
-    return postsData?.getPostsByPetId?.posts || [];
-  }, [postsData, pets]);
-
-  useEffect(() => {
-    if (owner?.id === currentUserId?.id) {
-      setCurrentUser(owner);
-      return;
-    }
-
-    const pet = pets.find((pet) => pet.id === currentUserId?.id);
-
-    if (pet) {
-      setCurrentUser(pet);
-      getPostsByPetId({ variables: { petId: pet.id } });
-    }
-  }, [currentUserId, owner, pets]);
+  
+  const [selectedPetId, setSelectedPetId] = useState<string>();
 
   const setEditProfileModalVisible = useCallback((bool: boolean) => {
     setModals((prev) => {
       return { ...prev, editProfile: bool };
-    });
-  }, []);
-
-  const setAccountSwitchModalVisible = useCallback((bool: boolean) => {
-    setModals((prev) => {
-      return { ...prev, accountSwitcher: bool };
     });
   }, []);
 
@@ -113,28 +88,25 @@ const Profile = ({ navigation }: Props) => {
     }
   }, []);
 
-  const renderPostsGrid = () => {
-    console.log('Rendering grid with posts:', gridPosts);
-
-    if (gridPosts.length === 0) {
-      return (
-        <View className='flex-1 items-center justify-center mt-10'>
-          <Text className='text-lg text-center text-gray-500 px-4'>No posts available</Text>
-        </View>
-      );
-    }
+  const renderOwnerPets = useMemo(() => {
     return (
-      <View className='flex-row flex-wrap justify-start mt-5 -mx-1'>
-        {gridPosts.map((post, index) => {
+      <View className='mt-10 flex-col justify-center'>
+        {pets.map((pet) => {
           return (
-            <View key={index} className='w-1/3 p-0.5'>
-              <Image className='w-full h-auto aspect-square' source={{ uri: post.Media.url }} resizeMode='cover' />
-            </View>
+            <PetCard
+              key={pet.id}
+              pet={pet}
+              goToProfile={() => {
+                navigation.navigate('Pet Profile', { pet: pet, isOwner: true });
+              }}
+              isSelected={selectedPetId === pet.id}
+              setIsSelected={setSelectedPetId}
+            />
           );
         })}
       </View>
     );
-  };
+  }, [pets, selectedPetId, setSelectedPetId]);
 
   const ownerProfile = useMemo(() => {
     return (
@@ -143,11 +115,11 @@ const Profile = ({ navigation }: Props) => {
           <View className='relative'>
             <Pressable onPress={() => {}}>
               <View className='w-28 h-28 rounded-full border-2 border-themeActive flex items-center justify-center'>
-                {currentUser?.ProfilePicture?.url ? (
+                {owner?.ProfilePicture?.url ? (
                   <Image
                     className='w-full h-full rounded-full'
                     source={{
-                      uri: currentUser.ProfilePicture.url,
+                      uri: owner.ProfilePicture.url,
                     }}
                   />
                 ) : (
@@ -155,9 +127,6 @@ const Profile = ({ navigation }: Props) => {
                 )}
               </View>
             </Pressable>
-            <View className='border-2 border-themeBg bg-themeBg absolute rounded-full bottom-1 right-1'>
-              <AntDesign name='pluscircle' size={20} color={'blue'} />
-            </View>
           </View>
           <View className='px-5 flex flex-row gap-7'>
             <View className='flex items-center'>
@@ -175,8 +144,8 @@ const Profile = ({ navigation }: Props) => {
           </View>
         </View>
         <View className='mt-3'>
-          <Text className='text-xl font-bold'>{currentUser?.name}</Text>
-          {currentUser?.location && <Text className='text-md'>📍 {currentUser?.location}</Text>}
+          <Text className='text-xl font-bold'>{owner?.name}</Text>
+          {owner?.location && <Text className='text-md'>📍 {owner?.location}</Text>}
         </View>
         <View className='mt-5 flex-row gap-x-3'>
           <PressableOpacity
@@ -200,104 +169,14 @@ const Profile = ({ navigation }: Props) => {
             </View>
           </PressableOpacity>
         </View>
-
-        <View className='mt-10 flex-row flex-wrap justify-center gap-x-5'>
-          {pets.map((pet) => {
-            return (
-              <View key={pet.id} className='bg-themeTabBg rounded-3xl w-5/12'>
-                <View className='aspect-square w-full flex justify-center items-center'>
-                  {pet?.ProfilePicture?.url ? (
-                    <Image
-                      className='w-full h-full rounded-t-2xl'
-                      source={{
-                        uri: pet.ProfilePicture.url,
-                      }}
-                    />
-                  ) : (
-                    <PetTypeImage type={pet.type} className='w-full h-full' />
-                  )}
-                </View>
-                <View className='px-3 pb-3'>
-                  <Text className='mt-2.5 text-lg font-bold'>{pet.name}</Text>
-                  <Text className='font-light text-slate-700'>@{pet.username}</Text>
-                </View>
-              </View>
-            );
-          })}
-        </View>
+        <View>{renderOwnerPets}</View>
       </ScrollView>
     );
-  }, [currentUser, pets, setEditProfileModalVisible, getApiBaseUrl]);
-
-  const petProfile = useMemo(() => {
-    return (
-      <ScrollView className='w-full '>
-        <View className='mt-5 flex items-center justify-between'>
-          <View className='relative'>
-            <Pressable onPress={() => {}}>
-              <View className='w-44 h-44 rounded-full border-2 border-themeActive flex items-center justify-center'>
-                {currentUser?.ProfilePicture?.url ? (
-                  <Image
-                    className='w-full h-full rounded-full'
-                    source={{
-                      uri: currentUser.ProfilePicture.url,
-                    }}
-                  />
-                ) : (
-                  <Ionicon name='person' size={55} />
-                )}
-              </View>
-            </Pressable>
-            <View className='border-2 border-themeBg bg-themeBg absolute rounded-full bottom-3 right-3'>
-              <AntDesign name='pluscircle' size={20} color={'blue'} />
-            </View>
-          </View>
-          <Text className='text-4xl font-semibold mt-5'>{currentUser?.name}</Text>
-          <Text className='text-lg'>@{currentUser?.username}</Text>
-          <View className='px-5 flex flex-row gap-x-5 mt-2'>
-            <View className='flex items-center'>
-              <Text className='text-xl font-semibold'>5</Text>
-              <Text className='text-md'>Posts</Text>
-            </View>
-            <View className='flex items-center'>
-              <Text className='text-xl font-semibold'>20</Text>
-              <Text className='text-md'>Followers</Text>
-            </View>
-          </View>
-        </View>
-        <View className='mt-2 px-5'>
-          <Text className='text-base'>{(currentUser as PetDAO)?.description}</Text>
-        </View>
-        <View className='mt-5 flex-row gap-x-3 px-5'>
-          <PressableOpacity
-            className='flex-1'
-            activeOpacity={0.6}
-            onPress={() => {
-              setEditProfileModalVisible(true);
-            }}>
-            <View className='bg-themeBtn px-7 py-2 rounded-lg'>
-              <Text className='text-themeText text-base font-semibold text-center'>Edit Profile</Text>
-            </View>
-          </PressableOpacity>
-          <PressableOpacity
-            className='flex-1'
-            activeOpacity={0.6}
-            onPress={() => {
-              onShare();
-            }}>
-            <View className='bg-themeBtn px-7 py-2 rounded-lg'>
-              <Text className='text-themeText text-base font-semibold text-center'>Share Profile</Text>
-            </View>
-          </PressableOpacity>
-        </View>
-        <View>{renderPostsGrid()}</View>
-      </ScrollView>
-    );
-  }, [currentUser, setEditProfileModalVisible, getApiBaseUrl, gridPosts]);
+  }, [owner, pets, setEditProfileModalVisible, getApiBaseUrl, renderOwnerPets]);
 
   return (
     <SafeAreaView className='flex-1 h-full items-center bg-themeBg'>
-      {currentUser && (
+      {owner && (
         <Modal
           visible={modals.editProfile}
           presentationStyle='pageSheet'
@@ -306,7 +185,7 @@ const Profile = ({ navigation }: Props) => {
             setEditProfileModalVisible(false);
           }}>
           <EditProfileModal
-            profile={currentUser}
+            profile={owner}
             forPet={currentUserId.isPet}
             closeModal={() => {
               setEditProfileModalVisible(false);
@@ -324,7 +203,7 @@ const Profile = ({ navigation }: Props) => {
           useNativeDriver>
           <AccountSwitcherModal
             navigateNewPet={navigateNewPet}
-            currentUser={currentUser}
+            currentUser={owner}
             closeModal={() => {
               accountSwitcherModalRef.current?.close();
             }}
@@ -349,7 +228,7 @@ const Profile = ({ navigation }: Props) => {
         <Pressable onPress={() => accountSwitcherModalRef.current?.open()}>
           <View className='flex-row items-center gap-x-2'>
             <FontAwesome name='lock' style={{ marginBottom: 5 }} size={25} color={colors.themeText} />
-            <Text className='font-bold text-3xl'>{currentUser?.username}</Text>
+            <Text className='font-bold text-3xl'>{owner?.username}</Text>
             <Ionicon name='chevron-down' size={15} />
           </View>
         </Pressable>
@@ -361,9 +240,9 @@ const Profile = ({ navigation }: Props) => {
           <Ionicon name='menu-outline' size={30} />
         </Pressable>
       </View>
-      {currentUserId?.isPet ? petProfile : ownerProfile}
+      {ownerProfile}
     </SafeAreaView>
   );
 };
 
-export default Profile;
+export default MyProfile;

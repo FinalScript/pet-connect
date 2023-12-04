@@ -17,9 +17,11 @@ import HomeNavigator from './src/pages/HomePage/HomeNavigator';
 import Loading from './src/pages/Loading';
 import PetCreation from './src/pages/PetCreation';
 import { CURRENT_USER, LOADING, OWNER_DATA, PET_DATA } from './src/redux/constants';
-import { ProfileReducer } from './src/redux/reducers/profileReducer';
+import { PetDAO, ProfileReducer } from './src/redux/reducers/profileReducer';
 import { navigationRef } from './src/services/navigator';
 import { options } from './src/utils/hapticFeedbackOptions';
+import PetProfile from './src/pages/PetProfile';
+import { Pet } from './src/__generated__/graphql';
 
 export type RootStackParamList = {
   Loading: undefined;
@@ -29,6 +31,7 @@ export type RootStackParamList = {
     initial?: boolean;
   };
   'Account Creation': undefined;
+  'Pet Profile': { pet: PetDAO; isOwner: boolean };
 };
 
 export type RootRouteProps<RouteName extends keyof RootStackParamList> = RouteProp<RootStackParamList, RouteName>;
@@ -156,6 +159,18 @@ const App = () => {
             <Stack.Screen name='Get Started' component={GetStarted} />
             <Stack.Screen name='Pet Creation' component={PetCreation} />
             <Stack.Screen name='Account Creation' component={AccountCreation} />
+            <Stack.Screen
+              name='Pet Profile'
+              component={PetProfile}
+              options={{
+                headerShown: true,
+                headerBackVisible: true,
+                animation: 'default',
+                animationTypeForReplace: 'push',
+                contentStyle: { backgroundColor: '#f6f6f6f' },
+                headerTransparent: true,
+              }}
+            />
           </Stack.Navigator>
         </NavigationContainer>
       </Host>

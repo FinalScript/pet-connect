@@ -21,7 +21,6 @@ interface Props extends ModalProps {
 const AccountSwitcherModal = ({ navigateNewPet, currentUser, closeModal }: Props) => {
   const dispatch = useDispatch();
   const owner = useSelector((state: ProfileReducer) => state.profile.owner);
-  const pets = useSelector((state: ProfileReducer) => state.profile.pets);
 
   const switchProfile = useCallback(
     (id?: string, isPet?: boolean) => {
@@ -71,44 +70,6 @@ const AccountSwitcherModal = ({ navigateNewPet, currentUser, closeModal }: Props
             </View>
           )}
         </Pressable>
-
-        {pets.map((pet) => {
-          return (
-            <View key={pet.id} className='flex-row items-center mt-5 ml-5'>
-              <View className='h-[2px] w-5 bg-themeText'></View>
-              <Pressable
-                className={
-                  (pet?.id === currentUser?.id ? 'border-themeActive' : 'border-transparent') +
-                  ' flex flex-row flex-1 items-center rounded-3xl bg-themeInput border-4 shadow-sm shadow-themeShadow py-1 px-1'
-                }
-                onPress={() => {
-                  switchProfile(pet?.id, true);
-                }}>
-                <View className='h-16 w-16 flex justify-center items-center mr-5'>
-                  {pet?.ProfilePicture?.url ? (
-                    <Image
-                      className='w-full h-full rounded-2xl'
-                      source={{
-                        uri: pet.ProfilePicture.url,
-                      }}
-                    />
-                  ) : (
-                    <PetTypeImage type={pet.type} className='w-full h-full' />
-                  )}
-                </View>
-                <View className='flex'>
-                  <Text className='text-2xl -mb-1'>{pet?.name}</Text>
-                  <Text className='text-sm'>@{pet?.username}</Text>
-                </View>
-                {pet.id === currentUser?.id && (
-                  <View className='absolute right-5'>
-                    <Ionicon name='checkmark-circle' size={30} color={'#FFBA93'} />
-                  </View>
-                )}
-              </Pressable>
-            </View>
-          );
-        })}
 
         <View className='flex-row items-center mt-5 ml-5'>
           <View className='h-[2px] w-5 bg-themeText'></View>
