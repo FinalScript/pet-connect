@@ -8,7 +8,7 @@ import { useAuth0 } from 'react-native-auth0';
 import { HapticFeedbackTypes, trigger } from 'react-native-haptic-feedback';
 import { Host } from 'react-native-portalize';
 import { useDispatch, useSelector } from 'react-redux';
-import { Pet } from './src/__generated__/graphql';
+import { Owner, Pet } from './src/__generated__/graphql';
 import { VERIFY_TOKEN } from './src/graphql/Auth';
 import { GET_OWNER } from './src/graphql/Owner';
 import AppLoader from './src/hoc/AppLoader';
@@ -22,6 +22,7 @@ import { CURRENT_USER, LOADING, OWNER_DATA, PET_DATA } from './src/redux/constan
 import { ProfileReducer } from './src/redux/reducers/profileReducer';
 import { navigationRef } from './src/services/navigator';
 import { options } from './src/utils/hapticFeedbackOptions';
+import OwnerProfile from './src/pages/OwnerProfile';
 
 export type RootStackParamList = {
   Loading: undefined;
@@ -32,6 +33,7 @@ export type RootStackParamList = {
   };
   'Account Creation': undefined;
   'Pet Profile': { pet: Pet };
+  'Owner Profile': { owner: Owner };
 };
 
 export type RootRouteProps<RouteName extends keyof RootStackParamList> = RouteProp<RootStackParamList, RouteName>;
@@ -128,7 +130,7 @@ const App = () => {
       const cachedCurrentUser = JSON.parse((await AsyncStorage.getItem('@currentUser')) || '{}');
 
       const owner = ownerData.data.getOwner.owner;
-      const pets: any[] = ownerData.data.getOwner.pets;
+      const pets = ownerData.data.getOwner.owner.Pets || [];
 
       dispatch({ type: OWNER_DATA, payload: owner });
       dispatch({ type: PET_DATA, payload: pets });
@@ -162,6 +164,18 @@ const App = () => {
             <Stack.Screen
               name='Pet Profile'
               component={PetProfile}
+              options={{
+                headerShown: true,
+                headerBackVisible: true,
+                animation: 'default',
+                animationTypeForReplace: 'push',
+                contentStyle: { backgroundColor: '#f6f6f6f' },
+                headerTransparent: true,
+              }}
+            />
+            <Stack.Screen
+              name='Owner Profile'
+              component={OwnerProfile}
               options={{
                 headerShown: true,
                 headerBackVisible: true,

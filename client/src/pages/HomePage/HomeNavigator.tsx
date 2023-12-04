@@ -15,7 +15,6 @@ import PostPage from './PostPage';
 export type HomeStackParamList = {
   Feed: undefined;
   Explore: undefined;
-  PostPage: undefined;
   Inbox: undefined;
   Profile: undefined;
 };

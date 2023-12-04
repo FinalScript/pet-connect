@@ -222,7 +222,7 @@ export const OwnerResolver = {
         throw new GraphQLError('Owner not found');
       }
 
-      return { owner: owner.dataValues, pets: owner.Pets };
+      return { owner };
     },
 
     validateUsername: async (_, { username }) => {

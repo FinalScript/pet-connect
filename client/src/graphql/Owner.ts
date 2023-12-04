@@ -16,21 +16,21 @@ export const GET_OWNER = gql(`
           path
           type
         }
-      }
-      pets {
-        id
-        username
-        name
-        type
-        description
-        location
-        OwnerId
-        ProfilePicture {
+        Pets {
           id
+          username
           name
-          url
-          path
           type
+          description
+          location
+          OwnerId
+          ProfilePicture {
+            id
+            name
+            url
+            path
+            type
+          }
         }
       }
     }

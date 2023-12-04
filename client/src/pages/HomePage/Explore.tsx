@@ -107,7 +107,7 @@ const Explore = ({ navigation }: Props) => {
               <Pressable
                 className={'border-transparent flex flex-row flex-1 items-center rounded-3xl bg-themeInput border-4 shadow-sm shadow-themeShadow py-1 px-1'}
                 onPress={() => {
-                  //
+                  navigation.navigate('Owner Profile', { owner: result });
                 }}>
                 <View className='h-16 w-16 flex justify-center items-center mr-5'>
                   {result?.ProfilePicture?.url ? (
