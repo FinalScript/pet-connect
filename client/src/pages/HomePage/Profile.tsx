@@ -38,8 +38,6 @@ const Profile = ({ navigation }: Props) => {
   const { clearSession } = useAuth0();
   const [modals, setModals] = useState({ accountSwitcher: false, settings: false, editProfile: false });
   const accountSwitcherModalRef = useRef<Modalize>(null);
-  const Tab = createMaterialTopTabNavigator();
-
   const [getPostsByPetId, { data: postsData }] = useLazyQuery(GET_POSTS_BY_PET_ID, {
     fetchPolicy: 'network-only',
   });
@@ -119,8 +117,8 @@ const Profile = ({ navigation }: Props) => {
     console.log('Rendering grid with posts:', gridPosts);
     if (gridPosts.length === 0) {
       return (
-        <View className='flex-1 items-center justify-center'>
-          <Text className='text-lg text-center text-gray-500 px-4'>No posts available</Text>
+        <View className='flex-1 items-center justify-center mt-10'>
+          <Text className='text-lg text-center text-slate-500 px-4'>This user hasn't posted yet</Text>
         </View>
       );
     }
@@ -156,9 +154,6 @@ const Profile = ({ navigation }: Props) => {
                 )}
               </View>
             </Pressable>
-            <View className='border-2 border-themeBg bg-themeBg absolute rounded-full bottom-1 right-1'>
-              <AntDesign name='pluscircle' size={20} color={'blue'} />
-            </View>
           </View>
           <View className='px-5 flex flex-row gap-7'>
             <View className='flex items-center'>
@@ -202,26 +197,52 @@ const Profile = ({ navigation }: Props) => {
           </PressableOpacity>
         </View>
 
-        <View className='mt-10 flex-row flex-wrap justify-center gap-x-5'>
+        <View className='mt-10 flex-col justify-center'>
           {pets.map((pet) => {
             return (
-              <View key={pet.id} className='bg-themeTabBg rounded-3xl w-5/12'>
-                <View className='aspect-square w-full flex justify-center items-center'>
-                  {pet?.ProfilePicture?.url ? (
-                    <Image
-                      className='w-full h-full rounded-t-2xl'
-                      source={{
-                        uri: pet.ProfilePicture.url,
-                      }}
-                    />
-                  ) : (
-                    <PetTypeImage type={pet.type} className='w-full h-full' />
-                  )}
-                </View>
-                <View className='px-3 pb-3'>
-                  <Text className='mt-2.5 text-lg font-bold'>{pet.name}</Text>
-                  <Text className='font-light text-slate-700'>@{pet.username}</Text>
-                </View>
+              <View key={pet.id} className='h-28 flex-row items-center mb-6'>
+                <Pressable
+                  className={'border-transparent flex flex-row flex-1 rounded-3xl bg-themeInput border-4 shadow-sm shadow-themeShadow py-1 px-1'}
+                  onPress={() => {
+                    //
+                  }}>
+                  <View className='w-28 aspect-square flex justify-center items-center mr-5'>
+                    {pet?.ProfilePicture?.url ? (
+                      <Image
+                        className='w-full h-full rounded-2xl'
+                        source={{
+                          uri: pet.ProfilePicture.url,
+                        }}
+                      />
+                    ) : (
+                      (pet as PetDAO)?.type && <PetTypeImage type={(pet as PetDAO)?.type} className='w-10 h-10' />
+                    )}
+                  </View>
+                  <View className='h-full flex justify-between'>
+                    <View className='flex'>
+                      <View className='flex-row items-center'>
+                        <Text className='text-xl font-medium'>{pet?.name}</Text>
+                        {(pet as PetDAO)?.type && <PetTypeImage type={(pet as PetDAO)?.type} className='w-5 h-5 ml-2' />}
+                      </View>
+                      <Text className='text-sm'>@{pet?.username}</Text>
+                    </View>
+
+                    <View className='flex-row -mb-2'>
+                      <View className='flex items-center mr-3'>
+                        <Text className='text-base'>{pets.length}</Text>
+                        <Text className='text-xs'>Posts</Text>
+                      </View>
+                      <View className='flex items-center mr-3'>
+                        <Text className='text-base'>20</Text>
+                        <Text className='text-xs'>Followers</Text>
+                      </View>
+                      <View className='flex items-center mr-3'>
+                        <Text className='text-base'>25</Text>
+                        <Text className='text-xs'>Likes</Text>
+                      </View>
+                    </View>
+                  </View>
+                </Pressable>
               </View>
             );
           })}
@@ -232,11 +253,11 @@ const Profile = ({ navigation }: Props) => {
 
   const petProfile = useMemo(() => {
     return (
-      <ScrollView className='w-full mb-12'>
-        <View className='mt-5 flex items-center justify-between'>
+      <ScrollView className='w-full px-5 mb-12'>
+        <View className='mt-5 flex flex-row items-center justify-between'>
           <View className='relative'>
             <Pressable onPress={() => {}}>
-              <View className='w-44 h-44 rounded-full border-2 border-themeActive flex items-center justify-center'>
+              <View className='w-28 h-28 rounded-full border-2 border-themeActive flex items-center justify-center'>
                 {currentUser?.ProfilePicture?.url ? (
                   <Image
                     className='w-full h-full rounded-full'
@@ -245,31 +266,39 @@ const Profile = ({ navigation }: Props) => {
                     }}
                   />
                 ) : (
-                  <Ionicon name='person' size={55} />
+                  (currentUser as PetDAO)?.type && <PetTypeImage type={(currentUser as PetDAO)?.type} className='w-10 h-10' />
                 )}
               </View>
             </Pressable>
-            <View className='border-2 border-themeBg bg-themeBg absolute rounded-full bottom-3 right-3'>
-              <AntDesign name='pluscircle' size={20} color={'blue'} />
-            </View>
           </View>
-          <Text className='text-4xl font-semibold mt-5'>{currentUser?.name}</Text>
-          <Text className='text-lg'>@{currentUser?.username}</Text>
-          <View className='px-5 flex flex-row gap-x-5 mt-2'>
-            <View className='flex items-center'>
-              <Text className='text-xl font-semibold'>5</Text>
-              <Text className='text-md'>Posts</Text>
+          <View className='px-5 flex items-start'>
+            <View className='flex flex-row gap-7'>
+              <View className='flex items-center'>
+                <Text className='text-xl font-bold'>{gridPosts.length}</Text>
+                <Text className='text-md'>Posts</Text>
+              </View>
+              <View className='flex items-center'>
+                <Text className='text-xl font-bold'>20</Text>
+                <Text className='text-md'>Followers</Text>
+              </View>
+              <View className='flex items-center'>
+                <Text className='text-xl font-bold'>25</Text>
+                <Text className='text-md'>Following</Text>
+              </View>
             </View>
-            <View className='flex items-center'>
-              <Text className='text-xl font-semibold'>20</Text>
-              <Text className='text-md'>Followers</Text>
-            </View>
+            {(currentUser as PetDAO)?.type && (
+              <View className='flex-row items-center mt-4 bg-themeShadow px-3 rounded-xl'>
+                <Text className='text-base mr-2'>{(currentUser as PetDAO)?.type.charAt(0) + (currentUser as PetDAO)?.type.substring(1).toLowerCase()}</Text>
+                <PetTypeImage type={(currentUser as PetDAO)?.type} className='w-5 h-5' />
+              </View>
+            )}
           </View>
         </View>
-        <View className='mt-2 px-5'>
-          <Text className='text-base'>{(currentUser as PetDAO)?.description}</Text>
+        <View className='mt-3'>
+          <Text className='text-xl font-bold'>{currentUser?.name}</Text>
+          {(currentUser as PetDAO)?.description && <Text className='text-md'>{(currentUser as PetDAO)?.description}</Text>}
         </View>
-        <View className='mt-5 flex-row gap-x-3 px-5'>
+        <View className='mt-5 flex-row gap-x-3'>
           <PressableOpacity
             className='flex-1'
             activeOpacity={0.6}
@@ -291,11 +320,10 @@ const Profile = ({ navigation }: Props) => {
             </View>
           </PressableOpacity>
         </View>
-        <View className='border-t-themeActive border-t-2 mt-5'>{renderPostsGrid()}</View>
+        <View className='border-t-themeActive border-t-2 mt-5 -mx-5'>{renderPostsGrid()}</View>
       </ScrollView>
     );
   }, [currentUser, setEditProfileModalVisible, getApiBaseUrl, gridPosts]);
-
   return (
     <SafeAreaView className='flex-1 h-full items-center bg-themeBg'>
       {currentUser && (
