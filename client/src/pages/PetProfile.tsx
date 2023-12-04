@@ -9,15 +9,19 @@ import PetTypeImage from '../components/PetTypeImage';
 import Text from '../components/Text';
 import { GET_POSTS_BY_PET_ID } from '../graphql/Post';
 import EditProfileModal from '../components/modals/EditProfileModal';
+import { PetDAO, ProfileReducer } from '../redux/reducers/profileReducer';
+import { useSelector } from 'react-redux';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Pet Profile'>;
 
 const PetProfile = ({
   navigation,
   route: {
-    params: { pet, isOwner },
+    params: { pet },
   },
 }: Props) => {
+  const ownerId = useSelector((state: ProfileReducer) => state.profile.owner?.id);
+  const isOwner = useMemo(() => ownerId === pet.OwnerId, [ownerId, pet]);
   const [getPostsByPetId, { data: postsData }] = useLazyQuery(GET_POSTS_BY_PET_ID, {
     fetchPolicy: 'cache-first',
   });
@@ -88,7 +92,7 @@ const PetProfile = ({
             setEditProfileModalVisible(false);
           }}>
           <EditProfileModal
-            profile={pet}
+            profile={pet as PetDAO}
             forPet={true}
             closeModal={() => {
               setEditProfileModalVisible(false);

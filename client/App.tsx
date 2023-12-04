@@ -8,6 +8,7 @@ import { useAuth0 } from 'react-native-auth0';
 import { HapticFeedbackTypes, trigger } from 'react-native-haptic-feedback';
 import { Host } from 'react-native-portalize';
 import { useDispatch, useSelector } from 'react-redux';
+import { Pet } from './src/__generated__/graphql';
 import { VERIFY_TOKEN } from './src/graphql/Auth';
 import { GET_OWNER } from './src/graphql/Owner';
 import AppLoader from './src/hoc/AppLoader';
@@ -16,12 +17,11 @@ import GetStarted from './src/pages/GetStarted';
 import HomeNavigator from './src/pages/HomePage/HomeNavigator';
 import Loading from './src/pages/Loading';
 import PetCreation from './src/pages/PetCreation';
+import PetProfile from './src/pages/PetProfile';
 import { CURRENT_USER, LOADING, OWNER_DATA, PET_DATA } from './src/redux/constants';
-import { PetDAO, ProfileReducer } from './src/redux/reducers/profileReducer';
+import { ProfileReducer } from './src/redux/reducers/profileReducer';
 import { navigationRef } from './src/services/navigator';
 import { options } from './src/utils/hapticFeedbackOptions';
-import PetProfile from './src/pages/PetProfile';
-import { Pet } from './src/__generated__/graphql';
 
 export type RootStackParamList = {
   Loading: undefined;
@@ -31,7 +31,7 @@ export type RootStackParamList = {
     initial?: boolean;
   };
   'Account Creation': undefined;
-  'Pet Profile': { pet: PetDAO; isOwner: boolean };
+  'Pet Profile': { pet: Pet };
 };
 
 export type RootRouteProps<RouteName extends keyof RootStackParamList> = RouteProp<RootStackParamList, RouteName>;

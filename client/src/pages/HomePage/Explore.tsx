@@ -1,16 +1,22 @@
 import { useLazyQuery } from '@apollo/client';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import React, { useEffect, useState } from 'react';
 import { ActivityIndicator, Pressable, SafeAreaView, TextInput, View } from 'react-native';
+import { ScrollView } from 'react-native-gesture-handler';
+import { RootStackParamList } from '../../../App';
 import colors from '../../../config/tailwind/colors';
 import { Owner, Pet } from '../../__generated__/graphql';
+import Image from '../../components/Image';
+import PetTypeImage from '../../components/PetTypeImage';
+import Text from '../../components/Text';
 import { SEARCH } from '../../graphql/Search';
 import { Ionicon } from '../../utils/Icons';
-import Image from '../../components/Image';
-import Text from '../../components/Text';
-import PetTypeImage from '../../components/PetTypeImage';
-import { ScrollView } from 'react-native-gesture-handler';
 
-const Explore = () => {
+interface Props {
+  navigation: NativeStackNavigationProp<RootStackParamList, 'Home', undefined>;
+}
+
+const Explore = ({ navigation }: Props) => {
   const [executeSearch] = useLazyQuery(SEARCH, { fetchPolicy: 'cache-first' });
   const [formData, setFormData] = useState({ search: '' });
   const [focus, setFocus] = useState({ search: false });
@@ -132,7 +138,7 @@ const Explore = () => {
               <Pressable
                 className={'border-transparent flex flex-row flex-1 items-center rounded-3xl bg-themeInput border-4 shadow-sm shadow-themeShadow py-1 px-1'}
                 onPress={() => {
-                  //
+                  navigation.navigate('Pet Profile', { pet: result });
                 }}>
                 <View className='h-16 w-16 flex justify-center items-center mr-5'>
                   {result?.ProfilePicture?.url ? (

@@ -21,6 +21,11 @@ export const getOwner = async (authId: string) => {
             model: ProfilePicture,
             as: 'ProfilePicture',
           },
+          {
+            model: Owner,
+            attributes: ['id'],
+            as: 'Owner',
+          },
         ],
       },
     ],
@@ -84,6 +89,11 @@ export const searchForOwners = async (searchValue: string) => {
           {
             model: ProfilePicture,
             as: 'ProfilePicture',
+          },
+          {
+            model: Owner,
+            attributes: ['id'],
+            as: 'Owner',
           },
         ],
       },

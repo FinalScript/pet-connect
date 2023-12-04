@@ -24,6 +24,7 @@ export const GET_OWNER = gql(`
         type
         description
         location
+        OwnerId
         ProfilePicture {
           id
           name

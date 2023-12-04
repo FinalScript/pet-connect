@@ -10,6 +10,7 @@ export const CREATE_PET = gql(`
         type
         description
         location
+        OwnerId
         ProfilePicture {
           id
           name
@@ -47,6 +48,7 @@ export const UPDATE_PET = gql(`
       description
       location
       id
+      OwnerId
       ProfilePicture {
         id
         name

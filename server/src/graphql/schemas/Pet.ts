@@ -21,6 +21,7 @@ export const PetTypeDef = `#graphql
         description: String
         location: String
         ProfilePicture: ProfilePicture
+        OwnerId: String!
     }
     
     type PetResponse {
@@ -35,6 +36,7 @@ export const PetTypeDef = `#graphql
         location: String
         id: String 
         ProfilePicture: ProfilePicture
+        OwnerId: String!
     }
 
     type ValidateUsernameResponse {

@@ -25,6 +25,7 @@ export const SEARCH = gql(`
           type
           description
           location
+          OwnerId
           ProfilePicture {
             id
             name
