@@ -11,12 +11,15 @@ import PetTypeImage from '../../components/PetTypeImage';
 import Text from '../../components/Text';
 import { SEARCH } from '../../graphql/Search';
 import { Ionicon } from '../../utils/Icons';
+import { useSelector } from 'react-redux';
+import { ProfileReducer } from '../../redux/reducers/profileReducer';
 
 interface Props {
   navigation: NativeStackNavigationProp<RootStackParamList, 'Home', undefined>;
 }
 
 const Explore = ({ navigation }: Props) => {
+  const ownerId = useSelector((state: ProfileReducer) => state.profile.owner?.id);
   const [executeSearch] = useLazyQuery(SEARCH, { fetchPolicy: 'cache-first' });
   const [formData, setFormData] = useState({ search: '' });
   const [focus, setFocus] = useState({ search: false });
@@ -53,15 +56,15 @@ const Explore = ({ navigation }: Props) => {
       }
 
       setLoading(false);
-    }, 450);
+    }, 550);
 
     return () => clearTimeout(delayDebounceFn);
   }, [formData.search]);
 
   return (
     <SafeAreaView className='flex-1 h-full items-center bg-themeBg'>
-      <View className='mt-3 w-full flex-row items-center px-10 relative'>
-        <View className='absolute px-10 ml-5 z-10'>
+      <View className='mt-3 w-full flex-row items-center px-5 relative'>
+        <View className='absolute px-5 ml-5 z-10'>
           <Ionicon name='search' size={25} color={colors.themeText} />
         </View>
         <TextInput
@@ -93,7 +96,7 @@ const Explore = ({ navigation }: Props) => {
           placeholder='Search'
           scrollEnabled={false}
         />
-        {loading && <ActivityIndicator className='pr-10 mr-5 absolute right-0' size='small' color={'#321411'} />}
+        {loading && <ActivityIndicator className='pr-5 mr-5 absolute right-0' size='small' color={'#321411'} />}
       </View>
 
       <ScrollView className='w-full px-5 mt-5'>
@@ -105,14 +108,14 @@ const Explore = ({ navigation }: Props) => {
           return (
             <View key={result.id} className='flex-row items-center mt-5'>
               <Pressable
-                className={'border-transparent flex flex-row flex-1 items-center rounded-3xl bg-themeInput border-4 shadow-sm shadow-themeShadow py-1 px-1'}
+                className={'h-[80px] flex flex-row flex-1 rounded-2xl bg-themeInput shadow-sm shadow-themeShadow'}
                 onPress={() => {
                   navigation.navigate('Owner Profile', { ownerId: result.id });
                 }}>
-                <View className='h-16 w-16 flex justify-center items-center mr-5'>
+                <View className='w-[80px] aspect-square flex justify-center items-center mr-5 p-1'>
                   {result?.ProfilePicture?.url ? (
                     <Image
-                      className='w-full h-full rounded-2xl'
+                      className='w-full h-full rounded-xl'
                       source={{
                         uri: result.ProfilePicture.url,
                       }}
@@ -121,10 +124,18 @@ const Explore = ({ navigation }: Props) => {
                     <Ionicon name='person' size={50} style={{ opacity: 0.8 }} />
                   )}
                 </View>
-                <View className='flex'>
+                <View className='flex justify-center'>
                   <Text className='text-2xl -mb-1'>{result?.name}</Text>
                   <Text className='text-sm'>@{result?.username}</Text>
                 </View>
+
+                {ownerId === result.id && (
+                  <View className='flex-1 flex-row justify-end items-start px-3 py-2'>
+                    <View className='bg-emerald-200 px-3 rounded-xl'>
+                      <Text className='font-medium text-xs'>You</Text>
+                    </View>
+                  </View>
+                )}
               </Pressable>
             </View>
           );
@@ -136,14 +147,14 @@ const Explore = ({ navigation }: Props) => {
           return (
             <View key={result.id} className='flex-row items-center mt-5'>
               <Pressable
-                className={'border-transparent flex flex-row flex-1 items-center rounded-3xl bg-themeInput border-4 shadow-sm shadow-themeShadow py-1 px-1'}
+                className={'h-[80px] flex flex-row flex-1 rounded-2xl bg-themeInput shadow-sm shadow-themeShadow'}
                 onPress={() => {
                   navigation.navigate('Pet Profile', { petId: result.id });
                 }}>
-                <View className='h-16 w-16 flex justify-center items-center mr-5'>
+                <View className='w-[80px] aspect-square flex justify-center items-center mr-5 p-1'>
                   {result?.ProfilePicture?.url ? (
                     <Image
-                      className='w-full h-full rounded-2xl'
+                      className='w-full h-full rounded-xl'
                       source={{
                         uri: result.ProfilePicture.url,
                       }}
@@ -152,10 +163,18 @@ const Explore = ({ navigation }: Props) => {
                     <PetTypeImage type={result.type} className='w-full h-full' />
                   )}
                 </View>
-                <View className='flex'>
+                <View className='flex justify-center'>
                   <Text className='text-2xl -mb-1'>{result?.name}</Text>
                   <Text className='text-sm'>@{result?.username}</Text>
                 </View>
+
+                {ownerId === result.Owner?.id && (
+                  <View className='flex-1 flex-row justify-end items-start px-3 py-2'>
+                    <View className='bg-emerald-200 px-3 rounded-lg'>
+                      <Text className='font-medium text-xs'>Your Pet</Text>
+                    </View>
+                  </View>
+                )}
               </Pressable>
             </View>
           );

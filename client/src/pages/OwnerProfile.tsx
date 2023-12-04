@@ -3,17 +3,15 @@ import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { Modal, Pressable, SafeAreaView, ScrollView, Share, View } from 'react-native';
 import { PressableOpacity } from 'react-native-pressable-opacity';
+import { useSelector } from 'react-redux';
 import { RootStackParamList } from '../../App';
 import Image from '../components/Image';
-import PetTypeImage from '../components/PetTypeImage';
-import Text from '../components/Text';
-import { GET_POSTS_BY_PET_ID } from '../graphql/Post';
-import EditProfileModal from '../components/modals/EditProfileModal';
-import { OwnerDAO, PetDAO, ProfileReducer } from '../redux/reducers/profileReducer';
-import { useSelector } from 'react-redux';
-import { Ionicon } from '../utils/Icons';
-import { GET_OWNER, GET_OWNER_BY_ID } from '../graphql/Owner';
 import PetCard from '../components/PetCard';
+import Text from '../components/Text';
+import EditProfileModal from '../components/modals/EditProfileModal';
+import { GET_OWNER_BY_ID } from '../graphql/Owner';
+import { OwnerDAO, ProfileReducer } from '../redux/reducers/profileReducer';
+import { Ionicon } from '../utils/Icons';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Owner Profile'>;
 
@@ -68,7 +66,6 @@ const OwnerProfile = ({
   }, []);
 
   const renderOwnerPets = useMemo(() => {
-    console.log(pets);
     return (
       <View className='mt-10 flex-col justify-center'>
         {pets.map((pet) => {

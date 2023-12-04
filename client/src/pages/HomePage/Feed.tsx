@@ -1,16 +1,16 @@
 import { useLazyQuery } from '@apollo/client';
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { Animated, RefreshControl, SafeAreaView, ScrollView, View } from 'react-native';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import React, { useCallback, useEffect, useState } from 'react';
+import { Animated, RefreshControl, SafeAreaView, View } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
+import { RootStackParamList } from '../../../App';
 import colors from '../../../config/tailwind/colors';
 import Post from '../../components/Post';
 import Text from '../../components/Text';
 import { GET_ALL_POSTS } from '../../graphql/Post';
 import { REPLACE_FEED } from '../../redux/constants';
 import { GeneralReducer } from '../../redux/reducers/generalReducer';
-import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { RootStackParamList } from '../../../App';
 
 const Tab = createMaterialTopTabNavigator();
 

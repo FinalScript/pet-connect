@@ -3,15 +3,15 @@ import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { Modal, Pressable, SafeAreaView, ScrollView, Share, View } from 'react-native';
 import { PressableOpacity } from 'react-native-pressable-opacity';
+import { useSelector } from 'react-redux';
 import { RootStackParamList } from '../../App';
 import Image from '../components/Image';
 import PetTypeImage from '../components/PetTypeImage';
 import Text from '../components/Text';
-import { GET_POSTS_BY_PET_ID } from '../graphql/Post';
 import EditProfileModal from '../components/modals/EditProfileModal';
-import { PetDAO, ProfileReducer } from '../redux/reducers/profileReducer';
-import { useSelector } from 'react-redux';
 import { GET_PET_BY_ID } from '../graphql/Pet';
+import { GET_POSTS_BY_PET_ID } from '../graphql/Post';
+import { PetDAO, ProfileReducer } from '../redux/reducers/profileReducer';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Pet Profile'>;
 
@@ -160,7 +160,6 @@ const PetProfile = ({
             <Text>Owned by</Text>
             <Pressable
               onPress={() => {
-                console.log(pet.Owner?.id)
                 pet.Owner?.id && navigation.navigate('Owner Profile', { ownerId: pet.Owner.id });
               }}>
               <Text className='font-medium text-blue-500'>@{pet.Owner.username}</Text>

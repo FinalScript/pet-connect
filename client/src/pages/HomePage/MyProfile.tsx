@@ -16,7 +16,7 @@ import AccountSwitcherModal from '../../components/modals/AccountSwitcherModal';
 import EditProfileModal from '../../components/modals/EditProfileModal';
 import SettingsModal from '../../components/modals/SettingsModal';
 import { LOGOUT } from '../../redux/constants';
-import { OwnerDAO, PetDAO, ProfileReducer } from '../../redux/reducers/profileReducer';
+import { OwnerDAO, ProfileReducer } from '../../redux/reducers/profileReducer';
 import { FontAwesome, Ionicon } from '../../utils/Icons';
 
 LogBox.ignoreLogs(["Modal with 'pageSheet' presentation style and 'transparent' value is not supported."]); // Ignore log notification by message

@@ -8,6 +8,7 @@ import { Asset, launchCamera, launchImageLibrary } from 'react-native-image-pick
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import { useDispatch, useSelector } from 'react-redux';
 import colors from '../../../config/tailwind/colors';
+import Image from '../../components/Image';
 import Text from '../../components/Text';
 import { UploadToFirebaseResult, storageFolders, uploadToFirebase } from '../../firebase/firebaseStorage';
 import { CREATE_POST } from '../../graphql/Post';
@@ -15,7 +16,6 @@ import { ADDING_POST_TO_FEED } from '../../redux/constants';
 import { ProfileReducer } from '../../redux/reducers/profileReducer';
 import { MaterialIcons } from '../../utils/Icons';
 import { options } from '../../utils/hapticFeedbackOptions';
-import Image from '../../components/Image';
 
 interface FormData {
   media?: Asset | null | undefined;

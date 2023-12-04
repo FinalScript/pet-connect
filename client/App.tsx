@@ -8,7 +8,6 @@ import { useAuth0 } from 'react-native-auth0';
 import { HapticFeedbackTypes, trigger } from 'react-native-haptic-feedback';
 import { Host } from 'react-native-portalize';
 import { useDispatch, useSelector } from 'react-redux';
-import { Owner, Pet } from './src/__generated__/graphql';
 import { VERIFY_TOKEN } from './src/graphql/Auth';
 import { GET_OWNER } from './src/graphql/Owner';
 import AppLoader from './src/hoc/AppLoader';
@@ -16,13 +15,13 @@ import AccountCreation from './src/pages/AccountCreation';
 import GetStarted from './src/pages/GetStarted';
 import HomeNavigator from './src/pages/HomePage/HomeNavigator';
 import Loading from './src/pages/Loading';
+import OwnerProfile from './src/pages/OwnerProfile';
 import PetCreation from './src/pages/PetCreation';
 import PetProfile from './src/pages/PetProfile';
 import { CURRENT_USER, LOADING, OWNER_DATA, PET_DATA } from './src/redux/constants';
 import { ProfileReducer } from './src/redux/reducers/profileReducer';
 import { navigationRef } from './src/services/navigator';
 import { options } from './src/utils/hapticFeedbackOptions';
-import OwnerProfile from './src/pages/OwnerProfile';
 
 export type RootStackParamList = {
   Loading: undefined;
