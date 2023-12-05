@@ -21,6 +21,8 @@ import { Feather, FontAwesome, Ionicon } from '../utils/Icons';
 import { HapticFeedbackTypes, trigger } from 'react-native-haptic-feedback';
 import { options } from '../utils/hapticFeedbackOptions';
 import { PaperProvider } from 'react-native-paper';
+import * as eva from '@eva-design/eva';
+import { ApplicationProvider, Layout } from '@ui-kitten/components';
 
 LogBox.ignoreLogs([
   'socketDidDisconnect with nil clientDelegate for ',
@@ -175,26 +177,28 @@ export default function AppLoader({ children }: Props) {
     <ApolloProvider client={client}>
       <Provider store={store}>
         <Auth0Provider domain={domain} clientId={clientId}>
-          <PaperProvider
-            settings={{
-              icon: (props) => <Ionicon {...props} />,
-            }}>
-            <GestureHandlerRootView>
-              <BottomSheetModalProvider>
-                {!apiStatus && (
-                  <AvailableConnection
-                    modalOpen={availableConnectionModal}
-                    setModalOpen={setAvailableConnectionModal}
-                    availableConnections={availableConnections}
-                    setApiUrl={setApiUrl}
-                  />
-                )}
-                <DeveloperPanel apiUrl={{ set: setApiUrl, value: apiUrl }} />
+          <ApplicationProvider {...eva} theme={eva.light}>
+            <PaperProvider
+              settings={{
+                icon: (props) => <Ionicon {...props} />,
+              }}>
+              <GestureHandlerRootView>
+                <BottomSheetModalProvider>
+                  {!apiStatus && (
+                    <AvailableConnection
+                      modalOpen={availableConnectionModal}
+                      setModalOpen={setAvailableConnectionModal}
+                      availableConnections={availableConnections}
+                      setApiUrl={setApiUrl}
+                    />
+                  )}
+                  <DeveloperPanel apiUrl={{ set: setApiUrl, value: apiUrl }} />
 
-                {!apiStatus ? <ErrorContactingServer /> : <>{children}</>}
-              </BottomSheetModalProvider>
-            </GestureHandlerRootView>
-          </PaperProvider>
+                  {!apiStatus ? <ErrorContactingServer /> : <>{children}</>}
+                </BottomSheetModalProvider>
+              </GestureHandlerRootView>
+            </PaperProvider>
+          </ApplicationProvider>
         </Auth0Provider>
       </Provider>
     </ApolloProvider>
