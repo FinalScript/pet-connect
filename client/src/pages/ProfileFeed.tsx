@@ -2,7 +2,6 @@ import { useLazyQuery } from '@apollo/client';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Animated, RefreshControl, SafeAreaView, View, ScrollView } from 'react-native';
-import { useDispatch } from 'react-redux';
 import { RootStackParamList } from '../../App';
 import Post from '../components/Post';
 import Text from '../components/Text';
@@ -21,7 +20,7 @@ const ProfileFeed = ({
   const scrollY = new Animated.Value(0);
   const [getPet, { data: petData }] = useLazyQuery(GET_PET_BY_ID, { fetchPolicy: 'network-only' });
   const [getPostsByPetId, { data: postsData, refetch }] = useLazyQuery(GET_POSTS_BY_PET_ID, { fetchPolicy: 'network-only' });
-  const [postHeights, setPostHeights] = useState([]);
+  const [postHeights, setPostHeights] = useState<number[]>([]);
 
   const pet = useMemo(() => petData?.getPetById.pet, [petData, petId]);
   const posts = useMemo(() => postsData?.getPostsByPetId.posts, [postsData]);
@@ -49,6 +48,15 @@ const ProfileFeed = ({
     setRefreshing(false);
   }, [refetch]);
 
+  const handlePostHeight = (index: number, height: number) => {
+    setPostHeights((currentHeights) => {
+      const newHeights = currentHeights.length >= (posts?.length || 0) ? [...currentHeights] : Array(posts?.length || 0).fill(0);
+
+      newHeights[index] = height;
+      return newHeights;
+    });
+  };
+
   return (
     <SafeAreaView className={'flex-1 h-full bg-themeBg'}>
       <View className='flex-1 h-full bg-themeBg'>
@@ -59,8 +67,13 @@ const ProfileFeed = ({
           ref={scrollViewRef}
           className='w-full pt-10'>
           <View className='flex justify-center items-center h-full pb-[100px]'>
-            {posts?.map((post, i) => (
-              <Post key={i} post={post} goToProfile={() => navigation.navigate('Pet Profile', { petId: post.author.id })} />
+            {posts?.map((post, index) => (
+              <Post
+                key={index}
+                post={post}
+                goToProfile={() => navigation.navigate('Pet Profile', { petId: post.author.id })}
+                onLayoutChange={(height) => handlePostHeight(index, height)}
+              />
             ))}
             {posts?.length === 0 && <Text>Nothing to see here...</Text>}
           </View>
