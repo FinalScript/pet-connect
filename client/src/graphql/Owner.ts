@@ -16,13 +16,41 @@ export const GET_OWNER = gql(`
           path
           type
         }
+        Pets {
+          id
+          username
+          name
+          type
+          description
+          location
+          Owner {
+            id
+            authId
+            name
+            username
+            location
+          }
+          ProfilePicture {
+            id
+            name
+            url
+            path
+            type
+          }
+        }
       }
-      pets {
+    }
+  }
+`);
+
+export const GET_OWNER_BY_ID = gql(`
+  query GetOwnerById($id: String!) {
+    getOwnerById(id: $id) {
+      owner {
         id
-        username
+        authId
         name
-        type
-        description
+        username
         location
         ProfilePicture {
           id
@@ -30,6 +58,28 @@ export const GET_OWNER = gql(`
           url
           path
           type
+        }
+        Pets {
+          id
+          username
+          name
+          type
+          description
+          location
+          Owner {
+            id
+            authId
+            name
+            username
+            location
+          }
+          ProfilePicture {
+            id
+            name
+            url
+            path
+            type
+          }
         }
       }
     }

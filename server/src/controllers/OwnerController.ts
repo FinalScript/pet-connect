@@ -21,7 +21,27 @@ export const getOwner = async (authId: string) => {
             model: ProfilePicture,
             as: 'ProfilePicture',
           },
+          {
+            model: Owner,
+            as: 'Owner',
+          },
         ],
+      },
+    ],
+  });
+
+  return owner;
+};
+
+export const getOwnerById = async (id: string) => {
+  const owner = await Owner.findOne({
+    where: {
+      id,
+    },
+    include: [
+      {
+        all: true,
+        nested: true,
       },
     ],
   });
@@ -84,6 +104,10 @@ export const searchForOwners = async (searchValue: string) => {
           {
             model: ProfilePicture,
             as: 'ProfilePicture',
+          },
+          {
+            model: Owner,
+            as: 'Owner',
           },
         ],
       },

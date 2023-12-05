@@ -1,28 +1,23 @@
-import { useLazyQuery } from '@apollo/client';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { Animated, Dimensions, LogBox, Modal, Pressable, SafeAreaView, ScrollView, Share, View } from 'react-native';
+import { useCallback, useMemo, useRef, useState } from 'react';
+import { LogBox, Modal, Pressable, SafeAreaView, ScrollView, Share, View } from 'react-native';
 import { useAuth0 } from 'react-native-auth0';
+import { Modalize } from 'react-native-modalize';
+import { Portal } from 'react-native-portalize';
 import { PressableOpacity } from 'react-native-pressable-opacity';
-import AntDesign from 'react-native-vector-icons/AntDesign';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootStackParamList } from '../../../App';
 import colors from '../../../config/tailwind/colors';
 import { getApiBaseUrl } from '../../api';
 import Image from '../../components/Image';
-import PetTypeImage from '../../components/PetTypeImage';
+import PetCard from '../../components/PetCard';
 import Text from '../../components/Text';
 import AccountSwitcherModal from '../../components/modals/AccountSwitcherModal';
 import EditProfileModal from '../../components/modals/EditProfileModal';
 import SettingsModal from '../../components/modals/SettingsModal';
-import { GET_POSTS_BY_PET_ID } from '../../graphql/Post';
 import { LOGOUT } from '../../redux/constants';
-import { OwnerDAO, PetDAO, ProfileReducer } from '../../redux/reducers/profileReducer';
+import { OwnerDAO, ProfileReducer } from '../../redux/reducers/profileReducer';
 import { FontAwesome, Ionicon } from '../../utils/Icons';
-import { Portal } from 'react-native-portalize';
-import { Modalize } from 'react-native-modalize';
-import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
-import PetCard from '../../components/PetCard';
 
 LogBox.ignoreLogs(["Modal with 'pageSheet' presentation style and 'transparent' value is not supported."]); // Ignore log notification by message
 
@@ -34,11 +29,10 @@ const MyProfile = ({ navigation }: Props) => {
   const dispatch = useDispatch();
   const owner = useSelector((state: ProfileReducer) => state.profile.owner);
   const pets = useSelector((state: ProfileReducer) => state.profile.pets);
-  const currentUserId = useSelector((state: ProfileReducer) => state.profile.currentUser);
   const { clearSession } = useAuth0();
   const [modals, setModals] = useState({ accountSwitcher: false, settings: false, editProfile: false });
   const accountSwitcherModalRef = useRef<Modalize>(null);
-  
+
   const [selectedPetId, setSelectedPetId] = useState<string>();
 
   const setEditProfileModalVisible = useCallback((bool: boolean) => {
@@ -97,7 +91,7 @@ const MyProfile = ({ navigation }: Props) => {
               key={pet.id}
               pet={pet}
               goToProfile={() => {
-                navigation.navigate('Pet Profile', { pet: pet, isOwner: true });
+                navigation.navigate('Pet Profile', { petId: pet.id });
               }}
               isSelected={selectedPetId === pet.id}
               setIsSelected={setSelectedPetId}
@@ -185,8 +179,8 @@ const MyProfile = ({ navigation }: Props) => {
             setEditProfileModalVisible(false);
           }}>
           <EditProfileModal
-            profile={owner}
-            forPet={currentUserId.isPet}
+            profile={owner as OwnerDAO}
+            forPet={false}
             closeModal={() => {
               setEditProfileModalVisible(false);
             }}
@@ -203,7 +197,7 @@ const MyProfile = ({ navigation }: Props) => {
           useNativeDriver>
           <AccountSwitcherModal
             navigateNewPet={navigateNewPet}
-            currentUser={owner}
+            currentUser={owner as OwnerDAO}
             closeModal={() => {
               accountSwitcherModalRef.current?.close();
             }}

@@ -1,33 +1,32 @@
 import { useMutation } from '@apollo/client';
+import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { ActivityIndicator, Keyboard, NativeSyntheticEvent, Pressable, StyleSheet, TextInput, TouchableHighlight, View } from 'react-native';
+import { ActivityIndicator, Keyboard, NativeSyntheticEvent, Pressable, SafeAreaView, StyleSheet, TextInput, TouchableHighlight, View } from 'react-native';
 import ContextMenu, { ContextMenuOnPressNativeEvent } from 'react-native-context-menu-view';
 import { Dropdown } from 'react-native-element-dropdown';
 import { HapticFeedbackTypes, trigger } from 'react-native-haptic-feedback';
 import { Asset, launchCamera, launchImageLibrary } from 'react-native-image-picker';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import { useDispatch, useSelector } from 'react-redux';
+import tailwindColors from 'tailwindcss/colors';
+import { RootStackParamList } from '../../../App';
 import colors from '../../../config/tailwind/colors';
+import Image from '../../components/Image';
 import Text from '../../components/Text';
 import { UploadToFirebaseResult, storageFolders, uploadToFirebase } from '../../firebase/firebaseStorage';
 import { CREATE_POST } from '../../graphql/Post';
 import { ADDING_POST_TO_FEED } from '../../redux/constants';
 import { ProfileReducer } from '../../redux/reducers/profileReducer';
-import { MaterialIcons } from '../../utils/Icons';
+import { AntDesign, MaterialIcons } from '../../utils/Icons';
 import { options } from '../../utils/hapticFeedbackOptions';
-import Image from '../../components/Image';
-
 interface FormData {
   media?: Asset | null | undefined;
   description: string;
   petId: string;
 }
+type Props = NativeStackScreenProps<RootStackParamList, 'New Post'>;
 
-interface Props {
-  closeModal: () => void;
-}
-
-const PostPage = ({ closeModal }: Props) => {
+const PostPage = ({ navigation }: Props) => {
   const dispatch = useDispatch();
   const [loading, setLoading] = useState(false);
   const pets = useSelector((state: ProfileReducer) => state.profile.pets);
@@ -38,7 +37,7 @@ const PostPage = ({ closeModal }: Props) => {
 
   const petsListData = useMemo(() => {
     return pets.map((pet, i) => {
-      return { value: pet.id, label: pet.name };
+      return { value: pet.id, label: `@${pet.username} - ${pet.name}` };
     });
   }, [pets]);
 
@@ -73,7 +72,7 @@ const PostPage = ({ closeModal }: Props) => {
         .then(async ({ data }) => {
           if (data?.createPost.post) {
             dispatch({ type: ADDING_POST_TO_FEED, payload: data?.createPost.post });
-            closeModal();
+            navigation.goBack();
           }
         })
         .catch((err) => {
@@ -122,16 +121,8 @@ const PostPage = ({ closeModal }: Props) => {
 
   return (
     <Pressable onPress={Keyboard.dismiss}>
-      <View className='h-full w-full bg-themeBg'>
-        <View className='px-5 flex-row items-center relative mt-10'>
-          {/* <PressableOpacity className='p-4 -m-4' onPress={() => closeModal()} disabledOpacity={0.4}>
-            <Ionicon name='ios-close' color='black' size={30} />
-          </PressableOpacity> */}
-
-          <Text className='-z-10 text-2xl font-bold absolute text-center w-full mx-5'>New Post</Text>
-        </View>
-
-        <KeyboardAwareScrollView className='mt-10 flex-1' extraHeight={200}>
+      <SafeAreaView className='h-full w-full bg-themeBg'>
+        <KeyboardAwareScrollView className='mt-5 flex-1' extraHeight={200}>
           <View className='mx-5'>
             <ContextMenu
               dropdownMenuMode={true}
@@ -195,7 +186,7 @@ const PostPage = ({ closeModal }: Props) => {
             </View>
           </TouchableHighlight>
         </View>
-      </View>
+      </SafeAreaView>
     </Pressable>
   );
 };
@@ -206,21 +197,44 @@ const PetsDropdown = ({ value, setValue, data }: any) => {
   return (
     <View
       className={
-        (isFocus ? 'border-themeActive' : 'border-transparent') + ' bg-themeInput border-[5px] shadow-sm shadow-themeShadow w-full rounded-3xl text-lg'
+        (isFocus ? 'border-themeActive rounded-3xl rounded-t-none' : 'border-transparent rounded-3xl') +
+        ' bg-themeInput border-[5px] border-t-[0px] shadow-sm shadow-themeShadow w-full text-lg'
       }>
       <Dropdown
         style={styles.dropdown}
         data={data}
         labelField='label'
         valueField='value'
-        placeholder={!isFocus ? 'Select pet to post as' : 'No pets found'}
+        placeholder={'Select pet to post as'}
         searchPlaceholder='Search...'
         value={value}
-        itemTextStyle={{ fontFamily: 'BalooChettan2-Regular' }}
+        renderItem={(item, selected) => {
+          if (!selected) {
+            return (
+              <View style={styles.item}>
+                <Text style={styles.textItem}>{item.label}</Text>
+              </View>
+            );
+          }
+        }}
+        itemTextStyle={{ fontFamily: 'BalooChettan2-Regular', color: colors.themeText }}
         placeholderStyle={{ fontFamily: 'BalooChettan2-Regular' }}
-        selectedTextStyle={{ fontFamily: 'BalooChettan2-Regular' }}
-        containerStyle={{ borderRadius: 24, marginBottom: 10, backgroundColor: colors.themeInput }}
-        itemContainerStyle={{ borderRadius: 24 }}
+        selectedTextStyle={{ fontFamily: 'BalooChettan2-Regular', color: tailwindColors.blue[500] }}
+        containerStyle={{
+          borderRadius: 24,
+          borderBottomRightRadius: 0,
+          borderBottomLeftRadius: 0,
+          marginBottom: 2,
+          marginLeft: -5,
+          marginRight: -5,
+          backgroundColor: colors.themeInput,
+          borderBottomWidth: 0,
+          borderWidth: 5,
+          borderColor: colors.themeActive,
+          shadowRadius: 0,
+          shadowOpacity: 0,
+        }}
+        itemContainerStyle={{}}
         activeColor='transparent'
         dropdownPosition='top'
         autoScroll
@@ -240,6 +254,30 @@ const styles = StyleSheet.create({
   dropdown: {
     height: 50,
     padding: 16,
+  },
+  item: {
+    padding: 17,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  textItem: {
+    flex: 1,
+    fontSize: 16,
+  },
+  placeholderStyle: {
+    fontSize: 16,
+  },
+  selectedTextStyle: {
+    fontSize: 16,
+  },
+  iconStyle: {
+    width: 20,
+    height: 20,
+  },
+  inputSearchStyle: {
+    height: 40,
+    fontSize: 16,
   },
 });
 

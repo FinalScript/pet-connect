@@ -1,5 +1,5 @@
 import { GraphQLError } from 'graphql';
-import { deleteOwner, getOwner, getOwnerByUsername, updateOwner } from '../../controllers/OwnerController';
+import { deleteOwner, getOwner, getOwnerById, getOwnerByUsername, updateOwner } from '../../controllers/OwnerController';
 import { isTokenValid } from '../../middleware/token';
 import { Owner } from '../../models/Owner';
 import { ProfilePicture } from '../../models/ProfilePicture';
@@ -222,7 +222,17 @@ export const OwnerResolver = {
         throw new GraphQLError('Owner not found');
       }
 
-      return { owner: owner.dataValues, pets: owner.Pets };
+      return { owner };
+    },
+
+    getOwnerById: async (_, { id }, context) => {
+      const owner = await getOwnerById(id);
+
+      if (!owner) {
+        throw new GraphQLError('Owner not found');
+      }
+
+      return { owner };
     },
 
     validateUsername: async (_, { username }) => {

@@ -6,13 +6,13 @@ export const OwnerTypeDef = `#graphql
     username: String!
     location: String
     ProfilePicture: ProfilePicture
+    Pets: [Pet]
   }
 
   # For Queries
 
   type OwnerResponse {
     owner: Owner!
-    pets: [Pet!]!
   }
 
   type ValidateUsernameResponse {
@@ -44,6 +44,7 @@ export const OwnerTypeDef = `#graphql
 
   type Query {
     getOwner: OwnerResponse!
+    getOwnerById(id: String!): OwnerResponse!
     validateUsername(username: String!): ValidateUsernameResponse!
     verifyToken: VerifyTokenResponse!
   }

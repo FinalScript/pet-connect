@@ -17,6 +17,28 @@ export const SEARCH = gql(`
             path
             type
           }
+          Pets {
+            id
+            username
+            name
+            type
+            description
+            location
+            Owner {
+              id
+              authId
+              name
+              username
+              location
+            }
+            ProfilePicture {
+              id
+              name
+              url
+              path
+              type
+            }
+          }
         }
         pets {
           id
@@ -25,6 +47,13 @@ export const SEARCH = gql(`
           type
           description
           location
+          Owner {
+            id
+            authId
+            name
+            username
+            location
+          }
           ProfilePicture {
             id
             name

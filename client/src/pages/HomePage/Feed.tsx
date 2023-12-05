@@ -1,8 +1,10 @@
 import { useLazyQuery } from '@apollo/client';
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { Animated, RefreshControl, SafeAreaView, ScrollView, View } from 'react-native';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import React, { useCallback, useEffect, useState } from 'react';
+import { Animated, RefreshControl, SafeAreaView, View } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
+import { RootStackParamList } from '../../../App';
 import colors from '../../../config/tailwind/colors';
 import Post from '../../components/Post';
 import Text from '../../components/Text';
@@ -12,7 +14,11 @@ import { GeneralReducer } from '../../redux/reducers/generalReducer';
 
 const Tab = createMaterialTopTabNavigator();
 
-const Feed = () => {
+interface Props {
+  navigation: NativeStackNavigationProp<RootStackParamList, 'Home', undefined>;
+}
+
+const Feed = ({ navigation }: Props) => {
   const dispatch = useDispatch();
   const [refreshing, setRefreshing] = useState(false);
   const [getAllPosts] = useLazyQuery(GET_ALL_POSTS, { fetchPolicy: 'network-only' });
@@ -67,14 +73,14 @@ const Feed = () => {
           },
           tabBarIndicatorStyle: { display: 'none' },
           tabBarItemStyle: {
-            width: 100,
+            width: 120,
             paddingHorizontal: 0,
             position: 'relative',
             padding: 0,
             height: 45,
           },
           tabBarLabelStyle: {
-            fontSize: 18,
+            fontSize: 15,
             fontFamily: 'BalooChettan2-Regular',
           },
           tabBarStyle: {
@@ -121,7 +127,15 @@ const Feed = () => {
                   refreshControl={<RefreshControl tintColor={'black'} refreshing={refreshing} onRefresh={onRefresh} />}>
                   <View className='flex justify-center items-center h-full pb-[100px]'>
                     {posts.map((post, i) => {
-                      return <Post key={i} post={post} />;
+                      return (
+                        <Post
+                          key={i}
+                          post={post}
+                          goToProfile={() => {
+                            navigation.navigate('Pet Profile', { petId: post.author.id });
+                          }}
+                        />
+                      );
                     })}
                     {posts.length === 0 && (
                       <>

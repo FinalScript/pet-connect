@@ -10,6 +10,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootRouteProps, RootStackParamList } from '../../App';
+import Image from '../components/Image';
 import Text from '../components/Text';
 import UsernameInput from '../components/UsernameInput';
 import { UploadToFirebaseResult, storageFolders, uploadToFirebase } from '../firebase/firebaseStorage';
@@ -18,7 +19,6 @@ import { ADD_PET, CURRENT_USER, LOADING } from '../redux/constants';
 import { GeneralReducer } from '../redux/reducers/generalReducer';
 import { PetType, ProfileReducer } from '../redux/reducers/profileReducer';
 import { options } from '../utils/hapticFeedbackOptions';
-import Image from '../components/Image';
 
 const petTypes = [
   { type: PetType.Dog, img: require('../../assets/img/dog.png') },

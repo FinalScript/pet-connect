@@ -7,9 +7,10 @@ import Text from './Text';
 import Animated, { useSharedValue, withSpring, withTiming } from 'react-native-reanimated';
 import { Ionicon } from '../utils/Icons';
 import colors from '../../config/tailwind/colors';
+import { Pet } from '../__generated__/graphql';
 
 interface Props {
-  pet: PetDAO;
+  pet: Pet;
   isSelected: boolean;
   setIsSelected: Dispatch<SetStateAction<string | undefined>>;
   goToProfile: () => void;
@@ -73,7 +74,7 @@ const PetCard = ({ pet, goToProfile, isSelected, setIsSelected }: Props) => {
 
         <View className='flex-1 flex-row justify-end'>
           <Pressable
-            className='p-5'
+            className='pr-5 pt-5'
             onPress={() => {
               setIsSelected((prev) => {
                 if (prev === pet.id) {

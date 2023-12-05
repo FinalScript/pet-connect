@@ -15,13 +15,14 @@ import AccountCreation from './src/pages/AccountCreation';
 import GetStarted from './src/pages/GetStarted';
 import HomeNavigator from './src/pages/HomePage/HomeNavigator';
 import Loading from './src/pages/Loading';
+import OwnerProfile from './src/pages/OwnerProfile';
 import PetCreation from './src/pages/PetCreation';
+import PetProfile from './src/pages/PetProfile';
 import { CURRENT_USER, LOADING, OWNER_DATA, PET_DATA } from './src/redux/constants';
-import { PetDAO, ProfileReducer } from './src/redux/reducers/profileReducer';
+import { ProfileReducer } from './src/redux/reducers/profileReducer';
 import { navigationRef } from './src/services/navigator';
 import { options } from './src/utils/hapticFeedbackOptions';
-import PetProfile from './src/pages/PetProfile';
-import { Pet } from './src/__generated__/graphql';
+import PostPage from './src/pages/HomePage/PostPage';
 
 export type RootStackParamList = {
   Loading: undefined;
@@ -31,7 +32,9 @@ export type RootStackParamList = {
     initial?: boolean;
   };
   'Account Creation': undefined;
-  'Pet Profile': { pet: PetDAO; isOwner: boolean };
+  'Pet Profile': { petId: string };
+  'Owner Profile': { ownerId: string };
+  'New Post': undefined;
 };
 
 export type RootRouteProps<RouteName extends keyof RootStackParamList> = RouteProp<RootStackParamList, RouteName>;
@@ -128,7 +131,7 @@ const App = () => {
       const cachedCurrentUser = JSON.parse((await AsyncStorage.getItem('@currentUser')) || '{}');
 
       const owner = ownerData.data.getOwner.owner;
-      const pets: any[] = ownerData.data.getOwner.pets;
+      const pets = ownerData.data.getOwner.owner.Pets || [];
 
       dispatch({ type: OWNER_DATA, payload: owner });
       dispatch({ type: PET_DATA, payload: pets });
@@ -166,6 +169,30 @@ const App = () => {
                 headerShown: true,
                 headerBackVisible: true,
                 animation: 'default',
+                animationTypeForReplace: 'push',
+                contentStyle: { backgroundColor: '#f6f6f6f' },
+                headerTransparent: true,
+              }}
+            />
+            <Stack.Screen
+              name='Owner Profile'
+              component={OwnerProfile}
+              options={{
+                headerShown: true,
+                headerBackVisible: true,
+                animation: 'default',
+                animationTypeForReplace: 'push',
+                contentStyle: { backgroundColor: '#f6f6f6f' },
+                headerTransparent: true,
+              }}
+            />
+            <Stack.Screen
+              name='New Post'
+              component={PostPage}
+              options={{
+                headerShown: true,
+                headerBackVisible: true,
+                animation: 'slide_from_bottom',
                 animationTypeForReplace: 'push',
                 contentStyle: { backgroundColor: '#f6f6f6f' },
                 headerTransparent: true,

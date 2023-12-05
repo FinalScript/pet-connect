@@ -1,22 +1,22 @@
-import React, { useCallback, useRef, useState } from 'react';
-import { Dimensions, View } from 'react-native';
+import React, { useRef, useState } from 'react';
+import { Pressable, View } from 'react-native';
 import { TapGestureHandler } from 'react-native-gesture-handler';
 import { HapticFeedbackTypes, trigger } from 'react-native-haptic-feedback';
-import AntDesign from 'react-native-vector-icons/AntDesign';
-import Ionicon from 'react-native-vector-icons/Ionicons';
-import { Post as PostType } from '../__generated__/graphql';
-import { options } from '../utils/hapticFeedbackOptions';
-import Text from './Text';
-import CommentsModel from './modals/CommentsModal';
-import Image from './Image';
-import PetTypeImage from './PetTypeImage';
 import { Modalize } from 'react-native-modalize';
 import { Portal } from 'react-native-portalize';
+import AntDesign from 'react-native-vector-icons/AntDesign';
+import Ionicon from 'react-native-vector-icons/Ionicons';
 import colors from '../../config/tailwind/colors';
-import { Easing } from 'react-native-reanimated';
+import { Post as PostType } from '../__generated__/graphql';
+import { options } from '../utils/hapticFeedbackOptions';
+import Image from './Image';
+import PetTypeImage from './PetTypeImage';
+import Text from './Text';
+import CommentsModel from './modals/CommentsModal';
 
 interface Props {
   post: PostType;
+  goToProfile: () => void;
 }
 
 const comments = [
@@ -34,7 +34,7 @@ const comments = [
   },
 ];
 
-export default function Post({ post }: Props) {
+export default function Post({ post, goToProfile }: Props) {
   const [postLiked, setPostLiked] = useState(false);
   const CAPTION_LINES = 2;
   const [moreCaption, setMoreCaption] = useState(false);
@@ -64,21 +64,20 @@ export default function Post({ post }: Props) {
 
   return (
     <View className='bg-white mb-5 pb-2 w-full shadow-sm shadow-themeShadow'>
-      <View className='flex-row w-full items-center px-3 py-2'>
-        <Portal>
-          <Modalize
-            ref={modalizeRef}
-            handlePosition='inside'
-            handleStyle={{ backgroundColor: colors.themeText }}
-            scrollViewProps={{ scrollEnabled: false }}
-            adjustToContentHeight
-            //@ts-expect-error
-            keyboardAvoidingBehavior=''
-            useNativeDriver>
-            <CommentsModel comments={comments} closeModal={() => closeCommentsModal()} />
-          </Modalize>
-        </Portal>
-
+      <Portal>
+        <Modalize
+          ref={modalizeRef}
+          handlePosition='inside'
+          handleStyle={{ backgroundColor: colors.themeText }}
+          scrollViewProps={{ scrollEnabled: false }}
+          adjustToContentHeight
+          //@ts-expect-error
+          keyboardAvoidingBehavior=''
+          useNativeDriver>
+          <CommentsModel comments={comments} closeModal={() => closeCommentsModal()} />
+        </Modalize>
+      </Portal>
+      <Pressable className='flex-row w-full items-center px-3 py-2' onPress={() => goToProfile()}>
         <View className='w-14 h-14 mr-2 aspect-square'>
           <Image className='flex w-full h-full rounded-lg' source={{ uri: post.author.ProfilePicture?.url }} />
         </View>
@@ -89,7 +88,7 @@ export default function Post({ post }: Props) {
           </View>
           <Text className='text-base font-light text-sky-500'>@{post.author.username}</Text>
         </View>
-      </View>
+      </Pressable>
 
       <TapGestureHandler
         onEnded={() => {
