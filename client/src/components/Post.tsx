@@ -17,6 +17,7 @@ import CommentsModel from './modals/CommentsModal';
 interface Props {
   post: PostType;
   goToProfile: () => void;
+  onLayoutChange?: (height: number) => void;
 }
 
 const comments = [
@@ -34,11 +35,18 @@ const comments = [
   },
 ];
 
-export default function Post({ post, goToProfile }: Props) {
+export default function Post({ post, goToProfile, onLayoutChange }: Props) {
   const [postLiked, setPostLiked] = useState(false);
   const CAPTION_LINES = 2;
   const [moreCaption, setMoreCaption] = useState(false);
   const modalizeRef = useRef<Modalize>(null);
+
+  const onLayout = (event: { nativeEvent: { layout: { height: number } } }) => {
+    const height = event.nativeEvent.layout.height;
+    if (onLayoutChange) {
+      onLayoutChange(height);
+    }
+  };
 
   const openCommentsModal = () => {
     modalizeRef.current?.open();
@@ -63,7 +71,7 @@ export default function Post({ post, goToProfile }: Props) {
   };
 
   return (
-    <View className='bg-white mb-5 pb-2 w-full shadow-sm shadow-themeShadow'>
+    <View className='bg-white mb-5 pb-2 w-full shadow-sm shadow-themeShadow' onLayout={onLayout}>
       <Portal>
         <Modalize
           ref={modalizeRef}
