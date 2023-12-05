@@ -74,7 +74,7 @@ const PetCard = ({ pet, goToProfile, isSelected, setIsSelected }: Props) => {
 
         <View className='flex-1 flex-row justify-end'>
           <Pressable
-            className='p-5'
+            className='pr-5 pt-5'
             onPress={() => {
               setIsSelected((prev) => {
                 if (prev === pet.id) {
