@@ -1,21 +1,10 @@
 import { Media } from '../models/Media';
 import { Pet } from '../models/Pet';
-import { Post, PostCreationAttributes, PostAttributes } from '../models/Post';
-import { ProfilePicture } from '../models/ProfilePicture';
+import { Post, PostAttributes, PostCreationAttributes } from '../models/Post';
 
 export const createPost = async (data: PostCreationAttributes) => {
   const newPost = await Post.create(data, {
-    include: [
-      {
-        model: Media,
-        as: 'Media',
-      },
-      {
-        model: Pet,
-        as: 'author',
-        include: [{ all: true }],
-      },
-    ],
+    include: [{ all: true, nested: true }],
   });
   return newPost;
 };
@@ -23,17 +12,7 @@ export const createPost = async (data: PostCreationAttributes) => {
 export const getAllPosts = async () => {
   const posts = await Post.findAll({
     order: [['dateCreated', 'DESC']],
-    include: [
-      {
-        model: Media,
-        as: 'Media',
-      },
-      {
-        model: Pet,
-        as: 'author',
-        include: [{ all: true }],
-      },
-    ],
+    include: [{ all: true, nested: true }],
   });
 
   return posts;
@@ -41,12 +20,7 @@ export const getAllPosts = async () => {
 
 export const getPostById = async (id: string) => {
   const post = await Post.findByPk(id, {
-    include: [
-      {
-        model: Media,
-        as: 'Media',
-      },
-    ],
+    include: [{ all: true, nested: true }],
   });
   return post;
 };
@@ -73,17 +47,7 @@ export const getPostsByPetId = async (petId: string) => {
   const posts = await Post.findAll({
     where: { petId },
     order: [['dateCreated', 'DESC']],
-    include: [
-      {
-        model: Media,
-        as: 'Media',
-      },
-      {
-        model: Pet,
-        as: 'author',
-        include: [{ all: true }],
-      },
-    ],
+    include: [{ all: true, nested: true }],
   });
   return posts;
 };

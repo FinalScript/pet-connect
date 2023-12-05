@@ -69,6 +69,8 @@ const init = async () => {
     Pet.hasOne(ProfilePicture);
     Owner.hasOne(ProfilePicture);
 
+    Pet.hasMany(Post, { as: 'Posts', foreignKey: 'petId' });
+
     Post.hasOne(Media, { as: 'Media' });
     Post.belongsTo(Pet, { as: 'author', foreignKey: 'petId' });
 
@@ -84,7 +86,7 @@ const init = async () => {
       as: 'likes',
     });
 
-    await sequelize.sync({ alter: true });
+    await sequelize.sync({});
   });
 
   const port = process.env.PORT || 54321;

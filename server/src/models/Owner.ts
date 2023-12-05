@@ -39,7 +39,7 @@ export class Owner extends Model<InferAttributes<Owner>, InferCreationAttributes
   declare Pets?: Pet[];
   declare addPet: HasManyAddAssociationMixin<InferAttributes<Pet>, InferCreationAttributes<Pet>>;
 
-  declare Following?: Pet[];
+  declare FollowedPets?: Pet[];
   declare addFollowing: BelongsToManyAddAssociationMixin<Pet, number>;
   declare removeFollowing: BelongsToManyRemoveAssociationMixin<Pet, number>;
 }

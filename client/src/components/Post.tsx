@@ -62,6 +62,10 @@ export default function Post({ post, goToProfile }: Props) {
     setMoreCaption(true);
   };
 
+  if(!post.author) {
+    return <View></View>
+  }
+
   return (
     <View className='bg-white mb-5 pb-2 w-full shadow-sm shadow-themeShadow'>
       <Portal>

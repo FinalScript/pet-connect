@@ -10,6 +10,7 @@ import {
 import { sequelize } from '../db/connection';
 import { Owner } from './Owner';
 import { ProfilePicture } from './ProfilePicture';
+import { Post } from './Post';
 
 export interface PetCreationDAO {
   username: string;
@@ -42,6 +43,7 @@ export class Pet extends Model<InferAttributes<Pet>, InferCreationAttributes<Pet
   public readonly Owner?: Owner;
   public readonly Followers?: Owner[];
   public readonly ProfilePicture?: ProfilePicture;
+  public readonly Posts?: Post[];
 
   public addFollower!: HasManyAddAssociationMixin<Owner, string>;
   public removeFollower!: HasManyRemoveAssociationMixin<Owner, string>;

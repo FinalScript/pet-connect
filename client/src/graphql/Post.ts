@@ -119,3 +119,124 @@ query getPostsByPetId($petId: String!) {
     }
   }
 }`);
+
+export const GET_FEED = gql(`
+  query GetFeed {
+    getFeed {
+      forYou {
+        id
+        petId
+        description
+        Media {
+          id
+          name
+          url
+          path
+          type
+        }
+        author {
+          id
+          username
+          name
+          type
+          description
+          location
+          ProfilePicture {
+            id
+            name
+            url
+            path
+            type
+          }
+          Owner {
+            id
+            authId
+            name
+            username
+            location
+            Pets {
+              id
+              username
+              name
+              type
+              description
+              location
+            }
+            FollowedPets {
+              id
+              username
+              name
+              type
+              description
+              location
+            }
+          }
+          Followers {
+            id
+            authId
+            name
+            username
+            location
+          }
+        }
+      }
+      following {
+        id
+        petId
+        description
+        author {
+          id
+          username
+          name
+          type
+          description
+          location
+          ProfilePicture {
+            id
+            name
+            url
+            path
+            type
+          }
+          Owner {
+            id
+            authId
+            name
+            username
+            location
+            Pets {
+              id
+              username
+              name
+              type
+              description
+              location
+            }
+            FollowedPets {
+              id
+              username
+              name
+              type
+              description
+              location
+            }
+          }
+          Followers {
+            id
+            authId
+            name
+            username
+            location
+          }
+        }
+        Media {
+          id
+          name
+          url
+          path
+          type
+        }
+      }
+    }
+  }
+`);
