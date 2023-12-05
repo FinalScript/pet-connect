@@ -23,6 +23,7 @@ import { ProfileReducer } from './src/redux/reducers/profileReducer';
 import { navigationRef } from './src/services/navigator';
 import { options } from './src/utils/hapticFeedbackOptions';
 import PostPage from './src/pages/HomePage/PostPage';
+import ProfilePicture from './src/pages/ProfilePicture';
 
 export type RootStackParamList = {
   Loading: undefined;
@@ -35,6 +36,7 @@ export type RootStackParamList = {
   'Pet Profile': { petId: string };
   'Owner Profile': { ownerId: string };
   'New Post': undefined;
+  'Profile Picture': {id: string, pet: boolean};
 };
 
 export type RootRouteProps<RouteName extends keyof RootStackParamList> = RouteProp<RootStackParamList, RouteName>;
@@ -189,6 +191,18 @@ const App = () => {
             <Stack.Screen
               name='New Post'
               component={PostPage}
+              options={{
+                headerShown: true,
+                headerBackVisible: true,
+                animation: 'slide_from_bottom',
+                animationTypeForReplace: 'push',
+                contentStyle: { backgroundColor: '#f6f6f6f' },
+                headerTransparent: true,
+              }}
+            />
+            <Stack.Screen
+              name='Profile Picture'
+              component={ProfilePicture}
               options={{
                 headerShown: true,
                 headerBackVisible: true,
