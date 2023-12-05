@@ -36,7 +36,7 @@ export type RootStackParamList = {
   'Pet Profile': { petId: string };
   'Owner Profile': { ownerId: string };
   'New Post': undefined;
-  'Profile Picture': {id: string, pet: boolean};
+  'Profile Picture': {id: string, isPet: boolean};
 };
 
 export type RootRouteProps<RouteName extends keyof RootStackParamList> = RouteProp<RootStackParamList, RouteName>;
@@ -206,7 +206,7 @@ const App = () => {
               options={{
                 headerShown: true,
                 headerBackVisible: true,
-                animation: 'slide_from_bottom',
+                animation: 'slide_from_right',
                 animationTypeForReplace: 'push',
                 contentStyle: { backgroundColor: '#f6f6f6f' },
                 headerTransparent: true,

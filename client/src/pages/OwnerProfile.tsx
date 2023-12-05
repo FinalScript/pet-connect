@@ -112,7 +112,12 @@ const OwnerProfile = ({
       <ScrollView className='w-full px-5'>
         <View className='mt-5 flex flex-row items-center justify-between'>
           <View className='relative'>
-            <Pressable onPress={() => {}}>
+            <Pressable
+              onPress={() => {
+                if (owner) {
+                  navigation.navigate('Profile Picture', { id: owner?.id, isPet: false });
+                }
+              }}>
               <View className='w-28 h-28 rounded-full border-2 border-themeActive flex items-center justify-center'>
                 {owner?.ProfilePicture?.url ? (
                   <Image

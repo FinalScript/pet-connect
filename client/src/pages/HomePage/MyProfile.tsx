@@ -109,7 +109,7 @@ const MyProfile = ({ navigation }: Props) => {
             <Pressable
               onPress={() => {
                 if (owner) {
-                  navigation.navigate('Profile Picture', { id: owner?.id, pet: false });
+                  navigation.navigate('Profile Picture', { id: owner?.id, isPet: false });
                 }
               }}>
               <View className='w-28 h-28 rounded-full border-2 border-themeActive flex items-center justify-center'>

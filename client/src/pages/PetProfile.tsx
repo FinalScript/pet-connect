@@ -122,7 +122,12 @@ const PetProfile = ({
       <ScrollView className='w-full px-5 mb-12'>
         <View className='mt-5 flex flex-row items-center justify-between'>
           <View className='relative'>
-            <Pressable onPress={() => {}}>
+            <Pressable
+              onPress={() => {
+                if (pet) {
+                  navigation.navigate('Profile Picture', { id: pet?.id, isPet: true });
+                }
+              }}>
               <View className='w-28 h-28 rounded-full border-2 border-themeActive flex items-center justify-center'>
                 {pet?.ProfilePicture?.url ? (
                   <Image
