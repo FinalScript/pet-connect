@@ -10,7 +10,7 @@ import Image from '../../components/Image';
 import PetTypeImage from '../../components/PetTypeImage';
 import Text from '../../components/Text';
 import { SEARCH } from '../../graphql/Search';
-import { Ionicon } from '../../utils/Icons';
+import { Feather, Ionicon } from '../../utils/Icons';
 import { useSelector } from 'react-redux';
 import { ProfileReducer } from '../../redux/reducers/profileReducer';
 
@@ -96,10 +96,21 @@ const Explore = ({ navigation }: Props) => {
           placeholder='Search'
           scrollEnabled={false}
         />
-        {loading && <ActivityIndicator className='pr-5 mr-5 absolute right-0' size='small' color={'#321411'} />}
+        {formData.search && (
+          <Pressable
+            onPress={() => {
+              setFormData((prev) => {
+                return { ...prev, search: '' };
+              });
+            }}
+            className='pr-5 mr-5 absolute right-0'>
+            <Feather name='x' size={15} color={colors.themeText} />
+          </Pressable>
+        )}
       </View>
 
       <ScrollView className='w-full px-5 mt-5'>
+        {loading && <ActivityIndicator className='mt-5' size='small' color={'#321411'} />}
         {message && <Text className='text-center'>{message}</Text>}
 
         {searchResultsOwners.length > 0 && <Text className='text-center'>Owners</Text>}
