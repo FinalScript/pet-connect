@@ -1,7 +1,8 @@
 import { useLazyQuery } from '@apollo/client';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
+import { Icon, IconElement, IconProps, Layout, Tab, TabBarProps, TabView } from '@ui-kitten/components';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { Modal, Pressable, SafeAreaView, ScrollView, Share, View } from 'react-native';
+import { Dimensions, Modal, Pressable, SafeAreaView, ScrollView, Share, View } from 'react-native';
 import { PressableOpacity } from 'react-native-pressable-opacity';
 import { useSelector } from 'react-redux';
 import { RootStackParamList } from '../../App';
@@ -12,6 +13,13 @@ import EditProfileModal from '../components/modals/EditProfileModal';
 import { GET_PET_BY_ID } from '../graphql/Pet';
 import { GET_POSTS_BY_PET_ID } from '../graphql/Post';
 import { PetDAO, ProfileReducer } from '../redux/reducers/profileReducer';
+import colors from '../../config/tailwind/colors';
+import { Feather } from '../utils/Icons';
+
+const useTabBarState = (initialState = 0): Partial<TabBarProps> => {
+  const [selectedIndex, setSelectedIndex] = useState(initialState);
+  return { selectedIndex, onSelect: setSelectedIndex };
+};
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Pet Profile'>;
 
@@ -30,6 +38,7 @@ const PetProfile = ({
   const gridPosts = useMemo(() => {
     return postsData?.getPostsByPetId?.posts || [];
   }, [postsData]);
+  const tabBarState = useTabBarState();
 
   useEffect(() => {
     getPet({ variables: { id: petId } });
@@ -68,7 +77,7 @@ const PetProfile = ({
   const renderPostsGrid = useCallback(() => {
     if (gridPosts.length === 0) {
       return (
-        <View className='flex-1 items-center justify-center mt-10'>
+        <View className='h-full flex-1 items-center justify-center mt-10'>
           <Text className='text-lg text-center text-slate-500 px-4'>This user hasn't posted yet</Text>
         </View>
       );
@@ -188,7 +197,22 @@ const PetProfile = ({
             </View>
           </PressableOpacity>
         </View>
-        <View className='border-t-themeActive border-t-2 mt-5 -mx-5'>{renderPostsGrid()}</View>
+
+        <View className='w-full -mx-5 mt-7 h-full'>
+          <TabView
+            {...tabBarState}
+            animationDuration={150}
+            style={{ width: Dimensions.get('window').width, flex: 1 }}
+            tabBarStyle={{ backgroundColor: 'transparent', paddingBottom: 10 }}
+            indicatorStyle={{ backgroundColor: colors.themeActive }}>
+            <Tab icon={() => <Feather name='grid' size={18} color={colors.themeText} />}>
+              <Layout style={{ flex: 1, backgroundColor: colors.themeBg }}>{renderPostsGrid()}</Layout>
+            </Tab>
+            <Tab icon={() => <Feather name='heart' size={18} color={colors.themeText} />}>
+              <Layout style={{ flex: 1, backgroundColor: colors.themeBg }}>{renderPostsGrid()}</Layout>
+            </Tab>
+          </TabView>
+        </View>
       </ScrollView>
     </SafeAreaView>
   );
