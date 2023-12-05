@@ -22,6 +22,7 @@ export const PetTypeDef = `#graphql
         location: String
         ProfilePicture: ProfilePicture
         Owner: Owner
+        Followers: [Owner]
     }
     
     type PetResponse {
@@ -47,6 +48,10 @@ export const PetTypeDef = `#graphql
         message: String!
     }
 
+    type FollowPetResponse {
+        success: Boolean!
+    }
+
     type Query {
         getPetById(id: String!): PetResponse!
         getPetByUsername(username: String!): PetResponse!
@@ -57,5 +62,7 @@ export const PetTypeDef = `#graphql
         createPet( username: String!, name: String!, type: PetType!, description: String, location: String, profilePicture: MediaInput ): PetResponse!
         updatePet( id: String, username: String, name: String, type: PetType, description: String, location: String, profilePicture: MediaInput ): PetUpdatedResponse!
         deletePet(id: String!): DeletePetResponse!
+        followPet(id: String!): FollowPetResponse!
+        unfollowPet(id: String!): FollowPetResponse!
     }
     `;

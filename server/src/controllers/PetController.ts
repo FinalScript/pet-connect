@@ -17,7 +17,6 @@ export const getPetById = async (id: string) => {
     ],
   });
 
-  console.log(pet)
   return pet;
 };
 

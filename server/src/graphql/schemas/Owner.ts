@@ -7,6 +7,7 @@ export const OwnerTypeDef = `#graphql
     location: String
     ProfilePicture: ProfilePicture
     Pets: [Pet]
+    FollowedPets: [Pet]
   }
 
   # For Queries

@@ -1,3 +1,4 @@
+import { claimCheck } from 'express-oauth2-jwt-bearer';
 import { Owner, OwnerCreationDAO, OwnerUpdateDAO } from '../models/Owner';
 import { Pet } from '../models/Pet';
 import { ProfilePicture } from '../models/ProfilePicture';
@@ -10,22 +11,8 @@ export const getOwner = async (authId: string) => {
     },
     include: [
       {
-        model: ProfilePicture,
-        as: 'ProfilePicture',
-      },
-      {
-        model: Pet,
-        as: 'Pets',
-        include: [
-          {
-            model: ProfilePicture,
-            as: 'ProfilePicture',
-          },
-          {
-            model: Owner,
-            as: 'Owner',
-          },
-        ],
+        all: true,
+        nested: true,
       },
     ],
   });

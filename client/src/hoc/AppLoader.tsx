@@ -148,6 +148,7 @@ export default function AppLoader({ children }: Props) {
   const load = async () => {
     const fetchedToken = await AsyncStorage.getItem('@token');
 
+    console.log(fetchedToken)
     if (fetchedToken) {
       setToken(fetchedToken);
       setBearerToken(`Bearer ${fetchedToken}`);

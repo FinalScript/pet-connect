@@ -1,5 +1,16 @@
 import { Pet } from './Pet';
-import { CreationOptional, DataTypes, HasManyAddAssociationMixin, HasOneSetAssociationMixin, InferAttributes, InferCreationAttributes, Model } from 'sequelize';
+import {
+  BelongsToManyAddAssociationMixin,
+  BelongsToManyRemoveAssociationMixin,
+  CreationOptional,
+  DataTypes,
+  HasManyAddAssociationMixin,
+  HasManyRemoveAssociationMixin,
+  HasOneSetAssociationMixin,
+  InferAttributes,
+  InferCreationAttributes,
+  Model,
+} from 'sequelize';
 import { sequelize } from '../db/connection';
 import { ProfilePicture } from './ProfilePicture';
 
@@ -23,9 +34,14 @@ export class Owner extends Model<InferAttributes<Owner>, InferCreationAttributes
   declare username: string;
   declare location: CreationOptional<string>;
   declare ProfilePicture?: ProfilePicture;
+  declare setProfilePicture: HasOneSetAssociationMixin<ProfilePicture, 'id'>;
+
   declare Pets?: Pet[];
   declare addPet: HasManyAddAssociationMixin<InferAttributes<Pet>, InferCreationAttributes<Pet>>;
-  declare setProfilePicture: HasOneSetAssociationMixin<ProfilePicture, 'id'>;
+
+  declare Following?: Pet[];
+  declare addFollowing: BelongsToManyAddAssociationMixin<Pet, number>;
+  declare removeFollowing: BelongsToManyRemoveAssociationMixin<Pet, number>;
 }
 
 Owner.init(

@@ -1,6 +1,15 @@
-import { CreationOptional, DataTypes, HasOneSetAssociationMixin, InferAttributes, InferCreationAttributes, Model, Sequelize } from 'sequelize';
+import {
+  DataTypes,
+  HasManyAddAssociationMixin,
+  HasManyRemoveAssociationMixin,
+  HasOneSetAssociationMixin,
+  InferAttributes,
+  InferCreationAttributes,
+  Model,
+} from 'sequelize';
 import { sequelize } from '../db/connection';
-import { ProfilePicture, ProfilePictureCreationDAO } from './ProfilePicture';
+import { Owner } from './Owner';
+import { ProfilePicture } from './ProfilePicture';
 
 export interface PetCreationDAO {
   username: string;
@@ -19,14 +28,24 @@ export interface PetUpdateDAO {
 }
 
 export class Pet extends Model<InferAttributes<Pet>, InferCreationAttributes<Pet>> {
-  declare id: CreationOptional<string>;
-  declare username: string;
-  declare name: string;
-  declare type: string;
-  declare ProfilePicture?: CreationOptional<ProfilePicture>;
-  declare description: CreationOptional<string>;
-  declare location: CreationOptional<string>;
-  declare setProfilePicture: HasOneSetAssociationMixin<ProfilePicture, 'id'>;
+  public id!: string;
+  public username!: string;
+  public name!: string;
+  public type!: string;
+  public description?: string | null;
+  public location?: string | null;
+
+  // Define associations
+  public readonly createdAt: Date;
+  public readonly updatedAt: Date;
+
+  public readonly Owner?: Owner;
+  public readonly Followers?: Owner[];
+  public readonly ProfilePicture?: ProfilePicture;
+
+  public addFollower!: HasManyAddAssociationMixin<Owner, string>;
+  public removeFollower!: HasManyRemoveAssociationMixin<Owner, string>;
+  public setProfilePicture!: HasOneSetAssociationMixin<ProfilePicture, 'id'>;
 }
 
 Pet.init(
@@ -56,10 +75,19 @@ Pet.init(
     location: {
       type: DataTypes.STRING,
     },
+    createdAt: {
+      type: DataTypes.DATE,
+      allowNull: false,
+      field: 'dateCreated',
+    },
+    updatedAt: {
+      type: DataTypes.DATE,
+      allowNull: false,
+      field: 'updateTimestamp',
+    },
   },
   {
-    sequelize, // We need to pass the connection instance
-    createdAt: 'dateCreated',
-    updatedAt: 'updateTimestamp',
+    sequelize,
+    modelName: 'Pet',
   }
 );

@@ -37,6 +37,21 @@ export const GET_OWNER = gql(`
             path
             type
           }
+          Followers {
+            id
+            authId
+            name
+            username
+            location
+          }
+        }
+        FollowedPets {
+          id
+          username
+          name
+          type
+          description
+          location
         }
       }
     }
@@ -80,6 +95,21 @@ export const GET_OWNER_BY_ID = gql(`
             path
             type
           }
+          Followers {
+            id
+            authId
+            name
+            username
+            location
+          }
+        }
+        FollowedPets {
+          id
+          username
+          name
+          type
+          description
+          location
         }
       }
     }

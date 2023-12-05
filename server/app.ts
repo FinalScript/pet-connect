@@ -16,6 +16,7 @@ import { Post } from './src/models/Post';
 import { ProfilePicture } from './src/models/ProfilePicture';
 import { OwnerRouter } from './src/routes/OwnerRoute';
 import { PetRouter } from './src/routes/PetRoute';
+import { Follows } from './src/models/Follow';
 
 dotenv.config();
 
@@ -56,8 +57,15 @@ const init = async () => {
   );
 
   connectToDB().then(async () => {
-    Owner.hasMany(Pet, { onDelete: 'cascade' });
-    Pet.belongsTo(Owner, { as: 'Owner' });
+    Owner.hasMany(Pet, { as: 'Pets', foreignKey: 'ownerId' });
+    Pet.belongsTo(Owner, { as: 'Owner', foreignKey: 'ownerId' });
+
+    Owner.belongsToMany(Pet, { through: Follows, as: 'FollowedPets', foreignKey: 'ownerId' });
+    Owner.hasMany(Follows, { as: 'OwnerFollows', foreignKey: 'ownerId' });
+
+    Pet.belongsToMany(Owner, { through: Follows, as: 'Followers', foreignKey: 'petId' });
+    Pet.hasMany(Follows, { as: 'PetFollows', foreignKey: 'petId' });
+
     Pet.hasOne(ProfilePicture);
     Owner.hasOne(ProfilePicture);
 
@@ -76,7 +84,7 @@ const init = async () => {
       as: 'likes',
     });
 
-    await sequelize.sync({});
+    await sequelize.sync({ alter: true });
   });
 
   const port = process.env.PORT || 54321;
