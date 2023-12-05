@@ -29,7 +29,6 @@ const MyProfile = ({ navigation }: Props) => {
   const dispatch = useDispatch();
   const owner = useSelector((state: ProfileReducer) => state.profile.owner);
   const pets = useSelector((state: ProfileReducer) => state.profile.pets);
-  const currentUserId = useSelector((state: ProfileReducer) => state.profile.currentUser);
   const { clearSession } = useAuth0();
   const [modals, setModals] = useState({ accountSwitcher: false, settings: false, editProfile: false });
   const accountSwitcherModalRef = useRef<Modalize>(null);
@@ -181,7 +180,7 @@ const MyProfile = ({ navigation }: Props) => {
           }}>
           <EditProfileModal
             profile={owner as OwnerDAO}
-            forPet={currentUserId.isPet}
+            forPet={false}
             closeModal={() => {
               setEditProfileModalVisible(false);
             }}
