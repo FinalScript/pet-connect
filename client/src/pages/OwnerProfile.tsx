@@ -22,7 +22,7 @@ const OwnerProfile = ({
   },
 }: Props) => {
   const currentOwnerId = useSelector((state: ProfileReducer) => state.profile.owner?.id);
-  const [getOwner, { data: ownerData }] = useLazyQuery(GET_OWNER_BY_ID, { fetchPolicy: 'network-only' });
+  const [getOwner, { data: ownerData }] = useLazyQuery(GET_OWNER_BY_ID, { fetchPolicy: 'no-cache' });
   const owner = useMemo(() => ownerData?.getOwnerById.owner, [ownerData]);
   const isOwner = useMemo(() => currentOwnerId === ownerId, [ownerId, currentOwnerId]);
   const [modals, setModals] = useState({ editProfile: false });
@@ -30,7 +30,7 @@ const OwnerProfile = ({
 
   const pets = useMemo(() => {
     return owner?.Pets || [];
-  }, [owner]);
+  }, [owner, ownerId]);
 
   useEffect(() => {
     getOwner({ variables: { id: ownerId } });
