@@ -22,10 +22,8 @@ const PetProfile = ({
   },
 }: Props) => {
   const ownerId = useSelector((state: ProfileReducer) => state.profile.owner?.id);
-  const [getPet, { data: petData }] = useLazyQuery(GET_PET_BY_ID);
-  const [getPostsByPetId, { data: postsData }] = useLazyQuery(GET_POSTS_BY_PET_ID, {
-    fetchPolicy: 'network-only',
-  });
+  const [getPet, { data: petData }] = useLazyQuery(GET_PET_BY_ID, { fetchPolicy: 'network-only' });
+  const [getPostsByPetId, { data: postsData }] = useLazyQuery(GET_POSTS_BY_PET_ID, { fetchPolicy: 'network-only' });
   const pet = useMemo(() => petData?.getPetById.pet, [petData, petId]);
   const isOwner = useMemo(() => ownerId === pet?.Owner?.id, [ownerId, pet?.Owner?.id]);
   const [modals, setModals] = useState({ accountSwitcher: false, settings: false, editProfile: false });
@@ -36,11 +34,11 @@ const PetProfile = ({
   useEffect(() => {
     getPet({ variables: { id: petId } });
     getPostsByPetId({ variables: { petId } });
-  }, [petId]);
+  }, [petId, getPet, getPostsByPetId]);
 
   useEffect(() => {
     navigation.setOptions({ title: pet?.username });
-  }, [pet, petData]);
+  }, [pet]);
 
   const setEditProfileModalVisible = useCallback((bool: boolean) => {
     setModals((prev) => {

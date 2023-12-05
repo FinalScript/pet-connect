@@ -7,7 +7,6 @@ export const SearchResolver = {
       const owners = await searchForOwners(search);
       const pets = await searchForPets(search);
 
-      console.log(pets)
       return { results: { owners, pets: pets } };
     },
   },

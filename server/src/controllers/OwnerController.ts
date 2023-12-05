@@ -40,22 +40,8 @@ export const getOwnerById = async (id: string) => {
     },
     include: [
       {
-        model: ProfilePicture,
-        as: 'ProfilePicture',
-      },
-      {
-        model: Pet,
-        as: 'Pets',
-        include: [
-          {
-            model: ProfilePicture,
-            as: 'ProfilePicture',
-          },
-          {
-            model: Owner,
-            as: 'Owner',
-          },
-        ],
+        all: true,
+        nested: true,
       },
     ],
   });

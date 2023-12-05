@@ -11,16 +11,13 @@ export const getPetById = async (id: string) => {
     },
     include: [
       {
-        model: ProfilePicture,
-        as: 'ProfilePicture',
-      },
-      {
-        model: Owner,
-        as: 'Owner',
+        all: true,
+        nested: true,
       },
     ],
   });
 
+  console.log(pet)
   return pet;
 };
 

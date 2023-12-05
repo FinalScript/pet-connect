@@ -226,18 +226,6 @@ export const OwnerResolver = {
     },
 
     getOwnerById: async (_, { id }, context) => {
-      const { token } = context;
-
-      const jwtResult = await isTokenValid(token);
-
-      if (jwtResult?.error || !jwtResult?.id) {
-        throw new GraphQLError(jwtResult?.error.toString(), {
-          extensions: {
-            code: 'UNAUTHORIZED',
-          },
-        });
-      }
-
       const owner = await getOwnerById(id);
 
       if (!owner) {
