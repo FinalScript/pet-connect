@@ -24,8 +24,6 @@ export type HomeRouteProps<RouteName extends keyof HomeStackParamList> = RoutePr
 type HomeScreenProps = NativeStackScreenProps<RootStackParamList, 'Home'>;
 
 const HomeNavigator = ({ navigation }: HomeScreenProps) => {
-  const [postPageModal, setPostPageModal] = useState(false);
-
   const _renderIcon = (routeName: string, selectedTab: string) => {
     let icon = '';
 
@@ -53,10 +51,6 @@ const HomeNavigator = ({ navigation }: HomeScreenProps) => {
 
   return (
     <>
-      <Modal animationType='slide' visible={postPageModal} presentationStyle='pageSheet' onRequestClose={() => setPostPageModal(false)}>
-        <PostPage closeModal={() => setPostPageModal(false)} />
-      </Modal>
-
       <NavigationContainer independent documentTitle={{ enabled: false }}>
         <CurvedBottomBar.Navigator
           screenOptions={{
@@ -72,7 +66,7 @@ const HomeNavigator = ({ navigation }: HomeScreenProps) => {
           borderTopLeftRight
           renderCircle={({ selectedTab, navigate }) => (
             <Animated.View style={styles.btnCircleUp}>
-              <TouchableOpacity style={styles.button} onPress={() => setPostPageModal(true)}>
+              <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('New Post')}>
                 <Ionicon name={'paw'} color={colors.themeText} size={25} />
               </TouchableOpacity>
             </Animated.View>

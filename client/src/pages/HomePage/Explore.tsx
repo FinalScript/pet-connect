@@ -109,8 +109,8 @@ const Explore = ({ navigation }: Props) => {
         )}
       </View>
 
-      <ScrollView className='w-full px-5 mt-5'>
-        {loading && <ActivityIndicator className='mt-5' size='small' color={'#321411'} />}
+      <ScrollView className='w-full px-5 pt-2.5 mt-2.5'>
+        {loading && <ActivityIndicator className='my-5' size='small' color={'#321411'} />}
         {message && <Text className='text-center'>{message}</Text>}
 
         {searchResultsOwners.length > 0 && <Text className='text-center'>Owners</Text>}
@@ -190,6 +190,8 @@ const Explore = ({ navigation }: Props) => {
             </View>
           );
         })}
+
+        <View className='h-24'></View>
       </ScrollView>
     </SafeAreaView>
   );

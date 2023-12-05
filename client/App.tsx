@@ -22,6 +22,7 @@ import { CURRENT_USER, LOADING, OWNER_DATA, PET_DATA } from './src/redux/constan
 import { ProfileReducer } from './src/redux/reducers/profileReducer';
 import { navigationRef } from './src/services/navigator';
 import { options } from './src/utils/hapticFeedbackOptions';
+import PostPage from './src/pages/HomePage/PostPage';
 
 export type RootStackParamList = {
   Loading: undefined;
@@ -33,6 +34,7 @@ export type RootStackParamList = {
   'Account Creation': undefined;
   'Pet Profile': { petId: string };
   'Owner Profile': { ownerId: string };
+  'New Post': undefined;
 };
 
 export type RootRouteProps<RouteName extends keyof RootStackParamList> = RouteProp<RootStackParamList, RouteName>;
@@ -179,6 +181,18 @@ const App = () => {
                 headerShown: true,
                 headerBackVisible: true,
                 animation: 'default',
+                animationTypeForReplace: 'push',
+                contentStyle: { backgroundColor: '#f6f6f6f' },
+                headerTransparent: true,
+              }}
+            />
+            <Stack.Screen
+              name='New Post'
+              component={PostPage}
+              options={{
+                headerShown: true,
+                headerBackVisible: true,
+                animation: 'slide_from_bottom',
                 animationTypeForReplace: 'push',
                 contentStyle: { backgroundColor: '#f6f6f6f' },
                 headerTransparent: true,
