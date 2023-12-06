@@ -44,6 +44,13 @@ export const SEARCH = gql(`
               name
               username
               location
+              ProfilePicture {
+                id
+                name
+                url
+                path
+                type
+              }
             }
           }
           FollowedPets {
@@ -89,6 +96,13 @@ export const SEARCH = gql(`
             name
             username
             location
+            ProfilePicture {
+              id
+              name
+              url
+              path
+              type
+            }
           }
         }
       }

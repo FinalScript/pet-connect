@@ -43,6 +43,13 @@ export const GET_OWNER = gql(`
             name
             username
             location
+            ProfilePicture {
+              id
+              name
+              url
+              path
+              type
+            }
           }
         }
         FollowedPets {
@@ -108,6 +115,13 @@ export const GET_OWNER_BY_ID = gql(`
             name
             username
             location
+            ProfilePicture {
+              id
+              name
+              url
+              path
+              type
+            }
           }
         }
         FollowedPets {

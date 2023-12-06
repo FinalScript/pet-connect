@@ -112,6 +112,13 @@ export const GET_PET_BY_ID = gql(`
           name
           username
           location
+          ProfilePicture {
+            id
+            name
+            url
+            path
+            type
+          }
         }
       }
     }
