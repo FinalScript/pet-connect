@@ -128,7 +128,7 @@ const OwnerProfile = ({ owner, navigation }: Props) => {
               onPress={() => {
                 if (owner?.FollowedPets) {
                   const validPets = owner.FollowedPets.filter((pet): pet is Pet => pet !== null);
-                  navigation.navigate('Profile Lists', { following: validPets });
+                  navigation.push('Following', { following: validPets });
                 }
               }}>
               <View className='flex items-center'>

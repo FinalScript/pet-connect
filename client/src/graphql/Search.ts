@@ -53,6 +53,13 @@ export const SEARCH = gql(`
             type
             description
             location
+            ProfilePicture {
+              id
+              name
+              url
+              path
+              type
+            }
           }
         }
         pets {

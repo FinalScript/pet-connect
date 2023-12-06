@@ -27,7 +27,7 @@ import ProfilePicturePage from './src/pages/ProfilePicture';
 import ProfileFeed from './src/pages/ProfileFeed';
 import { Pet, Post, ProfilePicture as ProfilePictureType } from './src/__generated__/graphql';
 import OwnerProfilePage from './src/pages/OwnerProfilePage/OwnerProfilePage';
-import ProfileLists from './src/pages/ProfileLists';
+import FollowingPage from './src/pages/Following';
 
 export type RootStackParamList = {
   Loading: undefined;
@@ -42,7 +42,7 @@ export type RootStackParamList = {
   'New Post': undefined;
   'Profile Picture': { profilePicture?: ProfilePictureType | null };
   'Profile Feed': { petUsername: string; posts: Post[]; initialPostIndex: number };
-  'Profile Lists': { following?: Pet [] };
+  Following: { following?: Pet[] };
 };
 
 export type RootRouteProps<RouteName extends keyof RootStackParamList> = RouteProp<RootStackParamList, RouteName>;
@@ -232,8 +232,8 @@ const App = () => {
               }}
             />
             <Stack.Screen
-              name='Profile Lists'
-              component={ProfileLists}
+              name='Following'
+              component={FollowingPage}
               options={{
                 headerShown: true,
                 headerBackVisible: true,

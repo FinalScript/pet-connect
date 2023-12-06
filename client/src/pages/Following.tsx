@@ -1,25 +1,25 @@
-import React from 'react';
-import { View, Pressable, Text, Image } from 'react-native';
+import React, { useEffect } from 'react';
+import { View, Pressable, Text, Image, SafeAreaView } from 'react-native';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../../App';
 import PetTypeImage from '../components/PetTypeImage';
 
-type Props = NativeStackScreenProps<RootStackParamList, 'Profile Lists'>;
+type Props = NativeStackScreenProps<RootStackParamList, 'Following'>;
 
-const ProfileLists = ({
+const Following = ({
   route: {
     params: { following },
   },
   navigation,
 }: Props) => {
   return (
-    <View className='flex-1 justify-center items-center bg-themeBg'>
+    <SafeAreaView className='flex-1 items-center bg-themeBg'>
       {following?.map((pet) => (
         <View key={pet.id} className='flex-row items-center mt-5'>
           <Pressable
             className='h-[80px] flex flex-row flex-1 rounded-2xl bg-themeInput shadow-sm shadow-themeShadow'
             onPress={() => {
-              navigation.navigate('Pet Profile', { petId: pet.id });
+              navigation.push('Pet Profile', { petId: pet.id });
             }}>
             <View className='w-[80px] aspect-square flex justify-center items-center mr-5 p-1'>
               {pet.ProfilePicture?.url ? (
@@ -35,8 +35,8 @@ const ProfileLists = ({
           </Pressable>
         </View>
       ))}
-    </View>
+    </SafeAreaView>
   );
 };
 
-export default ProfileLists;
+export default Following;

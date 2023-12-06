@@ -52,6 +52,13 @@ export const GET_OWNER = gql(`
           type
           description
           location
+          ProfilePicture {
+            id
+            name
+            url
+            path
+            type
+          }
         }
       }
     }
@@ -110,6 +117,13 @@ export const GET_OWNER_BY_ID = gql(`
           type
           description
           location
+          ProfilePicture {
+            id
+            name
+            url
+            path
+            type
+          }
         }
       }
     }
