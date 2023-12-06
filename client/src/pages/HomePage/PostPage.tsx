@@ -8,17 +8,15 @@ import { HapticFeedbackTypes, trigger } from 'react-native-haptic-feedback';
 import { Asset, launchCamera, launchImageLibrary } from 'react-native-image-picker';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import { useDispatch, useSelector } from 'react-redux';
-import tailwindColors from 'tailwindcss/colors';
 import { RootStackParamList } from '../../../App';
-import colors from '../../../config/tailwind/colors';
 import Image from '../../components/Image';
 import Text from '../../components/Text';
 import { UploadToFirebaseResult, storageFolders, uploadToFirebase } from '../../firebase/firebaseStorage';
 import { CREATE_POST } from '../../graphql/Post';
-import { ADDING_POST_TO_FEED } from '../../redux/constants';
 import { ProfileReducer } from '../../redux/reducers/profileReducer';
 import { AntDesign, MaterialIcons } from '../../utils/Icons';
 import { options } from '../../utils/hapticFeedbackOptions';
+import { themeConfig } from '../../utils/theme';
 interface FormData {
   media?: Asset | null | undefined;
   description: string;
@@ -71,7 +69,6 @@ const PostPage = ({ navigation }: Props) => {
       submitPost({ variables: { ...formData, media: mediaData } })
         .then(async ({ data }) => {
           if (data?.createPost.post) {
-            dispatch({ type: ADDING_POST_TO_FEED, payload: data?.createPost.post });
             navigation.goBack();
           }
         })
@@ -201,6 +198,7 @@ const PetsDropdown = ({ value, setValue, data }: any) => {
         ' bg-themeInput border-[5px] border-t-[0px] shadow-sm shadow-themeShadow w-full text-lg'
       }>
       <Dropdown
+        disable={data.length <= 1}
         style={styles.dropdown}
         data={data}
         labelField='label'
@@ -217,9 +215,9 @@ const PetsDropdown = ({ value, setValue, data }: any) => {
             );
           }
         }}
-        itemTextStyle={{ fontFamily: 'BalooChettan2-Regular', color: colors.themeText }}
+        itemTextStyle={{ fontFamily: 'BalooChettan2-Regular', color: themeConfig.customColors.themeText }}
         placeholderStyle={{ fontFamily: 'BalooChettan2-Regular' }}
-        selectedTextStyle={{ fontFamily: 'BalooChettan2-Regular', color: tailwindColors.blue[500] }}
+        selectedTextStyle={{ fontFamily: 'BalooChettan2-Regular', color: themeConfig.customColors.themeTrim }}
         containerStyle={{
           borderRadius: 24,
           borderBottomRightRadius: 0,
@@ -227,10 +225,10 @@ const PetsDropdown = ({ value, setValue, data }: any) => {
           marginBottom: 2,
           marginLeft: -5,
           marginRight: -5,
-          backgroundColor: colors.themeInput,
+          backgroundColor: themeConfig.customColors.themeInput,
           borderBottomWidth: 0,
           borderWidth: 5,
-          borderColor: colors.themeActive,
+          borderColor: themeConfig.customColors.themeActive,
           shadowRadius: 0,
           shadowOpacity: 0,
         }}

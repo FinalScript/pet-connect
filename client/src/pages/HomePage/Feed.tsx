@@ -5,12 +5,12 @@ import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { Animated, RefreshControl, SafeAreaView, View } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootStackParamList } from '../../../App';
-import colors from '../../../config/tailwind/colors';
 import Post from '../../components/Post';
 import Text from '../../components/Text';
 import { GET_FEED } from '../../graphql/Post';
 import { REPLACE_FOLLOWING_FEED, REPLACE_FORYOU_PAGE } from '../../redux/constants';
 import { GeneralReducer } from '../../redux/reducers/generalReducer';
+import { themeConfig } from '../../utils/theme';
 
 const Tab = createMaterialTopTabNavigator();
 
@@ -75,7 +75,7 @@ const Feed = ({ navigation }: Props) => {
         screenOptions={{
           tabBarPressOpacity: 1,
           tabBarPressColor: 'rgba(0,0,0,0)',
-          tabBarActiveTintColor: colors.themeText,
+          tabBarActiveTintColor: themeConfig.customColors.themeText,
           tabBarContentContainerStyle: {
             alignItems: 'center',
             justifyContent: 'center',

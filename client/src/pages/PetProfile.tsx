@@ -13,8 +13,8 @@ import EditProfileModal from '../components/modals/EditProfileModal';
 import { FOLLOW_PET, GET_PET_BY_ID, UNFOLOW_PET } from '../graphql/Pet';
 import { GET_POSTS_BY_PET_ID } from '../graphql/Post';
 import { PetDAO, ProfileReducer } from '../redux/reducers/profileReducer';
-import colors from '../../config/tailwind/colors';
 import { Feather } from '../utils/Icons';
+import { themeConfig } from '../utils/theme';
 
 const useTabBarState = (initialState = 0): Partial<TabBarProps> => {
   const [selectedIndex, setSelectedIndex] = useState(initialState);
@@ -115,7 +115,7 @@ const PetProfile = ({
             <View key={index} className='w-1/3 p-[1px]'>
               <Pressable
                 onPress={() => {
-                  if (pet) navigation.navigate('Profile Feed', { petId: pet?.id, initialPostIndex: index });
+                  if (pet) navigation.navigate('Profile Feed', { petUsername: pet.username, posts: gridPosts, initialPostIndex: index });
                 }}>
                 <Image className='w-full h-auto aspect-square' source={{ uri: post.Media.url }} resizeMode='cover' />
               </Pressable>
@@ -155,8 +155,8 @@ const PetProfile = ({
           <View className='relative'>
             <Pressable
               onPress={() => {
-                if (pet) {
-                  navigation.navigate('Profile Picture', { id: pet?.id, isPet: true });
+                if (pet.ProfilePicture) {
+                  navigation.navigate('Profile Picture', { profilePicture: pet?.ProfilePicture });
                 }
               }}>
               <View className='w-28 h-28 rounded-full border-2 border-themeActive flex items-center justify-center'>
@@ -205,7 +205,7 @@ const PetProfile = ({
               onPress={() => {
                 pet.Owner?.id && navigation.navigate('Owner Profile', { ownerId: pet.Owner.id });
               }}>
-              <Text className='font-medium text-blue-500'>@{pet.Owner.username}</Text>
+              <Text className='font-medium text-themeTrim'>@{pet.Owner.username}</Text>
             </Pressable>
           </View>
 
@@ -249,12 +249,12 @@ const PetProfile = ({
             animationDuration={150}
             style={{ width: Dimensions.get('window').width, flex: 1 }}
             tabBarStyle={{ backgroundColor: 'transparent', paddingBottom: 10 }}
-            indicatorStyle={{ backgroundColor: colors.themeActive }}>
-            <Tab icon={() => <Feather name='grid' size={18} color={colors.themeText} />}>
-              <Layout style={{ flex: 1, backgroundColor: colors.themeBg }}>{renderPostsGrid()}</Layout>
+            indicatorStyle={{ backgroundColor: themeConfig.customColors.themeTrim }}>
+            <Tab icon={() => <Feather name='grid' size={18} color={themeConfig.customColors.themeText} />}>
+              <Layout style={{ flex: 1, backgroundColor: themeConfig.customColors.themeBg }}>{renderPostsGrid()}</Layout>
             </Tab>
-            <Tab icon={() => <Feather name='heart' size={18} color={colors.themeText} />}>
-              <Layout style={{ flex: 1, backgroundColor: colors.themeBg }}>{renderPostsGrid()}</Layout>
+            <Tab icon={() => <Feather name='heart' size={18} color={themeConfig.customColors.themeText} />}>
+              <Layout style={{ flex: 1, backgroundColor: themeConfig.customColors.themeBg }}>{renderPostsGrid()}</Layout>
             </Tab>
           </TabView>
         </View>

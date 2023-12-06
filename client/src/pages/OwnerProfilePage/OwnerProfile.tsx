@@ -1,43 +1,30 @@
-import { useLazyQuery } from '@apollo/client';
-import { NativeStackScreenProps } from '@react-navigation/native-stack';
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import React, { useCallback, useMemo, useState } from 'react';
 import { Modal, Pressable, SafeAreaView, ScrollView, Share, View } from 'react-native';
 import { PressableOpacity } from 'react-native-pressable-opacity';
 import { useSelector } from 'react-redux';
-import { RootStackParamList } from '../../App';
-import Image from '../components/Image';
-import PetCard from '../components/PetCard';
-import Text from '../components/Text';
-import EditProfileModal from '../components/modals/EditProfileModal';
-import { GET_OWNER_BY_ID } from '../graphql/Owner';
-import { OwnerDAO, ProfileReducer } from '../redux/reducers/profileReducer';
-import { Ionicon } from '../utils/Icons';
+import { RootStackParamList } from '../../../App';
+import { Owner } from '../../__generated__/graphql';
+import Image from '../../components/Image';
+import PetCard from '../../components/PetCard';
+import Text from '../../components/Text';
+import EditProfileModal from '../../components/modals/EditProfileModal';
+import { OwnerDAO, ProfileReducer } from '../../redux/reducers/profileReducer';
+import { Ionicon } from '../../utils/Icons';
 
-type Props = NativeStackScreenProps<RootStackParamList, 'Owner Profile'>;
+interface Props {
+  owner: Owner;
+  navigation: NativeStackNavigationProp<RootStackParamList, 'Owner Profile', undefined>;
+}
 
-const OwnerProfile = ({
-  navigation,
-  route: {
-    params: { ownerId },
-  },
-}: Props) => {
-  const currentOwnerId = useSelector((state: ProfileReducer) => state.profile.owner?.id);
-  const [getOwner, { data: ownerData }] = useLazyQuery(GET_OWNER_BY_ID, { fetchPolicy: 'no-cache' });
-  const owner = useMemo(() => ownerData?.getOwnerById.owner, [ownerData]);
-  const isOwner = useMemo(() => currentOwnerId === ownerId, [ownerId, currentOwnerId]);
+const OwnerProfile = ({ owner, navigation }: Props) => {
   const [modals, setModals] = useState({ editProfile: false });
   const [selectedPetId, setSelectedPetId] = useState<string>();
+  const currentOwnerId = useSelector((state: ProfileReducer) => state.profile.owner?.id);
+  const isOwner = useMemo(() => currentOwnerId === owner?.id, [owner?.id, currentOwnerId]);
 
   const pets = useMemo(() => {
     return owner?.Pets || [];
-  }, [owner, ownerId]);
-
-  useEffect(() => {
-    getOwner({ variables: { id: ownerId } });
-  }, [ownerId, getOwner]);
-
-  useEffect(() => {
-    navigation.setOptions({ title: owner?.username });
   }, [owner]);
 
   const setEditProfileModalVisible = useCallback((bool: boolean) => {
@@ -90,7 +77,7 @@ const OwnerProfile = ({
   }, [pets, selectedPetId, setSelectedPetId]);
 
   return (
-    <SafeAreaView className='bg-themeBg h-full p-5 flex flex-col flew-grow'>
+    <SafeAreaView className='bg-themeBg h-full w-full p-5 flex flex-col flew-grow'>
       {isOwner && (
         <Modal
           visible={modals.editProfile}
@@ -114,8 +101,8 @@ const OwnerProfile = ({
           <View className='relative'>
             <Pressable
               onPress={() => {
-                if (owner) {
-                  navigation.navigate('Profile Picture', { id: owner?.id, isPet: false });
+                if (owner?.ProfilePicture) {
+                  navigation.navigate('Profile Picture', { profilePicture: owner?.ProfilePicture });
                 }
               }}>
               <View className='w-28 h-28 rounded-full border-2 border-themeActive flex items-center justify-center'>

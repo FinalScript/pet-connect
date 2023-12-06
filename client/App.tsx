@@ -15,7 +15,7 @@ import AccountCreation from './src/pages/AccountCreation';
 import GetStarted from './src/pages/GetStarted';
 import HomeNavigator from './src/pages/HomePage/HomeNavigator';
 import Loading from './src/pages/Loading';
-import OwnerProfile from './src/pages/OwnerProfile';
+import OwnerProfile from './src/pages/OwnerProfilePage/OwnerProfile';
 import PetCreation from './src/pages/PetCreation';
 import PetProfile from './src/pages/PetProfile';
 import { CURRENT_USER, LOADING, OWNER_DATA, PET_DATA } from './src/redux/constants';
@@ -23,8 +23,10 @@ import { ProfileReducer } from './src/redux/reducers/profileReducer';
 import { navigationRef } from './src/services/navigator';
 import { options } from './src/utils/hapticFeedbackOptions';
 import PostPage from './src/pages/HomePage/PostPage';
-import ProfilePicture from './src/pages/ProfilePicture';
+import ProfilePicturePage from './src/pages/ProfilePicture';
 import ProfileFeed from './src/pages/ProfileFeed';
+import { Post, ProfilePicture as ProfilePictureType } from './src/__generated__/graphql';
+import OwnerProfilePage from './src/pages/OwnerProfilePage/OwnerProfilePage';
 
 export type RootStackParamList = {
   Loading: undefined;
@@ -37,8 +39,8 @@ export type RootStackParamList = {
   'Pet Profile': { petId: string };
   'Owner Profile': { ownerId: string };
   'New Post': undefined;
-  'Profile Picture': { id: string; isPet: boolean };
-  'Profile Feed': { petId: string, initialPostIndex: number };
+  'Profile Picture': { profilePicture?: ProfilePictureType | null };
+  'Profile Feed': { petUsername: string; posts: Post[]; initialPostIndex: number };
 };
 
 export type RootRouteProps<RouteName extends keyof RootStackParamList> = RouteProp<RootStackParamList, RouteName>;
@@ -180,7 +182,7 @@ const App = () => {
             />
             <Stack.Screen
               name='Owner Profile'
-              component={OwnerProfile}
+              component={OwnerProfilePage}
               options={{
                 headerShown: true,
                 headerBackVisible: true,
@@ -204,13 +206,13 @@ const App = () => {
             />
             <Stack.Screen
               name='Profile Picture'
-              component={ProfilePicture}
+              component={ProfilePicturePage}
               options={{
                 headerShown: true,
                 headerBackVisible: true,
                 animation: 'slide_from_right',
                 animationTypeForReplace: 'push',
-                headerTitleStyle: { color: 'transparent'},
+                headerTitleStyle: { color: 'transparent' },
                 contentStyle: { backgroundColor: '#f6f6f6f' },
                 headerTransparent: true,
               }}

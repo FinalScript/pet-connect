@@ -6,13 +6,13 @@ import { Modalize } from 'react-native-modalize';
 import { Portal } from 'react-native-portalize';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import Ionicon from 'react-native-vector-icons/Ionicons';
-import colors from '../../config/tailwind/colors';
 import { Post as PostType } from '../__generated__/graphql';
 import { options } from '../utils/hapticFeedbackOptions';
 import Image from './Image';
 import PetTypeImage from './PetTypeImage';
 import Text from './Text';
 import CommentsModel from './modals/CommentsModal';
+import { themeConfig } from '../utils/theme';
 
 interface Props {
   post: PostType;
@@ -91,17 +91,17 @@ export default function Post({ post, goToProfile, onLayoutChange }: Props) {
     setMoreCaption(true);
   };
 
-  if(!post.author) {
-    return <View></View>
+  if (!post.author) {
+    return <View></View>;
   }
 
   return (
-    <View className='bg-white mb-5 pb-2 w-full shadow-sm shadow-themeShadow' onLayout={onLayout}>
+    <View className='bg-themeInput mb-5 pb-2 w-full shadow-md shadow-themeActive' onLayout={onLayout}>
       <Portal>
         <Modalize
           ref={modalizeRef}
           handlePosition='inside'
-          handleStyle={{ backgroundColor: colors.themeText }}
+          handleStyle={{ backgroundColor: themeConfig.customColors.themeText }}
           scrollViewProps={{ scrollEnabled: false }}
           adjustToContentHeight
           //@ts-expect-error
@@ -129,19 +129,15 @@ export default function Post({ post, goToProfile, onLayoutChange }: Props) {
           handleLike();
         }}
         numberOfTaps={2}>
-        <View className='h-[400px] w-full relative'>
+        <View className='h-[400px] w-full relative flex items-center justify-center'>
           <Image className='w-full h-full object-contain' source={{ uri: post.Media.url }} />
           {showHeartIcon && (
             <Animated.View
               style={{
                 position: 'absolute',
-                top: '50%',
-                left: '50%',
-                marginTop: -24,
-                marginLeft: -24,
                 transform: [{ scale: heartScale }],
               }}>
-              <AntDesign name='heart' size={100} color={colors.themeTabBg} />
+              <AntDesign name='heart' size={100} color={themeConfig.customColors.themeActive} />
             </Animated.View>
           )}
         </View>
@@ -151,7 +147,7 @@ export default function Post({ post, goToProfile, onLayoutChange }: Props) {
         <View className='mt-1'>
           {postLiked ? (
             <Pressable onPress={unlikePost}>
-              <AntDesign name='heart' size={25} color={'#ff1000'} />
+              <AntDesign name='heart' size={25} color={themeConfig.customColors.themeActive} />
             </Pressable>
           ) : (
             <Pressable onPress={handleLike}>
