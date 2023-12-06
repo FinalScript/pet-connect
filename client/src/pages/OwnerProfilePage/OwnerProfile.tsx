@@ -4,7 +4,7 @@ import { Modal, Pressable, SafeAreaView, ScrollView, Share, View } from 'react-n
 import { PressableOpacity } from 'react-native-pressable-opacity';
 import { useSelector } from 'react-redux';
 import { RootStackParamList } from '../../../App';
-import { Owner } from '../../__generated__/graphql';
+import { Owner, Pet } from '../../__generated__/graphql';
 import Image from '../../components/Image';
 import PetCard from '../../components/PetCard';
 import Text from '../../components/Text';
@@ -124,10 +124,18 @@ const OwnerProfile = ({ owner, navigation }: Props) => {
               <Text className='text-xl font-bold'>{pets.length}</Text>
               <Text className='text-md'>Pets</Text>
             </View>
-            <View className='flex items-center'>
-              <Text className='text-xl font-bold'>{owner?.FollowedPets?.length}</Text>
-              <Text className='text-md'>Following</Text>
-            </View>
+            <Pressable
+              onPress={() => {
+                if (owner?.FollowedPets) {
+                  const validPets = owner.FollowedPets.filter((pet): pet is Pet => pet !== null);
+                  navigation.navigate('Profile Lists', { following: validPets });
+                }
+              }}>
+              <View className='flex items-center'>
+                <Text className='text-xl font-bold'>{owner?.FollowedPets?.length}</Text>
+                <Text className='text-md'>Following</Text>
+              </View>
+            </Pressable>
           </View>
         </View>
         <View className='mt-3'>

@@ -25,8 +25,9 @@ import { options } from './src/utils/hapticFeedbackOptions';
 import PostPage from './src/pages/HomePage/PostPage';
 import ProfilePicturePage from './src/pages/ProfilePicture';
 import ProfileFeed from './src/pages/ProfileFeed';
-import { Post, ProfilePicture as ProfilePictureType } from './src/__generated__/graphql';
+import { Pet, Post, ProfilePicture as ProfilePictureType } from './src/__generated__/graphql';
 import OwnerProfilePage from './src/pages/OwnerProfilePage/OwnerProfilePage';
+import ProfileLists from './src/pages/ProfileLists';
 
 export type RootStackParamList = {
   Loading: undefined;
@@ -41,6 +42,7 @@ export type RootStackParamList = {
   'New Post': undefined;
   'Profile Picture': { profilePicture?: ProfilePictureType | null };
   'Profile Feed': { petUsername: string; posts: Post[]; initialPostIndex: number };
+  'Profile Lists': { following?: Pet [] };
 };
 
 export type RootRouteProps<RouteName extends keyof RootStackParamList> = RouteProp<RootStackParamList, RouteName>;
@@ -220,6 +222,18 @@ const App = () => {
             <Stack.Screen
               name='Profile Feed'
               component={ProfileFeed}
+              options={{
+                headerShown: true,
+                headerBackVisible: true,
+                animation: 'slide_from_right',
+                animationTypeForReplace: 'push',
+                contentStyle: { backgroundColor: '#f6f6f6f' },
+                headerTransparent: true,
+              }}
+            />
+            <Stack.Screen
+              name='Profile Lists'
+              component={ProfileLists}
               options={{
                 headerShown: true,
                 headerBackVisible: true,
