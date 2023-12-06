@@ -1,52 +1,32 @@
-import { useLazyQuery } from '@apollo/client';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
-import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { Animated, RefreshControl, SafeAreaView, View, ScrollView } from 'react-native';
+import React, { useEffect, useRef, useState } from 'react';
+import { Animated, SafeAreaView, ScrollView, View } from 'react-native';
 import { RootStackParamList } from '../../App';
 import Post from '../components/Post';
 import Text from '../components/Text';
-import { GET_POSTS_BY_PET_ID } from '../graphql/Post';
-import { GET_PET_BY_ID } from '../graphql/Pet';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Profile Feed'>;
 
 const ProfileFeed = ({
   navigation,
   route: {
-    params: { petId, initialPostIndex },
+    params: { petUsername, posts, initialPostIndex },
   },
 }: Props) => {
-  const [refreshing, setRefreshing] = useState(false);
   const scrollY = new Animated.Value(0);
-  const [getPet, { data: petData }] = useLazyQuery(GET_PET_BY_ID, { fetchPolicy: 'network-only' });
-  const [getPostsByPetId, { data: postsData, refetch }] = useLazyQuery(GET_POSTS_BY_PET_ID, { fetchPolicy: 'network-only' });
   const [postHeights, setPostHeights] = useState<number[]>([]);
-
-  const pet = useMemo(() => petData?.getPetById.pet, [petData, petId]);
-  const posts = useMemo(() => postsData?.getPostsByPetId.posts, [postsData]);
   const scrollViewRef = useRef<ScrollView>(null);
-
-  useEffect(() => {
-    getPet({ variables: { id: petId } });
-    getPostsByPetId({ variables: { petId } });
-  }, [petId, getPet, getPostsByPetId]);
 
   useEffect(() => {
     if (initialPostIndex !== undefined && postHeights.length > initialPostIndex) {
       const yOffset = postHeights.slice(0, initialPostIndex).reduce((acc, h) => acc + h, 0);
-      scrollViewRef.current?.scrollTo({ y: yOffset, animated: true });
+      scrollViewRef.current?.scrollTo({ y: yOffset, animated: false });
     }
   }, [postHeights, initialPostIndex]);
 
   useEffect(() => {
-    navigation.setOptions({ title: pet?.username });
-  }, [pet]);
-
-  const onRefresh = useCallback(async () => {
-    setRefreshing(true);
-    await refetch();
-    setRefreshing(false);
-  }, [refetch]);
+    navigation.setOptions({ title: `${petUsername}'s posts` });
+  }, [petUsername]);
 
   const handlePostHeight = (index: number, height: number) => {
     setPostHeights((currentHeights) => {
@@ -63,7 +43,6 @@ const ProfileFeed = ({
         <Animated.ScrollView
           scrollEventThrottle={16}
           onScroll={Animated.event([{ nativeEvent: { contentOffset: { y: scrollY } } }], { useNativeDriver: true })}
-          refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
           ref={scrollViewRef}
           className='w-full pt-10'>
           <View className='flex justify-center items-center h-full pb-[100px]'>

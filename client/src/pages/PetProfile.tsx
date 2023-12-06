@@ -115,7 +115,7 @@ const PetProfile = ({
             <View key={index} className='w-1/3 p-[1px]'>
               <Pressable
                 onPress={() => {
-                  if (pet) navigation.navigate('Profile Feed', { petId: pet?.id, initialPostIndex: index });
+                  if (pet) navigation.navigate('Profile Feed', { petUsername: pet.username, posts: gridPosts, initialPostIndex: index });
                 }}>
                 <Image className='w-full h-auto aspect-square' source={{ uri: post.Media.url }} resizeMode='cover' />
               </Pressable>

@@ -25,7 +25,7 @@ import { options } from './src/utils/hapticFeedbackOptions';
 import PostPage from './src/pages/HomePage/PostPage';
 import ProfilePicturePage from './src/pages/ProfilePicture';
 import ProfileFeed from './src/pages/ProfileFeed';
-import { ProfilePicture as ProfilePictureType } from './src/__generated__/graphql';
+import { Post, ProfilePicture as ProfilePictureType } from './src/__generated__/graphql';
 import OwnerProfilePage from './src/pages/OwnerProfilePage/OwnerProfilePage';
 
 export type RootStackParamList = {
@@ -40,7 +40,7 @@ export type RootStackParamList = {
   'Owner Profile': { ownerId: string };
   'New Post': undefined;
   'Profile Picture': { profilePicture?: ProfilePictureType | null };
-  'Profile Feed': { petId: string; initialPostIndex: number };
+  'Profile Feed': { petUsername: string; posts: Post[]; initialPostIndex: number };
 };
 
 export type RootRouteProps<RouteName extends keyof RootStackParamList> = RouteProp<RootStackParamList, RouteName>;
