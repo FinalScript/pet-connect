@@ -1,13 +1,14 @@
-import React, { Dispatch, SetStateAction, useEffect } from 'react';
-import { Pressable, View } from 'react-native';
+import React, { useCallback, Dispatch, SetStateAction, useEffect, useState } from 'react';
+import { Modal, Pressable, View } from 'react-native';
 import { PetDAO } from '../redux/reducers/profileReducer';
 import Image from './Image';
 import PetTypeImage from './PetTypeImage';
 import Text from './Text';
 import Animated, { useSharedValue, withSpring, withTiming } from 'react-native-reanimated';
-import { Ionicon } from '../utils/Icons';
+import { Ionicon, MaterialCommunityIcons } from '../utils/Icons';
 import colors from '../../config/tailwind/colors';
 import { Pet } from '../__generated__/graphql';
+import PetSettingsModal from './modals/PetSettingsModal';
 
 interface Props {
   pet: Pet;
@@ -17,6 +18,7 @@ interface Props {
 }
 const PetCard = ({ pet, goToProfile, isSelected, setIsSelected }: Props) => {
   const height = useSharedValue(80);
+  const [modals, setModals] = useState({ petSettings: false });
 
   useEffect(() => {
     if (isSelected) {
@@ -25,6 +27,12 @@ const PetCard = ({ pet, goToProfile, isSelected, setIsSelected }: Props) => {
       height.value = withTiming(80);
     }
   }, [isSelected]);
+
+  const setPetSettingsModalVisible = useCallback((bool: boolean) => {
+    setModals((prev) => {
+      return { ...prev, petSettings: bool };
+    });
+  }, []);
 
   return (
     <Animated.View style={{ height }} className={'flex-1 rounded-2xl bg-themeInput shadow-sm shadow-themeShadow ' + (isSelected ? 'mb-6' : 'mb-3')}>
@@ -84,10 +92,38 @@ const PetCard = ({ pet, goToProfile, isSelected, setIsSelected }: Props) => {
                 }
               });
             }}>
-            {isSelected ? <Ionicon name='chevron-up' size={20} color={colors.themeText} /> : <Ionicon name='chevron-down' size={20} color={colors.themeText} />}
+            {isSelected ? <Ionicon name='chevron-up' size={24} color={colors.themeText} /> : <Ionicon name='chevron-down' size={24} color={colors.themeText} />}
           </Pressable>
         </View>
       </Pressable>
+      {isSelected && (
+        <View className='absolute bottom-0 right-0'>
+          <Pressable
+            className='pr-5 pb-5'
+            onPress={() => {
+              console.log('we are being pressed rn');
+              setPetSettingsModalVisible(true);
+            }}>
+            <MaterialCommunityIcons name='dots-horizontal' size={24} color={colors.themeText}></MaterialCommunityIcons>
+          </Pressable>
+          <View>
+            <Modal
+              visible={modals.petSettings}
+              presentationStyle='pageSheet'
+              animationType='slide'
+              onRequestClose={() => {
+                setPetSettingsModalVisible(false);
+              }}>
+              <PetSettingsModal
+                closeModal={() => {
+                  setPetSettingsModalVisible(false);
+                }}
+                pet={pet}
+              />
+            </Modal>
+          </View>
+        </View>
+      )}
     </Animated.View>
   );
 };

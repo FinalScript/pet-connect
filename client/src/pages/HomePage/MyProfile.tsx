@@ -1,6 +1,6 @@
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useCallback, useMemo, useRef, useState } from 'react';
-import { LogBox, Modal, Pressable, SafeAreaView, ScrollView, Share, View } from 'react-native';
+import { Image, LogBox, Modal, Pressable, SafeAreaView, ScrollView, Share, View } from 'react-native';
 import { useAuth0 } from 'react-native-auth0';
 import { Modalize } from 'react-native-modalize';
 import { Portal } from 'react-native-portalize';
@@ -9,7 +9,6 @@ import { useDispatch, useSelector } from 'react-redux';
 import { RootStackParamList } from '../../../App';
 import colors from '../../../config/tailwind/colors';
 import { getApiBaseUrl } from '../../api';
-import Image from '../../components/Image';
 import PetCard from '../../components/PetCard';
 import Text from '../../components/Text';
 import AccountSwitcherModal from '../../components/modals/AccountSwitcherModal';
@@ -107,7 +106,12 @@ const MyProfile = ({ navigation }: Props) => {
       <ScrollView className='w-full px-5'>
         <View className='mt-5 flex flex-row items-center justify-between'>
           <View className='relative'>
-            <Pressable onPress={() => {}}>
+            <Pressable
+              onPress={() => {
+                if (owner) {
+                  navigation.navigate('Profile Picture', { id: owner?.id, isPet: false });
+                }
+              }}>
               <View className='w-28 h-28 rounded-full border-2 border-themeActive flex items-center justify-center'>
                 {owner?.ProfilePicture?.url ? (
                   <Image

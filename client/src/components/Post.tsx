@@ -1,5 +1,5 @@
 import React, { useRef, useState } from 'react';
-import { Pressable, View } from 'react-native';
+import { Animated, Pressable, View } from 'react-native';
 import { TapGestureHandler } from 'react-native-gesture-handler';
 import { HapticFeedbackTypes, trigger } from 'react-native-haptic-feedback';
 import { Modalize } from 'react-native-modalize';
@@ -17,6 +17,7 @@ import CommentsModel from './modals/CommentsModal';
 interface Props {
   post: PostType;
   goToProfile: () => void;
+  onLayoutChange?: (height: number) => void;
 }
 
 const comments = [
@@ -34,11 +35,20 @@ const comments = [
   },
 ];
 
-export default function Post({ post, goToProfile }: Props) {
+export default function Post({ post, goToProfile, onLayoutChange }: Props) {
   const [postLiked, setPostLiked] = useState(false);
   const CAPTION_LINES = 2;
   const [moreCaption, setMoreCaption] = useState(false);
   const modalizeRef = useRef<Modalize>(null);
+  const [showHeartIcon, setShowHeartIcon] = useState(false);
+  const heartScale = useRef(new Animated.Value(0)).current; // Ref for the animated value
+
+  const onLayout = (event: { nativeEvent: { layout: { height: number } } }) => {
+    const height = event.nativeEvent.layout.height;
+    if (onLayoutChange) {
+      onLayoutChange(height);
+    }
+  };
 
   const openCommentsModal = () => {
     modalizeRef.current?.open();
@@ -48,11 +58,30 @@ export default function Post({ post, goToProfile }: Props) {
     modalizeRef.current?.close();
   };
 
+  const animateHeart = () => {
+    setShowHeartIcon(true);
+    Animated.sequence([
+      Animated.timing(heartScale, {
+        toValue: 1,
+        duration: 200,
+        useNativeDriver: true,
+      }),
+      Animated.delay(500),
+      Animated.timing(heartScale, {
+        toValue: 0,
+        duration: 200,
+        useNativeDriver: true,
+      }),
+    ]).start();
+  };
+
   const handleLike = () => {
-    if (!postLiked) {
-      trigger(HapticFeedbackTypes.impactLight, options);
-    }
-    setPostLiked((prev) => !prev);
+    setPostLiked(true);
+    trigger(HapticFeedbackTypes.impactLight, options);
+  };
+
+  const unlikePost = () => {
+    setPostLiked(false);
   };
 
   const handleMoreCaption = () => {
@@ -63,7 +92,7 @@ export default function Post({ post, goToProfile }: Props) {
   };
 
   return (
-    <View className='bg-white mb-5 pb-2 w-full shadow-sm shadow-themeShadow'>
+    <View className='bg-white mb-5 pb-2 w-full shadow-sm shadow-themeShadow' onLayout={onLayout}>
       <Portal>
         <Modalize
           ref={modalizeRef}
@@ -92,20 +121,39 @@ export default function Post({ post, goToProfile }: Props) {
 
       <TapGestureHandler
         onEnded={() => {
-          if (!postLiked) {
-            handleLike();
-          }
+          animateHeart();
+          handleLike();
         }}
         numberOfTaps={2}>
-        <View className='h-[400px] w-full'>
-          {/* postImage would be used in source below */}
+        <View className='h-[400px] w-full relative'>
           <Image className='w-full h-full object-contain' source={{ uri: post.Media.url }} />
+          {showHeartIcon && (
+            <Animated.View
+              style={{
+                position: 'absolute',
+                top: '50%',
+                left: '50%',
+                marginTop: -24,
+                marginLeft: -24,
+                transform: [{ scale: heartScale }],
+              }}>
+              <AntDesign name='heart' size={100} color={colors.themeTabBg} />
+            </Animated.View>
+          )}
         </View>
       </TapGestureHandler>
 
       <View className='flex-row items-center gap-x-4 px-4 py-1'>
-        <View className='mt-1' onTouchEnd={handleLike}>
-          {postLiked === true ? <AntDesign name='heart' size={25} color={'#ff1000'} /> : <AntDesign name='hearto' size={25} color={'#000000'} />}
+        <View className='mt-1'>
+          {postLiked ? (
+            <Pressable onPress={unlikePost}>
+              <AntDesign name='heart' size={25} color={'#ff1000'} />
+            </Pressable>
+          ) : (
+            <Pressable onPress={handleLike}>
+              <AntDesign name='hearto' size={25} color={'#000000'} />
+            </Pressable>
+          )}
         </View>
         <View className='' onTouchEnd={openCommentsModal}>
           <Ionicon name='chatbubble-outline' size={25} color={'#000000'} />

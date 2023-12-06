@@ -23,6 +23,8 @@ import { ProfileReducer } from './src/redux/reducers/profileReducer';
 import { navigationRef } from './src/services/navigator';
 import { options } from './src/utils/hapticFeedbackOptions';
 import PostPage from './src/pages/HomePage/PostPage';
+import ProfilePicture from './src/pages/ProfilePicture';
+import ProfileFeed from './src/pages/ProfileFeed';
 
 export type RootStackParamList = {
   Loading: undefined;
@@ -35,6 +37,8 @@ export type RootStackParamList = {
   'Pet Profile': { petId: string };
   'Owner Profile': { ownerId: string };
   'New Post': undefined;
+  'Profile Picture': { id: string; isPet: boolean };
+  'Profile Feed': { petId: string, initialPostIndex: number };
 };
 
 export type RootRouteProps<RouteName extends keyof RootStackParamList> = RouteProp<RootStackParamList, RouteName>;
@@ -193,6 +197,31 @@ const App = () => {
                 headerShown: true,
                 headerBackVisible: true,
                 animation: 'slide_from_bottom',
+                animationTypeForReplace: 'push',
+                contentStyle: { backgroundColor: '#f6f6f6f' },
+                headerTransparent: true,
+              }}
+            />
+            <Stack.Screen
+              name='Profile Picture'
+              component={ProfilePicture}
+              options={{
+                headerShown: true,
+                headerBackVisible: true,
+                animation: 'slide_from_right',
+                animationTypeForReplace: 'push',
+                headerTitleStyle: { color: 'transparent'},
+                contentStyle: { backgroundColor: '#f6f6f6f' },
+                headerTransparent: true,
+              }}
+            />
+            <Stack.Screen
+              name='Profile Feed'
+              component={ProfileFeed}
+              options={{
+                headerShown: true,
+                headerBackVisible: true,
+                animation: 'slide_from_right',
                 animationTypeForReplace: 'push',
                 contentStyle: { backgroundColor: '#f6f6f6f' },
                 headerTransparent: true,

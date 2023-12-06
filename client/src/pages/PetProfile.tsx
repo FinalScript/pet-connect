@@ -87,7 +87,12 @@ const PetProfile = ({
         {gridPosts.map((post, index) => {
           return (
             <View key={index} className='w-1/3 p-[1px]'>
-              <Image className='w-full h-auto aspect-square' source={{ uri: post.Media.url }} resizeMode='cover' />
+              <Pressable
+                onPress={() => {
+                  if (pet) navigation.navigate('Profile Feed', { petId: pet?.id, initialPostIndex: index });
+                }}>
+                <Image className='w-full h-auto aspect-square' source={{ uri: post.Media.url }} resizeMode='cover' />
+              </Pressable>
             </View>
           );
         })}
@@ -122,7 +127,12 @@ const PetProfile = ({
       <ScrollView className='w-full px-5 mb-12'>
         <View className='mt-5 flex flex-row items-center justify-between'>
           <View className='relative'>
-            <Pressable onPress={() => {}}>
+            <Pressable
+              onPress={() => {
+                if (pet) {
+                  navigation.navigate('Profile Picture', { id: pet?.id, isPet: true });
+                }
+              }}>
               <View className='w-28 h-28 rounded-full border-2 border-themeActive flex items-center justify-center'>
                 {pet?.ProfilePicture?.url ? (
                   <Image
