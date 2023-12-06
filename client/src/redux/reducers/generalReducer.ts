@@ -1,12 +1,17 @@
 import { Post } from '../../__generated__/graphql';
-import { DEVELOPER_PANEL_OPEN, LOADING, ADDING_POST_TO_FEED, REPLACE_FEED } from '../constants';
+import { DEVELOPER_PANEL_OPEN, LOADING, REPLACE_FOLLOWING_FEED, REPLACE_FORYOU_PAGE } from '../constants';
 
-const initialState: GeneralState = { loading: true, developerPanelOpen: false , feedPosts: []};
+const initialState: GeneralState = { loading: true, developerPanelOpen: false, feed: { forYou: [], following: [] } };
 
 export interface GeneralState {
   loading: boolean;
   developerPanelOpen: boolean;
-  feedPosts: Post[];
+  feed: Feed;
+}
+
+interface Feed {
+  forYou: Post[];
+  following: Post[];
 }
 
 export interface GeneralReducer {
@@ -22,16 +27,16 @@ const generalReducer = (state = initialState, action: any) => {
         ...state,
         loading: action.payload,
       };
-    case ADDING_POST_TO_FEED:
+    case REPLACE_FOLLOWING_FEED:
       return {
         ...state,
-        feedPosts: [action.payload, ...state.feedPosts]
-      }
-    case REPLACE_FEED:
+        feed: { ...state.feed, following: action.payload },
+      };
+    case REPLACE_FORYOU_PAGE:
       return {
         ...state,
-        feedPosts: action.payload
-      }
+        feed: { ...state.feed, forYou: action.payload },
+      };
     default:
       return state;
   }

@@ -249,6 +249,104 @@ export const PetResolver = {
         });
       }
     },
+
+    followPet: async (_, { id }, context) => {
+      const { token } = context;
+      const jwtResult = await isTokenValid(token);
+
+      if (jwtResult?.error || !jwtResult?.id) {
+        throw new GraphQLError(jwtResult?.error.toString(), {
+          extensions: {
+            code: 'UNAUTHORIZED',
+          },
+        });
+      }
+
+      const authId = jwtResult.id;
+
+      const follower = await getOwner(authId);
+
+      if (!follower) {
+        throw new GraphQLError('Owner does not exist', {
+          extensions: {
+            code: 'BAD_USER_INPUT',
+          },
+        });
+      }
+
+      const pet = await getPetById(id);
+
+      if (!pet) {
+        throw new GraphQLError('Pet does not exist', {
+          extensions: {
+            code: 'BAD_USER_INPUT',
+          },
+        });
+      }
+
+      if (pet.Owner.id === follower.id) {
+        throw new GraphQLError('You cannot follow your own pet', {
+          extensions: {
+            code: 'BAD_USER_INPUT',
+          },
+        });
+      }
+
+      const followers = pet.Followers;
+
+      const isAlreadyFollowing = followers.some((follow) => follow.id === follower.id);
+
+      if (isAlreadyFollowing) {
+        throw new GraphQLError('Already following', {
+          extensions: {
+            code: 'BAD_USER_INPUT',
+          },
+        });
+      }
+
+      await pet.addFollower(follower);
+
+      return { success: true };
+    },
+
+    unfollowPet: async (_, { id }, context) => {
+      const { token } = context;
+      const jwtResult = await isTokenValid(token);
+
+      if (jwtResult?.error || !jwtResult?.id) {
+        throw new GraphQLError(jwtResult?.error.toString(), {
+          extensions: {
+            code: 'UNAUTHORIZED',
+          },
+        });
+      }
+
+      const authId = jwtResult.id;
+
+      const owner = await getOwner(authId);
+
+      if (!owner) {
+        throw new GraphQLError('Owner does not exist', {
+          extensions: {
+            code: 'BAD_USER_INPUT',
+          },
+        });
+      }
+
+      const pet = await getPetById(id);
+
+      if (!pet) {
+        throw new GraphQLError('Pet does not exist', {
+          extensions: {
+            code: 'BAD_USER_INPUT',
+          },
+        });
+      }
+
+      await pet.removeFollower(owner);
+
+      return { success: true };
+    },
   },
 
   Query: {

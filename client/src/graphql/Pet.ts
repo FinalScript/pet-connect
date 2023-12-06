@@ -106,8 +106,31 @@ export const GET_PET_BY_ID = gql(`
             location
           }
         }
+        Followers {
+          id
+          authId
+          name
+          username
+          location
+        }
       }
     }
   }
 
+`);
+
+export const FOLLOW_PET = gql(`
+  mutation FollowPet($id: String!) {
+    followPet(id: $id) {
+      success
+    }
+  }
+`);
+
+export const UNFOLOW_PET = gql(`
+  mutation UnfollowPet($id: String!) {
+    unfollowPet(id: $id) {
+      success
+    }
+  }
 `);

@@ -1,4 +1,4 @@
-import { useLazyQuery } from '@apollo/client';
+import { useLazyQuery, useMutation } from '@apollo/client';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { Icon, IconElement, IconProps, Layout, Tab, TabBarProps, TabView } from '@ui-kitten/components';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
@@ -10,7 +10,7 @@ import Image from '../components/Image';
 import PetTypeImage from '../components/PetTypeImage';
 import Text from '../components/Text';
 import EditProfileModal from '../components/modals/EditProfileModal';
-import { GET_PET_BY_ID } from '../graphql/Pet';
+import { FOLLOW_PET, GET_PET_BY_ID, UNFOLOW_PET } from '../graphql/Pet';
 import { GET_POSTS_BY_PET_ID } from '../graphql/Post';
 import { PetDAO, ProfileReducer } from '../redux/reducers/profileReducer';
 import colors from '../../config/tailwind/colors';
@@ -30,7 +30,7 @@ const PetProfile = ({
   },
 }: Props) => {
   const ownerId = useSelector((state: ProfileReducer) => state.profile.owner?.id);
-  const [getPet, { data: petData }] = useLazyQuery(GET_PET_BY_ID, { fetchPolicy: 'network-only' });
+  const [getPet, { data: petData, refetch: refetchPetData }] = useLazyQuery(GET_PET_BY_ID, { fetchPolicy: 'network-only' });
   const [getPostsByPetId, { data: postsData }] = useLazyQuery(GET_POSTS_BY_PET_ID, { fetchPolicy: 'network-only' });
   const pet = useMemo(() => petData?.getPetById.pet, [petData, petId]);
   const isOwner = useMemo(() => ownerId === pet?.Owner?.id, [ownerId, pet?.Owner?.id]);
@@ -38,6 +38,12 @@ const PetProfile = ({
   const gridPosts = useMemo(() => {
     return postsData?.getPostsByPetId?.posts || [];
   }, [postsData]);
+  const [followPet] = useMutation(FOLLOW_PET);
+  const [unfollowPet] = useMutation(UNFOLOW_PET);
+  const [manualIsFollowing, setManualIsFollowing] = useState(false);
+  const isFollowing = useMemo(() => {
+    return manualIsFollowing || (pet?.Followers && pet.Followers.findIndex((item) => item?.id === ownerId) !== -1);
+  }, [pet, ownerId, manualIsFollowing]);
   const tabBarState = useTabBarState();
 
   useEffect(() => {
@@ -54,6 +60,26 @@ const PetProfile = ({
       return { ...prev, editProfile: bool };
     });
   }, []);
+
+  const handleFollow = useCallback(() => {
+    if (!pet) return;
+
+    followPet({ variables: { id: pet.id } }).then(({ data }) => {
+      if (data?.followPet.success) {
+        refetchPetData();
+      }
+    });
+  }, [followPet, pet, setManualIsFollowing]);
+
+  const handleUnfollow = useCallback(() => {
+    if (!pet) return;
+
+    unfollowPet({ variables: { id: pet.id } }).then(({ data }) => {
+      if (data?.unfollowPet.success) {
+        refetchPetData();
+      }
+    });
+  }, [followPet, pet, setManualIsFollowing]);
 
   const onShare = useCallback(async () => {
     try {
@@ -150,16 +176,16 @@ const PetProfile = ({
           <View className='px-5 flex items-start'>
             <View className='flex flex-row gap-7'>
               <View className='flex items-center'>
-                <Text className='text-xl font-bold'>5</Text>
+                <Text className='text-xl font-bold'>{gridPosts.length}</Text>
                 <Text className='text-md'>Posts</Text>
               </View>
               <View className='flex items-center'>
-                <Text className='text-xl font-bold'>20</Text>
+                <Text className='text-xl font-bold'>{pet.Followers?.length}</Text>
                 <Text className='text-md'>Followers</Text>
               </View>
               <View className='flex items-center'>
                 <Text className='text-xl font-bold'>25</Text>
-                <Text className='text-md'>Following</Text>
+                <Text className='text-md'>Likes</Text>
               </View>
             </View>
             {pet?.type && (
@@ -190,10 +216,19 @@ const PetProfile = ({
             className='flex-1'
             activeOpacity={0.6}
             onPress={() => {
-              isOwner && setEditProfileModalVisible(true);
+              if (isOwner) {
+                setEditProfileModalVisible(true);
+                return;
+              }
+
+              if (isFollowing) {
+                handleUnfollow();
+              } else {
+                handleFollow();
+              }
             }}>
             <View className='bg-themeBtn px-7 py-2 rounded-lg'>
-              <Text className='text-themeText text-base font-semibold text-center'>{isOwner ? 'Edit Profile' : 'Follow'}</Text>
+              <Text className='text-themeText text-base font-semibold text-center'>{isOwner ? 'Edit Profile' : isFollowing ? 'Unfollow' : 'Follow'}</Text>
             </View>
           </PressableOpacity>
           <PressableOpacity

@@ -1,15 +1,15 @@
 import { useLazyQuery } from '@apollo/client';
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { Animated, RefreshControl, SafeAreaView, View } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootStackParamList } from '../../../App';
 import colors from '../../../config/tailwind/colors';
 import Post from '../../components/Post';
 import Text from '../../components/Text';
-import { GET_ALL_POSTS } from '../../graphql/Post';
-import { REPLACE_FEED } from '../../redux/constants';
+import { GET_FEED } from '../../graphql/Post';
+import { REPLACE_FOLLOWING_FEED, REPLACE_FORYOU_PAGE } from '../../redux/constants';
 import { GeneralReducer } from '../../redux/reducers/generalReducer';
 
 const Tab = createMaterialTopTabNavigator();
@@ -21,34 +21,43 @@ interface Props {
 const Feed = ({ navigation }: Props) => {
   const dispatch = useDispatch();
   const [refreshing, setRefreshing] = useState(false);
-  const [getAllPosts] = useLazyQuery(GET_ALL_POSTS, { fetchPolicy: 'network-only' });
-  const posts = useSelector((state: GeneralReducer) => state.general.feedPosts);
+  const [getFeed] = useLazyQuery(GET_FEED, { fetchPolicy: 'network-only' });
+  const feed = useSelector((state: GeneralReducer) => state.general.feed);
   const scrollY = new Animated.Value(0);
 
-  const clampedTranslateY = scrollY.interpolate({
-    inputRange: [20, 100],
-    outputRange: [0, -100],
-    extrapolateLeft: 'clamp',
-  });
+  const clampedTranslateY = useMemo(
+    () =>
+      scrollY.interpolate({
+        inputRange: [20, 100],
+        outputRange: [0, -100],
+        extrapolateLeft: 'clamp',
+      }),
+    [scrollY]
+  );
 
-  const clampedOpacity = scrollY.interpolate({
-    inputRange: [0, 40],
-    outputRange: [1, 0],
-    extrapolateLeft: 'clamp',
-  });
+  const clampedOpacity = useMemo(
+    () =>
+      scrollY.interpolate({
+        inputRange: [0, 40],
+        outputRange: [1, 0],
+        extrapolateLeft: 'clamp',
+      }),
+    [scrollY]
+  );
 
   useEffect(() => {
     getPosts();
   }, []);
 
-  const getPosts = async () => {
-    const fetchedPosts = await getAllPosts();
+  const getPosts = useCallback(async () => {
+    const fetchedPosts = await getFeed();
 
-    if (fetchedPosts.data?.getAllPosts.posts) {
-      dispatch({ type: REPLACE_FEED, payload: fetchedPosts.data.getAllPosts.posts });
+    if (fetchedPosts.data?.getFeed) {
+      dispatch({ type: REPLACE_FOLLOWING_FEED, payload: fetchedPosts.data.getFeed.following });
+      dispatch({ type: REPLACE_FORYOU_PAGE, payload: fetchedPosts.data.getFeed.forYou });
       return;
     }
-  };
+  }, [getFeed, dispatch]);
 
   const onRefresh = useCallback(async () => {
     setRefreshing(true);
@@ -62,7 +71,7 @@ const Feed = ({ navigation }: Props) => {
   return (
     <SafeAreaView className={'flex-1 h-full bg-themeBg'}>
       <Tab.Navigator
-        initialRouteName='For You'
+        initialRouteName='Following'
         screenOptions={{
           tabBarPressOpacity: 1,
           tabBarPressColor: 'rgba(0,0,0,0)',
@@ -96,7 +105,7 @@ const Feed = ({ navigation }: Props) => {
           },
         }}>
         <Tab.Screen
-          name='Following'
+          name='Explore'
           children={() => {
             return (
               <View className='flex-1 h-full bg-themeBg'>
@@ -116,7 +125,7 @@ const Feed = ({ navigation }: Props) => {
           }}
         />
         <Tab.Screen
-          name='For You'
+          name='Following'
           children={() => {
             return (
               <View className='flex-1 h-full bg-themeBg'>
@@ -126,7 +135,7 @@ const Feed = ({ navigation }: Props) => {
                   className='w-full pt-10'
                   refreshControl={<RefreshControl tintColor={'black'} refreshing={refreshing} onRefresh={onRefresh} />}>
                   <View className='flex justify-center items-center h-full pb-[100px]'>
-                    {posts.map((post, i) => {
+                    {feed.following.map((post, i) => {
                       return (
                         <Post
                           key={i}
@@ -137,7 +146,7 @@ const Feed = ({ navigation }: Props) => {
                         />
                       );
                     })}
-                    {posts.length === 0 && (
+                    {feed.following.length === 0 && (
                       <>
                         <Text>Nothing to see here...</Text>
                       </>

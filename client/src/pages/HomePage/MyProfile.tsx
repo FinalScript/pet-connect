@@ -126,17 +126,13 @@ const MyProfile = ({ navigation }: Props) => {
               </View>
             </Pressable>
           </View>
-          <View className='px-5 flex flex-row gap-7'>
+          <View className='px-5 flex flex-row gap-x-5'>
             <View className='flex items-center'>
               <Text className='text-xl font-bold'>{pets.length}</Text>
               <Text className='text-md'>Pets</Text>
             </View>
             <View className='flex items-center'>
-              <Text className='text-xl font-bold'>20</Text>
-              <Text className='text-md'>Followers</Text>
-            </View>
-            <View className='flex items-center'>
-              <Text className='text-xl font-bold'>25</Text>
+              <Text className='text-xl font-bold'>{owner?.FollowedPets?.length || 0}</Text>
               <Text className='text-md'>Following</Text>
             </View>
           </View>

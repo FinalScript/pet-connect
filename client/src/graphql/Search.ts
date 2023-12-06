@@ -38,6 +38,21 @@ export const SEARCH = gql(`
               path
               type
             }
+            Followers {
+              id
+              authId
+              name
+              username
+              location
+            }
+          }
+          FollowedPets {
+            id
+            username
+            name
+            type
+            description
+            location
           }
         }
         pets {
@@ -60,6 +75,13 @@ export const SEARCH = gql(`
             url
             path
             type
+          }
+          Followers {
+            id
+            authId
+            name
+            username
+            location
           }
         }
       }

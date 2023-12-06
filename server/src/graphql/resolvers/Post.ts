@@ -4,10 +4,27 @@ import { createPost, deletePost, getAllPosts, getPostById, getPostsByPetId, upda
 import { Post } from '../../models/Post';
 import { Media } from '../../models/Media';
 import { Pet } from '../../models/Pet';
+import { isTokenValid } from '../../middleware/token';
+import { getOwner } from '../../controllers/OwnerController';
+import { Owner } from '../../models/Owner';
+import { Follows } from '../../models/Follow';
+import { ProfilePicture } from '../../models/ProfilePicture';
 
 export const PostResolver = {
   Mutation: {
     createPost: async (_, { petId, description, media }, context) => {
+      const { token } = context;
+
+      const jwtResult = await isTokenValid(token);
+
+      if (jwtResult?.error || !jwtResult?.id) {
+        throw new GraphQLError(jwtResult?.error.toString(), {
+          extensions: {
+            code: 'UNAUTHORIZED',
+          },
+        });
+      }
+
       if (!petId) {
         throw new GraphQLError('Please provide petId', {
           extensions: {
@@ -70,6 +87,18 @@ export const PostResolver = {
     },
 
     updatePost: async (_, { id, description, media }, context) => {
+      const { token } = context;
+
+      const jwtResult = await isTokenValid(token);
+
+      if (jwtResult?.error || !jwtResult?.id) {
+        throw new GraphQLError(jwtResult?.error.toString(), {
+          extensions: {
+            code: 'UNAUTHORIZED',
+          },
+        });
+      }
+
       if (!id) {
         throw new GraphQLError('ID missing', {
           extensions: {
@@ -112,6 +141,18 @@ export const PostResolver = {
     },
 
     deletePost: async (_, { id }, context) => {
+      const { token } = context;
+
+      const jwtResult = await isTokenValid(token);
+
+      if (jwtResult?.error || !jwtResult?.id) {
+        throw new GraphQLError(jwtResult?.error.toString(), {
+          extensions: {
+            code: 'UNAUTHORIZED',
+          },
+        });
+      }
+
       if (!id) {
         throw new GraphQLError('ID missing', {
           extensions: {
@@ -151,7 +192,7 @@ export const PostResolver = {
 
       return { posts };
     },
-    
+
     getPostsByPetId: async (_, { petId }, context) => {
       if (!petId) {
         throw new GraphQLError('Pet ID missing', {
@@ -163,7 +204,7 @@ export const PostResolver = {
 
       try {
         const posts = await getPostsByPetId(petId);
-        return {posts};
+        return { posts };
       } catch (error) {
         console.error(error);
         throw new GraphQLError('Error fetching posts', {
@@ -194,6 +235,56 @@ export const PostResolver = {
       }
 
       return { post };
+    },
+
+    getFeed: async (_, {}, context) => {
+      const { token } = context;
+
+      const jwtResult = await isTokenValid(token);
+
+      if (jwtResult?.error || !jwtResult?.id) {
+        throw new GraphQLError(jwtResult?.error.toString(), {
+          extensions: {
+            code: 'UNAUTHORIZED',
+          },
+        });
+      }
+
+      const ownerWithFollowedPets = await Owner.findOne({
+        where: { authId: jwtResult.id },
+        include: [
+          {
+            model: Pet,
+            as: 'FollowedPets',
+            include: [
+              {
+                model: Post,
+                as: 'Posts',
+                include: [{ all: true, nested: true }],
+              },
+            ],
+          },
+        ],
+      });
+
+      if (!ownerWithFollowedPets) {
+        throw new GraphQLError('Owner not found');
+      }
+
+      const forYou = await getAllPosts();
+      let following = [];
+
+      if (ownerWithFollowedPets) {
+        const followedPets = ownerWithFollowedPets.FollowedPets || [];
+        const allFollowedPosts = followedPets.reduce((allPosts, pet) => {
+          const posts = pet.Posts || [];
+          return [...allPosts, ...posts];
+        }, []);
+
+        following = allFollowedPosts.sort((postA, postB) => postB.dateCreated - postA.dateCreated);
+      }
+
+      return { forYou, following };
     },
   },
 };
