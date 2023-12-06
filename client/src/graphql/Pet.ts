@@ -105,6 +105,14 @@ export const GET_PET_BY_ID = gql(`
             description
             location
           }
+          FollowedPets {
+            id
+            username
+            name
+            type
+            description
+            location
+          }
         }
         Followers {
           id
@@ -112,12 +120,32 @@ export const GET_PET_BY_ID = gql(`
           name
           username
           location
-          ProfilePicture {
+        }
+        ProfilePicture {
+          id
+          name
+          url
+          path
+          type
+        }
+        Posts {
+          id
+          petId
+          description
+          Media {
             id
             name
             url
             path
             type
+          }
+          author {
+            id
+            username
+            name
+            type
+            description
+            location
           }
         }
       }

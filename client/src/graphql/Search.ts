@@ -55,6 +55,13 @@ export const SEARCH = gql(`
             username
             location
           }
+          ProfilePicture {
+            id
+            name
+            url
+            path
+            type
+          }
         }
       }
     }

@@ -15,7 +15,7 @@ import { GET_POSTS_BY_PET_ID } from '../graphql/Post';
 import { PetDAO, ProfileReducer } from '../redux/reducers/profileReducer';
 import { Feather } from '../utils/Icons';
 import { themeConfig } from '../utils/theme';
-import { Owner } from '../__generated__/graphql';
+import { Owner, Post } from '../__generated__/graphql';
 
 const useTabBarState = (initialState = 0): Partial<TabBarProps> => {
   const [selectedIndex, setSelectedIndex] = useState(initialState);
@@ -36,7 +36,7 @@ const PetProfile = ({
   const pet = useMemo(() => petData?.getPetById.pet, [petData, petId]);
   const isOwner = useMemo(() => ownerId === pet?.Owner?.id, [ownerId, pet?.Owner?.id]);
   const [modals, setModals] = useState({ accountSwitcher: false, settings: false, editProfile: false });
-  const gridPosts = useMemo(() => {
+  const gridPosts:Post[] = useMemo(() => {
     return postsData?.getPostsByPetId?.posts || [];
   }, [postsData]);
   const [followPet] = useMutation(FOLLOW_PET);

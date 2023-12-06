@@ -64,7 +64,7 @@ const PetCard = ({ pet, goToProfile, isSelected, setIsSelected }: Props) => {
           {isSelected && (
             <View className='flex-row '>
               <View className='flex items-center mr-3'>
-                <Text className='text-base'>5</Text>
+                <Text className='text-base'>{pet.Posts?.length}</Text>
                 <Text className='text-xs'>Posts</Text>
               </View>
               <View className='flex items-center mr-3'>

@@ -23,13 +23,6 @@ export const GET_OWNER = gql(`
           type
           description
           location
-          Owner {
-            id
-            authId
-            name
-            username
-            location
-          }
           ProfilePicture {
             id
             name
@@ -37,18 +30,38 @@ export const GET_OWNER = gql(`
             path
             type
           }
+          Owner {
+            id
+            authId
+            name
+            username
+            location
+          }
           Followers {
             id
             authId
             name
             username
             location
-            ProfilePicture {
+          }
+          Posts {
+            id
+            petId
+            description
+            Media {
               id
               name
               url
               path
               type
+            }
+            author {
+              id
+              username
+              name
+              type
+              description
+              location
             }
           }
         }
@@ -59,17 +72,10 @@ export const GET_OWNER = gql(`
           type
           description
           location
-          ProfilePicture {
-            id
-            name
-            url
-            path
-            type
-          }
         }
       }
     }
-  }
+}
 `);
 
 export const GET_OWNER_BY_ID = gql(`

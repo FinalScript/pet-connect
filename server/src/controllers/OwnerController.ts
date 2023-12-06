@@ -3,6 +3,7 @@ import { Owner, OwnerCreationDAO, OwnerUpdateDAO } from '../models/Owner';
 import { Pet } from '../models/Pet';
 import { ProfilePicture } from '../models/ProfilePicture';
 import { Op } from 'sequelize';
+import { Post } from '../models/Post';
 
 export const getOwner = async (authId: string) => {
   const owner = await Owner.findOne({
@@ -12,8 +13,11 @@ export const getOwner = async (authId: string) => {
     include: [
       {
         model: Pet,
-        as: "Pets",
-        include: [{all:true, nested:true}]
+        as: 'Pets',
+        include: [
+          { all: true, nested: true },
+          { model: Post, as: 'Posts', include: [{ all: true, nested: true }] },
+        ],
       },
       {
         all: true,
