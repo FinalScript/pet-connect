@@ -59,11 +59,7 @@ const App = () => {
   const owner = useSelector((state: ProfileReducer) => state.profile.owner);
 
   useEffect(() => {
-    const timeoutId = setTimeout(() => {
-      getAuth();
-    }, 200);
-
-    return () => clearTimeout(timeoutId);
+    getAuth();
   }, [user, navigationRef]);
 
   useEffect(() => {
@@ -143,7 +139,7 @@ const App = () => {
       const owner = ownerData.data.getOwner.owner;
       const pets = ownerData.data.getOwner.owner.Pets || [];
 
-      console.log(owner)
+      console.log(owner);
 
       dispatch({ type: OWNER_DATA, payload: owner });
       dispatch({ type: PET_DATA, payload: pets });

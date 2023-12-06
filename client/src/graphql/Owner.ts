@@ -46,23 +46,6 @@ export const GET_OWNER = gql(`
           }
           Posts {
             id
-            petId
-            description
-            Media {
-              id
-              name
-              url
-              path
-              type
-            }
-            author {
-              id
-              username
-              name
-              type
-              description
-              location
-            }
           }
         }
         FollowedPets {

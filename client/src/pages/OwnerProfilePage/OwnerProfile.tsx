@@ -66,7 +66,7 @@ const OwnerProfile = ({ owner, navigation }: Props) => {
               key={pet?.id}
               pet={pet}
               goToProfile={() => {
-                navigation.navigate('Pet Profile', { petId: pet.id });
+                navigation.push('Pet Profile', { petId: pet.id });
               }}
               isSelected={selectedPetId === pet.id}
               setIsSelected={setSelectedPetId}
@@ -103,7 +103,7 @@ const OwnerProfile = ({ owner, navigation }: Props) => {
             <Pressable
               onPress={() => {
                 if (owner?.ProfilePicture) {
-                  navigation.navigate('Profile Picture', { profilePicture: owner?.ProfilePicture });
+                  navigation.push('Profile Picture', { profilePicture: owner?.ProfilePicture });
                 }
               }}>
               <View className='w-28 h-28 rounded-full border-2 border-themeActive flex items-center justify-center'>
