@@ -27,12 +27,8 @@ export const getPetByUsername = async (username: string) => {
     },
     include: [
       {
-        model: ProfilePicture,
-        as: 'ProfilePicture',
-      },
-      {
-        model: Owner,
-        as: 'Owner',
+        all: true,
+        nested: true,
       },
     ],
   });
@@ -72,12 +68,8 @@ export const searchForPets = async (searchValue: string) => {
     limit: 20,
     include: [
       {
-        model: ProfilePicture,
-        as: 'ProfilePicture',
-      },
-      {
-        model: Owner,
-        as: 'Owner',
+        all: true,
+        nested: true,
       },
     ],
   });

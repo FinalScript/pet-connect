@@ -19,7 +19,6 @@ interface Props {
 const PetCard = ({ pet, goToProfile, isSelected, setIsSelected }: Props) => {
   const height = useSharedValue(80);
   const [modals, setModals] = useState({ petSettings: false });
-
   useEffect(() => {
     if (isSelected) {
       height.value = withTiming(140);
@@ -50,14 +49,14 @@ const PetCard = ({ pet, goToProfile, isSelected, setIsSelected }: Props) => {
               }}
             />
           ) : (
-            (pet as PetDAO)?.type && <PetTypeImage type={(pet as PetDAO)?.type} className='w-10 h-10' />
+            (pet)?.type && <PetTypeImage type={(pet)?.type} className='w-10 h-10' />
           )}
         </Animated.View>
         <View className='flex justify-around h-full'>
           <View className='flex '>
             <View className='flex-row items-center'>
               <Text className='text-xl font-medium'>{pet?.name}</Text>
-              {(pet as PetDAO)?.type && <PetTypeImage type={(pet as PetDAO)?.type} className='w-5 h-5 ml-2' />}
+              {(pet)?.type && <PetTypeImage type={(pet)?.type} className='w-5 h-5 ml-2' />}
             </View>
             <Text className='text-sm'>@{pet?.username}</Text>
           </View>
@@ -69,7 +68,7 @@ const PetCard = ({ pet, goToProfile, isSelected, setIsSelected }: Props) => {
                 <Text className='text-xs'>Posts</Text>
               </View>
               <View className='flex items-center mr-3'>
-                <Text className='text-base'>20</Text>
+                <Text className='text-base'>{pet.Followers?.length}</Text>
                 <Text className='text-xs'>Followers</Text>
               </View>
               <View className='flex items-center mr-3'>

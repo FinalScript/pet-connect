@@ -24,34 +24,6 @@ export const SEARCH = gql(`
             type
             description
             location
-            Owner {
-              id
-              authId
-              name
-              username
-              location
-            }
-            ProfilePicture {
-              id
-              name
-              url
-              path
-              type
-            }
-            Followers {
-              id
-              authId
-              name
-              username
-              location
-              ProfilePicture {
-                id
-                name
-                url
-                path
-                type
-              }
-            }
           }
           FollowedPets {
             id
@@ -60,13 +32,6 @@ export const SEARCH = gql(`
             type
             description
             location
-            ProfilePicture {
-              id
-              name
-              url
-              path
-              type
-            }
           }
         }
         pets {
@@ -83,26 +48,12 @@ export const SEARCH = gql(`
             username
             location
           }
-          ProfilePicture {
-            id
-            name
-            url
-            path
-            type
-          }
           Followers {
             id
             authId
             name
             username
             location
-            ProfilePicture {
-              id
-              name
-              url
-              path
-              type
-            }
           }
         }
       }

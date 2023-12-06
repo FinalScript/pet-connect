@@ -11,6 +11,11 @@ export const getOwner = async (authId: string) => {
     },
     include: [
       {
+        model: Pet,
+        as: "Pets",
+        include: [{all:true, nested:true}]
+      },
+      {
         all: true,
         nested: true,
       },

@@ -54,7 +54,8 @@ const OwnerProfile = ({ owner, navigation }: Props) => {
 
   const renderOwnerPets = useMemo(() => {
     return (
-      <View className='mt-10 flex-col justify-center'>
+      <View className='flex-col justify-center'>
+        {pets && <Text className='m-5 text-center'>{isOwner && "My "}Pets</Text>}
         {pets.map((pet) => {
           if (!pet) {
             return;

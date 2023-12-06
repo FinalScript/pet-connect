@@ -143,6 +143,8 @@ const App = () => {
       const owner = ownerData.data.getOwner.owner;
       const pets = ownerData.data.getOwner.owner.Pets || [];
 
+      console.log(owner)
+
       dispatch({ type: OWNER_DATA, payload: owner });
       dispatch({ type: PET_DATA, payload: pets });
 
