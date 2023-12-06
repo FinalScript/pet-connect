@@ -205,7 +205,7 @@ const PetProfile = ({
               onPress={() => {
                 pet.Owner?.id && navigation.navigate('Owner Profile', { ownerId: pet.Owner.id });
               }}>
-              <Text className='font-medium text-blue-500'>@{pet.Owner.username}</Text>
+              <Text className='font-medium text-themeTrim'>@{pet.Owner.username}</Text>
             </Pressable>
           </View>
 
@@ -249,7 +249,7 @@ const PetProfile = ({
             animationDuration={150}
             style={{ width: Dimensions.get('window').width, flex: 1 }}
             tabBarStyle={{ backgroundColor: 'transparent', paddingBottom: 10 }}
-            indicatorStyle={{ backgroundColor: themeConfig.customColors.themeActive }}>
+            indicatorStyle={{ backgroundColor: themeConfig.customColors.themeTrim }}>
             <Tab icon={() => <Feather name='grid' size={18} color={themeConfig.customColors.themeText} />}>
               <Layout style={{ flex: 1, backgroundColor: themeConfig.customColors.themeBg }}>{renderPostsGrid()}</Layout>
             </Tab>

@@ -198,6 +198,7 @@ const PetsDropdown = ({ value, setValue, data }: any) => {
         ' bg-themeInput border-[5px] border-t-[0px] shadow-sm shadow-themeShadow w-full text-lg'
       }>
       <Dropdown
+        disable={data.length <= 1}
         style={styles.dropdown}
         data={data}
         labelField='label'
@@ -216,7 +217,7 @@ const PetsDropdown = ({ value, setValue, data }: any) => {
         }}
         itemTextStyle={{ fontFamily: 'BalooChettan2-Regular', color: themeConfig.customColors.themeText }}
         placeholderStyle={{ fontFamily: 'BalooChettan2-Regular' }}
-        selectedTextStyle={{ fontFamily: 'BalooChettan2-Regular', color: themeConfig.tailwindColors.blue[500] }}
+        selectedTextStyle={{ fontFamily: 'BalooChettan2-Regular', color: themeConfig.customColors.themeTrim }}
         containerStyle={{
           borderRadius: 24,
           borderBottomRightRadius: 0,

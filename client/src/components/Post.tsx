@@ -96,7 +96,7 @@ export default function Post({ post, goToProfile, onLayoutChange }: Props) {
   }
 
   return (
-    <View className='bg-white mb-5 pb-2 w-full shadow-sm shadow-themeShadow' onLayout={onLayout}>
+    <View className='bg-themeInput mb-5 pb-2 w-full shadow-md shadow-themeActive' onLayout={onLayout}>
       <Portal>
         <Modalize
           ref={modalizeRef}
@@ -147,7 +147,7 @@ export default function Post({ post, goToProfile, onLayoutChange }: Props) {
         <View className='mt-1'>
           {postLiked ? (
             <Pressable onPress={unlikePost}>
-              <AntDesign name='heart' size={25} color={themeConfig.customColors.themeActive}  />
+              <AntDesign name='heart' size={25} color={themeConfig.customColors.themeActive} />
             </Pressable>
           ) : (
             <Pressable onPress={handleLike}>
