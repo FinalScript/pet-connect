@@ -1,16 +1,15 @@
 import { NavigationContainer, RouteProp } from '@react-navigation/native';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
-import React, { useState } from 'react';
-import { Animated, Modal, StyleSheet, TouchableOpacity } from 'react-native';
+import React from 'react';
+import { Animated, StyleSheet, TouchableOpacity } from 'react-native';
 import { CurvedBottomBar } from 'react-native-curved-bottom-bar';
 import { RootStackParamList } from '../../../App';
-import colors from '../../../config/tailwind/colors';
 import { Ionicon } from '../../utils/Icons';
+import { themeConfig } from '../../utils/theme';
 import Explore from './Explore';
 import Feed from './Feed';
 import Inbox from './Inbox';
 import MyProfile from './MyProfile';
-import PostPage from './PostPage';
 
 export type HomeStackParamList = {
   Feed: undefined;
@@ -29,13 +28,13 @@ const HomeNavigator = ({ navigation }: HomeScreenProps) => {
 
     switch (routeName) {
       case 'Feed':
-        return <Ionicon name='home' size={25} color={colors.themeText} />;
+        return <Ionicon name='home' size={25} color={themeConfig.customColors.themeText} />;
       case 'Explore':
-        return <Ionicon name='search' size={25} color={colors.themeText} />;
+        return <Ionicon name='search' size={25} color={themeConfig.customColors.themeText} />;
       case 'Inbox':
-        return <Ionicon name='file-tray' size={25} color={colors.themeText} />;
+        return <Ionicon name='file-tray' size={25} color={themeConfig.customColors.themeText} />;
       case 'Profile':
-        return <Ionicon name='person-circle' size={25} color={colors.themeText} />;
+        return <Ionicon name='person-circle' size={25} color={themeConfig.customColors.themeText} />;
     }
 
     return <Ionicon name={icon} size={25} color={routeName === selectedTab ? 'black' : 'gray'} />;
@@ -61,13 +60,13 @@ const HomeNavigator = ({ navigation }: HomeScreenProps) => {
           shadowStyle={styles.shadow}
           height={75}
           circleWidth={50}
-          bgColor={colors.themeInput}
+          bgColor={themeConfig.customColors.themeInput}
           initialRouteName='Feed'
           borderTopLeftRight
           renderCircle={({ selectedTab, navigate }) => (
             <Animated.View style={styles.btnCircleUp}>
               <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('New Post')}>
-                <Ionicon name={'paw'} color={colors.themeText} size={25} />
+                <Ionicon name={'paw'} color={themeConfig.customColors.themeText} size={25} />
               </TouchableOpacity>
             </Animated.View>
           )}
@@ -88,7 +87,7 @@ const styles = StyleSheet.create({
     padding: 20,
   },
   shadow: {
-    shadowColor: colors.themeBtn,
+    shadowColor: themeConfig.customColors.themeBtn,
     shadowOffset: {
       width: 0,
       height: 1,
@@ -107,9 +106,9 @@ const styles = StyleSheet.create({
     borderRadius: 30,
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: colors.themeBtn,
+    backgroundColor: themeConfig.customColors.themeBtn,
     bottom: 18,
-    shadowColor: colors.themeShadowLight,
+    shadowColor: themeConfig.customColors.themeShadowLight,
     shadowOffset: {
       width: 0,
       height: 1,

@@ -1,13 +1,13 @@
-import React, { useCallback, Dispatch, SetStateAction, useEffect, useState } from 'react';
+import React, { Dispatch, SetStateAction, useCallback, useEffect, useState } from 'react';
 import { Modal, Pressable, View } from 'react-native';
+import Animated, { useSharedValue, withTiming } from 'react-native-reanimated';
+import { Pet } from '../__generated__/graphql';
 import { PetDAO } from '../redux/reducers/profileReducer';
+import { Ionicon, MaterialCommunityIcons } from '../utils/Icons';
+import { themeConfig } from '../utils/theme';
 import Image from './Image';
 import PetTypeImage from './PetTypeImage';
 import Text from './Text';
-import Animated, { useSharedValue, withSpring, withTiming } from 'react-native-reanimated';
-import { Ionicon, MaterialCommunityIcons } from '../utils/Icons';
-import colors from '../../config/tailwind/colors';
-import { Pet } from '../__generated__/graphql';
 import PetSettingsModal from './modals/PetSettingsModal';
 
 interface Props {
@@ -92,7 +92,11 @@ const PetCard = ({ pet, goToProfile, isSelected, setIsSelected }: Props) => {
                 }
               });
             }}>
-            {isSelected ? <Ionicon name='chevron-up' size={24} color={colors.themeText} /> : <Ionicon name='chevron-down' size={24} color={colors.themeText} />}
+            {isSelected ? (
+              <Ionicon name='chevron-up' size={24} color={themeConfig.customColors.themeText} />
+            ) : (
+              <Ionicon name='chevron-down' size={24} color={themeConfig.customColors.themeText} />
+            )}
           </Pressable>
         </View>
       </Pressable>
@@ -104,7 +108,7 @@ const PetCard = ({ pet, goToProfile, isSelected, setIsSelected }: Props) => {
               console.log('we are being pressed rn');
               setPetSettingsModalVisible(true);
             }}>
-            <MaterialCommunityIcons name='dots-horizontal' size={24} color={colors.themeText}></MaterialCommunityIcons>
+            <MaterialCommunityIcons name='dots-horizontal' size={24} color={themeConfig.customColors.themeText}></MaterialCommunityIcons>
           </Pressable>
           <View>
             <Modal

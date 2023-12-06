@@ -4,7 +4,6 @@ import React, { useEffect, useState } from 'react';
 import { ActivityIndicator, Pressable, SafeAreaView, TextInput, View } from 'react-native';
 import { ScrollView } from 'react-native-gesture-handler';
 import { RootStackParamList } from '../../../App';
-import colors from '../../../config/tailwind/colors';
 import { Owner, Pet } from '../../__generated__/graphql';
 import Image from '../../components/Image';
 import PetTypeImage from '../../components/PetTypeImage';
@@ -13,6 +12,7 @@ import { SEARCH } from '../../graphql/Search';
 import { Feather, Ionicon } from '../../utils/Icons';
 import { useSelector } from 'react-redux';
 import { ProfileReducer } from '../../redux/reducers/profileReducer';
+import { themeConfig } from '../../utils/theme';
 
 interface Props {
   navigation: NativeStackNavigationProp<RootStackParamList, 'Home', undefined>;
@@ -65,7 +65,7 @@ const Explore = ({ navigation }: Props) => {
     <SafeAreaView className='flex-1 h-full items-center bg-themeBg'>
       <View className='mt-3 w-full flex-row items-center px-5 relative'>
         <View className='absolute px-5 ml-5 z-10'>
-          <Ionicon name='search' size={25} color={colors.themeText} />
+          <Ionicon name='search' size={25} color={themeConfig.customColors.themeText} />
         </View>
         <TextInput
           className={
@@ -104,7 +104,7 @@ const Explore = ({ navigation }: Props) => {
               });
             }}
             className='pr-5 mr-5 absolute right-0'>
-            <Feather name='x' size={15} color={colors.themeText} />
+            <Feather name='x' size={15} color={themeConfig.customColors.themeText} />
           </Pressable>
         )}
       </View>
