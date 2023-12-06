@@ -210,6 +210,7 @@ const App = () => {
                 headerBackVisible: true,
                 animation: 'slide_from_right',
                 animationTypeForReplace: 'push',
+                headerTitleStyle: { color: 'transparent'},
                 contentStyle: { backgroundColor: '#f6f6f6f' },
                 headerTransparent: true,
               }}

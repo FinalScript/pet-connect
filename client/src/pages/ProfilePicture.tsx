@@ -32,7 +32,7 @@ const ProfilePicture = ({
   const profilePictureUrl = isPet ? pet?.ProfilePicture?.url : owner?.ProfilePicture?.url;
 
   return (
-    <View className="flex-1 justify-center items-center bg-themeBg">
+    <View className="flex-1 justify-center items-center bg-black">
       <View className='w-64 h-64 rounded-full border-2 border-themeActive flex items-center justify-center '>
         {profilePictureUrl ? (
           <Image
