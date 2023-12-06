@@ -129,6 +129,26 @@ export const GET_OWNER_BY_ID = gql(`
               type
             }
           }
+          Posts {
+            id
+            petId
+            description
+            Media {
+              id
+              name
+              url
+              path
+              type
+            }
+            author {
+              id
+              username
+              name
+              type
+              description
+              location
+            }
+          }
         }
         FollowedPets {
           id
