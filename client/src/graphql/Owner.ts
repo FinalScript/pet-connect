@@ -23,13 +23,6 @@ export const GET_OWNER = gql(`
           type
           description
           location
-          Owner {
-            id
-            authId
-            name
-            username
-            location
-          }
           ProfilePicture {
             id
             name
@@ -37,12 +30,39 @@ export const GET_OWNER = gql(`
             path
             type
           }
+          Owner {
+            id
+            authId
+            name
+            username
+            location
+          }
           Followers {
             id
             authId
             name
             username
             location
+          }
+          Posts {
+            id
+            petId
+            description
+            Media {
+              id
+              name
+              url
+              path
+              type
+            }
+            author {
+              id
+              username
+              name
+              type
+              description
+              location
+            }
           }
         }
         FollowedPets {
@@ -55,7 +75,7 @@ export const GET_OWNER = gql(`
         }
       }
     }
-  }
+}
 `);
 
 export const GET_OWNER_BY_ID = gql(`
@@ -101,6 +121,33 @@ export const GET_OWNER_BY_ID = gql(`
             name
             username
             location
+            ProfilePicture {
+              id
+              name
+              url
+              path
+              type
+            }
+          }
+          Posts {
+            id
+            petId
+            description
+            Media {
+              id
+              name
+              url
+              path
+              type
+            }
+            author {
+              id
+              username
+              name
+              type
+              description
+              location
+            }
           }
         }
         FollowedPets {
@@ -110,6 +157,13 @@ export const GET_OWNER_BY_ID = gql(`
           type
           description
           location
+          ProfilePicture {
+            id
+            name
+            url
+            path
+            type
+          }
         }
       }
     }

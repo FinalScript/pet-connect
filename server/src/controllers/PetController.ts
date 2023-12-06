@@ -1,8 +1,7 @@
-import { PetUpdateDAO } from './../models/Pet';
-import { Pet, PetCreationDAO } from '../models/Pet';
-import { ProfilePicture } from '../models/ProfilePicture';
 import { Op } from 'sequelize';
-import { Owner } from '../models/Owner';
+import { Pet, PetCreationDAO } from '../models/Pet';
+import { PetUpdateDAO } from './../models/Pet';
+import { Post } from '../models/Post';
 
 export const getPetById = async (id: string) => {
   const pet = await Pet.findOne({
@@ -14,6 +13,7 @@ export const getPetById = async (id: string) => {
         all: true,
         nested: true,
       },
+      { model: Post, as: 'Posts', include: [{ all: true, nested: true }] },
     ],
   });
 
@@ -27,12 +27,8 @@ export const getPetByUsername = async (username: string) => {
     },
     include: [
       {
-        model: ProfilePicture,
-        as: 'ProfilePicture',
-      },
-      {
-        model: Owner,
-        as: 'Owner',
+        all: true,
+        nested: true,
       },
     ],
   });
@@ -72,12 +68,8 @@ export const searchForPets = async (searchValue: string) => {
     limit: 20,
     include: [
       {
-        model: ProfilePicture,
-        as: 'ProfilePicture',
-      },
-      {
-        model: Owner,
-        as: 'Owner',
+        all: true,
+        nested: true,
       },
     ],
   });

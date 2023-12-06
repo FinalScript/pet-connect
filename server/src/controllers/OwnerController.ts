@@ -3,6 +3,7 @@ import { Owner, OwnerCreationDAO, OwnerUpdateDAO } from '../models/Owner';
 import { Pet } from '../models/Pet';
 import { ProfilePicture } from '../models/ProfilePicture';
 import { Op } from 'sequelize';
+import { Post } from '../models/Post';
 
 export const getOwner = async (authId: string) => {
   const owner = await Owner.findOne({
@@ -10,6 +11,14 @@ export const getOwner = async (authId: string) => {
       authId,
     },
     include: [
+      {
+        model: Pet,
+        as: 'Pets',
+        include: [
+          { all: true, nested: true },
+          { model: Post, as: 'Posts', include: [{ all: true, nested: true }] },
+        ],
+      },
       {
         all: true,
         nested: true,
@@ -27,6 +36,14 @@ export const getOwnerById = async (id: string) => {
     },
     include: [
       {
+        model: Pet,
+        as: 'Pets',
+        include: [
+          { all: true, nested: true },
+          { model: Post, as: 'Posts', include: [{ all: true, nested: true }] },
+        ],
+      },
+      {
         all: true,
         nested: true,
       },
@@ -41,6 +58,20 @@ export const getOwnerByUsername = async (username: string) => {
     where: {
       username,
     },
+    include: [
+      {
+        model: Pet,
+        as: 'Pets',
+        include: [
+          { all: true, nested: true },
+          { model: Post, as: 'Posts', include: [{ all: true, nested: true }] },
+        ],
+      },
+      {
+        all: true,
+        nested: true,
+      },
+    ],
   });
 
   return owner;
@@ -81,22 +112,16 @@ export const searchForOwners = async (searchValue: string) => {
     limit: 20,
     include: [
       {
-        model: ProfilePicture,
-        as: 'ProfilePicture',
-      },
-      {
         model: Pet,
         as: 'Pets',
         include: [
-          {
-            model: ProfilePicture,
-            as: 'ProfilePicture',
-          },
-          {
-            model: Owner,
-            as: 'Owner',
-          },
+          { all: true, nested: true },
+          { model: Post, as: 'Posts', include: [{ all: true, nested: true }] },
         ],
+      },
+      {
+        all: true,
+        nested: true,
       },
     ],
   });

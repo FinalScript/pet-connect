@@ -15,6 +15,7 @@ import { GET_POSTS_BY_PET_ID } from '../graphql/Post';
 import { PetDAO, ProfileReducer } from '../redux/reducers/profileReducer';
 import { Feather } from '../utils/Icons';
 import { themeConfig } from '../utils/theme';
+import { Owner, Post } from '../__generated__/graphql';
 
 const useTabBarState = (initialState = 0): Partial<TabBarProps> => {
   const [selectedIndex, setSelectedIndex] = useState(initialState);
@@ -35,7 +36,7 @@ const PetProfile = ({
   const pet = useMemo(() => petData?.getPetById.pet, [petData, petId]);
   const isOwner = useMemo(() => ownerId === pet?.Owner?.id, [ownerId, pet?.Owner?.id]);
   const [modals, setModals] = useState({ accountSwitcher: false, settings: false, editProfile: false });
-  const gridPosts = useMemo(() => {
+  const gridPosts:Post[] = useMemo(() => {
     return postsData?.getPostsByPetId?.posts || [];
   }, [postsData]);
   const [followPet] = useMutation(FOLLOW_PET);
@@ -115,7 +116,7 @@ const PetProfile = ({
             <View key={index} className='w-1/3 p-[1px]'>
               <Pressable
                 onPress={() => {
-                  if (pet) navigation.navigate('Profile Feed', { petUsername: pet.username, posts: gridPosts, initialPostIndex: index });
+                  if (pet) navigation.push('Profile Feed', { petUsername: pet.username, posts: gridPosts, initialPostIndex: index });
                 }}>
                 <Image className='w-full h-auto aspect-square' source={{ uri: post.Media.url }} resizeMode='cover' />
               </Pressable>
@@ -156,7 +157,7 @@ const PetProfile = ({
             <Pressable
               onPress={() => {
                 if (pet.ProfilePicture) {
-                  navigation.navigate('Profile Picture', { profilePicture: pet?.ProfilePicture });
+                  navigation.push('Profile Picture', { profilePicture: pet?.ProfilePicture });
                 }
               }}>
               <View className='w-28 h-28 rounded-full border-2 border-themeActive flex items-center justify-center'>
@@ -179,10 +180,18 @@ const PetProfile = ({
                 <Text className='text-xl font-bold'>{gridPosts.length}</Text>
                 <Text className='text-md'>Posts</Text>
               </View>
-              <View className='flex items-center'>
-                <Text className='text-xl font-bold'>{pet.Followers?.length}</Text>
-                <Text className='text-md'>Followers</Text>
-              </View>
+              <Pressable
+                onPress={() => {
+                  if (pet?.Followers) {
+                    const validOwners = pet.Followers.filter((owner): owner is Owner => owner !== null);
+                    navigation.push('Followers', { followers: validOwners });
+                  }
+                }}>
+                <View className='flex items-center'>
+                  <Text className='text-xl font-bold'>{pet.Followers?.length}</Text>
+                  <Text className='text-md'>Followers</Text>
+                </View>
+              </Pressable>
               <View className='flex items-center'>
                 <Text className='text-xl font-bold'>25</Text>
                 <Text className='text-md'>Likes</Text>
@@ -203,7 +212,7 @@ const PetProfile = ({
             <Text>Owned by</Text>
             <Pressable
               onPress={() => {
-                pet.Owner?.id && navigation.navigate('Owner Profile', { ownerId: pet.Owner.id });
+                pet.Owner?.id && navigation.push('Owner Profile', { ownerId: pet.Owner.id });
               }}>
               <Text className='font-medium text-themeTrim'>@{pet.Owner.username}</Text>
             </Pressable>
