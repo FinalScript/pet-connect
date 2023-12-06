@@ -72,6 +72,13 @@ export const GET_OWNER = gql(`
           type
           description
           location
+          ProfilePicture {
+            id
+            name
+            url
+            path
+            type
+          }
         }
       }
     }
