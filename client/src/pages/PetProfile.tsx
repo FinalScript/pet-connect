@@ -15,6 +15,7 @@ import { GET_POSTS_BY_PET_ID } from '../graphql/Post';
 import { PetDAO, ProfileReducer } from '../redux/reducers/profileReducer';
 import { Feather } from '../utils/Icons';
 import { themeConfig } from '../utils/theme';
+import { Owner } from '../__generated__/graphql';
 
 const useTabBarState = (initialState = 0): Partial<TabBarProps> => {
   const [selectedIndex, setSelectedIndex] = useState(initialState);
@@ -179,10 +180,18 @@ const PetProfile = ({
                 <Text className='text-xl font-bold'>{gridPosts.length}</Text>
                 <Text className='text-md'>Posts</Text>
               </View>
-              <View className='flex items-center'>
-                <Text className='text-xl font-bold'>{pet.Followers?.length}</Text>
-                <Text className='text-md'>Followers</Text>
-              </View>
+              <Pressable
+                onPress={() => {
+                  if (pet?.Followers) {
+                    const validOwners = pet.Followers.filter((owner): owner is Owner => owner !== null);
+                    navigation.push('Followers', { followers: validOwners });
+                  }
+                }}>
+                <View className='flex items-center'>
+                  <Text className='text-xl font-bold'>{pet.Followers?.length}</Text>
+                  <Text className='text-md'>Followers</Text>
+                </View>
+              </Pressable>
               <View className='flex items-center'>
                 <Text className='text-xl font-bold'>25</Text>
                 <Text className='text-md'>Likes</Text>

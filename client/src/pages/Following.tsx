@@ -1,8 +1,9 @@
 import React, { useEffect } from 'react';
-import { View, Pressable, Text, Image, SafeAreaView } from 'react-native';
+import { View, Pressable, Text, SafeAreaView } from 'react-native';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../../App';
 import PetTypeImage from '../components/PetTypeImage';
+import Image from '../components/Image';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Following'>;
 
