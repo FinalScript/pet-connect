@@ -17,7 +17,6 @@ export const getOwner = async (authId: string) => {
         as: 'ProfilePicture',
       },
     ],
-    raw: true,
     nest: true,
   });
 
@@ -38,7 +37,6 @@ export const getOwnerById = async (id: string) => {
         as: 'ProfilePicture',
       },
     ],
-    raw: true,
     nest: true,
   });
 
@@ -97,7 +95,6 @@ export const searchForOwners = async (searchValue: string) => {
         as: 'ProfilePicture',
       },
     ],
-    raw: true,
     nest: true,
   });
 

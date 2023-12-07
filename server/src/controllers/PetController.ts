@@ -35,7 +35,6 @@ export const getPetById = async (id: string) => {
       },
       { model: Owner, as: 'Followers', attributes: [] },
     ],
-    raw: true,
     nest: true,
   });
 
@@ -60,7 +59,6 @@ export const getPetsByOwnerId = async (id: string) => {
         as: 'ProfilePicture',
       },
     ],
-    raw: true,
     nest: true,
   });
 
@@ -85,7 +83,6 @@ export const getPetByUsername = async (username: string) => {
         as: 'ProfilePicture',
       },
     ],
-    raw: true,
     nest: true,
   });
 
@@ -135,7 +132,6 @@ export const searchForPets = async (searchValue: string) => {
         as: 'ProfilePicture',
       },
     ],
-    raw: true,
     nest: true,
   });
 
