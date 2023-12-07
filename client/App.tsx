@@ -25,9 +25,11 @@ import { options } from './src/utils/hapticFeedbackOptions';
 import PostPage from './src/pages/HomePage/PostPage';
 import ProfilePicturePage from './src/pages/ProfilePicture';
 import ProfileFeed from './src/pages/ProfileFeed';
-import { Post, ProfilePicture as ProfilePictureType } from './src/__generated__/graphql';
+import { Owner, Pet, Post, ProfilePicture as ProfilePictureType } from './src/__generated__/graphql';
 import OwnerProfilePage from './src/pages/OwnerProfilePage/OwnerProfilePage';
 import { GET_PETS_BY_OWNER_ID } from './src/graphql/Pet';
+import FollowingPage from './src/pages/Following';
+import FollowersPage from './src/pages/Followers';
 
 export type RootStackParamList = {
   Loading: undefined;
@@ -42,6 +44,8 @@ export type RootStackParamList = {
   'New Post': undefined;
   'Profile Picture': { profilePicture?: ProfilePictureType | null };
   'Profile Feed': { petUsername: string; posts: Post[]; initialPostIndex: number };
+  Following: { following?: Pet[] };
+  Followers: { followers?: Owner[] };
 };
 
 export type RootRouteProps<RouteName extends keyof RootStackParamList> = RouteProp<RootStackParamList, RouteName>;
@@ -57,11 +61,7 @@ const App = () => {
   const owner = useSelector((state: ProfileReducer) => state.profile.owner);
 
   useEffect(() => {
-    const timeoutId = setTimeout(() => {
-      getAuth();
-    }, 200);
-
-    return () => clearTimeout(timeoutId);
+    getAuth();
   }, [user, navigationRef]);
 
   useEffect(() => {
@@ -213,6 +213,30 @@ const App = () => {
             <Stack.Screen
               name='Profile Feed'
               component={ProfileFeed}
+              options={{
+                headerShown: true,
+                headerBackVisible: true,
+                animation: 'slide_from_right',
+                animationTypeForReplace: 'push',
+                contentStyle: { backgroundColor: '#f6f6f6f' },
+                headerTransparent: true,
+              }}
+            />
+            <Stack.Screen
+              name='Following'
+              component={FollowingPage}
+              options={{
+                headerShown: true,
+                headerBackVisible: true,
+                animation: 'slide_from_right',
+                animationTypeForReplace: 'push',
+                contentStyle: { backgroundColor: '#f6f6f6f' },
+                headerTransparent: true,
+              }}
+            />
+            <Stack.Screen
+              name='Followers'
+              component={FollowersPage}
               options={{
                 headerShown: true,
                 headerBackVisible: true,

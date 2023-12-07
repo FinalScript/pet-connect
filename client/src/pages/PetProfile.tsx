@@ -144,7 +144,7 @@ const PetProfile = ({
             <Pressable
               onPress={() => {
                 if (pet.ProfilePicture) {
-                  navigation.navigate('Profile Picture', { profilePicture: pet?.ProfilePicture });
+                  navigation.push('Profile Picture', { profilePicture: pet?.ProfilePicture });
                 }
               }}>
               <View className='w-28 h-28 rounded-full border-2 border-themeActive flex items-center justify-center'>
@@ -191,7 +191,7 @@ const PetProfile = ({
             <Text>Owned by</Text>
             <Pressable
               onPress={() => {
-                pet.Owner?.id && navigation.navigate('Owner Profile', { ownerId: pet.Owner.id });
+                pet.Owner?.id && navigation.push('Owner Profile', { ownerId: pet.Owner.id });
               }}>
               <Text className='font-medium text-themeTrim'>@{pet.Owner.username}</Text>
             </Pressable>

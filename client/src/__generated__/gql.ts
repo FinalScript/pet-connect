@@ -14,7 +14,7 @@ import { TypedDocumentNode as DocumentNode } from '@graphql-typed-document-node/
  */
 const documents = {
     "\n  query VerifyToken {\n    verifyToken {\n      valid\n    }\n  }\n": types.VerifyTokenDocument,
-    "\n  query GetOwner {\n    getOwner {\n      owner {\n        id\n        authId\n        name\n        username\n        location\n        ProfilePicture {\n          id\n          name\n          url\n          path\n          type\n        }\n        followingCount\n      }\n    }\n  }\n": types.GetOwnerDocument,
+    "\n  query GetOwner {\n    getOwner {\n      owner {\n        id\n        authId\n        name\n        username\n        location\n        ProfilePicture {\n          id\n          name\n          url\n          path\n          type\n        }\n        followingCount\n      }\n    }\n}\n": types.GetOwnerDocument,
     "\n  query GetOwnerById($id: String!) {\n    getOwnerById(id: $id) {\n      owner {\n        id\n        authId\n        name\n        username\n        location\n        ProfilePicture {\n          id\n          name\n          url\n          path\n          type\n        }\n        followingCount\n      }\n    }\n  }\n": types.GetOwnerByIdDocument,
     "\n  mutation Signup($username: String!, $name: String, $location: String, $profilePicture: MediaInput) {\n    signup(username: $username, name: $name, location: $location, profilePicture: $profilePicture) {\n      owner {\n        id\n        authId\n        name\n        username\n        location\n        ProfilePicture {\n          id\n          name\n          url\n          path\n          type\n        }\n        followingCount\n      }\n    }\n  }\n": types.SignupDocument,
     "\n  query OwnerUsernameExists($username: String!) {\n    validateUsername(username: $username) {\n      isAvailable\n    }\n  }\n": types.OwnerUsernameExistsDocument,
@@ -56,7 +56,7 @@ export function gql(source: "\n  query VerifyToken {\n    verifyToken {\n      v
 /**
  * The gql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
-export function gql(source: "\n  query GetOwner {\n    getOwner {\n      owner {\n        id\n        authId\n        name\n        username\n        location\n        ProfilePicture {\n          id\n          name\n          url\n          path\n          type\n        }\n        followingCount\n      }\n    }\n  }\n"): (typeof documents)["\n  query GetOwner {\n    getOwner {\n      owner {\n        id\n        authId\n        name\n        username\n        location\n        ProfilePicture {\n          id\n          name\n          url\n          path\n          type\n        }\n        followingCount\n      }\n    }\n  }\n"];
+export function gql(source: "\n  query GetOwner {\n    getOwner {\n      owner {\n        id\n        authId\n        name\n        username\n        location\n        ProfilePicture {\n          id\n          name\n          url\n          path\n          type\n        }\n        followingCount\n      }\n    }\n}\n"): (typeof documents)["\n  query GetOwner {\n    getOwner {\n      owner {\n        id\n        authId\n        name\n        username\n        location\n        ProfilePicture {\n          id\n          name\n          url\n          path\n          type\n        }\n        followingCount\n      }\n    }\n}\n"];
 /**
  * The gql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */

@@ -20,7 +20,6 @@ interface Props {
 const PetCard = ({ pet, goToProfile, isSelected = false, setIsSelected, isOwner }: Props) => {
   const height = useSharedValue(80);
   const [modals, setModals] = useState({ petSettings: false });
-
   useEffect(() => {
     if (isSelected) {
       height.value = withTiming(140);

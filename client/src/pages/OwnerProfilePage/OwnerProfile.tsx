@@ -98,7 +98,7 @@ const OwnerProfile = ({ ownerId, navigation }: Props) => {
             <Pressable
               onPress={() => {
                 if (owner?.ProfilePicture) {
-                  navigation.navigate('Profile Picture', { profilePicture: owner?.ProfilePicture });
+                  navigation.push('Profile Picture', { profilePicture: owner?.ProfilePicture });
                 }
               }}>
               <View className='w-28 h-28 rounded-full border-2 border-themeActive flex items-center justify-center'>

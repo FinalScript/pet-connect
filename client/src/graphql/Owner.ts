@@ -19,7 +19,7 @@ export const GET_OWNER = gql(`
         followingCount
       }
     }
-  }
+}
 `);
 
 export const GET_OWNER_BY_ID = gql(`

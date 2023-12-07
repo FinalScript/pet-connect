@@ -1,8 +1,8 @@
 import { useLazyQuery } from '@apollo/client';
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { Animated, RefreshControl, SafeAreaView, View } from 'react-native';
+import React, { MutableRefObject, RefObject, useCallback, useEffect, useMemo, useState } from 'react';
+import { Animated, RefreshControl, SafeAreaView, ScrollView, View } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootStackParamList } from '../../../App';
 import Post from '../../components/Post';
@@ -16,9 +16,10 @@ const Tab = createMaterialTopTabNavigator();
 
 interface Props {
   navigation: NativeStackNavigationProp<RootStackParamList, 'Home', undefined>;
+  scrollViewRef: RefObject<ScrollView>;
 }
 
-const Feed = ({ navigation }: Props) => {
+const Feed = ({ navigation, scrollViewRef }: Props) => {
   const dispatch = useDispatch();
   const [refreshing, setRefreshing] = useState(false);
   const [getFeed] = useLazyQuery(GET_FEED);
@@ -110,6 +111,7 @@ const Feed = ({ navigation }: Props) => {
             return (
               <View className='flex-1 h-full bg-themeBg'>
                 <Animated.ScrollView
+                  ref={scrollViewRef}
                   scrollEventThrottle={16}
                   onScroll={Animated.event([{ nativeEvent: { contentOffset: { y: scrollY } } }], { useNativeDriver: true })}
                   className='w-full pt-10'
@@ -130,6 +132,7 @@ const Feed = ({ navigation }: Props) => {
             return (
               <View className='flex-1 h-full bg-themeBg'>
                 <Animated.ScrollView
+                  ref={scrollViewRef}
                   scrollEventThrottle={16}
                   onScroll={Animated.event([{ nativeEvent: { contentOffset: { y: scrollY } } }], { useNativeDriver: true })}
                   className='w-full pt-10'
