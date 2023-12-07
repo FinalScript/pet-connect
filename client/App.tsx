@@ -44,8 +44,8 @@ export type RootStackParamList = {
   'New Post': undefined;
   'Profile Picture': { profilePicture?: ProfilePictureType | null };
   'Profile Feed': { petUsername: string; posts: Post[]; initialPostIndex: number };
-  Following: { following?: Pet[] };
-  Followers: { followers?: Owner[] };
+  Following: { ownerId: string };
+  Followers: { petId: string };
 };
 
 export type RootRouteProps<RouteName extends keyof RootStackParamList> = RouteProp<RootStackParamList, RouteName>;

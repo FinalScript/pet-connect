@@ -135,6 +135,26 @@ export const GET_PETS_BY_OWNER_ID = gql(`
 
 `);
 
+export const GET_FOLLOWERS_BY_PET_ID = gql(`
+  query GetFollowersByPetId($petId: String!) {
+    getFollowersByPetId(petId: $petId) {
+      id
+      authId
+      name
+      username
+      location
+      ProfilePicture {
+        id
+        name
+        url
+        path
+        type
+      }
+      followingCount
+    }
+  }
+`);
+
 export const IS_FOLLOWING_PET = gql(`
   query IsFollowingPet($ownerId: String!, $petId: String!) {
     isFollowingPet(ownerId: $ownerId, petId: $petId)

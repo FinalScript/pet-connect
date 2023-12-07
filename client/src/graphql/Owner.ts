@@ -22,6 +22,36 @@ export const GET_OWNER = gql(`
 }
 `);
 
+export const GET_FOLLOWING_BY_OWNER_ID = gql(`
+  query GetFollowingByOwnerId($ownerId: String!) {
+    getFollowingByOwnerId(ownerId: $ownerId) {
+      id
+      username
+      name
+      type
+      description
+      location
+      ProfilePicture {
+        id
+        name
+        url
+        path
+        type
+      }
+      Owner {
+        id
+        authId
+        name
+        username
+        location
+        followingCount
+      }
+      followerCount
+      postsCount
+    }
+  }
+`);
+
 export const GET_OWNER_BY_ID = gql(`
   query GetOwnerById($id: String!) {
     getOwnerById(id: $id) {

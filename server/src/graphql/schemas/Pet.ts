@@ -58,7 +58,8 @@ export const PetTypeDef = `#graphql
     }
 
     type Query {
-        isFollowingPet(ownerId: String! ,petId: String!): Boolean!
+        getFollowersByPetId(petId: String!): [Owner!]!
+        isFollowingPet(ownerId: String! , petId: String!): Boolean!
         getPetById(id: String!): PetResponse!
         getPetsByOwnerId(id: String!): PetsResponse!
         getPetByUsername(username: String!): PetResponse!

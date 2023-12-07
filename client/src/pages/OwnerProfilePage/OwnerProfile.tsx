@@ -1,5 +1,6 @@
+import { useQuery } from '@apollo/client';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import { Modal, Pressable, RefreshControl, SafeAreaView, ScrollView, Share, View } from 'react-native';
 import { PressableOpacity } from 'react-native-pressable-opacity';
 import { useSelector } from 'react-redux';
@@ -9,11 +10,10 @@ import Image from '../../components/Image';
 import PetCard from '../../components/PetCard';
 import Text from '../../components/Text';
 import EditProfileModal from '../../components/modals/EditProfileModal';
-import { OwnerDAO, ProfileReducer } from '../../redux/reducers/profileReducer';
-import { Ionicon } from '../../utils/Icons';
-import { useLazyQuery, useQuery } from '@apollo/client';
 import { GET_OWNER_BY_ID } from '../../graphql/Owner';
 import { GET_PETS_BY_OWNER_ID } from '../../graphql/Pet';
+import { OwnerDAO, ProfileReducer } from '../../redux/reducers/profileReducer';
+import { Ionicon } from '../../utils/Icons';
 
 interface Props {
   ownerId: string;
@@ -120,10 +120,15 @@ const OwnerProfile = ({ ownerId, navigation }: Props) => {
               <Text className='text-xl font-bold'>{pets.length}</Text>
               <Text className='text-md'>Pets</Text>
             </View>
-            <View className='flex items-center'>
-              <Text className='text-xl font-bold'>{owner?.followingCount}</Text>
-              <Text className='text-md'>Following</Text>
-            </View>
+            <Pressable
+              onPress={() => {
+                navigation.push('Following', { ownerId });
+              }}>
+              <View className='flex items-center'>
+                <Text className='text-xl font-bold'>{owner?.followingCount}</Text>
+                <Text className='text-md'>Following</Text>
+              </View>
+            </Pressable>
           </View>
         </View>
         <View className='mt-3'>

@@ -4,6 +4,17 @@ import { Pet } from '../models/Pet';
 import { ProfilePicture } from '../models/ProfilePicture';
 import { Post } from '../models/Post';
 
+export const getFollowingByOwnerId = async (id: string) => {
+  const owner = await Owner.findOne({
+    where: {
+      id,
+    },
+    include: [{ model: Pet, as: 'FollowedPets', include: [{ model: ProfilePicture, as: 'ProfilePicture' }] }],
+  });
+
+  return owner.FollowedPets;
+};
+
 export const getOwner = async (authId: string) => {
   const owner = await Owner.findOne({
     where: {

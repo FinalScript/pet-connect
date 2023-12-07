@@ -5,6 +5,17 @@ import { Pet, PetCreationDAO } from '../models/Pet';
 import { ProfilePicture } from '../models/ProfilePicture';
 import { PetUpdateDAO } from './../models/Pet';
 
+export const getFollowersByPetId = async (id: string) => {
+  const pet = await Pet.findOne({
+    where: {
+      id,
+    },
+    include: [{ model: Owner, as: 'Followers', include: [{ model: ProfilePicture, as: 'ProfilePicture' }] }],
+  });
+
+  return pet.Followers;
+};
+
 export const isFollowingPet = async (ownerId: string, petId: string) => {
   const isFollowing = await Follows.findOne({
     where: {

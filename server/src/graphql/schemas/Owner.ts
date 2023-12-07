@@ -43,6 +43,7 @@ export const OwnerTypeDef = `#graphql
   # Query and Mutation definitions
 
   type Query {
+    getFollowingByOwnerId(ownerId: String!): [Pet!]!
     getOwner: OwnerResponse!
     getOwnerById(id: String!): OwnerResponse!
     validateUsername(username: String!): ValidateUsernameResponse!

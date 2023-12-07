@@ -167,10 +167,16 @@ const PetProfile = ({
                 <Text className='text-xl font-bold'>{gridPosts.length}</Text>
                 <Text className='text-md'>Posts</Text>
               </View>
-              <View className='flex items-center'>
-                <Text className='text-xl font-bold'>{pet.followerCount}</Text>
-                <Text className='text-md'>Followers</Text>
-              </View>
+              <Pressable
+                onPress={() => {
+                  navigation.push('Followers', { petId: pet.id });
+                }}>
+                <View className='flex items-center'>
+                  <Text className='text-xl font-bold'>{pet.followerCount}</Text>
+                  <Text className='text-md'>Followers</Text>
+                </View>
+              </Pressable>
+
               <View className='flex items-center'>
                 <Text className='text-xl font-bold'>25</Text>
                 <Text className='text-md'>Likes</Text>

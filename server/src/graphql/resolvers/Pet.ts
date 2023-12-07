@@ -1,6 +1,15 @@
 import { GraphQLError } from 'graphql';
 import { getOwner } from '../../controllers/OwnerController';
-import { createPet, deletePet, getPetById, getPetByUsername, getPetsByOwnerId, isFollowingPet, updatePet } from '../../controllers/PetController';
+import {
+  createPet,
+  deletePet,
+  getFollowersByPetId,
+  getPetById,
+  getPetByUsername,
+  getPetsByOwnerId,
+  isFollowingPet,
+  updatePet,
+} from '../../controllers/PetController';
 import { isTokenValid } from '../../middleware/token';
 import { Pet } from '../../models/Pet';
 import { ProfilePicture } from '../../models/ProfilePicture';
@@ -346,6 +355,20 @@ export const PetResolver = {
   },
 
   Query: {
+    getFollowersByPetId: async (_, { petId }, context) => {
+      if (!petId) {
+        throw new GraphQLError('petId missing', {
+          extensions: {
+            code: 'BAD_USER_INPUT',
+          },
+        });
+      }
+
+      const followers = await getFollowersByPetId(petId);
+
+      return followers;
+    },
+
     isFollowingPet: async (_, { ownerId, petId }, context) => {
       if (!ownerId) {
         throw new GraphQLError('ownerId missing', {

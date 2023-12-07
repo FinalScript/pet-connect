@@ -1,8 +1,9 @@
 import { GraphQLError } from 'graphql';
-import { deleteOwner, getOwner, getOwnerById, getOwnerByUsername, updateOwner } from '../../controllers/OwnerController';
+import { deleteOwner, getFollowingByOwnerId, getOwner, getOwnerById, getOwnerByUsername, updateOwner } from '../../controllers/OwnerController';
 import { isTokenValid } from '../../middleware/token';
 import { Owner } from '../../models/Owner';
 import { ProfilePicture } from '../../models/ProfilePicture';
+import { getFollowersByPetId } from '../../controllers/PetController';
 
 export const OwnerResolver = {
   Mutation: {
@@ -201,6 +202,20 @@ export const OwnerResolver = {
       }
 
       return { valid: true };
+    },
+
+    getFollowingByOwnerId: async (_, { ownerId }, context) => {
+      if (!ownerId) {
+        throw new GraphQLError('ownerId missing', {
+          extensions: {
+            code: 'BAD_USER_INPUT',
+          },
+        });
+      }
+
+      const following = await getFollowingByOwnerId(ownerId);
+
+      return following;
     },
 
     getOwner: async (_, {}, context) => {
