@@ -21,8 +21,8 @@ interface Props {
 }
 
 const OwnerProfile = ({ ownerId, navigation }: Props) => {
-  const { data: ownerData, refetch: refetchOwnerData } = useQuery(GET_OWNER_BY_ID, { variables: { id: ownerId } });
-  const { data: petData, refetch: refetchPetData } = useQuery(GET_PETS_BY_OWNER_ID, { variables: { id: ownerId } });
+  const { data: ownerData, refetch: refetchOwnerData } = useQuery(GET_OWNER_BY_ID, { variables: { id: ownerId }, pollInterval: 2000 });
+  const { data: petData, refetch: refetchPetData } = useQuery(GET_PETS_BY_OWNER_ID, { variables: { id: ownerId }, pollInterval: 2000 });
   const owner: Owner | undefined = useMemo(() => ownerData?.getOwnerById.owner, [ownerData]);
   const pets: Pet[] = useMemo(() => {
     return petData?.getPetsByOwnerId.pets || [];

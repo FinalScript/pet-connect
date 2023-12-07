@@ -21,7 +21,7 @@ interface Props {
 const Feed = ({ navigation }: Props) => {
   const dispatch = useDispatch();
   const [refreshing, setRefreshing] = useState(false);
-  const [getFeed] = useLazyQuery(GET_FEED, { fetchPolicy: 'network-only' });
+  const [getFeed] = useLazyQuery(GET_FEED);
   const feed = useSelector((state: GeneralReducer) => state.general.feed);
   const scrollY = new Animated.Value(0);
 
