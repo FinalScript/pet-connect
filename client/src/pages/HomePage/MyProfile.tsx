@@ -1,5 +1,5 @@
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { useCallback, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { Modal, Pressable, SafeAreaView, View } from 'react-native';
 import { useAuth0 } from 'react-native-auth0';
 import { Modalize } from 'react-native-modalize';
@@ -22,7 +22,6 @@ interface Props {
 const MyProfile = ({ navigation }: Props) => {
   const dispatch = useDispatch();
   const owner = useSelector((state: ProfileReducer) => state.profile.owner);
-  const pets = useSelector((state: ProfileReducer) => state.profile.pets);
   const { clearSession } = useAuth0();
   const [modals, setModals] = useState({ accountSwitcher: false, settings: false, editProfile: false });
   const accountSwitcherModalRef = useRef<Modalize>(null);
@@ -31,7 +30,7 @@ const MyProfile = ({ navigation }: Props) => {
     setModals((prev) => {
       return { ...prev, settings: bool };
     });
-  }, []);
+  }, [setModals]);
 
   const logout = useCallback(async () => {
     try {
@@ -43,11 +42,11 @@ const MyProfile = ({ navigation }: Props) => {
       console.log(e);
       console.log('Log out cancelled');
     }
-  }, [dispatch]);
+  }, [dispatch, navigation]);
 
   const navigateNewPet = useCallback(() => {
     navigation.navigate('Pet Creation');
-  }, []);
+  }, [navigation]);
 
   return (
     <SafeAreaView className='flex-1 h-full items-center bg-themeBg'>
@@ -98,7 +97,7 @@ const MyProfile = ({ navigation }: Props) => {
           <Ionicon name='menu-outline' size={30} />
         </Pressable>
       </View>
-      {owner && <OwnerProfile owner={owner} pets={pets} navigation={navigation as any} />}
+      {owner && owner.id && <OwnerProfile ownerId={owner.id} navigation={navigation as any} />}
     </SafeAreaView>
   );
 };

@@ -1,6 +1,6 @@
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { Modal, Pressable, SafeAreaView, ScrollView, Share, View } from 'react-native';
+import { Modal, Pressable, RefreshControl, SafeAreaView, ScrollView, Share, View } from 'react-native';
 import { PressableOpacity } from 'react-native-pressable-opacity';
 import { useSelector } from 'react-redux';
 import { RootStackParamList } from '../../../App';
@@ -11,20 +11,38 @@ import Text from '../../components/Text';
 import EditProfileModal from '../../components/modals/EditProfileModal';
 import { OwnerDAO, ProfileReducer } from '../../redux/reducers/profileReducer';
 import { Ionicon } from '../../utils/Icons';
+import { useLazyQuery, useQuery } from '@apollo/client';
+import { GET_OWNER_BY_ID } from '../../graphql/Owner';
+import { GET_PETS_BY_OWNER_ID } from '../../graphql/Pet';
 
 interface Props {
-  owner: Owner;
-  pets: Pet[];
+  ownerId: string;
   navigation: NativeStackNavigationProp<RootStackParamList, 'Owner Profile', undefined>;
 }
 
-const OwnerProfile = ({ owner, pets = [], navigation }: Props) => {
+const OwnerProfile = ({ ownerId, navigation }: Props) => {
+  const { data: ownerData, refetch: refetchOwnerData } = useQuery(GET_OWNER_BY_ID, { variables: { id: ownerId } });
+  const { data: petData, refetch: refetchPetData } = useQuery(GET_PETS_BY_OWNER_ID, { variables: { id: ownerId } });
+  const owner: Owner | undefined = useMemo(() => ownerData?.getOwnerById.owner, [ownerData]);
+  const pets: Pet[] = useMemo(() => {
+    return petData?.getPetsByOwnerId.pets || [];
+  }, [petData?.getPetsByOwnerId.pets]);
+
   const [modals, setModals] = useState({ editProfile: false });
   const [selectedPetId, setSelectedPetId] = useState<string>();
   const currentOwnerId = useSelector((state: ProfileReducer) => state.profile.owner?.id);
   const isOwner = useMemo(() => currentOwnerId === owner?.id, [owner?.id, currentOwnerId]);
+  const [refreshing, setRefreshing] = useState(false);
 
-  useEffect(() => {}, []);
+  const onRefresh = useCallback(async () => {
+    setRefreshing(true);
+
+    setTimeout(() => {
+      refetchOwnerData();
+      refetchPetData();
+      setRefreshing(false);
+    }, 600);
+  }, [ownerId, refetchOwnerData, refetchPetData]);
 
   const setEditProfileModalVisible = useCallback((bool: boolean) => {
     setModals((prev) => {
@@ -51,30 +69,6 @@ const OwnerProfile = ({ owner, pets = [], navigation }: Props) => {
     }
   }, []);
 
-  const renderOwnerPets = useMemo(() => {
-    return (
-      <View className='mt-10 flex-col justify-center'>
-        {pets.map((pet) => {
-          if (!pet) {
-            return;
-          }
-
-          return (
-            <PetCard
-              key={pet?.id}
-              pet={pet}
-              goToProfile={() => {
-                navigation.navigate('Pet Profile', { petId: pet.id });
-              }}
-              isSelected={selectedPetId === pet.id}
-              setIsSelected={setSelectedPetId}
-            />
-          );
-        })}
-      </View>
-    );
-  }, [pets, selectedPetId, setSelectedPetId]);
-
   return (
     <SafeAreaView className='bg-themeBg h-full w-full p-5 flex flex-col flew-grow'>
       {isOwner && (
@@ -95,7 +89,10 @@ const OwnerProfile = ({ owner, pets = [], navigation }: Props) => {
         </Modal>
       )}
 
-      <ScrollView className='w-full px-5'>
+      <ScrollView
+        className='w-full px-5'
+        scrollEventThrottle={16}
+        refreshControl={<RefreshControl tintColor={'black'} refreshing={refreshing} onRefresh={onRefresh} />}>
         <View className='mt-5 flex flex-row items-center justify-between'>
           <View className='relative'>
             <Pressable
@@ -155,7 +152,21 @@ const OwnerProfile = ({ owner, pets = [], navigation }: Props) => {
             </View>
           </PressableOpacity>
         </View>
-        <View>{renderOwnerPets}</View>
+        <View className='mt-10 flex-col justify-center'>
+          {pets.map((pet) => {
+            return (
+              <PetCard
+                key={pet.id}
+                pet={pet}
+                goToProfile={() => {
+                  navigation.navigate('Pet Profile', { petId: pet.id });
+                }}
+                isSelected={selectedPetId === pet.id}
+                setIsSelected={setSelectedPetId}
+              />
+            );
+          })}
+        </View>
       </ScrollView>
     </SafeAreaView>
   );
