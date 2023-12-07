@@ -8,16 +8,12 @@ export const getOwner = async (authId: string) => {
     where: {
       authId,
     },
-    attributes: {
-      include: [[Sequelize.literal('(SELECT COUNT(*) FROM Follows WHERE Follows.ownerId = Owner.id)'), 'followingCount'], '*'],
-    },
     include: [
       {
         model: ProfilePicture,
         as: 'ProfilePicture',
       },
     ],
-    nest: true,
   });
 
   return owner;
@@ -28,16 +24,12 @@ export const getOwnerById = async (id: string) => {
     where: {
       id,
     },
-    attributes: {
-      include: [[Sequelize.literal('(SELECT COUNT(*) FROM Follows WHERE Follows.ownerId = Owner.id)'), 'followingCount'], '*'],
-    },
     include: [
       {
         model: ProfilePicture,
         as: 'ProfilePicture',
       },
     ],
-    nest: true,
   });
 
   return owner;
@@ -86,16 +78,12 @@ export const searchForOwners = async (searchValue: string) => {
       [Op.or]: [{ name: { [Op.like]: '%' + searchValue + '%' } }, { username: { [Op.like]: '%' + searchValue + '%' } }],
     },
     limit: 20,
-    attributes: {
-      include: [[Sequelize.literal('(SELECT COUNT(*) FROM Follows WHERE Follows.ownerId = Owner.id)'), 'followingCount'], '*'],
-    },
     include: [
       {
         model: ProfilePicture,
         as: 'ProfilePicture',
       },
     ],
-    nest: true,
   });
 
   return owners;

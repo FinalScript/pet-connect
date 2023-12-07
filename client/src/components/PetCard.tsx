@@ -69,7 +69,7 @@ const PetCard = ({ pet, goToProfile, isSelected, setIsSelected }: Props) => {
                 <Text className='text-xs'>Posts</Text>
               </View>
               <View className='flex items-center mr-3'>
-                <Text className='text-base'>20</Text>
+                <Text className='text-base'>{pet?.followerCount}</Text>
                 <Text className='text-xs'>Followers</Text>
               </View>
               <View className='flex items-center mr-3'>

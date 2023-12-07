@@ -292,19 +292,11 @@ export const PetResolver = {
         });
       }
 
-      const followers = pet.Followers;
-
-      const isAlreadyFollowing = followers.some((follow) => follow.id === follower.id);
-
-      if (isAlreadyFollowing) {
-        throw new GraphQLError('Already following', {
-          extensions: {
-            code: 'BAD_USER_INPUT',
-          },
-        });
+      try {
+        await pet.addFollower(follower);
+      } catch (e) {
+        console.error(e);
       }
-
-      await pet.addFollower(follower);
 
       return { success: true };
     },

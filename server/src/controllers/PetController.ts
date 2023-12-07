@@ -21,9 +21,6 @@ export const getPetById = async (id: string) => {
     where: {
       id,
     },
-    attributes: {
-      include: [[Sequelize.literal('(SELECT COUNT(*) FROM Follows WHERE Follows.petId = Pet.id)'), 'followerCount'], '*'],
-    },
     include: [
       {
         model: Owner,
@@ -35,7 +32,6 @@ export const getPetById = async (id: string) => {
       },
       { model: Owner, as: 'Followers', attributes: [] },
     ],
-    nest: true,
   });
 
   return pet;
@@ -46,9 +42,6 @@ export const getPetsByOwnerId = async (id: string) => {
     where: {
       ownerId: id,
     },
-    attributes: {
-      include: [[Sequelize.literal('(SELECT COUNT(*) FROM Follows WHERE Follows.petId = Pet.id)'), 'followerCount'], '*'],
-    },
     include: [
       {
         model: Owner,
@@ -59,7 +52,6 @@ export const getPetsByOwnerId = async (id: string) => {
         as: 'ProfilePicture',
       },
     ],
-    nest: true,
   });
 
   return pets;
@@ -70,9 +62,6 @@ export const getPetByUsername = async (username: string) => {
     where: {
       username,
     },
-    attributes: {
-      include: [[Sequelize.literal('(SELECT COUNT(*) FROM Follows WHERE Follows.petId = Pet.id)'), 'followerCount'], '*'],
-    },
     include: [
       {
         model: Owner,
@@ -83,7 +72,6 @@ export const getPetByUsername = async (username: string) => {
         as: 'ProfilePicture',
       },
     ],
-    nest: true,
   });
 
   return pet;
@@ -119,9 +107,6 @@ export const searchForPets = async (searchValue: string) => {
       [Op.or]: [{ name: { [Op.like]: '%' + searchValue + '%' } }, { username: { [Op.like]: '%' + searchValue + '%' } }],
     },
     limit: 20,
-    attributes: {
-      include: [[Sequelize.literal('(SELECT COUNT(*) FROM Follows WHERE Follows.petId = Pet.id)'), 'followerCount'], '*'],
-    },
     include: [
       {
         model: Owner,
@@ -132,7 +117,6 @@ export const searchForPets = async (searchValue: string) => {
         as: 'ProfilePicture',
       },
     ],
-    nest: true,
   });
 
   return pets;
