@@ -123,65 +123,69 @@ query getPostsByPetId($petId: String!) {
   }
 }`);
 
-export const GET_FEED = gql(`
-  query GetFeed {
-    getFeed {
-      forYou {
+export const GET_FOLLOWING = gql(`
+  query GetFollowing {
+    getFollowing {
+      id
+      petId
+      description
+      Media {
         id
-        petId
-        description
-        Media {
-          id
-          name
-          url
-          path
-          type
-        }
-        author {
-          id
-          username
-          name
-          type
-          description
-          location
-          ProfilePicture {
-            id
-            name
-            url
-            path
-            type
-          }
-          postsCount
-          followerCount
-        }
+        name
+        url
+        path
+        type
       }
-      following {
+      author {
         id
-        petId
+        username
+        name
+        type
         description
-        author {
-          id
-          username
-          name
-          type
-          description
-          location
-          ProfilePicture {
-            id
-            name
-            url
-            path
-            type
-          }
-          followerCount
-        }
-        Media {
+        location
+        ProfilePicture {
           id
           name
           url
           path
           type
         }
+        postsCount
+        followerCount
+      }
+    }
+  }
+`);
+
+export const GET_FOR_YOU = gql(`
+  query GetForYou {
+    getForYou {
+      id
+      petId
+      description
+      Media {
+        id
+        name
+        url
+        path
+        type
+      }
+      author {
+        id
+        username
+        name
+        type
+        description
+        location
+        ProfilePicture {
+          id
+          name
+          url
+          path
+          type
+        }
+        postsCount
+        followerCount
       }
     }
   }

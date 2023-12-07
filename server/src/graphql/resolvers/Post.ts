@@ -9,6 +9,7 @@ import { getOwner } from '../../controllers/OwnerController';
 import { Owner } from '../../models/Owner';
 import { Follows } from '../../models/Follow';
 import { ProfilePicture } from '../../models/ProfilePicture';
+import { Sequelize } from 'sequelize';
 
 export const PostResolver = {
   Mutation: {
@@ -237,7 +238,7 @@ export const PostResolver = {
       return { post };
     },
 
-    getFeed: async (_, {}, context) => {
+    getFollowing: async (_, {}, context) => {
       const { token } = context;
 
       const jwtResult = await isTokenValid(token);
@@ -274,7 +275,6 @@ export const PostResolver = {
         throw new GraphQLError('Owner not found');
       }
 
-      const forYou = await getAllPosts();
       let following = [];
 
       if (ownerWithFollowedPets) {
@@ -287,7 +287,31 @@ export const PostResolver = {
         following = allFollowedPosts.sort((postA, postB) => postB.dateCreated - postA.dateCreated);
       }
 
-      return { forYou, following };
+      return following;
+    },
+    getForYou: async (_, {}, context) => {
+      const { token } = context;
+
+      const jwtResult = await isTokenValid(token);
+
+      if (jwtResult?.error || !jwtResult?.id) {
+        throw new GraphQLError(jwtResult?.error.toString(), {
+          extensions: {
+            code: 'UNAUTHORIZED',
+          },
+        });
+      }
+
+      const forYou = await Post.findAll({
+        order: Sequelize.literal('rand()'),
+        limit: 20,
+        include: [
+          { model: Pet, as: 'author', include: [{ model: ProfilePicture, as: 'ProfilePicture' }] },
+          { model: Media, as: 'Media' },
+        ],
+      });
+
+      return forYou;
     },
   },
 };

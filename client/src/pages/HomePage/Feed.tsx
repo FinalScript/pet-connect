@@ -1,4 +1,4 @@
-import { useLazyQuery } from '@apollo/client';
+import { useLazyQuery, useQuery } from '@apollo/client';
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import React, { MutableRefObject, RefObject, useCallback, useEffect, useMemo, useState } from 'react';
@@ -7,10 +7,10 @@ import { useDispatch, useSelector } from 'react-redux';
 import { RootStackParamList } from '../../../App';
 import Post from '../../components/Post';
 import Text from '../../components/Text';
-import { GET_FEED } from '../../graphql/Post';
 import { REPLACE_FOLLOWING_FEED, REPLACE_FORYOU_PAGE } from '../../redux/constants';
 import { GeneralReducer } from '../../redux/reducers/generalReducer';
 import { themeConfig } from '../../utils/theme';
+import { GET_FOLLOWING, GET_FOR_YOU } from '../../graphql/Post';
 
 const Tab = createMaterialTopTabNavigator();
 
@@ -20,10 +20,11 @@ interface Props {
 }
 
 const Feed = ({ navigation, scrollViewRef }: Props) => {
-  const dispatch = useDispatch();
   const [refreshing, setRefreshing] = useState(false);
-  const [getFeed] = useLazyQuery(GET_FEED);
-  const feed = useSelector((state: GeneralReducer) => state.general.feed);
+  const { data: followingData, refetch: refetchFollowing } = useQuery(GET_FOLLOWING);
+  const { data: forYouData, refetch: refetchForYou } = useQuery(GET_FOR_YOU);
+  const following = useMemo(() => followingData?.getFollowing || [], [followingData]);
+  const forYou = useMemo(() => forYouData?.getForYou || [], [forYouData]);
   const scrollY = new Animated.Value(0);
 
   const clampedTranslateY = useMemo(
@@ -46,28 +47,23 @@ const Feed = ({ navigation, scrollViewRef }: Props) => {
     [scrollY]
   );
 
-  useEffect(() => {
-    getPosts();
-  }, []);
-
-  const getPosts = useCallback(async () => {
-    const fetchedPosts = await getFeed();
-
-    if (fetchedPosts.data?.getFeed) {
-      dispatch({ type: REPLACE_FOLLOWING_FEED, payload: fetchedPosts.data.getFeed.following });
-      dispatch({ type: REPLACE_FORYOU_PAGE, payload: fetchedPosts.data.getFeed.forYou });
-      return;
-    }
-  }, [getFeed, dispatch]);
-
-  const onRefresh = useCallback(async () => {
+  const onRefreshForYou = useCallback(async () => {
     setRefreshing(true);
 
     setTimeout(() => {
-      getPosts();
+      refetchForYou();
       setRefreshing(false);
     }, 600);
-  }, [getPosts]);
+  }, []);
+
+  const onRefreshFollowing = useCallback(async () => {
+    setRefreshing(true);
+
+    setTimeout(() => {
+      refetchFollowing();
+      setRefreshing(false);
+    }, 600);
+  }, []);
 
   return (
     <SafeAreaView className={'flex-1 h-full bg-themeBg'}>
@@ -115,11 +111,24 @@ const Feed = ({ navigation, scrollViewRef }: Props) => {
                   scrollEventThrottle={16}
                   onScroll={Animated.event([{ nativeEvent: { contentOffset: { y: scrollY } } }], { useNativeDriver: true })}
                   className='w-full pt-10'
-                  refreshControl={<RefreshControl tintColor={'black'} refreshing={refreshing} onRefresh={onRefresh} />}>
-                  <View className='flex justify-center items-center h-full pb-5 px-3'>
-                    <>
-                      <Text>Nothing to see here...</Text>
-                    </>
+                  refreshControl={<RefreshControl tintColor={'black'} refreshing={refreshing} onRefresh={onRefreshForYou} />}>
+                  <View className='flex justify-center items-center h-full pb-[100px]'>
+                    {forYou.map((post, i) => {
+                      return (
+                        <Post
+                          key={i}
+                          post={post}
+                          goToProfile={() => {
+                            navigation.navigate('Pet Profile', { petId: post.author.id });
+                          }}
+                        />
+                      );
+                    })}
+                    {forYou.length === 0 && (
+                      <>
+                        <Text>Nothing to see here...</Text>
+                      </>
+                    )}
                   </View>
                 </Animated.ScrollView>
               </View>
@@ -136,9 +145,9 @@ const Feed = ({ navigation, scrollViewRef }: Props) => {
                   scrollEventThrottle={16}
                   onScroll={Animated.event([{ nativeEvent: { contentOffset: { y: scrollY } } }], { useNativeDriver: true })}
                   className='w-full pt-10'
-                  refreshControl={<RefreshControl tintColor={'black'} refreshing={refreshing} onRefresh={onRefresh} />}>
+                  refreshControl={<RefreshControl tintColor={'black'} refreshing={refreshing} onRefresh={onRefreshFollowing} />}>
                   <View className='flex justify-center items-center h-full pb-[100px]'>
-                    {feed.following.map((post, i) => {
+                    {following.map((post, i) => {
                       return (
                         <Post
                           key={i}
@@ -149,7 +158,7 @@ const Feed = ({ navigation, scrollViewRef }: Props) => {
                         />
                       );
                     })}
-                    {feed.following.length === 0 && (
+                    {following.length === 0 && (
                       <>
                         <Text>Nothing to see here...</Text>
                       </>

@@ -22,26 +22,28 @@ const Following = ({
   return (
     <SafeAreaView className='flex-1 items-center bg-themeBg'>
       <ScrollView className='w-full px-5 pt-2.5 mt-2.5'>
-        {following.map((pet) => (
-          <Pressable
-            key={pet.id}
-            className='h-[80px] flex flex-row flex-1 mt-5 rounded-2xl bg-themeInput shadow-sm shadow-themeShadow'
-            onPress={() => {
-              navigation.push('Pet Profile', { petId: pet.id });
-            }}>
-            <View className='w-[80px] aspect-square flex justify-center items-center mr-5 p-1'>
-              {pet.ProfilePicture?.url ? (
-                <Image className='w-full h-full rounded-xl' source={{ uri: pet.ProfilePicture.url }} />
-              ) : (
-                <PetTypeImage type={pet.type} className='w-full h-full' />
-              )}
-            </View>
-            <View className='flex justify-center'>
-              <Text className='text-2xl -mb-1'>{pet.name}</Text>
-              <Text className='text-sm'>@{pet.username}</Text>
-            </View>
-          </Pressable>
-        ))}
+        {following.map((pet) => {
+          return (
+            <Pressable
+              key={pet.id}
+              className='h-[80px] flex flex-row flex-1 mt-5 rounded-2xl bg-themeInput shadow-sm shadow-themeShadow'
+              onPress={() => {
+                navigation.push('Pet Profile', { petId: pet.id });
+              }}>
+              <View className='w-[80px] aspect-square flex justify-center items-center mr-5 p-1'>
+                {pet.ProfilePicture?.url ? (
+                  <Image className='w-full h-full rounded-xl' source={{ uri: pet.ProfilePicture.url }} />
+                ) : (
+                  <PetTypeImage type={pet.type} className='w-full h-full' />
+                )}
+              </View>
+              <View className='flex justify-center'>
+                <Text className='text-2xl -mb-1'>{pet.name}</Text>
+                <Text className='text-sm'>@{pet.username}</Text>
+              </View>
+            </Pressable>
+          );
+        })}
       </ScrollView>
     </SafeAreaView>
   );
