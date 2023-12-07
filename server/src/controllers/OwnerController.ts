@@ -1,20 +1,24 @@
-import { claimCheck } from 'express-oauth2-jwt-bearer';
+import { Op, Sequelize } from 'sequelize';
 import { Owner, OwnerCreationDAO, OwnerUpdateDAO } from '../models/Owner';
 import { Pet } from '../models/Pet';
 import { ProfilePicture } from '../models/ProfilePicture';
-import { Op } from 'sequelize';
 
 export const getOwner = async (authId: string) => {
   const owner = await Owner.findOne({
     where: {
       authId,
     },
+    attributes: {
+      include: [[Sequelize.literal('(SELECT COUNT(*) FROM Follows WHERE Follows.ownerId = Owner.id)'), 'followingCount'], '*'],
+    },
     include: [
       {
-        all: true,
-        nested: true,
+        model: ProfilePicture,
+        as: 'ProfilePicture',
       },
     ],
+    raw: true,
+    nest: true,
   });
 
   return owner;
@@ -25,12 +29,17 @@ export const getOwnerById = async (id: string) => {
     where: {
       id,
     },
+    attributes: {
+      include: [[Sequelize.literal('(SELECT COUNT(*) FROM Follows WHERE Follows.ownerId = Owner.id)'), 'followingCount'], '*'],
+    },
     include: [
       {
-        all: true,
-        nested: true,
+        model: ProfilePicture,
+        as: 'ProfilePicture',
       },
     ],
+    raw: true,
+    nest: true,
   });
 
   return owner;
@@ -79,26 +88,17 @@ export const searchForOwners = async (searchValue: string) => {
       [Op.or]: [{ name: { [Op.like]: '%' + searchValue + '%' } }, { username: { [Op.like]: '%' + searchValue + '%' } }],
     },
     limit: 20,
+    attributes: {
+      include: [[Sequelize.literal('(SELECT COUNT(*) FROM Follows WHERE Follows.ownerId = Owner.id)'), 'followingCount'], '*'],
+    },
     include: [
       {
         model: ProfilePicture,
         as: 'ProfilePicture',
       },
-      {
-        model: Pet,
-        as: 'Pets',
-        include: [
-          {
-            model: ProfilePicture,
-            as: 'ProfilePicture',
-          },
-          {
-            model: Owner,
-            as: 'Owner',
-          },
-        ],
-      },
     ],
+    raw: true,
+    nest: true,
   });
 
   return owners;

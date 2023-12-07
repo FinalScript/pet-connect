@@ -1,10 +1,10 @@
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import React, { useCallback, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { Modal, Pressable, SafeAreaView, ScrollView, Share, View } from 'react-native';
 import { PressableOpacity } from 'react-native-pressable-opacity';
 import { useSelector } from 'react-redux';
 import { RootStackParamList } from '../../../App';
-import { Owner } from '../../__generated__/graphql';
+import { Owner, Pet } from '../../__generated__/graphql';
 import Image from '../../components/Image';
 import PetCard from '../../components/PetCard';
 import Text from '../../components/Text';
@@ -14,18 +14,17 @@ import { Ionicon } from '../../utils/Icons';
 
 interface Props {
   owner: Owner;
+  pets: Pet[];
   navigation: NativeStackNavigationProp<RootStackParamList, 'Owner Profile', undefined>;
 }
 
-const OwnerProfile = ({ owner, navigation }: Props) => {
+const OwnerProfile = ({ owner, pets = [], navigation }: Props) => {
   const [modals, setModals] = useState({ editProfile: false });
   const [selectedPetId, setSelectedPetId] = useState<string>();
   const currentOwnerId = useSelector((state: ProfileReducer) => state.profile.owner?.id);
   const isOwner = useMemo(() => currentOwnerId === owner?.id, [owner?.id, currentOwnerId]);
 
-  const pets = useMemo(() => {
-    return owner?.Pets || [];
-  }, [owner]);
+  useEffect(() => {}, []);
 
   const setEditProfileModalVisible = useCallback((bool: boolean) => {
     setModals((prev) => {
@@ -125,7 +124,7 @@ const OwnerProfile = ({ owner, navigation }: Props) => {
               <Text className='text-md'>Pets</Text>
             </View>
             <View className='flex items-center'>
-              <Text className='text-xl font-bold'>{owner?.FollowedPets?.length}</Text>
+              <Text className='text-xl font-bold'>{owner?.followingCount}</Text>
               <Text className='text-md'>Following</Text>
             </View>
           </View>

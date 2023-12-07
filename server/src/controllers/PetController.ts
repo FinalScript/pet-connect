@@ -1,23 +1,70 @@
-import { PetUpdateDAO } from './../models/Pet';
+import { Op, Sequelize } from 'sequelize';
+import { Follows } from '../models/Follow';
+import { Owner } from '../models/Owner';
 import { Pet, PetCreationDAO } from '../models/Pet';
 import { ProfilePicture } from '../models/ProfilePicture';
-import { Op } from 'sequelize';
-import { Owner } from '../models/Owner';
+import { PetUpdateDAO } from './../models/Pet';
+
+export const isFollowingPet = async (ownerId: string, petId: string) => {
+  const isFollowing = await Follows.findOne({
+    where: {
+      ownerId: ownerId,
+      petId: petId,
+    },
+  });
+
+  return !!isFollowing; // Return true if the association exists, false otherwise
+};
 
 export const getPetById = async (id: string) => {
   const pet = await Pet.findOne({
     where: {
       id,
     },
+    attributes: {
+      include: [[Sequelize.literal('(SELECT COUNT(*) FROM Follows WHERE Follows.petId = Pet.id)'), 'followerCount'], '*'],
+    },
     include: [
       {
-        all: true,
-        nested: true,
+        model: Owner,
+        as: 'Owner',
       },
+      {
+        model: ProfilePicture,
+        as: 'ProfilePicture',
+      },
+      { model: Owner, as: 'Followers', attributes: [] },
     ],
+    raw: true,
+    nest: true,
   });
 
   return pet;
+};
+
+export const getPetsByOwnerId = async (id: string) => {
+  const pets = await Pet.findAll({
+    where: {
+      ownerId: id,
+    },
+    attributes: {
+      include: [[Sequelize.literal('(SELECT COUNT(*) FROM Follows WHERE Follows.petId = Pet.id)'), 'followerCount'], '*'],
+    },
+    include: [
+      {
+        model: Owner,
+        as: 'Owner',
+      },
+      {
+        model: ProfilePicture,
+        as: 'ProfilePicture',
+      },
+    ],
+    raw: true,
+    nest: true,
+  });
+
+  return pets;
 };
 
 export const getPetByUsername = async (username: string) => {
@@ -25,16 +72,21 @@ export const getPetByUsername = async (username: string) => {
     where: {
       username,
     },
+    attributes: {
+      include: [[Sequelize.literal('(SELECT COUNT(*) FROM Follows WHERE Follows.petId = Pet.id)'), 'followerCount'], '*'],
+    },
     include: [
-      {
-        model: ProfilePicture,
-        as: 'ProfilePicture',
-      },
       {
         model: Owner,
         as: 'Owner',
       },
+      {
+        model: ProfilePicture,
+        as: 'ProfilePicture',
+      },
     ],
+    raw: true,
+    nest: true,
   });
 
   return pet;
@@ -70,16 +122,21 @@ export const searchForPets = async (searchValue: string) => {
       [Op.or]: [{ name: { [Op.like]: '%' + searchValue + '%' } }, { username: { [Op.like]: '%' + searchValue + '%' } }],
     },
     limit: 20,
+    attributes: {
+      include: [[Sequelize.literal('(SELECT COUNT(*) FROM Follows WHERE Follows.petId = Pet.id)'), 'followerCount'], '*'],
+    },
     include: [
-      {
-        model: ProfilePicture,
-        as: 'ProfilePicture',
-      },
       {
         model: Owner,
         as: 'Owner',
       },
+      {
+        model: ProfilePicture,
+        as: 'ProfilePicture',
+      },
     ],
+    raw: true,
+    nest: true,
   });
 
   return pets;

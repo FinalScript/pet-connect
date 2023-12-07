@@ -22,6 +22,7 @@ interface Props {
 const MyProfile = ({ navigation }: Props) => {
   const dispatch = useDispatch();
   const owner = useSelector((state: ProfileReducer) => state.profile.owner);
+  const pets = useSelector((state: ProfileReducer) => state.profile.pets);
   const { clearSession } = useAuth0();
   const [modals, setModals] = useState({ accountSwitcher: false, settings: false, editProfile: false });
   const accountSwitcherModalRef = useRef<Modalize>(null);
@@ -97,7 +98,7 @@ const MyProfile = ({ navigation }: Props) => {
           <Ionicon name='menu-outline' size={30} />
         </Pressable>
       </View>
-      {owner && <OwnerProfile owner={owner} navigation={navigation as any} />}
+      {owner && <OwnerProfile owner={owner} pets={pets} navigation={navigation as any} />}
     </SafeAreaView>
   );
 };

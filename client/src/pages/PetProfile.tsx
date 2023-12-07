@@ -10,7 +10,7 @@ import Image from '../components/Image';
 import PetTypeImage from '../components/PetTypeImage';
 import Text from '../components/Text';
 import EditProfileModal from '../components/modals/EditProfileModal';
-import { FOLLOW_PET, GET_PET_BY_ID, UNFOLOW_PET } from '../graphql/Pet';
+import { FOLLOW_PET, GET_PET_BY_ID, IS_FOLLOWING_PET, UNFOLOW_PET } from '../graphql/Pet';
 import { GET_POSTS_BY_PET_ID } from '../graphql/Post';
 import { PetDAO, ProfileReducer } from '../redux/reducers/profileReducer';
 import { Feather } from '../utils/Icons';
@@ -32,24 +32,34 @@ const PetProfile = ({
   const ownerId = useSelector((state: ProfileReducer) => state.profile.owner?.id);
   const [getPet, { data: petData, refetch: refetchPetData }] = useLazyQuery(GET_PET_BY_ID, { fetchPolicy: 'network-only' });
   const [getPostsByPetId, { data: postsData }] = useLazyQuery(GET_POSTS_BY_PET_ID, { fetchPolicy: 'network-only' });
+  const [getIsFollowingPet, { data: isFollowingPet }] = useLazyQuery(IS_FOLLOWING_PET, { fetchPolicy: 'network-only' });
+
   const pet = useMemo(() => petData?.getPetById.pet, [petData, petId]);
   const isOwner = useMemo(() => ownerId === pet?.Owner?.id, [ownerId, pet?.Owner?.id]);
-  const [modals, setModals] = useState({ accountSwitcher: false, settings: false, editProfile: false });
   const gridPosts = useMemo(() => {
     return postsData?.getPostsByPetId?.posts || [];
   }, [postsData]);
+
   const [followPet] = useMutation(FOLLOW_PET);
   const [unfollowPet] = useMutation(UNFOLOW_PET);
-  const [manualIsFollowing, setManualIsFollowing] = useState(false);
+
   const isFollowing = useMemo(() => {
-    return manualIsFollowing || (pet?.Followers && pet.Followers.findIndex((item) => item?.id === ownerId) !== -1);
-  }, [pet, ownerId, manualIsFollowing]);
+    return isFollowingPet?.isFollowingPet;
+  }, [isFollowingPet]);
+
   const tabBarState = useTabBarState();
+  const [modals, setModals] = useState({ accountSwitcher: false, settings: false, editProfile: false });
 
   useEffect(() => {
     getPet({ variables: { id: petId } });
     getPostsByPetId({ variables: { petId } });
   }, [petId, getPet, getPostsByPetId]);
+
+  useEffect(() => {
+    if (ownerId && petId) {
+      getIsFollowingPet({ variables: { ownerId, petId } });
+    }
+  }, [ownerId, petId]);
 
   useEffect(() => {
     navigation.setOptions({ title: pet?.username });
@@ -69,7 +79,7 @@ const PetProfile = ({
         refetchPetData();
       }
     });
-  }, [followPet, pet, setManualIsFollowing]);
+  }, [followPet, pet]);
 
   const handleUnfollow = useCallback(() => {
     if (!pet) return;
@@ -79,7 +89,7 @@ const PetProfile = ({
         refetchPetData();
       }
     });
-  }, [followPet, pet, setManualIsFollowing]);
+  }, [followPet, pet]);
 
   const onShare = useCallback(async () => {
     try {
@@ -180,7 +190,7 @@ const PetProfile = ({
                 <Text className='text-md'>Posts</Text>
               </View>
               <View className='flex items-center'>
-                <Text className='text-xl font-bold'>{pet.Followers?.length}</Text>
+                <Text className='text-xl font-bold'>{pet.followerCount}</Text>
                 <Text className='text-md'>Followers</Text>
               </View>
               <View className='flex items-center'>

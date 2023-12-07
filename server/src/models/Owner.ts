@@ -28,13 +28,15 @@ export interface OwnerUpdateDAO {
   location?: string;
 }
 export class Owner extends Model<InferAttributes<Owner>, InferCreationAttributes<Owner>> {
-  declare id: CreationOptional<number>;
+  public id!: string;
   declare authId: CreationOptional<string>;
   declare name: CreationOptional<string>;
   declare username: string;
   declare location: CreationOptional<string>;
   declare ProfilePicture?: ProfilePicture;
   declare setProfilePicture: HasOneSetAssociationMixin<ProfilePicture, 'id'>;
+
+  public followingCount?: number = 0;
 
   declare Pets?: Pet[];
   declare addPet: HasManyAddAssociationMixin<InferAttributes<Pet>, InferCreationAttributes<Pet>>;

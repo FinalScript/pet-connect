@@ -36,6 +36,9 @@ export class Pet extends Model<InferAttributes<Pet>, InferCreationAttributes<Pet
   public description?: string | null;
   public location?: string | null;
 
+  public followerCount?: number = 0;
+
+  public readonly ownerId?: string;
   // Define associations
   public readonly createdAt: Date;
   public readonly updatedAt: Date;

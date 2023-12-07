@@ -10,13 +10,6 @@ export const CREATE_PET = gql(`
         type
         description
         location
-        Owner {
-          id
-          authId
-          name
-          username
-          location
-        }
         ProfilePicture {
           id
           name
@@ -24,6 +17,15 @@ export const CREATE_PET = gql(`
           path
           type
         }
+        Owner {
+          id
+          authId
+          name
+          username
+          location
+          followingCount
+        }
+        followerCount
       }
     }
   }
@@ -97,26 +99,43 @@ export const GET_PET_BY_ID = gql(`
           name
           username
           location
-          Pets {
-            id
-            username
-            name
-            type
-            description
-            location
-          }
+          followingCount
         }
-        Followers {
-          id
-          authId
-          name
-          username
-          location
-        }
+        followerCount
       }
     }
   }
 
+`);
+
+export const GET_PETS_BY_OWNER_ID = gql(`
+  query GetPetsByOwnerId($id: String!) {
+    getPetsByOwnerId(id: $id) {
+      pets {
+        id
+        username
+        name
+        type
+        description
+        location
+        ProfilePicture {
+          id
+          name
+          url
+          path
+          type
+        }
+        followerCount
+      }
+    }
+  }
+
+`);
+
+export const IS_FOLLOWING_PET = gql(`
+  query IsFollowingPet($ownerId: String!, $petId: String!) {
+    isFollowingPet(ownerId: $ownerId, petId: $petId)
+  }
 `);
 
 export const FOLLOW_PET = gql(`

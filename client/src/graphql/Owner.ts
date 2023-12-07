@@ -16,43 +16,7 @@ export const GET_OWNER = gql(`
           path
           type
         }
-        Pets {
-          id
-          username
-          name
-          type
-          description
-          location
-          Owner {
-            id
-            authId
-            name
-            username
-            location
-          }
-          ProfilePicture {
-            id
-            name
-            url
-            path
-            type
-          }
-          Followers {
-            id
-            authId
-            name
-            username
-            location
-          }
-        }
-        FollowedPets {
-          id
-          username
-          name
-          type
-          description
-          location
-        }
+        followingCount
       }
     }
   }
@@ -74,43 +38,7 @@ export const GET_OWNER_BY_ID = gql(`
           path
           type
         }
-        Pets {
-          id
-          username
-          name
-          type
-          description
-          location
-          Owner {
-            id
-            authId
-            name
-            username
-            location
-          }
-          ProfilePicture {
-            id
-            name
-            url
-            path
-            type
-          }
-          Followers {
-            id
-            authId
-            name
-            username
-            location
-          }
-        }
-        FollowedPets {
-          id
-          username
-          name
-          type
-          description
-          location
-        }
+        followingCount
       }
     }
   }
@@ -132,6 +60,7 @@ export const SIGNUP = gql(`
           path
           type
         }
+        followingCount
       }
     }
   }

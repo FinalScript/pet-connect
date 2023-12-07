@@ -5,6 +5,7 @@ import { View } from 'react-native';
 import { RootStackParamList } from '../../../App';
 import { GET_OWNER_BY_ID } from '../../graphql/Owner';
 import OwnerProfile from './OwnerProfile';
+import { GET_PETS_BY_OWNER_ID } from '../../graphql/Pet';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Owner Profile'>;
 
@@ -15,17 +16,23 @@ const OwnerProfilePage = ({
   },
 }: Props) => {
   const [getOwner, { data: ownerData }] = useLazyQuery(GET_OWNER_BY_ID, { fetchPolicy: 'no-cache' });
+  const [getPets, { data: petData }] = useLazyQuery(GET_PETS_BY_OWNER_ID, { fetchPolicy: 'network-only' });
   const owner = useMemo(() => ownerData?.getOwnerById.owner, [ownerData]);
+  const pets = useMemo(() => {
+    console.log(petData?.getPetsByOwnerId.pets);
+    return petData?.getPetsByOwnerId.pets || [];
+  }, [getPets, petData]);
 
   useEffect(() => {
     getOwner({ variables: { id: ownerId } });
-  }, [ownerId, getOwner]);
+    getPets({ variables: { id: ownerId } });
+  }, [ownerId, getOwner, getPets]);
 
   useEffect(() => {
     navigation.setOptions({ title: owner?.username });
   }, [owner?.username]);
 
-  return <View>{owner && <OwnerProfile owner={owner} navigation={navigation} />}</View>;
+  return <View>{owner && <OwnerProfile owner={owner} pets={pets} navigation={navigation} />}</View>;
 };
 
 export default OwnerProfilePage;

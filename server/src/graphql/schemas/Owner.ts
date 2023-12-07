@@ -6,8 +6,7 @@ export const OwnerTypeDef = `#graphql
     username: String!
     location: String
     ProfilePicture: ProfilePicture
-    Pets: [Pet]
-    FollowedPets: [Pet]
+    followingCount: Int
   }
 
   # For Queries

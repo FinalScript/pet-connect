@@ -52,6 +52,7 @@ const Feed = ({ navigation }: Props) => {
   const getPosts = useCallback(async () => {
     const fetchedPosts = await getFeed();
 
+    console.log(fetchedPosts.data?.getFeed.following)
     if (fetchedPosts.data?.getFeed) {
       dispatch({ type: REPLACE_FOLLOWING_FEED, payload: fetchedPosts.data.getFeed.following });
       dispatch({ type: REPLACE_FORYOU_PAGE, payload: fetchedPosts.data.getFeed.forYou });
