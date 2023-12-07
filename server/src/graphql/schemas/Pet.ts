@@ -23,6 +23,7 @@ export const PetTypeDef = `#graphql
         ProfilePicture: ProfilePicture
         Owner: Owner
         followerCount: Int
+        postsCount: Int
     }
     
     type PetResponse {

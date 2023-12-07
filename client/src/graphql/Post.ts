@@ -36,6 +36,7 @@ export const GET_ALL_POSTS = gql(`
             location
             followingCount
           }
+          postsCount
           followerCount
         }
       }
@@ -79,6 +80,7 @@ export const CREATE_POST = gql(`
             location
             followingCount
           }
+          postsCount
           followerCount
         }
       }
@@ -114,6 +116,7 @@ query getPostsByPetId($petId: String!) {
           path
           type
         }
+        postsCount
         followerCount
       }
     }
@@ -148,6 +151,7 @@ export const GET_FEED = gql(`
             path
             type
           }
+          postsCount
           followerCount
         }
       }

@@ -25,6 +25,7 @@ export const CREATE_PET = gql(`
           location
           followingCount
         }
+        postsCount
         followerCount
       }
     }
@@ -102,6 +103,7 @@ export const GET_PET_BY_ID = gql(`
           followingCount
         }
         followerCount
+        postsCount
       }
     }
   }
@@ -125,6 +127,7 @@ export const GET_PETS_BY_OWNER_ID = gql(`
           path
           type
         }
+        postsCount
         followerCount
       }
     }

@@ -30,22 +30,18 @@ const PetProfile = ({
   },
 }: Props) => {
   const ownerId = useSelector((state: ProfileReducer) => state.profile.owner?.id);
-  const [getPet, { data: petData, refetch: refetchPetData }] = useLazyQuery(GET_PET_BY_ID, { fetchPolicy: 'network-only' });
-  const [getPostsByPetId, { data: postsData }] = useLazyQuery(GET_POSTS_BY_PET_ID, { fetchPolicy: 'network-only' });
-  const [getIsFollowingPet, { data: isFollowingPet }] = useLazyQuery(IS_FOLLOWING_PET, { fetchPolicy: 'network-only' });
+  const [getPet, { data: petData, refetch: refetchPetData }] = useLazyQuery(GET_PET_BY_ID);
+  const [getPostsByPetId, { data: postsData }] = useLazyQuery(GET_POSTS_BY_PET_ID);
+  const [getIsFollowingPet, { data: isFollowingPet, refetch: refetchIsFollowing }] = useLazyQuery(IS_FOLLOWING_PET);
 
   const pet = useMemo(() => petData?.getPetById.pet, [petData, petId]);
   const isOwner = useMemo(() => ownerId === pet?.Owner?.id, [ownerId, pet?.Owner?.id]);
-  const gridPosts = useMemo(() => {
-    return postsData?.getPostsByPetId?.posts || [];
-  }, [postsData]);
+  const gridPosts = useMemo(() => postsData?.getPostsByPetId?.posts || [], [postsData]);
 
   const [followPet] = useMutation(FOLLOW_PET);
   const [unfollowPet] = useMutation(UNFOLOW_PET);
 
-  const isFollowing = useMemo(() => {
-    return isFollowingPet?.isFollowingPet;
-  }, [isFollowingPet]);
+  const isFollowing = useMemo(() => isFollowingPet?.isFollowingPet, [isFollowingPet]);
 
   const tabBarState = useTabBarState();
   const [modals, setModals] = useState({ accountSwitcher: false, settings: false, editProfile: false });
@@ -74,22 +70,24 @@ const PetProfile = ({
   const handleFollow = useCallback(() => {
     if (!pet) return;
 
-    followPet({ variables: { id: pet.id } }).then(({ data }) => {
+    followPet({ variables: { id: pet.id } }).then(async ({ data }) => {
       if (data?.followPet.success) {
-        refetchPetData();
+        await refetchIsFollowing();
+        await refetchPetData();
       }
     });
-  }, [followPet, pet]);
+  }, [followPet, pet, refetchIsFollowing, refetchPetData]);
 
   const handleUnfollow = useCallback(() => {
     if (!pet) return;
 
-    unfollowPet({ variables: { id: pet.id } }).then(({ data }) => {
+    unfollowPet({ variables: { id: pet.id } }).then(async ({ data }) => {
       if (data?.unfollowPet.success) {
-        refetchPetData();
+        await refetchIsFollowing();
+        await refetchPetData();
       }
     });
-  }, [followPet, pet]);
+  }, [followPet, pet, refetchIsFollowing, refetchPetData]);
 
   const onShare = useCallback(async () => {
     try {
@@ -125,7 +123,7 @@ const PetProfile = ({
             <View key={index} className='w-1/3 p-[1px]'>
               <Pressable
                 onPress={() => {
-                  if (pet) navigation.navigate('Profile Feed', { petUsername: pet.username, posts: gridPosts, initialPostIndex: index });
+                  if (pet) navigation.push('Profile Feed', { petUsername: pet.username, posts: gridPosts, initialPostIndex: index });
                 }}>
                 <Image className='w-full h-auto aspect-square' source={{ uri: post.Media.url }} resizeMode='cover' />
               </Pressable>

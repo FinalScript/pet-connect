@@ -15,13 +15,10 @@ const OwnerProfilePage = ({
     params: { ownerId },
   },
 }: Props) => {
-  const [getOwner, { data: ownerData }] = useLazyQuery(GET_OWNER_BY_ID, { fetchPolicy: 'no-cache' });
-  const [getPets, { data: petData }] = useLazyQuery(GET_PETS_BY_OWNER_ID, { fetchPolicy: 'network-only' });
+  const [getOwner, { data: ownerData }] = useLazyQuery(GET_OWNER_BY_ID);
+  const [getPets, { data: petData }] = useLazyQuery(GET_PETS_BY_OWNER_ID);
   const owner = useMemo(() => ownerData?.getOwnerById.owner, [ownerData]);
-  const pets = useMemo(() => {
-    console.log(petData?.getPetsByOwnerId.pets);
-    return petData?.getPetsByOwnerId.pets || [];
-  }, [getPets, petData]);
+  const pets = useMemo(() => petData?.getPetsByOwnerId.pets || [], [getPets, petData]);
 
   useEffect(() => {
     getOwner({ variables: { id: ownerId } });

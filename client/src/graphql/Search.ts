@@ -41,6 +41,7 @@ export const SEARCH = gql(`
             path
             type
           }
+          postsCount
           followerCount
         }
       }
