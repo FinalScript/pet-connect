@@ -15,8 +15,9 @@ interface Props {
   isSelected: boolean;
   setIsSelected: Dispatch<SetStateAction<string | undefined>>;
   goToProfile: () => void;
+  isOwner: boolean;
 }
-const PetCard = ({ pet, goToProfile, isSelected = false, setIsSelected }: Props) => {
+const PetCard = ({ pet, goToProfile, isSelected = false, setIsSelected, isOwner }: Props) => {
   const height = useSharedValue(80);
   const [modals, setModals] = useState({ petSettings: false });
 
@@ -100,12 +101,11 @@ const PetCard = ({ pet, goToProfile, isSelected = false, setIsSelected }: Props)
           </Pressable>
         </View>
       </Pressable>
-      {isSelected && (
+      {isSelected && isOwner && (
         <View className='absolute bottom-0 right-0'>
           <Pressable
             className='pr-5 pb-5'
             onPress={() => {
-              console.log('we are being pressed rn');
               setPetSettingsModalVisible(true);
             }}>
             <MaterialCommunityIcons name='dots-horizontal' size={24} color={themeConfig.customColors.themeText}></MaterialCommunityIcons>

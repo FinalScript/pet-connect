@@ -163,6 +163,7 @@ const OwnerProfile = ({ ownerId, navigation }: Props) => {
                 }}
                 isSelected={selectedPetId === pet.id}
                 setIsSelected={setSelectedPetId}
+                isOwner={isOwner}
               />
             );
           })}
