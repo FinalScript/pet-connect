@@ -1,8 +1,7 @@
-import { claimCheck } from 'express-oauth2-jwt-bearer';
+import { Op, Sequelize } from 'sequelize';
 import { Owner, OwnerCreationDAO, OwnerUpdateDAO } from '../models/Owner';
 import { Pet } from '../models/Pet';
 import { ProfilePicture } from '../models/ProfilePicture';
-import { Op } from 'sequelize';
 import { Post } from '../models/Post';
 
 export const getOwner = async (authId: string) => {
@@ -12,8 +11,8 @@ export const getOwner = async (authId: string) => {
     },
     include: [
       {
-        all: true,
-        nested: true,
+        model: ProfilePicture,
+        as: 'ProfilePicture',
       },
       {
         model: Pet,
@@ -36,16 +35,8 @@ export const getOwnerById = async (id: string) => {
     },
     include: [
       {
-        model: Pet,
-        as: 'Pets',
-        include: [
-          { all: true, nested: true },
-          { model: Post, as: 'Posts', include: [{ all: true, nested: true }] },
-        ],
-      },
-      {
-        all: true,
-        nested: true,
+        model: ProfilePicture,
+        as: 'ProfilePicture',
       },
     ],
   });
@@ -112,16 +103,8 @@ export const searchForOwners = async (searchValue: string) => {
     limit: 20,
     include: [
       {
-        model: Pet,
-        as: 'Pets',
-        include: [
-          { all: true, nested: true },
-          { model: Post, as: 'Posts', include: [{ all: true, nested: true }] },
-        ],
-      },
-      {
-        all: true,
-        nested: true,
+        model: ProfilePicture,
+        as: 'ProfilePicture',
       },
     ],
   });

@@ -1,4 +1,4 @@
-import { useLazyQuery, useMutation } from '@apollo/client';
+import { useLazyQuery, useMutation, useQuery } from '@apollo/client';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { Icon, IconElement, IconProps, Layout, Tab, TabBarProps, TabView } from '@ui-kitten/components';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
@@ -10,12 +10,12 @@ import Image from '../components/Image';
 import PetTypeImage from '../components/PetTypeImage';
 import Text from '../components/Text';
 import EditProfileModal from '../components/modals/EditProfileModal';
-import { FOLLOW_PET, GET_PET_BY_ID, UNFOLOW_PET } from '../graphql/Pet';
+import { FOLLOW_PET, GET_PET_BY_ID, IS_FOLLOWING_PET, UNFOLOW_PET } from '../graphql/Pet';
 import { GET_POSTS_BY_PET_ID } from '../graphql/Post';
 import { PetDAO, ProfileReducer } from '../redux/reducers/profileReducer';
 import { Feather } from '../utils/Icons';
 import { themeConfig } from '../utils/theme';
-import { Owner, Post } from '../__generated__/graphql';
+import { Post } from '../__generated__/graphql';
 
 const useTabBarState = (initialState = 0): Partial<TabBarProps> => {
   const [selectedIndex, setSelectedIndex] = useState(initialState);
@@ -31,26 +31,21 @@ const PetProfile = ({
   },
 }: Props) => {
   const ownerId = useSelector((state: ProfileReducer) => state.profile.owner?.id);
-  const [getPet, { data: petData, refetch: refetchPetData }] = useLazyQuery(GET_PET_BY_ID, { fetchPolicy: 'network-only' });
-  const [getPostsByPetId, { data: postsData }] = useLazyQuery(GET_POSTS_BY_PET_ID, { fetchPolicy: 'network-only' });
+  const { data: petData } = useQuery(GET_PET_BY_ID, { variables: { id: petId }, pollInterval: 2000 });
+  const { data: postsData } = useQuery(GET_POSTS_BY_PET_ID, { variables: { petId }, pollInterval: 2000 });
+  const { data: isFollowingPet } = useQuery(IS_FOLLOWING_PET, { variables: { ownerId: ownerId || '', petId }, skip: !ownerId, pollInterval: 500 });
+
   const pet = useMemo(() => petData?.getPetById.pet, [petData, petId]);
   const isOwner = useMemo(() => ownerId === pet?.Owner?.id, [ownerId, pet?.Owner?.id]);
-  const [modals, setModals] = useState({ accountSwitcher: false, settings: false, editProfile: false });
-  const gridPosts:Post[] = useMemo(() => {
-    return postsData?.getPostsByPetId?.posts || [];
-  }, [postsData]);
+  const gridPosts: Post[] = useMemo(() => postsData?.getPostsByPetId?.posts || [], [postsData]);
+
   const [followPet] = useMutation(FOLLOW_PET);
   const [unfollowPet] = useMutation(UNFOLOW_PET);
-  const [manualIsFollowing, setManualIsFollowing] = useState(false);
-  const isFollowing = useMemo(() => {
-    return manualIsFollowing || (pet?.Followers && pet.Followers.findIndex((item) => item?.id === ownerId) !== -1);
-  }, [pet, ownerId, manualIsFollowing]);
-  const tabBarState = useTabBarState();
 
-  useEffect(() => {
-    getPet({ variables: { id: petId } });
-    getPostsByPetId({ variables: { petId } });
-  }, [petId, getPet, getPostsByPetId]);
+  const isFollowing = useMemo(() => isFollowingPet?.isFollowingPet, [isFollowingPet]);
+
+  const tabBarState = useTabBarState();
+  const [modals, setModals] = useState({ accountSwitcher: false, settings: false, editProfile: false });
 
   useEffect(() => {
     navigation.setOptions({ title: pet?.username });
@@ -62,25 +57,17 @@ const PetProfile = ({
     });
   }, []);
 
-  const handleFollow = useCallback(() => {
+  const handleFollow = useCallback(async () => {
     if (!pet) return;
 
-    followPet({ variables: { id: pet.id } }).then(({ data }) => {
-      if (data?.followPet.success) {
-        refetchPetData();
-      }
-    });
-  }, [followPet, pet, setManualIsFollowing]);
+    await followPet({ variables: { id: pet.id } });
+  }, [followPet, pet]);
 
-  const handleUnfollow = useCallback(() => {
+  const handleUnfollow = useCallback(async () => {
     if (!pet) return;
 
-    unfollowPet({ variables: { id: pet.id } }).then(({ data }) => {
-      if (data?.unfollowPet.success) {
-        refetchPetData();
-      }
-    });
-  }, [followPet, pet, setManualIsFollowing]);
+    await unfollowPet({ variables: { id: pet.id } });
+  }, [unfollowPet, pet]);
 
   const onShare = useCallback(async () => {
     try {
@@ -180,18 +167,10 @@ const PetProfile = ({
                 <Text className='text-xl font-bold'>{gridPosts.length}</Text>
                 <Text className='text-md'>Posts</Text>
               </View>
-              <Pressable
-                onPress={() => {
-                  if (pet?.Followers) {
-                    const validOwners = pet.Followers.filter((owner): owner is Owner => owner !== null);
-                    navigation.push('Followers', { followers: validOwners });
-                  }
-                }}>
-                <View className='flex items-center'>
-                  <Text className='text-xl font-bold'>{pet.Followers?.length}</Text>
-                  <Text className='text-md'>Followers</Text>
-                </View>
-              </Pressable>
+              <View className='flex items-center'>
+                <Text className='text-xl font-bold'>{pet.followerCount}</Text>
+                <Text className='text-md'>Followers</Text>
+              </View>
               <View className='flex items-center'>
                 <Text className='text-xl font-bold'>25</Text>
                 <Text className='text-md'>Likes</Text>

@@ -17,22 +17,7 @@ export const SEARCH = gql(`
             path
             type
           }
-          Pets {
-            id
-            username
-            name
-            type
-            description
-            location
-          }
-          FollowedPets {
-            id
-            username
-            name
-            type
-            description
-            location
-          }
+          followingCount
         }
         pets {
           id
@@ -47,13 +32,7 @@ export const SEARCH = gql(`
             name
             username
             location
-          }
-          Followers {
-            id
-            authId
-            name
-            username
-            location
+            followingCount
           }
           ProfilePicture {
             id
@@ -62,6 +41,8 @@ export const SEARCH = gql(`
             path
             type
           }
+          postsCount
+          followerCount
         }
       }
     }

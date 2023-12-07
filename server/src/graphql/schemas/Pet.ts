@@ -22,12 +22,16 @@ export const PetTypeDef = `#graphql
         location: String
         ProfilePicture: ProfilePicture
         Owner: Owner
-        Followers: [Owner]
-        Posts: [Post]
+        followerCount: Int
+        postsCount: Int
     }
     
     type PetResponse {
         pet: Pet
+    }
+
+    type PetsResponse {
+        pets: [Pet!]!
     }
 
     type PetUpdatedResponse {
@@ -54,7 +58,9 @@ export const PetTypeDef = `#graphql
     }
 
     type Query {
+        isFollowingPet(ownerId: String! ,petId: String!): Boolean!
         getPetById(id: String!): PetResponse!
+        getPetsByOwnerId(id: String!): PetsResponse!
         getPetByUsername(username: String!): PetResponse!
         validatePetUsername(username: String!): ValidateUsernameResponse!
     }

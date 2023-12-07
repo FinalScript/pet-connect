@@ -21,13 +21,6 @@ export const GET_ALL_POSTS = gql(`
           type
           description
           location
-          Owner {
-            id
-            authId
-            name
-            username
-            location
-          }
           ProfilePicture {
             id
             name
@@ -35,6 +28,16 @@ export const GET_ALL_POSTS = gql(`
             path
             type
           }
+          Owner {
+            id
+            authId
+            name
+            username
+            location
+            followingCount
+          }
+          postsCount
+          followerCount
         }
       }
     }
@@ -60,13 +63,8 @@ export const CREATE_POST = gql(`
           username
           name
           type
-          Owner {
-            id
-            authId
-            name
-            username
-            location
-          }
+          description
+          location
           ProfilePicture {
             id
             name
@@ -74,6 +72,16 @@ export const CREATE_POST = gql(`
             path
             type
           }
+          Owner {
+            id
+            authId
+            name
+            username
+            location
+            followingCount
+          }
+          postsCount
+          followerCount
         }
       }
     }
@@ -101,13 +109,6 @@ query getPostsByPetId($petId: String!) {
         type
         description
         location
-        Owner {
-          id
-          authId
-          name
-          username
-          location
-        }
         ProfilePicture {
           id
           name
@@ -115,6 +116,8 @@ query getPostsByPetId($petId: String!) {
           path
           type
         }
+        postsCount
+        followerCount
       }
     }
   }
@@ -148,36 +151,8 @@ export const GET_FEED = gql(`
             path
             type
           }
-          Owner {
-            id
-            authId
-            name
-            username
-            location
-            Pets {
-              id
-              username
-              name
-              type
-              description
-              location
-            }
-            FollowedPets {
-              id
-              username
-              name
-              type
-              description
-              location
-            }
-          }
-          Followers {
-            id
-            authId
-            name
-            username
-            location
-          }
+          postsCount
+          followerCount
         }
       }
       following {
@@ -198,36 +173,7 @@ export const GET_FEED = gql(`
             path
             type
           }
-          Owner {
-            id
-            authId
-            name
-            username
-            location
-            Pets {
-              id
-              username
-              name
-              type
-              description
-              location
-            }
-            FollowedPets {
-              id
-              username
-              name
-              type
-              description
-              location
-            }
-          }
-          Followers {
-            id
-            authId
-            name
-            username
-            location
-          }
+          followerCount
         }
         Media {
           id

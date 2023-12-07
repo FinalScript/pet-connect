@@ -260,7 +260,10 @@ export const PostResolver = {
               {
                 model: Post,
                 as: 'Posts',
-                include: [{ all: true, nested: true }],
+                include: [
+                  { model: Pet, as: 'author', include: [{ model: ProfilePicture, as: 'ProfilePicture' }] },
+                  { model: Media, as: 'Media' },
+                ],
               },
             ],
           },

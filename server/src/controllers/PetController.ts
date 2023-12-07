@@ -1,7 +1,20 @@
-import { Op } from 'sequelize';
+import { Op, Sequelize } from 'sequelize';
+import { Follows } from '../models/Follow';
+import { Owner } from '../models/Owner';
 import { Pet, PetCreationDAO } from '../models/Pet';
+import { ProfilePicture } from '../models/ProfilePicture';
 import { PetUpdateDAO } from './../models/Pet';
-import { Post } from '../models/Post';
+
+export const isFollowingPet = async (ownerId: string, petId: string) => {
+  const isFollowing = await Follows.findOne({
+    where: {
+      ownerId: ownerId,
+      petId: petId,
+    },
+  });
+
+  return !!isFollowing; // Return true if the association exists, false otherwise
+};
 
 export const getPetById = async (id: string) => {
   const pet = await Pet.findOne({
@@ -10,14 +23,38 @@ export const getPetById = async (id: string) => {
     },
     include: [
       {
-        all: true,
-        nested: true,
+        model: Owner,
+        as: 'Owner',
       },
-      { model: Post, as: 'Posts', include: [{ all: true, nested: true }] },
+      {
+        model: ProfilePicture,
+        as: 'ProfilePicture',
+      },
+      { model: Owner, as: 'Followers', attributes: [] },
     ],
   });
 
   return pet;
+};
+
+export const getPetsByOwnerId = async (id: string) => {
+  const pets = await Pet.findAll({
+    where: {
+      ownerId: id,
+    },
+    include: [
+      {
+        model: Owner,
+        as: 'Owner',
+      },
+      {
+        model: ProfilePicture,
+        as: 'ProfilePicture',
+      },
+    ],
+  });
+
+  return pets;
 };
 
 export const getPetByUsername = async (username: string) => {
@@ -27,8 +64,12 @@ export const getPetByUsername = async (username: string) => {
     },
     include: [
       {
-        all: true,
-        nested: true,
+        model: Owner,
+        as: 'Owner',
+      },
+      {
+        model: ProfilePicture,
+        as: 'ProfilePicture',
       },
     ],
   });
@@ -68,8 +109,12 @@ export const searchForPets = async (searchValue: string) => {
     limit: 20,
     include: [
       {
-        all: true,
-        nested: true,
+        model: Owner,
+        as: 'Owner',
+      },
+      {
+        model: ProfilePicture,
+        as: 'ProfilePicture',
       },
     ],
   });

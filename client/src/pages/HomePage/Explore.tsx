@@ -20,7 +20,7 @@ interface Props {
 
 const Explore = ({ navigation }: Props) => {
   const ownerId = useSelector((state: ProfileReducer) => state.profile.owner?.id);
-  const [executeSearch] = useLazyQuery(SEARCH, { fetchPolicy: 'cache-first' });
+  const [executeSearch] = useLazyQuery(SEARCH);
   const [formData, setFormData] = useState({ search: '' });
   const [focus, setFocus] = useState({ search: false });
   const [searchResultsPets, setSearchResultsPets] = useState<Pet[]>([]);
@@ -121,7 +121,7 @@ const Explore = ({ navigation }: Props) => {
               <Pressable
                 className={'h-[80px] flex flex-row flex-1 rounded-2xl bg-themeInput shadow-sm shadow-themeShadow'}
                 onPress={() => {
-                  navigation.navigate('Owner Profile', { ownerId: result.id });
+                  navigation.push('Owner Profile', { ownerId: result.id });
                 }}>
                 <View className='w-[80px] aspect-square flex justify-center items-center mr-5 p-1'>
                   {result?.ProfilePicture?.url ? (
@@ -160,7 +160,7 @@ const Explore = ({ navigation }: Props) => {
               <Pressable
                 className={'h-[80px] flex flex-row flex-1 rounded-2xl bg-themeInput shadow-sm shadow-themeShadow'}
                 onPress={() => {
-                  navigation.navigate('Pet Profile', { petId: result.id });
+                  navigation.push('Pet Profile', { petId: result.id });
                 }}>
                 <View className='w-[80px] aspect-square flex justify-center items-center mr-5 p-1'>
                   {result?.ProfilePicture?.url ? (
