@@ -1,7 +1,7 @@
 import { NavigationContainer, RouteProp } from '@react-navigation/native';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import React, { useRef } from 'react';
-import { Animated, ScrollView, StyleSheet, TouchableOpacity } from 'react-native';
+import { Animated, ScrollView, StyleSheet, TouchableOpacity, View } from 'react-native';
 import { CurvedBottomBar } from 'react-native-curved-bottom-bar';
 import { RootStackParamList } from '../../../App';
 import { Ionicon } from '../../utils/Icons';
@@ -73,11 +73,11 @@ const HomeNavigator = ({ navigation }: HomeScreenProps) => {
           initialRouteName='Feed'
           borderTopLeftRight
           renderCircle={({ selectedTab, navigate }) => (
-            <Animated.View style={styles.btnCircleUp}>
-              <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('New Post')}>
+            <TouchableOpacity onPress={() => navigation.navigate('New Post')}>
+              <View style={styles.btnCircleUp}>
                 <Ionicon name={'paw'} color={themeConfig.customColors.themeText} size={25} />
-              </TouchableOpacity>
-            </Animated.View>
+              </View>
+            </TouchableOpacity>
           )}
           tabBar={renderTabBar}>
           <CurvedBottomBar.Screen name='Feed' position='LEFT' component={() => <Feed navigation={navigation} scrollViewRef={feedScrollViewRef} />} />
@@ -104,10 +104,7 @@ const styles = StyleSheet.create({
     shadowOpacity: 1,
     shadowRadius: 5,
   },
-  button: {
-    flex: 1,
-    justifyContent: 'center',
-  },
+
   bottomBar: {},
   btnCircleUp: {
     width: 60,

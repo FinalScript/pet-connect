@@ -96,7 +96,7 @@ export default function Post({ post, goToProfile, onLayoutChange }: Props) {
   }
 
   return (
-    <View className='bg-themeInput mb-5 pb-2 w-full shadow-md shadow-themeActive' onLayout={onLayout}>
+    <View className='bg-themeInput mb-5 pb-2 w-full shadow-md shadow-themeShadow' onLayout={onLayout}>
       <Portal>
         <Modalize
           ref={modalizeRef}
@@ -106,6 +106,7 @@ export default function Post({ post, goToProfile, onLayoutChange }: Props) {
           adjustToContentHeight
           //@ts-expect-error
           keyboardAvoidingBehavior=''
+          propagateSwipe={true}
           useNativeDriver>
           <CommentsModel comments={comments} closeModal={() => closeCommentsModal()} />
         </Modalize>
