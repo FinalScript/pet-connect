@@ -4,7 +4,7 @@ import { Icon, IconElement, IconProps, Layout, Tab, TabBarProps, TabView } from 
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { Dimensions, Modal, Pressable, SafeAreaView, ScrollView, Share, View } from 'react-native';
 import { PressableOpacity } from 'react-native-pressable-opacity';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { RootStackParamList } from '../../App';
 import Image from '../components/Image';
 import PetTypeImage from '../components/PetTypeImage';
@@ -16,6 +16,7 @@ import { PetDAO, ProfileReducer } from '../redux/reducers/profileReducer';
 import { Feather } from '../utils/Icons';
 import { themeConfig } from '../utils/theme';
 import { Post } from '../__generated__/graphql';
+import { POST_DATA } from '../redux/constants';
 
 const useTabBarState = (initialState = 0): Partial<TabBarProps> => {
   const [selectedIndex, setSelectedIndex] = useState(initialState);
@@ -30,6 +31,7 @@ const PetProfile = ({
     params: { petId },
   },
 }: Props) => {
+  const dispatch = useDispatch();
   const ownerId = useSelector((state: ProfileReducer) => state.profile.owner?.id);
   const { data: petData } = useQuery(GET_PET_BY_ID, { variables: { id: petId }, pollInterval: 2000 });
   const { data: postsData } = useQuery(GET_POSTS_BY_PET_ID, { variables: { petId }, pollInterval: 2000 });
@@ -38,6 +40,10 @@ const PetProfile = ({
   const pet = useMemo(() => petData?.getPetById.pet, [petData, petId]);
   const isOwner = useMemo(() => ownerId === pet?.Owner?.id, [ownerId, pet?.Owner?.id]);
   const gridPosts: Post[] = useMemo(() => postsData?.getPostsByPetId?.posts || [], [postsData]);
+
+  useEffect(() => {
+    dispatch({ type: POST_DATA, payload: gridPosts });
+  }, [gridPosts]);
 
   const [followPet] = useMutation(FOLLOW_PET);
   const [unfollowPet] = useMutation(UNFOLOW_PET);
@@ -103,7 +109,7 @@ const PetProfile = ({
             <View key={index} className='w-1/3 p-[1px]'>
               <Pressable
                 onPress={() => {
-                  if (pet) navigation.push('Profile Feed', { petUsername: pet.username, posts: gridPosts, initialPostIndex: index });
+                  if (pet) navigation.push('Profile Feed', { petUsername: pet.username, initialPostIndex: index });
                 }}>
                 <Image className='w-full h-auto aspect-square' source={{ uri: post.Media.url }} resizeMode='cover' />
               </Pressable>

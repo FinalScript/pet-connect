@@ -1,8 +1,8 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { ADD_PET, CURRENT_USER, LOGOUT, OWNER_DATA, PET_DATA, REMOVE_PET, UPDATE_PET } from '../constants';
+import { ADD_PET, CURRENT_USER, LOGOUT, OWNER_DATA, PET_DATA, POST_DATA, REMOVE_PET, UPDATE_PET } from '../constants';
 import { Owner, Pet, Post } from '../../__generated__/graphql';
 
-const initialState: ProfileState = { owner: undefined, pets: [], currentUser: { id: '', isPet: false } };
+const initialState: ProfileState = { owner: undefined, pets: [], currentUser: { id: '', isPet: false }, posts: [] };
 
 export interface OwnerDAO {
   id: string;
@@ -54,6 +54,7 @@ export interface ProfileState {
   owner: Owner | undefined;
   pets: Pet[];
   currentUser: CurrentUser;
+  posts: Post[];
 }
 
 export interface ProfileReducer {
@@ -73,6 +74,11 @@ const profileReducer: ProfileReducerFn = (state = initialState, action: any) => 
       return {
         ...state,
         pets: action.payload,
+      };
+    case POST_DATA:
+      return {
+        ...state,
+        posts: action.payload,
       };
     case CURRENT_USER:
       AsyncStorage.setItem('@currentUser', JSON.stringify(action.payload));

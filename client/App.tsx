@@ -43,7 +43,7 @@ export type RootStackParamList = {
   'Owner Profile': { ownerId: string };
   'New Post': undefined;
   'Profile Picture': { profilePicture?: ProfilePictureType | null };
-  'Profile Feed': { petUsername: string; posts: Post[]; initialPostIndex: number };
+  'Profile Feed': { petUsername: string; initialPostIndex: number };
   Following: { ownerId: string };
   Followers: { petId: string };
 };
