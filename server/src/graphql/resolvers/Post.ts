@@ -154,6 +154,8 @@ export const PostResolver = {
         });
       }
 
+      const owner = await getOwner(jwtResult.id);
+
       if (!id) {
         throw new GraphQLError('ID missing', {
           extensions: {
@@ -168,6 +170,14 @@ export const PostResolver = {
         throw new GraphQLError('Post does not exist', {
           extensions: {
             code: 'BAD_USER_INPUT',
+          },
+        });
+      }
+
+      if (post.author.ownerId !== owner.id) {
+        throw new GraphQLError('You don\'t have permissions to delete this post.', {
+          extensions: {
+            code: 'FORBIDDEN',
           },
         });
       }

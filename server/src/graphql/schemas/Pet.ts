@@ -24,6 +24,7 @@ export const PetTypeDef = `#graphql
         Owner: Owner
         followerCount: Int
         postsCount: Int
+        ownerId: String
     }
     
     type PetResponse {

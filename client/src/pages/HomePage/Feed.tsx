@@ -18,8 +18,8 @@ interface Props {
 
 const Feed = ({ navigation, scrollViewRef }: Props) => {
   const [refreshing, setRefreshing] = useState(false);
-  const { data: followingData, refetch: refetchFollowing } = useQuery(GET_FOLLOWING);
-  const { data: forYouData, refetch: refetchForYou } = useQuery(GET_FOR_YOU);
+  const { data: followingData, refetch: refetchFollowing } = useQuery(GET_FOLLOWING, { pollInterval: 10000 });
+  const { data: forYouData, refetch: refetchForYou } = useQuery(GET_FOR_YOU, { pollInterval: 10000 });
   const following = useMemo(() => followingData?.getFollowing || [], [followingData]);
   const forYou = useMemo(() => forYouData?.getForYou || [], [forYouData]);
   const scrollY = new Animated.Value(0);

@@ -38,6 +38,7 @@ export const GET_ALL_POSTS = gql(`
           }
           postsCount
           followerCount
+          ownerId
         }
       }
     }
@@ -82,6 +83,7 @@ export const CREATE_POST = gql(`
           }
           postsCount
           followerCount
+          ownerId
         }
       }
     }
@@ -118,6 +120,7 @@ query getPostsByPetId($petId: String!) {
         }
         postsCount
         followerCount
+        ownerId
       }
     }
   }
@@ -152,6 +155,7 @@ export const GET_FOLLOWING = gql(`
         }
         postsCount
         followerCount
+        ownerId
       }
     }
   }
@@ -186,7 +190,16 @@ export const GET_FOR_YOU = gql(`
         }
         postsCount
         followerCount
+        ownerId
       }
+    }
+  }
+`);
+
+export const DELETE_POST = gql(`
+  mutation DeletePost($id: String!) {
+    deletePost(id: $id) {
+      message
     }
   }
 `);
