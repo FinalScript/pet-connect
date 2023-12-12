@@ -27,6 +27,7 @@ import ProfilePicturePage from './src/pages/ProfilePicture';
 import ProfileFeed from './src/pages/ProfileFeed';
 import { Owner, Pet, Post, ProfilePicture as ProfilePictureType } from './src/__generated__/graphql';
 import OwnerProfilePage from './src/pages/OwnerProfilePage/OwnerProfilePage';
+import { GET_PETS_BY_OWNER_ID } from './src/graphql/Pet';
 import FollowingPage from './src/pages/Following';
 import FollowersPage from './src/pages/Followers';
 
@@ -42,9 +43,9 @@ export type RootStackParamList = {
   'Owner Profile': { ownerId: string };
   'New Post': undefined;
   'Profile Picture': { profilePicture?: ProfilePictureType | null };
-  'Profile Feed': { petUsername: string; posts: Post[]; initialPostIndex: number };
-  Following: { following?: Pet[] };
-  Followers: { followers?: Owner[] };
+  'Profile Feed': { petUsername: string; initialPostIndex: number };
+  Following: { ownerId: string };
+  Followers: { petId: string };
 };
 
 export type RootRouteProps<RouteName extends keyof RootStackParamList> = RouteProp<RootStackParamList, RouteName>;
@@ -53,25 +54,44 @@ const Stack = createNativeStackNavigator<RootStackParamList>();
 
 const App = () => {
   const dispatch = useDispatch();
-  const [getUserData] = useLazyQuery(GET_OWNER);
+  const [getUserData, { data: ownerData, error: ownerDataError }] = useLazyQuery(GET_OWNER);
+  const [getPets] = useLazyQuery(GET_PETS_BY_OWNER_ID);
   const [verifyToken] = useLazyQuery(VERIFY_TOKEN);
   const { user, getCredentials } = useAuth0();
   const owner = useSelector((state: ProfileReducer) => state.profile.owner);
 
   useEffect(() => {
-    const timeoutId = setTimeout(() => {
-      getAuth();
-    }, 200);
-
-    return () => clearTimeout(timeoutId);
+    getAuth();
   }, [user, navigationRef]);
 
   useEffect(() => {
     if (owner) {
-      trigger(HapticFeedbackTypes.notificationSuccess, options);
       navigationRef.dispatch(StackActions.replace('Home'));
     }
   }, [owner?.id]);
+
+  useEffect(() => {
+    if (ownerDataError && ownerDataError.message === 'Owner not found') {
+      dispatch({ type: LOADING, payload: false });
+      trigger(HapticFeedbackTypes.notificationWarning, options);
+      navigationRef.dispatch(StackActions.replace('Account Creation'));
+      return;
+    }
+
+    if (!ownerData) {
+      dispatch({ type: LOADING, payload: false });
+      return;
+    }
+
+    const owner = ownerData.getOwner.owner;
+
+    getPets({ variables: { id: owner.id } }).then(({ data }) => {
+      dispatch({ type: PET_DATA, payload: data?.getPetsByOwnerId.pets || [] });
+    });
+
+    dispatch({ type: OWNER_DATA, payload: owner });
+    dispatch({ type: LOADING, payload: false });
+  }, [ownerData, ownerDataError, getUserData, getPets, dispatch]);
 
   const getAuth = useCallback(async () => {
     if (!navigationRef.isReady()) {
@@ -102,7 +122,7 @@ const App = () => {
         // Error saving data
       }
 
-      fetchUserData();
+      await getUserData();
 
       return;
     }
@@ -119,41 +139,8 @@ const App = () => {
       return;
     }
 
-    await fetchUserData();
+    await getUserData();
   }, [navigationRef, dispatch, verifyToken]);
-
-  const fetchUserData = useCallback(async () => {
-    const ownerData = await getUserData();
-
-    if (ownerData.error && ownerData.error.message === 'Owner not found') {
-      dispatch({ type: LOADING, payload: false });
-      trigger(HapticFeedbackTypes.notificationWarning, options);
-      navigationRef.dispatch(StackActions.replace('Account Creation'));
-      return;
-    }
-
-    if (!ownerData) {
-      dispatch({ type: LOADING, payload: false });
-      return;
-    }
-
-    if (ownerData.data?.getOwner) {
-      const cachedCurrentUser = JSON.parse((await AsyncStorage.getItem('@currentUser')) || '{}');
-
-      const owner = ownerData.data.getOwner.owner;
-      const pets = ownerData.data.getOwner.owner.Pets || [];
-
-      console.log(owner)
-
-      dispatch({ type: OWNER_DATA, payload: owner });
-      dispatch({ type: PET_DATA, payload: pets });
-
-      const validCache = owner?.id === cachedCurrentUser?.id || pets.find((pet) => pet?.id === cachedCurrentUser?.id) ? true : false;
-
-      dispatch({ type: CURRENT_USER, payload: cachedCurrentUser && validCache ? cachedCurrentUser : { id: ownerData.data.getOwner.owner.id, isPet: false } });
-      dispatch({ type: LOADING, payload: false });
-    }
-  }, [getUserData, navigationRef, dispatch]);
 
   return (
     <View className='bg-themeBg h-full'>

@@ -4,18 +4,20 @@ import { Animated, SafeAreaView, ScrollView, View } from 'react-native';
 import { RootStackParamList } from '../../App';
 import Post from '../components/Post';
 import Text from '../components/Text';
+import { useSelector } from 'react-redux';
+import { ProfileReducer } from '../redux/reducers/profileReducer';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Profile Feed'>;
 
 const ProfileFeed = ({
   navigation,
   route: {
-    params: { petUsername, posts, initialPostIndex },
+    params: { petUsername, initialPostIndex },
   },
 }: Props) => {
-  const scrollY = new Animated.Value(0);
   const [postHeights, setPostHeights] = useState<number[]>([]);
   const scrollViewRef = useRef<ScrollView>(null);
+  const posts = useSelector((state: ProfileReducer) => state.profile.posts);
 
   useEffect(() => {
     if (initialPostIndex !== undefined && postHeights.length > initialPostIndex) {
@@ -42,7 +44,6 @@ const ProfileFeed = ({
       <View className='flex-1 h-full bg-themeBg'>
         <Animated.ScrollView
           scrollEventThrottle={16}
-          onScroll={Animated.event([{ nativeEvent: { contentOffset: { y: scrollY } } }], { useNativeDriver: true })}
           ref={scrollViewRef}
           className='w-full pt-10'>
           <View className='flex justify-center items-center h-full pb-[100px]'>

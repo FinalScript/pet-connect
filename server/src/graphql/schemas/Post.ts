@@ -20,11 +20,6 @@ type PostsResponse {
     posts: [Post!]!
 }
 
-type FeedResponse {
-    forYou: [Post!]!
-    following: [Post!]!
-}
-
 type PostUpdatedResponse {
     petId: String
     description: String
@@ -40,7 +35,8 @@ type Query{
     getAllPosts: AllPostsResponse! 
     getPostById(id: String!): PostResponse!
     getPostsByPetId(petId: String!): PostsResponse!
-    getFeed: FeedResponse!
+    getFollowing: [Post!]!
+    getForYou: [Post!]!
 }
 
 type Mutation {

@@ -1,73 +1,47 @@
-import { useLazyQuery } from '@apollo/client';
+import { useQuery } from '@apollo/client';
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { Animated, RefreshControl, SafeAreaView, View } from 'react-native';
-import { useDispatch, useSelector } from 'react-redux';
+import React, { RefObject, useCallback, useMemo, useState } from 'react';
+import { Animated, RefreshControl, SafeAreaView, ScrollView, View } from 'react-native';
 import { RootStackParamList } from '../../../App';
 import Post from '../../components/Post';
 import Text from '../../components/Text';
-import { GET_FEED } from '../../graphql/Post';
-import { REPLACE_FOLLOWING_FEED, REPLACE_FORYOU_PAGE } from '../../redux/constants';
-import { GeneralReducer } from '../../redux/reducers/generalReducer';
+import { GET_FOLLOWING, GET_FOR_YOU } from '../../graphql/Post';
 import { themeConfig } from '../../utils/theme';
+import { useIsFocused } from '@react-navigation/native';
+import { Post as PostType } from '../../__generated__/graphql';
 
 const Tab = createMaterialTopTabNavigator();
 
 interface Props {
   navigation: NativeStackNavigationProp<RootStackParamList, 'Home', undefined>;
+  scrollViewRef: RefObject<ScrollView>;
 }
 
-const Feed = ({ navigation }: Props) => {
-  const dispatch = useDispatch();
+const Feed = ({ navigation, scrollViewRef }: Props) => {
   const [refreshing, setRefreshing] = useState(false);
-  const [getFeed] = useLazyQuery(GET_FEED, { fetchPolicy: 'network-only' });
-  const feed = useSelector((state: GeneralReducer) => state.general.feed);
-  const scrollY = new Animated.Value(0);
+  const { data: followingData, refetch: refetchFollowing } = useQuery(GET_FOLLOWING);
+  const { data: forYouData, refetch: refetchForYou } = useQuery(GET_FOR_YOU);
+  const following: PostType[] = useMemo(() => followingData?.getFollowing || [], [followingData]);
+  const forYou: PostType[] = useMemo(() => forYouData?.getForYou || [], [forYouData]);
 
-  const clampedTranslateY = useMemo(
-    () =>
-      scrollY.interpolate({
-        inputRange: [20, 100],
-        outputRange: [0, -100],
-        extrapolateLeft: 'clamp',
-      }),
-    [scrollY]
-  );
-
-  const clampedOpacity = useMemo(
-    () =>
-      scrollY.interpolate({
-        inputRange: [0, 40],
-        outputRange: [1, 0],
-        extrapolateLeft: 'clamp',
-      }),
-    [scrollY]
-  );
-
-  useEffect(() => {
-    getPosts();
-  }, []);
-
-  const getPosts = useCallback(async () => {
-    const fetchedPosts = await getFeed();
-
-    if (fetchedPosts.data?.getFeed) {
-      dispatch({ type: REPLACE_FOLLOWING_FEED, payload: fetchedPosts.data.getFeed.following });
-      dispatch({ type: REPLACE_FORYOU_PAGE, payload: fetchedPosts.data.getFeed.forYou });
-      return;
-    }
-  }, [getFeed, dispatch]);
-
-  const onRefresh = useCallback(async () => {
+  const onRefreshForYou = useCallback(async () => {
     setRefreshing(true);
 
     setTimeout(() => {
-      getPosts();
+      refetchForYou();
       setRefreshing(false);
     }, 600);
-  }, [getPosts]);
+  }, [setRefreshing, refetchForYou]);
 
+  const onRefreshFollowing = useCallback(async () => {
+    setRefreshing(true);
+
+    setTimeout(() => {
+      refetchFollowing();
+      setRefreshing(false);
+    }, 600);
+  }, [setRefreshing, refetchFollowing]);
   return (
     <SafeAreaView className={'flex-1 h-full bg-themeBg'}>
       <Tab.Navigator
@@ -100,27 +74,19 @@ const Feed = ({ navigation }: Props) => {
             left: 50,
             right: 50,
             height: 20,
-            opacity: clampedOpacity,
-            transform: [{ translateY: clampedTranslateY }],
           },
         }}>
         <Tab.Screen
           name='Explore'
           children={() => {
             return (
-              <View className='flex-1 h-full bg-themeBg'>
-                <Animated.ScrollView
-                  scrollEventThrottle={16}
-                  onScroll={Animated.event([{ nativeEvent: { contentOffset: { y: scrollY } } }], { useNativeDriver: true })}
-                  className='w-full pt-10'
-                  refreshControl={<RefreshControl tintColor={'black'} refreshing={refreshing} onRefresh={onRefresh} />}>
-                  <View className='flex justify-center items-center h-full pb-5 px-3'>
-                    <>
-                      <Text>Nothing to see here...</Text>
-                    </>
-                  </View>
-                </Animated.ScrollView>
-              </View>
+              <ExploreTab
+                innerRef={scrollViewRef}
+                posts={forYou}
+                refreshing={refreshing}
+                onRefresh={onRefreshForYou}
+                navigation={navigation}
+              />
             );
           }}
         />
@@ -128,37 +94,92 @@ const Feed = ({ navigation }: Props) => {
           name='Following'
           children={() => {
             return (
-              <View className='flex-1 h-full bg-themeBg'>
-                <Animated.ScrollView
-                  scrollEventThrottle={16}
-                  onScroll={Animated.event([{ nativeEvent: { contentOffset: { y: scrollY } } }], { useNativeDriver: true })}
-                  className='w-full pt-10'
-                  refreshControl={<RefreshControl tintColor={'black'} refreshing={refreshing} onRefresh={onRefresh} />}>
-                  <View className='flex justify-center items-center h-full pb-[100px]'>
-                    {feed.following.map((post, i) => {
-                      return (
-                        <Post
-                          key={i}
-                          post={post}
-                          goToProfile={() => {
-                            navigation.navigate('Pet Profile', { petId: post.author.id });
-                          }}
-                        />
-                      );
-                    })}
-                    {feed.following.length === 0 && (
-                      <>
-                        <Text>Nothing to see here...</Text>
-                      </>
-                    )}
-                  </View>
-                </Animated.ScrollView>
-              </View>
+              <FollowingTab
+                innerRef={scrollViewRef}
+                posts={following}
+                refreshing={refreshing}
+                onRefresh={onRefreshFollowing}
+                navigation={navigation}
+              />
             );
           }}
         />
       </Tab.Navigator>
     </SafeAreaView>
+  );
+};
+
+interface TabProps {
+  innerRef: RefObject<ScrollView>;
+  posts: PostType[];
+  refreshing: boolean;
+  onRefresh: () => Promise<void>;
+  navigation: NativeStackNavigationProp<RootStackParamList, 'Home', undefined>;
+}
+
+const ExploreTab = ({ innerRef, posts, refreshing, onRefresh, navigation }: TabProps) => {
+  const isFocused = useIsFocused();
+
+  return (
+    <View className='flex-1 h-full bg-themeBg'>
+      <ScrollView
+        ref={isFocused ? innerRef : null}
+        scrollEventThrottle={16}
+        className='w-full pt-10'
+        refreshControl={<RefreshControl tintColor={'black'} refreshing={refreshing} onRefresh={onRefresh} />}>
+        <View className='flex justify-center items-center h-full pb-[100px]'>
+          {posts.map((post, i) => {
+            return (
+              <Post
+                key={i}
+                post={post}
+                goToProfile={() => {
+                  navigation.navigate('Pet Profile', { petId: post.author.id });
+                }}
+              />
+            );
+          })}
+          {posts.length === 0 && (
+            <>
+              <Text>Nothing to see here...</Text>
+            </>
+          )}
+        </View>
+      </ScrollView>
+    </View>
+  );
+};
+
+const FollowingTab = ({ innerRef, posts, refreshing, onRefresh, navigation }: TabProps) => {
+  const isFocused = useIsFocused();
+
+  return (
+    <View className='flex-1 h-full bg-themeBg'>
+      <ScrollView
+        ref={isFocused ? innerRef : null}
+        scrollEventThrottle={16}
+        className='w-full pt-10'
+        refreshControl={<RefreshControl tintColor={'black'} refreshing={refreshing} onRefresh={onRefresh} />}>
+        <View className='flex justify-center items-center h-full pb-[100px]'>
+          {posts.map((post, i) => {
+            return (
+              <Post
+                key={i}
+                post={post}
+                goToProfile={() => {
+                  navigation.navigate('Pet Profile', { petId: post.author.id });
+                }}
+              />
+            );
+          })}
+          {posts.length === 0 && (
+            <>
+              <Text>Nothing to see here...</Text>
+            </>
+          )}
+        </View>
+      </ScrollView>
+    </View>
   );
 };
 

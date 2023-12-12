@@ -1,5 +1,5 @@
-import React, { useRef, useState } from 'react';
-import { Animated, Pressable, View } from 'react-native';
+import React, { useMemo, useRef, useState } from 'react';
+import { Animated, Platform, Pressable, View } from 'react-native';
 import { TapGestureHandler } from 'react-native-gesture-handler';
 import { HapticFeedbackTypes, trigger } from 'react-native-haptic-feedback';
 import { Modalize } from 'react-native-modalize';
@@ -13,6 +13,13 @@ import PetTypeImage from './PetTypeImage';
 import Text from './Text';
 import CommentsModel from './modals/CommentsModal';
 import { themeConfig } from '../utils/theme';
+import { Entypo } from '../utils/Icons';
+import { Divider, Menu } from 'react-native-paper';
+import { MenuAction, MenuView } from '@react-native-menu/menu';
+import { useSelector } from 'react-redux';
+import { ProfileReducer } from '../redux/reducers/profileReducer';
+import { useMutation } from '@apollo/client';
+import { DELETE_POST } from '../graphql/Post';
 
 interface Props {
   post: PostType;
@@ -35,13 +42,48 @@ const comments = [
   },
 ];
 
+const CAPTION_LINES = 2;
+
 export default function Post({ post, goToProfile, onLayoutChange }: Props) {
   const [postLiked, setPostLiked] = useState(false);
-  const CAPTION_LINES = 2;
   const [moreCaption, setMoreCaption] = useState(false);
-  const modalizeRef = useRef<Modalize>(null);
   const [showHeartIcon, setShowHeartIcon] = useState(false);
+  const modalizeRef = useRef<Modalize>(null);
   const heartScale = useRef(new Animated.Value(0)).current; // Ref for the animated value
+  const ownerId = useSelector((state: ProfileReducer) => state.profile.owner?.id);
+  const isOwner = useMemo(() => ownerId === post.author.ownerId, [ownerId, post.author.Owner?.id]);
+  const [deletePost] = useMutation(DELETE_POST, { variables: { id: post.id } });
+
+  const menuActions: MenuAction[] = useMemo(() => {
+    const actions: MenuAction[] = [
+      {
+        id: 'share',
+        title: 'Share',
+        titleColor: '#46F289',
+        subtitle: 'Share',
+        image: Platform.select({
+          ios: 'square.and.arrow.up',
+          android: 'ic_menu_share',
+        }),
+      },
+    ];
+
+    if (isOwner) {
+      actions.push({
+        id: 'delete',
+        title: 'Delete',
+        attributes: {
+          destructive: true,
+        },
+        image: Platform.select({
+          ios: 'trash',
+          android: 'ic_menu_delete',
+        }),
+      });
+    }
+
+    return actions;
+  }, [isOwner, ownerId]);
 
   const onLayout = (event: { nativeEvent: { layout: { height: number } } }) => {
     const height = event.nativeEvent.layout.height;
@@ -96,7 +138,7 @@ export default function Post({ post, goToProfile, onLayoutChange }: Props) {
   }
 
   return (
-    <View className='bg-themeInput mb-5 pb-2 w-full shadow-md shadow-themeActive' onLayout={onLayout}>
+    <View className='bg-themeInput mb-5 pb-2 w-full shadow-md shadow-themeShadow' onLayout={onLayout}>
       <Portal>
         <Modalize
           ref={modalizeRef}
@@ -106,22 +148,39 @@ export default function Post({ post, goToProfile, onLayoutChange }: Props) {
           adjustToContentHeight
           //@ts-expect-error
           keyboardAvoidingBehavior=''
+          propagateSwipe={true}
           useNativeDriver>
           <CommentsModel comments={comments} closeModal={() => closeCommentsModal()} />
         </Modalize>
       </Portal>
-      <Pressable className='flex-row w-full items-center px-3 py-2' onPress={() => goToProfile()}>
-        <View className='w-14 h-14 mr-2 aspect-square'>
-          <Image className='flex w-full h-full rounded-lg' source={{ uri: post.author.ProfilePicture?.url }} />
-        </View>
-        <View className='flex justify-center'>
-          <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-            <Text className='text-2xl font-semibold text-sky-700 -mb-2'>{post.author.name}</Text>
-            <PetTypeImage type={post.author.type} style={{ width: 20, height: 20, marginLeft: 5, marginTop: 5 }} />
+      <View className='flex-row justify-between items-center px-3 py-2'>
+        <Pressable className='flex-row items-center ' onPress={() => goToProfile()}>
+          <View className='w-14 h-14 mr-2 aspect-square'>
+            <Image className='flex w-full h-full rounded-lg' source={{ uri: post.author.ProfilePicture?.url }} />
           </View>
-          <Text className='text-base font-light text-sky-500'>@{post.author.username}</Text>
+          <View className='flex justify-center'>
+            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+              <Text className='text-2xl font-semibold text-sky-700 -mb-2'>{post.author.name}</Text>
+              <PetTypeImage type={post.author.type} style={{ width: 20, height: 20, marginLeft: 5, marginTop: 5 }} />
+            </View>
+            <Text className='text-base font-light text-sky-500'>@{post.author.username}</Text>
+          </View>
+        </Pressable>
+
+        <View>
+          <MenuView
+            onPressAction={({ nativeEvent }) => {
+              if (nativeEvent.event === 'delete') {
+                deletePost();
+              }
+            }}
+            actions={menuActions}>
+            <View className='pr-3'>
+              <Entypo name='dots-three-horizontal' size={18} />
+            </View>
+          </MenuView>
         </View>
-      </Pressable>
+      </View>
 
       <TapGestureHandler
         onEnded={() => {

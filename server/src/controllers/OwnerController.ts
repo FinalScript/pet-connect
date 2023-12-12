@@ -1,9 +1,19 @@
-import { claimCheck } from 'express-oauth2-jwt-bearer';
+import { Op, Sequelize } from 'sequelize';
 import { Owner, OwnerCreationDAO, OwnerUpdateDAO } from '../models/Owner';
 import { Pet } from '../models/Pet';
 import { ProfilePicture } from '../models/ProfilePicture';
-import { Op } from 'sequelize';
 import { Post } from '../models/Post';
+
+export const getFollowingByOwnerId = async (id: string) => {
+  const owner = await Owner.findOne({
+    where: {
+      id,
+    },
+    include: [{ model: Pet, as: 'FollowedPets', include: [{ model: ProfilePicture, as: 'ProfilePicture' }] }],
+  });
+
+  return owner.FollowedPets;
+};
 
 export const getOwner = async (authId: string) => {
   const owner = await Owner.findOne({
@@ -12,16 +22,16 @@ export const getOwner = async (authId: string) => {
     },
     include: [
       {
+        model: ProfilePicture,
+        as: 'ProfilePicture',
+      },
+      {
         model: Pet,
         as: 'Pets',
         include: [
           { all: true, nested: true },
-          { model: Post, as: 'Posts', include: [{ all: true, nested: true }] },
+          { model: Post, as: 'Posts', attributes: ['id'] },
         ],
-      },
-      {
-        all: true,
-        nested: true,
       },
     ],
   });
@@ -36,16 +46,8 @@ export const getOwnerById = async (id: string) => {
     },
     include: [
       {
-        model: Pet,
-        as: 'Pets',
-        include: [
-          { all: true, nested: true },
-          { model: Post, as: 'Posts', include: [{ all: true, nested: true }] },
-        ],
-      },
-      {
-        all: true,
-        nested: true,
+        model: ProfilePicture,
+        as: 'ProfilePicture',
       },
     ],
   });
@@ -112,16 +114,8 @@ export const searchForOwners = async (searchValue: string) => {
     limit: 20,
     include: [
       {
-        model: Pet,
-        as: 'Pets',
-        include: [
-          { all: true, nested: true },
-          { model: Post, as: 'Posts', include: [{ all: true, nested: true }] },
-        ],
-      },
-      {
-        all: true,
-        nested: true,
+        model: ProfilePicture,
+        as: 'ProfilePicture',
       },
     ],
   });

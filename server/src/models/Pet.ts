@@ -36,6 +36,7 @@ export class Pet extends Model<InferAttributes<Pet>, InferCreationAttributes<Pet
   public description?: string | null;
   public location?: string | null;
 
+  public readonly ownerId?: string;
   // Define associations
   public readonly createdAt: Date;
   public readonly updatedAt: Date;
@@ -44,6 +45,9 @@ export class Pet extends Model<InferAttributes<Pet>, InferCreationAttributes<Pet
   public readonly Followers?: Owner[];
   public readonly ProfilePicture?: ProfilePicture;
   public readonly Posts?: Post[];
+
+  public followerCount?: number = 0;
+  public postsCount?: number = 0;
 
   public addFollower!: HasManyAddAssociationMixin<Owner, string>;
   public removeFollower!: HasManyRemoveAssociationMixin<Owner, string>;
@@ -76,6 +80,20 @@ Pet.init(
     },
     location: {
       type: DataTypes.STRING,
+    },
+    followerCount: {
+      type: DataTypes.VIRTUAL(DataTypes.INTEGER),
+      get() {
+        // Use a getter to dynamically fetch follower count
+        return sequelize.models.Follows.count({ where: { petId: this.id } });
+      },
+    },
+    postsCount: {
+      type: DataTypes.VIRTUAL(DataTypes.INTEGER),
+      get() {
+        // Use a getter to dynamically fetch posts count
+        return sequelize.models.Post.count({ where: { petId: this.id } });
+      },
     },
     createdAt: {
       type: DataTypes.DATE,

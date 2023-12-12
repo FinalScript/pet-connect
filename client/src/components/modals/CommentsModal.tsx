@@ -22,7 +22,7 @@ const CommentsModel = ({ comments, closeModal }: Props) => {
   useEffect(() => {
     Animated.timing(inputAnimatedValue, {
       toValue: -keyboardHeight + 10,
-      duration: 300,
+      duration: 250,
       useNativeDriver: true,
     }).start();
   }, [keyboardHeight]);
@@ -45,7 +45,7 @@ const CommentsModel = ({ comments, closeModal }: Props) => {
     <View style={{ height: Dimensions.get('screen').height * 0.85 }} className='flex w-full h-full pb-4 pt-5 rounded-t-xl bg-themeBg'>
       <Text className='text-md font-bold text-center my-3'> 720 Comments</Text>
       <View className='flex-1'>
-        <ScrollView className='px-2'>
+        <ScrollView className='px-2' >
           {comments.map((comment, index) => (
             <View key={`comment-${index}`} className='mb-4 pr-5'>
               <View className='flex-row rounded-lg'>

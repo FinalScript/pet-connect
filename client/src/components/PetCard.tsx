@@ -15,8 +15,9 @@ interface Props {
   isSelected: boolean;
   setIsSelected: Dispatch<SetStateAction<string | undefined>>;
   goToProfile: () => void;
+  isOwner: boolean;
 }
-const PetCard = ({ pet, goToProfile, isSelected, setIsSelected }: Props) => {
+const PetCard = ({ pet, goToProfile, isSelected = false, setIsSelected, isOwner }: Props) => {
   const height = useSharedValue(80);
   const [modals, setModals] = useState({ petSettings: false });
   useEffect(() => {
@@ -49,26 +50,26 @@ const PetCard = ({ pet, goToProfile, isSelected, setIsSelected }: Props) => {
               }}
             />
           ) : (
-            (pet)?.type && <PetTypeImage type={(pet)?.type} className='w-10 h-10' />
+            pet.type && <PetTypeImage type={pet.type} className='w-10 h-10' />
           )}
         </Animated.View>
         <View className='flex justify-around h-full'>
           <View className='flex '>
             <View className='flex-row items-center'>
-              <Text className='text-xl font-medium'>{pet?.name}</Text>
-              {(pet)?.type && <PetTypeImage type={(pet)?.type} className='w-5 h-5 ml-2' />}
+              <Text className='text-xl font-medium'>{pet.name}</Text>
+              {pet.type && <PetTypeImage type={pet.type} className='w-5 h-5 ml-2' />}
             </View>
-            <Text className='text-sm'>@{pet?.username}</Text>
+            <Text className='text-sm'>@{pet.username}</Text>
           </View>
 
           {isSelected && (
             <View className='flex-row '>
               <View className='flex items-center mr-3'>
-                <Text className='text-base'>{pet.Posts?.length}</Text>
+                <Text className='text-base'>{pet.postsCount}</Text>
                 <Text className='text-xs'>Posts</Text>
               </View>
               <View className='flex items-center mr-3'>
-                <Text className='text-base'>{pet.Followers?.length}</Text>
+                <Text className='text-base'>{pet.followerCount}</Text>
                 <Text className='text-xs'>Followers</Text>
               </View>
               <View className='flex items-center mr-3'>
@@ -99,12 +100,11 @@ const PetCard = ({ pet, goToProfile, isSelected, setIsSelected }: Props) => {
           </Pressable>
         </View>
       </Pressable>
-      {isSelected && (
+      {isSelected && isOwner && (
         <View className='absolute bottom-0 right-0'>
           <Pressable
             className='pr-5 pb-5'
             onPress={() => {
-              console.log('we are being pressed rn');
               setPetSettingsModalVisible(true);
             }}>
             <MaterialCommunityIcons name='dots-horizontal' size={24} color={themeConfig.customColors.themeText}></MaterialCommunityIcons>

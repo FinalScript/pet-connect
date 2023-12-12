@@ -4,6 +4,7 @@ export const MediaTypeDef = `#graphql
     url: String!
     path: String!
     type: String
+    aspectRatio: Float!
   }
 
   type Media {
@@ -12,5 +13,6 @@ export const MediaTypeDef = `#graphql
     url: String!
     path: String!
     type: String
+    aspectRatio: Float!
   }
 `;

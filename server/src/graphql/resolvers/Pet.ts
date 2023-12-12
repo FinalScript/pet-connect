@@ -1,6 +1,15 @@
 import { GraphQLError } from 'graphql';
 import { getOwner } from '../../controllers/OwnerController';
-import { createPet, deletePet, getPetById, getPetByUsername, updatePet } from '../../controllers/PetController';
+import {
+  createPet,
+  deletePet,
+  getFollowersByPetId,
+  getPetById,
+  getPetByUsername,
+  getPetsByOwnerId,
+  isFollowingPet,
+  updatePet,
+} from '../../controllers/PetController';
 import { isTokenValid } from '../../middleware/token';
 import { Pet } from '../../models/Pet';
 import { ProfilePicture } from '../../models/ProfilePicture';
@@ -292,19 +301,11 @@ export const PetResolver = {
         });
       }
 
-      const followers = pet.Followers;
-
-      const isAlreadyFollowing = followers.some((follow) => follow.id === follower.id);
-
-      if (isAlreadyFollowing) {
-        throw new GraphQLError('Already following', {
-          extensions: {
-            code: 'BAD_USER_INPUT',
-          },
-        });
+      try {
+        await pet.addFollower(follower);
+      } catch (e) {
+        console.error(e);
       }
-
-      await pet.addFollower(follower);
 
       return { success: true };
     },
@@ -343,13 +344,52 @@ export const PetResolver = {
         });
       }
 
-      await pet.removeFollower(owner);
+      try {
+        await pet.removeFollower(owner);
+      } catch (e) {
+        console.error(e);
+      }
 
       return { success: true };
     },
   },
 
   Query: {
+    getFollowersByPetId: async (_, { petId }, context) => {
+      if (!petId) {
+        throw new GraphQLError('petId missing', {
+          extensions: {
+            code: 'BAD_USER_INPUT',
+          },
+        });
+      }
+
+      const followers = await getFollowersByPetId(petId);
+
+      return followers;
+    },
+
+    isFollowingPet: async (_, { ownerId, petId }, context) => {
+      if (!ownerId) {
+        throw new GraphQLError('ownerId missing', {
+          extensions: {
+            code: 'BAD_USER_INPUT',
+          },
+        });
+      }
+
+      if (!petId) {
+        throw new GraphQLError('petId missing', {
+          extensions: {
+            code: 'BAD_USER_INPUT',
+          },
+        });
+      }
+
+      const isFollowing = await isFollowingPet(ownerId, petId);
+
+      return isFollowing;
+    },
     getPetById: async (_, { id }, context) => {
       if (!id) {
         throw new GraphQLError('ID missing', {
@@ -370,6 +410,19 @@ export const PetResolver = {
       }
 
       return { pet };
+    },
+    getPetsByOwnerId: async (_, { id }, context) => {
+      if (!id) {
+        throw new GraphQLError('ID missing', {
+          extensions: {
+            code: 'BAD_USER_INPUT',
+          },
+        });
+      }
+
+      const pets = await getPetsByOwnerId(id);
+
+      return { pets };
     },
 
     getPetByUsername: async (_, { username }, context) => {

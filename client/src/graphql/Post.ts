@@ -13,6 +13,7 @@ export const GET_ALL_POSTS = gql(`
           url
           path
           type
+          aspectRatio
         }
         author {
           id
@@ -21,13 +22,6 @@ export const GET_ALL_POSTS = gql(`
           type
           description
           location
-          Owner {
-            id
-            authId
-            name
-            username
-            location
-          }
           ProfilePicture {
             id
             name
@@ -35,6 +29,17 @@ export const GET_ALL_POSTS = gql(`
             path
             type
           }
+          Owner {
+            id
+            authId
+            name
+            username
+            location
+            followingCount
+          }
+          postsCount
+          followerCount
+          ownerId
         }
       }
     }
@@ -54,19 +59,15 @@ export const CREATE_POST = gql(`
           url
           path
           type
+          aspectRatio
         }
         author {
           id
           username
           name
           type
-          Owner {
-            id
-            authId
-            name
-            username
-            location
-          }
+          description
+          location
           ProfilePicture {
             id
             name
@@ -74,6 +75,17 @@ export const CREATE_POST = gql(`
             path
             type
           }
+          Owner {
+            id
+            authId
+            name
+            username
+            location
+            followingCount
+          }
+          postsCount
+          followerCount
+          ownerId
         }
       }
     }
@@ -93,6 +105,7 @@ query getPostsByPetId($petId: String!) {
         url
         path
         type
+        aspectRatio
       }
       author {
         id
@@ -101,13 +114,6 @@ query getPostsByPetId($petId: String!) {
         type
         description
         location
-        Owner {
-          id
-          authId
-          name
-          username
-          location
-        }
         ProfilePicture {
           id
           name
@@ -115,128 +121,90 @@ query getPostsByPetId($petId: String!) {
           path
           type
         }
+        postsCount
+        followerCount
+        ownerId
       }
     }
   }
 }`);
 
-export const GET_FEED = gql(`
-  query GetFeed {
-    getFeed {
-      forYou {
+export const GET_FOLLOWING = gql(`
+  query GetFollowing {
+    getFollowing {
+      id
+      petId
+      description
+      Media {
         id
-        petId
+        name
+        url
+        path
+        type
+        aspectRatio
+      }
+      author {
+        id
+        username
+        name
+        type
         description
-        Media {
+        location
+        ProfilePicture {
           id
           name
           url
           path
           type
         }
-        author {
-          id
-          username
-          name
-          type
-          description
-          location
-          ProfilePicture {
-            id
-            name
-            url
-            path
-            type
-          }
-          Owner {
-            id
-            authId
-            name
-            username
-            location
-            Pets {
-              id
-              username
-              name
-              type
-              description
-              location
-            }
-            FollowedPets {
-              id
-              username
-              name
-              type
-              description
-              location
-            }
-          }
-          Followers {
-            id
-            authId
-            name
-            username
-            location
-          }
-        }
+        postsCount
+        followerCount
+        ownerId
       }
-      following {
+    }
+  }
+`);
+
+export const GET_FOR_YOU = gql(`
+  query GetForYou {
+    getForYou {
+      id
+      petId
+      description
+      Media {
         id
-        petId
+        name
+        url
+        path
+        type
+        aspectRatio
+      }
+      author {
+        id
+        username
+        name
+        type
         description
-        author {
-          id
-          username
-          name
-          type
-          description
-          location
-          ProfilePicture {
-            id
-            name
-            url
-            path
-            type
-          }
-          Owner {
-            id
-            authId
-            name
-            username
-            location
-            Pets {
-              id
-              username
-              name
-              type
-              description
-              location
-            }
-            FollowedPets {
-              id
-              username
-              name
-              type
-              description
-              location
-            }
-          }
-          Followers {
-            id
-            authId
-            name
-            username
-            location
-          }
-        }
-        Media {
+        location
+        ProfilePicture {
           id
           name
           url
           path
           type
         }
+        postsCount
+        followerCount
+        ownerId
       }
+    }
+  }
+`);
+
+export const DELETE_POST = gql(`
+  mutation DeletePost($id: String!) {
+    deletePost(id: $id) {
+      message
     }
   }
 `);
