@@ -44,17 +44,17 @@ Pet Connect was crafted using a combination of powerful technologies. React Nati
 ## Screenshots
 
 <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px;">
-    <img src="/assets//screenshots/Feed.PNG" alt="Feed" width="200"/>
-    <img src="/assets//screenshots/OthersPetProfile.PNG" alt="Other's Pet Profile" width="200"/>
+    <img src="/assets//screenshots/Feed.PNG" alt="Feed" width="250"/>
+    <img src="/assets//screenshots/OthersPetProfile.PNG" alt="Other's Pet Profile" width="250"/>
 
-<img src="/assets//screenshots/Search.PNG" alt="Search" width="200"/>
-<img src="/assets//screenshots/NewPostForm.PNG" alt="New Post" width="200"/>
+<img src="/assets//screenshots/Search.PNG" alt="Search" width="250"/>
+<img src="/assets//screenshots/NewPostForm.PNG" alt="New Post" width="250"/>
 
-<img src="/assets//screenshots/PetCreationSelection.PNG" alt="Pet Creation Selection" width="200"/>
-<img src="/assets//screenshots/PetCreationForm.PNG" alt="Pet Creation Form" width="200"/>
+<img src="/assets//screenshots/PetCreationSelection.PNG" alt="Pet Creation Selection" width="250"/>
+<img src="/assets//screenshots/PetCreationForm.PNG" alt="Pet Creation Form" width="250"/>
 
-<img src="/assets//screenshots/PetPostsFeed.PNG" alt="Pet Posts Feed" width="200"/>
-<img src="/assets//screenshots/EditPetProfileForm.PNG" alt="Edit Pet Profile Form" width="200"/>
+<img src="/assets//screenshots/PetPostsFeed.PNG" alt="Pet Posts Feed" width="250"/>
+<img src="/assets//screenshots/EditPetProfileForm.PNG" alt="Edit Pet Profile Form" width="250"/>
 
-<img src="/assets//screenshots/OwnedPetProfile.PNG" alt="Owned Pet Profile" width="200"/>
+<img src="/assets//screenshots/OwnedPetProfile.PNG" alt="Owned Pet Profile" width="250"/>
 </div>
