@@ -43,16 +43,16 @@ Pet Connect was crafted using a combination of powerful technologies. React Nati
 
 ## Screenshots
 
-<img src="/assets//screenshots/Feed.PNG" alt="Feed" width="400"/>
-<img src="/assets//screenshots/OthersPetProfile.PNG" alt="Other's Pet Profile" width="400"/>
+<img src="/assets//screenshots/Feed.PNG" alt="Feed" width="300"/>
+<img src="/assets//screenshots/OthersPetProfile.PNG" alt="Other's Pet Profile" width="300"/>
 
-<img src="/assets//screenshots/Search.PNG" alt="Search" width="400"/>
-<img src="/assets//screenshots/NewPostForm.PNG" alt="New Post" width="400"/>
+<img src="/assets//screenshots/Search.PNG" alt="Search" width="300"/>
+<img src="/assets//screenshots/NewPostForm.PNG" alt="New Post" width="300"/>
 
-<img src="/assets//screenshots/PetCreationSelection.PNG" alt="Pet Creation Selection" width="400"/>
-<img src="/assets//screenshots/PetCreationForm.PNG" alt="Pet Creation Form" width="400"/>
+<img src="/assets//screenshots/PetCreationSelection.PNG" alt="Pet Creation Selection" width="300"/>
+<img src="/assets//screenshots/PetCreationForm.PNG" alt="Pet Creation Form" width="300"/>
 
-<img src="/assets//screenshots/PetPostsFeed.PNG" alt="Pet Posts Feed" width="400"/>
-<img src="/assets//screenshots/EditPetProfileForm.PNG" alt="Edit Pet Profile Form" width="400"/>
+<img src="/assets//screenshots/PetPostsFeed.PNG" alt="Pet Posts Feed" width="300"/>
+<img src="/assets//screenshots/EditPetProfileForm.PNG" alt="Edit Pet Profile Form" width="300"/>
 
-<img src="/assets//screenshots/OwnedPetProfile.PNG" alt="Owned Pet Profile" width="400"/>
+<img src="/assets//screenshots/OwnedPetProfile.PNG" alt="Owned Pet Profile" width="300"/>
