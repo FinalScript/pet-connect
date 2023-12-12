@@ -13,6 +13,7 @@ export const GET_ALL_POSTS = gql(`
           url
           path
           type
+          aspectRatio
         }
         author {
           id
@@ -58,6 +59,7 @@ export const CREATE_POST = gql(`
           url
           path
           type
+          aspectRatio
         }
         author {
           id
@@ -103,6 +105,7 @@ query getPostsByPetId($petId: String!) {
         url
         path
         type
+        aspectRatio
       }
       author {
         id
@@ -138,6 +141,7 @@ export const GET_FOLLOWING = gql(`
         url
         path
         type
+        aspectRatio
       }
       author {
         id
@@ -173,6 +177,7 @@ export const GET_FOR_YOU = gql(`
         url
         path
         type
+        aspectRatio
       }
       author {
         id

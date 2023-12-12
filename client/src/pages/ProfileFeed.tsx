@@ -15,7 +15,6 @@ const ProfileFeed = ({
     params: { petUsername, initialPostIndex },
   },
 }: Props) => {
-  const scrollY = new Animated.Value(0);
   const [postHeights, setPostHeights] = useState<number[]>([]);
   const scrollViewRef = useRef<ScrollView>(null);
   const posts = useSelector((state: ProfileReducer) => state.profile.posts);
@@ -45,7 +44,6 @@ const ProfileFeed = ({
       <View className='flex-1 h-full bg-themeBg'>
         <Animated.ScrollView
           scrollEventThrottle={16}
-          onScroll={Animated.event([{ nativeEvent: { contentOffset: { y: scrollY } } }], { useNativeDriver: true })}
           ref={scrollViewRef}
           className='w-full pt-10'>
           <View className='flex justify-center items-center h-full pb-[100px]'>

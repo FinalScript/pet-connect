@@ -6,6 +6,7 @@ export interface MediaCreationDAO {
   url: string;
   name: string;
   type: string;
+  aspectRatio: number;
 }
 export class Media extends Model<InferAttributes<Media>, InferCreationAttributes<Media>> {
   declare id: CreationOptional<number>;
@@ -13,6 +14,7 @@ export class Media extends Model<InferAttributes<Media>, InferCreationAttributes
   declare url: string;
   declare path: string;
   declare type: string;
+  declare aspectRatio: number;
 }
 
 Media.init(
@@ -36,6 +38,9 @@ Media.init(
     },
     type: {
       type: DataTypes.STRING,
+    },
+    aspectRatio: {
+      type: DataTypes.FLOAT,
     },
   },
   {

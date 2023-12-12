@@ -144,59 +144,46 @@ const PetProfile = ({
         </Modal>
       )}
 
-      <ScrollView className='w-full px-5 mb-12'>
-        <View className='mt-5 flex flex-row items-center justify-between'>
-          <View className='relative'>
-            <Pressable
-              onPress={() => {
-                if (pet.ProfilePicture) {
-                  navigation.push('Profile Picture', { profilePicture: pet?.ProfilePicture });
-                }
-              }}>
-              <View className='w-28 h-28 rounded-full border-2 border-themeActive flex items-center justify-center'>
-                {pet?.ProfilePicture?.url ? (
-                  <Image
-                    className='w-full h-full rounded-full'
-                    source={{
-                      uri: pet.ProfilePicture.url,
-                    }}
-                  />
-                ) : (
-                  pet?.type && <PetTypeImage type={pet?.type} className='w-10 h-10' />
-                )}
-              </View>
-            </Pressable>
-          </View>
-          <View className='px-5 flex items-start'>
-            <View className='flex flex-row gap-7'>
-              <View className='flex items-center'>
-                <Text className='text-xl font-bold'>{gridPosts.length}</Text>
-                <Text className='text-md'>Posts</Text>
-              </View>
-              <Pressable
-                onPress={() => {
-                  navigation.push('Followers', { petId: pet.id });
-                }}>
-                <View className='flex items-center'>
-                  <Text className='text-xl font-bold'>{pet.followerCount}</Text>
-                  <Text className='text-md'>Followers</Text>
-                </View>
-              </Pressable>
-
-              <View className='flex items-center'>
-                <Text className='text-xl font-bold'>25</Text>
-                <Text className='text-md'>Likes</Text>
-              </View>
+      <ScrollView className='w-full px-5'>
+        <View className='mt-5 flex flex-row items-center justify-center'>
+          <Pressable
+            className='flex-1'
+            onPress={() => {
+              navigation.push('Followers', { petId: pet.id });
+            }}>
+            <View className='flex items-center'>
+              <Text className='text-xl font-bold'>{pet.followerCount}</Text>
+              <Text className='text-md'>Followers</Text>
             </View>
-            {pet?.type && (
-              <View className='flex-row items-center mt-4 bg-themeShadow px-3 rounded-xl'>
-                <Text className='text-sm mr-2'>{pet.type.charAt(0) + pet.type.substring(1).toLowerCase()}</Text>
-                <PetTypeImage type={pet.type} className='w-4 h-4' />
-              </View>
-            )}
+          </Pressable>
+
+          <Pressable
+            className='mx-5'
+            onPress={() => {
+              if (pet.ProfilePicture) {
+                navigation.push('Profile Picture', { profilePicture: pet?.ProfilePicture });
+              }
+            }}>
+            <View className='w-36 h-36 flex items-center justify-center'>
+              {pet?.ProfilePicture?.url ? (
+                <Image
+                  className='w-full h-full rounded-3xl border-2 border-themeActive'
+                  source={{
+                    uri: pet.ProfilePicture.url,
+                  }}
+                />
+              ) : (
+                pet?.type && <PetTypeImage type={pet?.type} className='w-10 h-10' />
+              )}
+            </View>
+          </Pressable>
+
+          <View className='flex items-center flex-1'>
+            <Text className='text-xl font-bold'>25</Text>
+            <Text className='text-md'>Likes</Text>
           </View>
         </View>
-        <View className='mt-3'>
+        <View className='mt-3 flex items-center'>
           <Text className='text-xl font-bold'>{pet?.name}</Text>
 
           <View className='flex-row gap-x-1'>
@@ -210,6 +197,12 @@ const PetProfile = ({
           </View>
 
           {pet.description && <Text className='text-md'>{pet.description}</Text>}
+          {pet?.type && (
+            <View className='flex-row items-center mt-4 bg-themeShadow px-3 rounded-xl'>
+              <Text className='text-sm mr-2'>{pet.type.charAt(0) + pet.type.substring(1).toLowerCase()}</Text>
+              <PetTypeImage type={pet.type} className='w-4 h-4' />
+            </View>
+          )}
         </View>
         <View className='mt-5 flex-row gap-x-3'>
           <PressableOpacity

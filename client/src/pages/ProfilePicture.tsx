@@ -14,8 +14,8 @@ const ProfilePicturePage = ({
 }: Props) => {
   return (
     <View className='flex-1 justify-center items-center bg-black'>
-      <View className='w-64 h-64 rounded-full border-2 border-themeActive flex items-center justify-center '>
-        {profilePicture?.url ? <Image className='w-full h-full rounded-full' source={{ uri: profilePicture.url }} /> : <Ionicon name='person' size={55} />}
+      <View className='w-full aspect-square rounded-full flex items-center justify-center '>
+        {profilePicture?.url ? <Image className='w-full h-full ' source={{ uri: profilePicture.url }} /> : <Ionicon name='person' size={55} />}
       </View>
     </View>
   );

@@ -12,6 +12,7 @@ export interface UploadToFirebaseResult {
   url: string;
   path: string;
   type: string;
+  aspectRatio: number;
 }
 
 export const updateFileInFirebase = (file: Asset, path: string) => {
@@ -49,6 +50,7 @@ export const updateFileInFirebase = (file: Asset, path: string) => {
             url,
             path: uploadTask.snapshot.metadata.fullPath,
             type: uploadTask.snapshot.metadata.contentType || '',
+            aspectRatio: (file.width || 0) / (file.height || 0),
           });
           return;
         });
@@ -92,6 +94,7 @@ export const uploadToFirebase = (file: Asset, folder: storageFolders) => {
             url,
             path: uploadTask.snapshot.metadata.fullPath,
             type: uploadTask.snapshot.metadata.contentType || '',
+            aspectRatio: (file.width || 0) / (file.height || 0),
           });
           return;
         });

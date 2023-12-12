@@ -24,27 +24,6 @@ const Feed = ({ navigation, scrollViewRef }: Props) => {
   const { data: forYouData, refetch: refetchForYou } = useQuery(GET_FOR_YOU);
   const following: PostType[] = useMemo(() => followingData?.getFollowing || [], [followingData]);
   const forYou: PostType[] = useMemo(() => forYouData?.getForYou || [], [forYouData]);
-  const scrollY = new Animated.Value(0);
-
-  const clampedTranslateY = useMemo(
-    () =>
-      scrollY.interpolate({
-        inputRange: [20, 100],
-        outputRange: [0, -100],
-        extrapolateLeft: 'clamp',
-      }),
-    [scrollY]
-  );
-
-  const clampedOpacity = useMemo(
-    () =>
-      scrollY.interpolate({
-        inputRange: [0, 40],
-        outputRange: [1, 0],
-        extrapolateLeft: 'clamp',
-      }),
-    [scrollY]
-  );
 
   const onRefreshForYou = useCallback(async () => {
     setRefreshing(true);
@@ -95,8 +74,6 @@ const Feed = ({ navigation, scrollViewRef }: Props) => {
             left: 50,
             right: 50,
             height: 20,
-            opacity: clampedOpacity,
-            transform: [{ translateY: clampedTranslateY }],
           },
         }}>
         <Tab.Screen
@@ -106,7 +83,6 @@ const Feed = ({ navigation, scrollViewRef }: Props) => {
               <ExploreTab
                 innerRef={scrollViewRef}
                 posts={forYou}
-                scrollY={scrollY}
                 refreshing={refreshing}
                 onRefresh={onRefreshForYou}
                 navigation={navigation}
@@ -121,7 +97,6 @@ const Feed = ({ navigation, scrollViewRef }: Props) => {
               <FollowingTab
                 innerRef={scrollViewRef}
                 posts={following}
-                scrollY={scrollY}
                 refreshing={refreshing}
                 onRefresh={onRefreshFollowing}
                 navigation={navigation}
@@ -137,21 +112,19 @@ const Feed = ({ navigation, scrollViewRef }: Props) => {
 interface TabProps {
   innerRef: RefObject<ScrollView>;
   posts: PostType[];
-  scrollY: Animated.Value;
   refreshing: boolean;
   onRefresh: () => Promise<void>;
   navigation: NativeStackNavigationProp<RootStackParamList, 'Home', undefined>;
 }
 
-const ExploreTab = ({ innerRef, posts, scrollY, refreshing, onRefresh, navigation }: TabProps) => {
+const ExploreTab = ({ innerRef, posts, refreshing, onRefresh, navigation }: TabProps) => {
   const isFocused = useIsFocused();
 
   return (
     <View className='flex-1 h-full bg-themeBg'>
-      <Animated.ScrollView
+      <ScrollView
         ref={isFocused ? innerRef : null}
         scrollEventThrottle={16}
-        onScroll={Animated.event([{ nativeEvent: { contentOffset: { y: scrollY } } }], { useNativeDriver: true })}
         className='w-full pt-10'
         refreshControl={<RefreshControl tintColor={'black'} refreshing={refreshing} onRefresh={onRefresh} />}>
         <View className='flex justify-center items-center h-full pb-[100px]'>
@@ -172,20 +145,19 @@ const ExploreTab = ({ innerRef, posts, scrollY, refreshing, onRefresh, navigatio
             </>
           )}
         </View>
-      </Animated.ScrollView>
+      </ScrollView>
     </View>
   );
 };
 
-const FollowingTab = ({ innerRef, posts, scrollY, refreshing, onRefresh, navigation }: TabProps) => {
+const FollowingTab = ({ innerRef, posts, refreshing, onRefresh, navigation }: TabProps) => {
   const isFocused = useIsFocused();
 
   return (
     <View className='flex-1 h-full bg-themeBg'>
-      <Animated.ScrollView
+      <ScrollView
         ref={isFocused ? innerRef : null}
         scrollEventThrottle={16}
-        onScroll={Animated.event([{ nativeEvent: { contentOffset: { y: scrollY } } }], { useNativeDriver: true })}
         className='w-full pt-10'
         refreshControl={<RefreshControl tintColor={'black'} refreshing={refreshing} onRefresh={onRefresh} />}>
         <View className='flex justify-center items-center h-full pb-[100px]'>
@@ -206,7 +178,7 @@ const FollowingTab = ({ innerRef, posts, scrollY, refreshing, onRefresh, navigat
             </>
           )}
         </View>
-      </Animated.ScrollView>
+      </ScrollView>
     </View>
   );
 };
