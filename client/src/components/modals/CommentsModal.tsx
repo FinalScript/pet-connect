@@ -9,6 +9,7 @@ import Image from '../Image';
 import { Comment, Exact, GetCommentsByPostIdQuery } from '../../__generated__/graphql';
 import { ApolloQueryResult, useMutation } from '@apollo/client';
 import { CREATE_COMMENT } from '../../graphql/Comment';
+import { getRelativeTime } from '../../utils/Date';
 
 interface Props {
   postId: string;
@@ -50,18 +51,19 @@ const CommentsModel = ({ postId, comments, closeModal, refetchComments }: Props)
               <View className='flex-row rounded-lg'>
                 <Image className='w-9 h-9 rounded-full mr-3' source={{ uri: comment.author.ProfilePicture?.url }} />
                 <View className='flex-1 rounded-2xl'>
-                  <Text className='text-xs text-gray-600'>{owner?.id === comment.author.id ? 'You' : comment.author.name}</Text>
+                  <Text className='text-xs text-gray-600'>{comment.author.name}</Text>
                   <Text className='text-sm font-medium text-themeText' numberOfLines={4}>
                     {comment.text}
                   </Text>
+                  <View className='flex-row items-end justify-between'>
+                    <Text className='mt-2 text-xs text-[#6d6d6d]'>{getRelativeTime(comment.createdAt)}</Text>
+                    <View className='flex-row items-center gap-1'>
+                      <Text className='text-xs text-[#6d6d6d]'>134</Text>
+                      <AntDesign name='hearto' size={10} color={'#6d6d6d'} />
+                    </View>
+                  </View>
                 </View>
               </View>
-              {/* <View className='flex-row items-start justify-end'>
-                <View className='flex-row items-center gap-1'>
-                  <Text className='text-xs text-[#6d6d6d]'>1304</Text>
-                  <AntDesign name='hearto' size={10} color={'#6d6d6d'} />
-                </View>
-              </View> */}
             </View>
           ))}
         </ScrollView>

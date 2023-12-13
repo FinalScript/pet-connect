@@ -33,6 +33,9 @@ export class Post extends Model<InferAttributes<Post>, InferCreationAttributes<P
   public readonly Comments?: Comment[];
   public addComment!: HasManyAddAssociationMixin<Comment, string>;
   public removeComment!: HasManyRemoveAssociationMixin<Comment, string>;
+
+  public readonly createdAt: Date;
+  public readonly updatedAt: Date;
 }
 
 Post.init(
@@ -55,11 +58,19 @@ Post.init(
       type: DataTypes.TEXT,
       allowNull: true,
     },
+    createdAt: {
+      type: DataTypes.DATE,
+      allowNull: false,
+      field: 'dateCreated',
+    },
+    updatedAt: {
+      type: DataTypes.DATE,
+      allowNull: false,
+      field: 'updateTimestamp',
+    },
   },
   {
     sequelize,
     tableName: 'posts',
-    createdAt: 'dateCreated',
-    updatedAt: 'updateTimestamp',
   }
 );

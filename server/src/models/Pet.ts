@@ -37,9 +37,6 @@ export class Pet extends Model<InferAttributes<Pet>, InferCreationAttributes<Pet
   public location?: string | null;
 
   public readonly ownerId?: string;
-  // Define associations
-  public readonly createdAt: Date;
-  public readonly updatedAt: Date;
 
   public readonly Owner?: Owner;
   public readonly Followers?: Owner[];
@@ -52,6 +49,9 @@ export class Pet extends Model<InferAttributes<Pet>, InferCreationAttributes<Pet
   public addFollower!: HasManyAddAssociationMixin<Owner, string>;
   public removeFollower!: HasManyRemoveAssociationMixin<Owner, string>;
   public setProfilePicture!: HasOneSetAssociationMixin<ProfilePicture, 'id'>;
+
+  public readonly createdAt: Date;
+  public readonly updatedAt: Date;
 }
 
 Pet.init(

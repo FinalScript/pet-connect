@@ -6,6 +6,8 @@ type Post {
     description: String
     Media: Media!
     author: Pet!
+    createdAt: Date!
+    updatedAt: Date!
 }
 
 type AllPostsResponse {

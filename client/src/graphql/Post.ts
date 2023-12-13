@@ -7,6 +7,8 @@ export const GET_ALL_POSTS = gql(`
         id
         petId
         description
+        createdAt
+        updatedAt
         Media {
           id
           name
@@ -53,6 +55,8 @@ export const CREATE_POST = gql(`
         id
         petId
         description
+        createdAt
+        updatedAt
         Media {
           id
           name
@@ -99,6 +103,8 @@ query getPostsByPetId($petId: String!) {
       id
       petId
       description
+      createdAt
+      updatedAt
       Media {
         id
         name
@@ -135,6 +141,8 @@ export const GET_FOLLOWING = gql(`
       id
       petId
       description
+      createdAt
+      updatedAt
       Media {
         id
         name
@@ -171,6 +179,8 @@ export const GET_FOR_YOU = gql(`
       id
       petId
       description
+      createdAt
+      updatedAt
       Media {
         id
         name

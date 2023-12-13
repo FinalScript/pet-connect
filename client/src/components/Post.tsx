@@ -21,6 +21,7 @@ import { ProfileReducer } from '../redux/reducers/profileReducer';
 import { useMutation, useQuery } from '@apollo/client';
 import { DELETE_POST } from '../graphql/Post';
 import { GET_COMMENTS_BY_POST_ID } from '../graphql/Comment';
+import { getRelativeTime } from '../utils/Date';
 
 interface Props {
   post: PostType;
@@ -227,6 +228,16 @@ export default function Post({ post, goToProfile, onLayoutChange }: Props) {
           </View>
         </View>
       )}
+
+      {comments.length > 0 && (
+        <Pressable onPress={openCommentsModal}>
+          <Text className='px-4 mt-2 text-md text-[#4b4b4b]'>
+            View {comments.length > 1 && 'all'} {comments.length} comment{comments.length > 1 && 's'}
+          </Text>
+        </Pressable>
+      )}
+
+      <Text className='px-4 mt-1 text-xs text-[#838383]'>{getRelativeTime(post.createdAt)} ago</Text>
     </View>
   );
 }
