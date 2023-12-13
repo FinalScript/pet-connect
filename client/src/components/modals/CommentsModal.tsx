@@ -36,7 +36,7 @@ const CommentsModel = ({ postId, comments, closeModal, refetchComments }: Props)
   useEffect(() => {
     Animated.timing(inputAnimatedValue, {
       toValue: -keyboardHeight + 10,
-      duration: 250,
+      duration: 200,
       useNativeDriver: true,
     }).start();
   }, [keyboardHeight]);
@@ -45,18 +45,19 @@ const CommentsModel = ({ postId, comments, closeModal, refetchComments }: Props)
     <View style={{ height: Dimensions.get('screen').height * 0.85 }} className='flex w-full h-full pb-4 pt-5 rounded-t-xl bg-themeBg'>
       <Text className='text-md font-bold text-center my-3'> 720 Comments</Text>
       <View className='flex-1'>
+        {comments.length === 0 && <Text className='text-center mt-5'>Be the first to comment</Text>}
         <ScrollView className='px-2'>
           {comments.map((comment, index) => (
             <View key={`comment-${index}`} className='mb-4 pr-5'>
               <View className='flex-row rounded-lg'>
                 <Image className='w-9 h-9 rounded-full mr-3' source={{ uri: comment.author.ProfilePicture?.url }} />
                 <View className='flex-1 rounded-2xl'>
-                  <Text className='text-xs text-gray-600'>{comment.author.name}</Text>
+                  <Text className='text-xs text-gray-700'>{comment.author.name}</Text>
                   <Text className='text-sm font-medium text-themeText' numberOfLines={4}>
                     {comment.text}
                   </Text>
                   <View className='flex-row items-end justify-between'>
-                    <Text className='mt-2 text-xs text-[#6d6d6d]'>{getRelativeTime(comment.createdAt)}</Text>
+                    <Text className='mt-2 text-xs text-[#9c9c9c]'>{getRelativeTime(comment.createdAt)}</Text>
                     <View className='flex-row items-center gap-1'>
                       <Text className='text-xs text-[#6d6d6d]'>134</Text>
                       <AntDesign name='hearto' size={10} color={'#6d6d6d'} />

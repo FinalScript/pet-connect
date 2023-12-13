@@ -134,7 +134,7 @@ export default function Post({ post, goToProfile, onLayoutChange }: Props) {
   }
 
   return (
-    <View className='bg-themeInput mb-5 pb-2 w-full shadow-md shadow-themeShadow' onLayout={onLayout}>
+    <View className='bg-themeInput mb-5 pb-2 w-full border-t-[.2px] border-b-[.2px] border-gray-600' onLayout={onLayout}>
       <Portal>
         <Modalize
           ref={modalizeRef}
@@ -216,7 +216,7 @@ export default function Post({ post, goToProfile, onLayoutChange }: Props) {
       </View>
 
       {post.description && (
-        <View className='px-3 py-1'>
+        <View className='px-3'>
           <View className='flex flex-row min-h-[7rem]'>
             <Text className='text-lg' numberOfLines={moreCaption ? 0 : CAPTION_LINES}>
               <Text className='font-semibold text-sky-600'>{post.author.name} </Text>
@@ -231,13 +231,13 @@ export default function Post({ post, goToProfile, onLayoutChange }: Props) {
 
       {comments.length > 0 && (
         <Pressable onPress={openCommentsModal}>
-          <Text className='px-4 mt-2 text-md text-[#4b4b4b]'>
+          <Text className='px-3 text-md text-[#4b4b4b]'>
             View {comments.length > 1 && 'all'} {comments.length} comment{comments.length > 1 && 's'}
           </Text>
         </Pressable>
       )}
 
-      <Text className='px-4 mt-1 text-xs text-[#838383]'>{getRelativeTime(post.createdAt)} ago</Text>
+      <Text className='px-3 mt-1 text-xs text-[#838383]'>{getRelativeTime(post.createdAt)}</Text>
     </View>
   );
 }

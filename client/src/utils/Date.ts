@@ -16,8 +16,8 @@ export const getRelativeTime = (timestamp: Date) => {
 
   for (const [key, value] of Object.entries(intervals)) {
     const interval = Math.floor(seconds / value);
-    if (interval >= 1) return `${interval}${key.charAt(0)}`;
+    if (interval >= 1) return `${interval}${key.charAt(0)} ago`;
   }
 
-  return `${Math.floor(seconds / intervals.year)}y`;
+  return `${Math.floor(seconds / intervals.year)}y ago`;
 };

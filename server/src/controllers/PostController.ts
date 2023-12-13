@@ -12,7 +12,7 @@ export const createPost = async (data: PostCreationAttributes) => {
 
 export const getAllPosts = async () => {
   const posts = await Post.findAll({
-    order: [['dateCreated', 'DESC']],
+    order: [['createdAt', 'DESC']],
     include: [
       { model: Pet, as: 'author', include: [{ model: ProfilePicture, as: 'ProfilePicture' }] },
       { model: Media, as: 'Media' },
@@ -53,7 +53,7 @@ export const deletePost = async (id: string) => {
 export const getPostsByPetId = async (petId: string) => {
   const posts = await Post.findAll({
     where: { petId },
-    order: [['dateCreated', 'DESC']],
+    order: [['createdAt', 'DESC']],
     include: [
       { model: Pet, as: 'author', include: [{ model: ProfilePicture, as: 'ProfilePicture' }] },
       { model: Media, as: 'Media' },
