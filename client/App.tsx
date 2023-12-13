@@ -7,29 +7,29 @@ import { StatusBar, View } from 'react-native';
 import { useAuth0 } from 'react-native-auth0';
 import { HapticFeedbackTypes, trigger } from 'react-native-haptic-feedback';
 import { Host } from 'react-native-portalize';
+import SplashScreen from 'react-native-splash-screen';
 import { useDispatch, useSelector } from 'react-redux';
+import { ProfilePicture as ProfilePictureType } from './src/__generated__/graphql';
 import { VERIFY_TOKEN } from './src/graphql/Auth';
 import { GET_OWNER } from './src/graphql/Owner';
+import { GET_PETS_BY_OWNER_ID } from './src/graphql/Pet';
 import AppLoader from './src/hoc/AppLoader';
 import AccountCreation from './src/pages/AccountCreation';
+import FollowersPage from './src/pages/Followers';
+import FollowingPage from './src/pages/Following';
 import GetStarted from './src/pages/GetStarted';
 import HomeNavigator from './src/pages/HomePage/HomeNavigator';
+import PostPage from './src/pages/HomePage/PostPage';
 import Loading from './src/pages/Loading';
-import OwnerProfile from './src/pages/OwnerProfilePage/OwnerProfile';
+import OwnerProfilePage from './src/pages/OwnerProfilePage/OwnerProfilePage';
 import PetCreation from './src/pages/PetCreation';
 import PetProfile from './src/pages/PetProfile';
-import { CURRENT_USER, LOADING, OWNER_DATA, PET_DATA } from './src/redux/constants';
+import ProfileFeed from './src/pages/ProfileFeed';
+import ProfilePicturePage from './src/pages/ProfilePicture';
+import { LOADING, OWNER_DATA, PET_DATA } from './src/redux/constants';
 import { ProfileReducer } from './src/redux/reducers/profileReducer';
 import { navigationRef } from './src/services/navigator';
 import { options } from './src/utils/hapticFeedbackOptions';
-import PostPage from './src/pages/HomePage/PostPage';
-import ProfilePicturePage from './src/pages/ProfilePicture';
-import ProfileFeed from './src/pages/ProfileFeed';
-import { Owner, Pet, Post, ProfilePicture as ProfilePictureType } from './src/__generated__/graphql';
-import OwnerProfilePage from './src/pages/OwnerProfilePage/OwnerProfilePage';
-import { GET_PETS_BY_OWNER_ID } from './src/graphql/Pet';
-import FollowingPage from './src/pages/Following';
-import FollowersPage from './src/pages/Followers';
 
 export type RootStackParamList = {
   Loading: undefined;
@@ -66,6 +66,7 @@ const App = () => {
 
   useEffect(() => {
     if (owner) {
+      SplashScreen.hide();
       navigationRef.dispatch(StackActions.replace('Home'));
     }
   }, [owner?.id]);
@@ -74,6 +75,7 @@ const App = () => {
     if (ownerDataError && ownerDataError.message === 'Owner not found') {
       dispatch({ type: LOADING, payload: false });
       trigger(HapticFeedbackTypes.notificationWarning, options);
+      SplashScreen.hide();
       navigationRef.dispatch(StackActions.replace('Account Creation'));
       return;
     }
@@ -112,6 +114,7 @@ const App = () => {
 
       if (!credentials?.accessToken) {
         dispatch({ type: LOADING, payload: false });
+        SplashScreen.hide();
         navigationRef.dispatch(StackActions.replace('Get Started'));
         return;
       }
@@ -135,6 +138,7 @@ const App = () => {
       console.log(verifiedToken.error);
       await AsyncStorage.removeItem('@token');
       dispatch({ type: LOADING, payload: false });
+      SplashScreen.hide();
       navigationRef.dispatch(StackActions.replace('Get Started'));
       return;
     }

@@ -1,15 +1,21 @@
 import { ApolloClient, ApolloLink, ApolloProvider, InMemoryCache } from '@apollo/client';
 import { setContext } from '@apollo/client/link/context';
+import * as eva from '@eva-design/eva';
 import { BottomSheetModalProvider } from '@gorhom/bottom-sheet';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { ApplicationProvider, IconRegistry } from '@ui-kitten/components';
+import { EvaIconsPack } from '@ui-kitten/eva-icons';
 import createUploadLink from 'apollo-upload-client/public/createUploadLink';
-import React, { Dispatch, ReactNode, SetStateAction, useCallback, useEffect, useState } from 'react';
+import React, { Dispatch, ReactNode, SetStateAction, useEffect, useState } from 'react';
 import { ActivityIndicator, LogBox, Modal, Pressable, SafeAreaView, View } from 'react-native';
 import { Auth0Provider } from 'react-native-auth0';
 import Config from 'react-native-config';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import { HapticFeedbackTypes, trigger } from 'react-native-haptic-feedback';
 import LanPortScanner, { LSScanConfig, LSSingleScanResult } from 'react-native-lan-port-scanner';
+import { PaperProvider } from 'react-native-paper';
 import { PressableOpacity } from 'react-native-pressable-opacity';
+import SplashScreen from 'react-native-splash-screen';
 import { Provider, useDispatch } from 'react-redux';
 import { ping, setAxiosBaseURL, setBearerToken } from '../api';
 import Text from '../components/Text';
@@ -17,14 +23,8 @@ import DeveloperPanel from '../pages/DeveloperPanel';
 import Loading from '../pages/Loading';
 import { DEVELOPER_PANEL_OPEN } from '../redux/constants';
 import { store } from '../redux/store';
-import { Feather, FontAwesome, Ionicon } from '../utils/Icons';
-import { HapticFeedbackTypes, trigger } from 'react-native-haptic-feedback';
+import { Feather, Ionicon } from '../utils/Icons';
 import { options } from '../utils/hapticFeedbackOptions';
-import { PaperProvider } from 'react-native-paper';
-import * as eva from '@eva-design/eva';
-import {} from '@ui-kitten/components';
-import { Layout, ApplicationProvider, IconRegistry } from '@ui-kitten/components';
-import { EvaIconsPack } from '@ui-kitten/eva-icons';
 
 LogBox.ignoreLogs([
   'socketDidDisconnect with nil clientDelegate for ',
@@ -55,6 +55,8 @@ export default function AppLoader({ children }: Props) {
     if (apiStatus) {
       return;
     }
+
+    SplashScreen.hide();
     //Returns `LSNetworkInfo`
 
     let cancelScanHandle: any;
@@ -148,7 +150,7 @@ export default function AppLoader({ children }: Props) {
   const load = async () => {
     const fetchedToken = await AsyncStorage.getItem('@token');
 
-    console.log(fetchedToken)
+    console.log(fetchedToken);
     if (fetchedToken) {
       setToken(fetchedToken);
       setBearerToken(`Bearer ${fetchedToken}`);
