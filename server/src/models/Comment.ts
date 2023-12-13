@@ -1,25 +1,24 @@
-import { DataTypes, Model, Optional, Sequelize } from 'sequelize';
+import { DataTypes, HasOneSetAssociationMixin, InferAttributes, InferCreationAttributes, Model, Optional } from 'sequelize';
 import { sequelize } from '../db/connection';
-import { Post } from './Post';
 import { Owner } from './Owner';
+import { Post } from './Post';
 
 export interface CommentAttributes {
   id: string;
+  text: string;
   ownerId: string;
   postId: string;
-  text: string;
 }
 
-export interface CommentCreationAttributes extends Optional<CommentAttributes, 'id'> {
+export interface CommentCreationAttributes extends Optional<CommentAttributes, 'id'> {}
 
-}
-
-export class Comment extends Model<CommentAttributes, CommentCreationAttributes> {
+export class Comment extends Model<InferAttributes<Comment>, InferCreationAttributes<Comment>> {
   public id!: string;
-  public ownerId!: string;
-  public postId!: string;
   public text!: string;
-
+  declare ownerId: string;
+  declare postId: string;
+  declare author?: Owner;
+  declare setAuthor: HasOneSetAssociationMixin<Owner, 'id'>;
   public readonly createdAt!: Date;
   public readonly updatedAt!: Date;
 }
@@ -31,6 +30,10 @@ Comment.init(
       defaultValue: DataTypes.UUIDV4,
       allowNull: false,
       primaryKey: true,
+    },
+    text: {
+      type: DataTypes.TEXT,
+      allowNull: false,
     },
     ownerId: {
       type: DataTypes.UUID,
@@ -48,15 +51,19 @@ Comment.init(
         key: 'id',
       },
     },
-    text: {
-      type: DataTypes.TEXT,
+    createdAt: {
+      type: DataTypes.DATE,
       allowNull: false,
+      field: 'dateCreated',
+    },
+    updatedAt: {
+      type: DataTypes.DATE,
+      allowNull: false,
+      field: 'updateTimestamp',
     },
   },
   {
     sequelize,
     tableName: 'comments',
-    createdAt: 'dateCreated',
-    updatedAt: 'updateTimestamp',
   }
 );

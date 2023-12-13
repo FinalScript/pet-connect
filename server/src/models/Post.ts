@@ -1,7 +1,17 @@
-import { DataTypes, HasOneSetAssociationMixin, InferAttributes, InferCreationAttributes, Model, Optional } from 'sequelize';
+import {
+  DataTypes,
+  HasManyAddAssociationMixin,
+  HasManyRemoveAssociationMixin,
+  HasOneSetAssociationMixin,
+  InferAttributes,
+  InferCreationAttributes,
+  Model,
+  Optional,
+} from 'sequelize';
 import { sequelize } from '../db/connection';
 import { Pet } from './Pet';
 import { Media } from './Media';
+import { Comment } from './Comment';
 
 export interface PostCreationAttributes extends Optional<PostAttributes, 'id'> {}
 
@@ -19,6 +29,10 @@ export class Post extends Model<InferAttributes<Post>, InferCreationAttributes<P
   declare Media?: Media;
   declare author?: Pet;
   declare setMedia: HasOneSetAssociationMixin<Media, 'id'>;
+
+  public readonly Comments?: Comment[];
+  public addComment!: HasManyAddAssociationMixin<Comment, string>;
+  public removeComment!: HasManyRemoveAssociationMixin<Comment, string>;
 }
 
 Post.init(

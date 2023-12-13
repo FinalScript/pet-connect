@@ -80,6 +80,8 @@ const init = async () => {
       as: 'comments',
     });
 
+    Comment.belongsTo(Owner, { as: 'author' });
+
     Post.hasMany(Like, {
       sourceKey: 'id',
       foreignKey: 'postId',

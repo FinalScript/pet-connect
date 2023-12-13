@@ -1,4 +1,4 @@
-import React, { useMemo, useRef, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { Animated, Platform, Pressable, View } from 'react-native';
 import { TapGestureHandler } from 'react-native-gesture-handler';
 import { HapticFeedbackTypes, trigger } from 'react-native-haptic-feedback';
@@ -6,7 +6,7 @@ import { Modalize } from 'react-native-modalize';
 import { Portal } from 'react-native-portalize';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import Ionicon from 'react-native-vector-icons/Ionicons';
-import { Post as PostType } from '../__generated__/graphql';
+import { Comment, Post as PostType } from '../__generated__/graphql';
 import { options } from '../utils/hapticFeedbackOptions';
 import Image from './Image';
 import PetTypeImage from './PetTypeImage';
@@ -18,29 +18,15 @@ import { Divider, Menu } from 'react-native-paper';
 import { MenuAction, MenuView } from '@react-native-menu/menu';
 import { useSelector } from 'react-redux';
 import { ProfileReducer } from '../redux/reducers/profileReducer';
-import { useMutation } from '@apollo/client';
+import { useMutation, useQuery } from '@apollo/client';
 import { DELETE_POST } from '../graphql/Post';
+import { GET_COMMENTS_BY_POST_ID } from '../graphql/Comment';
 
 interface Props {
   post: PostType;
   goToProfile: () => void;
   onLayoutChange?: (height: number) => void;
 }
-
-const comments = [
-  {
-    username: 'jimmy16',
-    text: 'Wow so cute OMG 😍🥹',
-  },
-  {
-    username: 'catwoman',
-    text: 'eu, odio. Phasellus at augue id ante dictum cursus. Nunc',
-  },
-  {
-    username: 'bakrsdog',
-    text: 'suscipit, est ac facilisis facilisis, magna tellus faucibus leo, in',
-  },
-];
 
 const CAPTION_LINES = 2;
 
@@ -50,9 +36,14 @@ export default function Post({ post, goToProfile, onLayoutChange }: Props) {
   const [showHeartIcon, setShowHeartIcon] = useState(false);
   const modalizeRef = useRef<Modalize>(null);
   const heartScale = useRef(new Animated.Value(0)).current; // Ref for the animated value
+
   const ownerId = useSelector((state: ProfileReducer) => state.profile.owner?.id);
   const isOwner = useMemo(() => ownerId === post.author.ownerId, [ownerId, post.author.Owner?.id]);
+
   const [deletePost] = useMutation(DELETE_POST, { variables: { id: post.id } });
+
+  const { data: commentsData, refetch: refetchCommentData } = useQuery(GET_COMMENTS_BY_POST_ID, { variables: { postId: post.id }, pollInterval: 5000 });
+  const comments: Comment[] = useMemo(() => commentsData?.getCommentsByPostId || [], [commentsData]);
 
   const menuActions: MenuAction[] = useMemo(() => {
     const actions: MenuAction[] = [
@@ -84,6 +75,10 @@ export default function Post({ post, goToProfile, onLayoutChange }: Props) {
 
     return actions;
   }, [isOwner, ownerId]);
+
+  useEffect(() => {
+    console.log(post.id);
+  }, [post]);
 
   const onLayout = (event: { nativeEvent: { layout: { height: number } } }) => {
     const height = event.nativeEvent.layout.height;
@@ -150,7 +145,7 @@ export default function Post({ post, goToProfile, onLayoutChange }: Props) {
           keyboardAvoidingBehavior=''
           propagateSwipe={true}
           useNativeDriver>
-          <CommentsModel comments={comments} closeModal={() => closeCommentsModal()} />
+          <CommentsModel postId={post.id} comments={comments} closeModal={() => closeCommentsModal()} refetchComments={refetchCommentData} />
         </Modalize>
       </Portal>
       <View className='flex-row justify-between items-center px-3 py-2'>

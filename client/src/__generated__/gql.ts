@@ -14,6 +14,8 @@ import { TypedDocumentNode as DocumentNode } from '@graphql-typed-document-node/
  */
 const documents = {
     "\n  query VerifyToken {\n    verifyToken {\n      valid\n    }\n  }\n": types.VerifyTokenDocument,
+    "\n  query GetCommentsByPostId($postId: String!) {\n    getCommentsByPostId(postId: $postId) {\n      id\n      text\n      ownerId\n      postId\n      author {\n        id\n        authId\n        name\n        username\n        ProfilePicture {\n          id\n          name\n          url\n          path\n          type\n        }\n      }\n    }\n  }\n": types.GetCommentsByPostIdDocument,
+    "\n  mutation CreateComment($postId: String!, $text: String!) {\n    createComment(postId: $postId, text: $text) {\n      id\n      text\n      ownerId\n      postId\n      author {\n        id\n        authId\n        name\n        username\n        ProfilePicture {\n          id\n          name\n          url\n          path\n          type\n        }\n        followingCount\n      }\n    }\n  }\n": types.CreateCommentDocument,
     "\n  query GetOwner {\n    getOwner {\n      owner {\n        id\n        authId\n        name\n        username\n        location\n        ProfilePicture {\n          id\n          name\n          url\n          path\n          type\n        }\n        followingCount\n      }\n    }\n}\n": types.GetOwnerDocument,
     "\n  query GetFollowingByOwnerId($ownerId: String!) {\n    getFollowingByOwnerId(ownerId: $ownerId) {\n      id\n      username\n      name\n      type\n      description\n      location\n      ProfilePicture {\n        id\n        name\n        url\n        path\n        type\n      }\n      Owner {\n        id\n        authId\n        name\n        username\n        location\n        followingCount\n      }\n      followerCount\n      postsCount\n    }\n  }\n": types.GetFollowingByOwnerIdDocument,
     "\n  query GetOwnerById($id: String!) {\n    getOwnerById(id: $id) {\n      owner {\n        id\n        authId\n        name\n        username\n        location\n        ProfilePicture {\n          id\n          name\n          url\n          path\n          type\n        }\n        followingCount\n      }\n    }\n  }\n": types.GetOwnerByIdDocument,
@@ -57,6 +59,14 @@ export function gql(source: string): unknown;
  * The gql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
 export function gql(source: "\n  query VerifyToken {\n    verifyToken {\n      valid\n    }\n  }\n"): (typeof documents)["\n  query VerifyToken {\n    verifyToken {\n      valid\n    }\n  }\n"];
+/**
+ * The gql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function gql(source: "\n  query GetCommentsByPostId($postId: String!) {\n    getCommentsByPostId(postId: $postId) {\n      id\n      text\n      ownerId\n      postId\n      author {\n        id\n        authId\n        name\n        username\n        ProfilePicture {\n          id\n          name\n          url\n          path\n          type\n        }\n      }\n    }\n  }\n"): (typeof documents)["\n  query GetCommentsByPostId($postId: String!) {\n    getCommentsByPostId(postId: $postId) {\n      id\n      text\n      ownerId\n      postId\n      author {\n        id\n        authId\n        name\n        username\n        ProfilePicture {\n          id\n          name\n          url\n          path\n          type\n        }\n      }\n    }\n  }\n"];
+/**
+ * The gql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function gql(source: "\n  mutation CreateComment($postId: String!, $text: String!) {\n    createComment(postId: $postId, text: $text) {\n      id\n      text\n      ownerId\n      postId\n      author {\n        id\n        authId\n        name\n        username\n        ProfilePicture {\n          id\n          name\n          url\n          path\n          type\n        }\n        followingCount\n      }\n    }\n  }\n"): (typeof documents)["\n  mutation CreateComment($postId: String!, $text: String!) {\n    createComment(postId: $postId, text: $text) {\n      id\n      text\n      ownerId\n      postId\n      author {\n        id\n        authId\n        name\n        username\n        ProfilePicture {\n          id\n          name\n          url\n          path\n          type\n        }\n        followingCount\n      }\n    }\n  }\n"];
 /**
  * The gql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
