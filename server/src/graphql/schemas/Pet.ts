@@ -43,7 +43,7 @@ export const PetTypeDef = `#graphql
         location: String
         id: String 
         ProfilePicture: ProfilePicture
-        OwnerId: String!
+        OwnerId: String
     }
 
     type ValidateUsernameResponse {

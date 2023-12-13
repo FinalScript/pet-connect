@@ -1,7 +1,7 @@
 import { useMutation } from '@apollo/client';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { useCallback, useState } from 'react';
+import { useCallback, useRef, useState } from 'react';
 import { ActivityIndicator, Keyboard, Pressable, TextInput, TouchableHighlight, TouchableOpacity, TouchableWithoutFeedback, View } from 'react-native';
 import { HapticFeedbackTypes, trigger } from 'react-native-haptic-feedback';
 import { Asset, launchImageLibrary } from 'react-native-image-picker';
@@ -54,6 +54,9 @@ export default function PetCreation() {
   const [focus, setFocus] = useState({ username: false, name: false, description: false });
   const [isUsernameValid, setIsUsernameValid] = useState(false);
   const [optionsShuffle, setShuffle] = useState(0);
+
+  const usernameRef = useRef<TextInput>(null);
+  const descriptionRef = useRef<TextInput>(null);
 
   const submit = useCallback(async () => {
     dispatch({ type: LOADING, payload: true });
@@ -259,6 +262,10 @@ export default function PetCreation() {
                       return { ...prev, name: false };
                     });
                   }}
+                  blurOnSubmit={false}
+                  onSubmitEditing={() => {
+                    usernameRef.current?.focus();
+                  }}
                   maxLength={30}
                   returnKeyType='next'
                   placeholder="Enter your pet's name"
@@ -268,6 +275,11 @@ export default function PetCreation() {
               <View className='mt-3'>
                 <Text className='mb-2 pl-4 text-xl font-bold text-themeText'>Give your pet a username.</Text>
                 <UsernameInput
+                  inputRef={usernameRef}
+                  blurOnSubmit={false}
+                  onSubmitEditing={() => {
+                    descriptionRef.current?.focus();
+                  }}
                   value={formData.username}
                   setValue={(e: string) => {
                     setFormData((prev) => {
@@ -287,6 +299,7 @@ export default function PetCreation() {
               <View className='mt-3'>
                 <Text className='mb-2 pl-4 text-xl font-bold text-themeText'>Tell us about{formData.name ? ` ${formData.name}` : '...'}</Text>
                 <TextInput
+                  ref={descriptionRef}
                   className={
                     (focus.description === true ? 'border-themeActive' : 'border-transparent') +
                     ' bg-themeInput border-[5px] shadow-sm shadow-themeShadow h-28 max-h-44 w-full rounded-3xl px-5 py-3 text-lg'
