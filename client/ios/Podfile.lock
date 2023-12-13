@@ -392,6 +392,8 @@ PODS:
     - ReactCommon/turbomodule/core
   - react-native-sensitive-info (5.5.8):
     - React
+  - react-native-splash-screen (3.3.0):
+    - React-Core
   - react-native-version-check (3.4.7):
     - React-Core
   - React-NativeModulesApple (0.72.6):
@@ -632,6 +634,7 @@ DEPENDENCIES:
   - react-native-restart (from `../node_modules/react-native-restart`)
   - react-native-safe-area-context (from `../node_modules/react-native-safe-area-context`)
   - react-native-sensitive-info (from `../node_modules/react-native-sensitive-info`)
+  - react-native-splash-screen (from `../node_modules/react-native-splash-screen`)
   - react-native-version-check (from `../node_modules/react-native-version-check`)
   - React-NativeModulesApple (from `../node_modules/react-native/ReactCommon/react/nativemodule/core/platform/ios`)
   - React-perflogger (from `../node_modules/react-native/ReactCommon/reactperflogger`)
@@ -754,6 +757,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native-safe-area-context"
   react-native-sensitive-info:
     :path: "../node_modules/react-native-sensitive-info"
+  react-native-splash-screen:
+    :path: "../node_modules/react-native-splash-screen"
   react-native-version-check:
     :path: "../node_modules/react-native-version-check"
   React-NativeModulesApple:
@@ -867,6 +872,7 @@ SPEC CHECKSUMS:
   react-native-restart: 7595693413fe3ca15893702f2c8306c62a708162
   react-native-safe-area-context: b8979f5eda6ed5903d4dbc885be3846ea3daa753
   react-native-sensitive-info: 400c6e3d27945e15c8cddb5b4b92233c85ee06f8
+  react-native-splash-screen: 4312f786b13a81b5169ef346d76d33bc0c6dc457
   react-native-version-check: 6cd36aad4e30b8e3216747e3b4ddeb09e0647af8
   React-NativeModulesApple: 63505fb94b71e2469cab35bdaf36cca813cb5bfd
   React-perflogger: e3596db7e753f51766bceadc061936ef1472edc3
