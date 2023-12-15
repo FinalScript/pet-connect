@@ -10,6 +10,7 @@ import { Comment, Exact, GetCommentsByPostIdQuery } from '../../__generated__/gr
 import { ApolloQueryResult, useMutation } from '@apollo/client';
 import { CREATE_COMMENT } from '../../graphql/Comment';
 import { getRelativeTime } from '../../utils/Date';
+import { formatNumberWithSuffix } from '../../utils/Number';
 
 interface Props {
   postId: string;
@@ -59,7 +60,7 @@ const CommentsModel = ({ postId, comments, closeModal, refetchComments }: Props)
                   <View className='flex-row items-end justify-between'>
                     <Text className='mt-2 text-xs text-[#9c9c9c]'>{getRelativeTime(comment.createdAt)}</Text>
                     <View className='flex-row items-center gap-1'>
-                      <Text className='text-xs text-[#6d6d6d]'>134</Text>
+                      <Text className='text-xs text-[#6d6d6d]'>{formatNumberWithSuffix(Math.floor(Math.random() * (50000 - 500)) + 500)}</Text>
                       <AntDesign name='hearto' size={10} color={'#6d6d6d'} />
                     </View>
                   </View>
