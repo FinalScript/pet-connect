@@ -46,7 +46,7 @@ export default function Post({ post, goToProfile, onLayoutChange }: Props) {
   const [likePost] = useMutation(LIKE_POST, { variables: { id: post.id } });
   const [unlikePost] = useMutation(UNLIKE_POST, { variables: { id: post.id } });
 
-  const { data: likesCountData, refetch: refetchLikesCountData } = useQuery(GET_LIKES_COUNT_OF_POST, { variables: { id: post.id }, pollInterval: 3000 });
+  const { data: likesCountData, refetch: refetchLikesCountData } = useQuery(GET_LIKES_COUNT_OF_POST, { variables: { id: post.id }, pollInterval: 5000 });
   const likesCount: number = useMemo(() => likesCountData?.getPostById.post?.likesCount || 0, [likesCountData]);
 
   const { data: isLikedData, refetch: refetchIsLikeData } = useQuery(IS_LIKING_POST, { variables: { id: post.id } });
@@ -126,6 +126,7 @@ export default function Post({ post, goToProfile, onLayoutChange }: Props) {
     if (!postLiked) {
       await likePost();
       await refetchIsLikeData();
+      await refetchLikesCountData();
       trigger(HapticFeedbackTypes.impactLight, options);
     }
   }, [likePost]);
@@ -133,6 +134,7 @@ export default function Post({ post, goToProfile, onLayoutChange }: Props) {
   const handleUnlike = useCallback(async () => {
     await unlikePost();
     await refetchIsLikeData();
+    await refetchLikesCountData();
   }, [unlikePost]);
 
   const handleMoreCaption = () => {

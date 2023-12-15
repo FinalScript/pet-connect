@@ -67,15 +67,9 @@ Post.init(
     likesCount: {
       type: DataTypes.VIRTUAL(DataTypes.INTEGER),
       async get() {
-        const postId = this.getDataValue('id'); // Assuming the field name for Post's ID is 'id'
-        const owners = await Owner.findAll({
-          include: {
-            model: Post,
-            as: 'Likes',
-            where: { id: postId }, // Assuming there's an association between Owner and Post via 'id'
-          },
-        });
-        return owners.length;
+        const post = await Post.findByPk(this.id, { include: [{ model: Owner, as: 'Likes' }] });
+
+        return post?.Likes?.length || 0;
       },
     },
     createdAt: {
