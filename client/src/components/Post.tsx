@@ -228,20 +228,17 @@ export default function Post({ post, goToProfile, onLayoutChange }: Props) {
         </View>
       </View>
 
-      {likesCount && (
-        <View className='px-3'>
-          <Text className='text-themeText font-base text-lg' onPress={handleMoreCaption} suppressHighlighting>
-            {likesCount.toLocaleString()} like{likesCount > 1 && 's'}
-          </Text>
-        </View>
-      )}
+      <View className='px-3'>
+        <Text className='text-themeText font-base text-lg' onPress={handleMoreCaption} suppressHighlighting>
+          {likesCount.toLocaleString()} like{likesCount > 1 && 's'}
+        </Text>
+      </View>
 
       {post.description && (
         <View className='px-3'>
           <View className='flex flex-row min-h-[7rem]'>
             <Text className='text-lg' numberOfLines={moreCaption ? 0 : CAPTION_LINES}>
-              <Text className='font-semibold text-sky-600'>{post.author.name} </Text>
-
+              <Text className='font-semibold text-sky-600'>{post.author.name}</Text>
               <Text className='text-themeText' onPress={handleMoreCaption} suppressHighlighting>
                 {post.description}
               </Text>
