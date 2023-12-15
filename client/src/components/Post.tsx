@@ -211,7 +211,7 @@ export default function Post({ post, goToProfile, onLayoutChange }: Props) {
         </View>
       </TapGestureHandler>
 
-      <View className='flex-row items-center gap-x-4 px-4 py-1'>
+      <View className='flex-row items-center gap-x-4 px-2 py-1'>
         <View className='mt-1'>
           {postLiked ? (
             <Pressable onPress={handleUnlike}>
