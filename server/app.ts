@@ -8,7 +8,6 @@ import { auth } from 'express-oauth2-jwt-bearer';
 import { connectToDB, sequelize } from './src/db/connection';
 import { schema } from './src/graphql/schemas/index';
 import { Comment } from './src/models/Comment';
-import { Like } from './src/models/Like';
 import { Media } from './src/models/Media';
 import { Owner } from './src/models/Owner';
 import { Pet } from './src/models/Pet';
@@ -77,18 +76,20 @@ const init = async () => {
     Post.hasMany(Comment, {
       sourceKey: 'id',
       foreignKey: 'postId',
-      as: 'comments',
+      as: 'Comments',
+    });
+
+    Post.hasMany(Owner, {
+      as: 'Likes',
+    });
+
+    Owner.hasMany(Post, {
+      foreignKey: 'ownerId',
+      as: 'Likes',
     });
 
     Comment.belongsTo(Owner, { as: 'author' });
 
-    Post.hasMany(Like, {
-      sourceKey: 'id',
-      foreignKey: 'postId',
-      as: 'likes',
-    });
-
-    await sequelize.sync({ alter: true });
   });
 
   const port = process.env.PORT || 54321;

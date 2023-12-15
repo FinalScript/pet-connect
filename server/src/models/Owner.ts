@@ -13,6 +13,7 @@ import {
 } from 'sequelize';
 import { sequelize } from '../db/connection';
 import { ProfilePicture } from './ProfilePicture';
+import { Post } from './Post';
 
 export interface OwnerCreationDAO {
   authId: string;
@@ -44,6 +45,10 @@ export class Owner extends Model<InferAttributes<Owner>, InferCreationAttributes
   declare FollowedPets?: Pet[];
   declare addFollowing: BelongsToManyAddAssociationMixin<Pet, number>;
   declare removeFollowing: BelongsToManyRemoveAssociationMixin<Pet, number>;
+
+  public readonly Likes?: Post[]; // Assuming likes are associated with Post model
+  public addLike!: HasManyAddAssociationMixin<Post, number>; // Method to add a like
+  public removeLike!: HasManyRemoveAssociationMixin<Post, number>; // Method to remove a like
 }
 
 Owner.init(

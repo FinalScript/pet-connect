@@ -12,6 +12,7 @@ import { sequelize } from '../db/connection';
 import { Pet } from './Pet';
 import { Media } from './Media';
 import { Comment } from './Comment';
+import { Owner } from './Owner';
 
 export interface PostCreationAttributes extends Optional<PostAttributes, 'id'> {}
 
@@ -33,6 +34,11 @@ export class Post extends Model<InferAttributes<Post>, InferCreationAttributes<P
   public readonly Comments?: Comment[];
   public addComment!: HasManyAddAssociationMixin<Comment, string>;
   public removeComment!: HasManyRemoveAssociationMixin<Comment, string>;
+
+  public readonly Likes?: Owner[];
+  public addLike!: HasManyAddAssociationMixin<Owner, string>;
+  public removeLike!: HasManyRemoveAssociationMixin<Owner, string>;
+  public readonly likesCount = 0;
 
   public readonly createdAt: Date;
   public readonly updatedAt: Date;
@@ -57,6 +63,20 @@ Post.init(
     description: {
       type: DataTypes.TEXT,
       allowNull: true,
+    },
+    likesCount: {
+      type: DataTypes.VIRTUAL(DataTypes.INTEGER),
+      async get() {
+        const postId = this.getDataValue('id'); // Assuming the field name for Post's ID is 'id'
+        const owners = await Owner.findAll({
+          include: {
+            model: Post,
+            as: 'Likes',
+            where: { id: postId }, // Assuming there's an association between Owner and Post via 'id'
+          },
+        });
+        return owners.length;
+      },
     },
     createdAt: {
       type: DataTypes.DATE,

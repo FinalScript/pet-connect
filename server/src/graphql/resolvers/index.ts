@@ -1,12 +1,10 @@
 import { merge } from 'lodash';
-import { LikeResolver } from './Like';
 import { OwnerResolver } from './Owner';
 import { PetResolver } from './Pet';
 import { PostResolver } from './Post';
 import { SearchResolver } from './Search';
 import { CommentResolver } from './Comment';
 import { GraphQLScalarType, Kind } from 'graphql';
-import { GraphQLJSON } from 'graphql-compose';
 
 const dateScalar = new GraphQLScalarType({
   name: 'Date',
@@ -25,12 +23,4 @@ const dateScalar = new GraphQLScalarType({
   },
 });
 
-export const resolvers = merge(
-  OwnerResolver,
-  PetResolver,
-  LikeResolver,
-  PostResolver,
-  SearchResolver,
-  CommentResolver,
-  { Date: dateScalar }
-);
+export const resolvers = merge(OwnerResolver, PetResolver, PostResolver, SearchResolver, CommentResolver, { Date: dateScalar });

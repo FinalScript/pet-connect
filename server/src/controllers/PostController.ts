@@ -1,4 +1,5 @@
 import { Media } from '../models/Media';
+import { Owner } from '../models/Owner';
 import { Pet } from '../models/Pet';
 import { Post, PostAttributes, PostCreationAttributes } from '../models/Post';
 import { ProfilePicture } from '../models/ProfilePicture';
@@ -27,6 +28,17 @@ export const getPostById = async (id: string) => {
     include: [
       { model: Pet, as: 'author', include: [{ model: ProfilePicture, as: 'ProfilePicture' }] },
       { model: Media, as: 'Media' },
+    ],
+  });
+  return post;
+};
+
+export const getPostByIdWithLikers = async (id: string) => {
+  const post = await Post.findByPk(id, {
+    include: [
+      { model: Pet, as: 'author', include: [{ model: ProfilePicture, as: 'ProfilePicture' }] },
+      { model: Media, as: 'Media' },
+      { model: Owner, as: 'Likes' },
     ],
   });
   return post;

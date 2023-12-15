@@ -6,6 +6,7 @@ type Post {
     description: String
     Media: Media!
     author: Pet!
+    likesCount: Int!
     createdAt: Date!
     updatedAt: Date!
 }
@@ -33,17 +34,25 @@ type DeletePostResponse {
     message: String!
 }
 
+type LikeResponse {
+    success: Boolean!
+}
+
 type Query{
     getAllPosts: AllPostsResponse! 
     getPostById(id: String!): PostResponse!
     getPostsByPetId(petId: String!): PostsResponse!
     getFollowing: [Post!]!
     getForYou: [Post!]!
+    getAllLikersByPostId( id: String! ): [Owner!]!
+    isLikingPost( id: String! ): Boolean!
 }
 
 type Mutation {
     createPost( petId: String!, description: String, media: MediaInput! ): PostResponse!
     updatePost( id: String,  description: String, media: MediaInput! ): PostUpdatedResponse!
     deletePost( id: String! ): DeletePostResponse!
+    likePost( id: String! ): LikeResponse!
+    unlikePost( id: String! ): LikeResponse!
 }
 `;

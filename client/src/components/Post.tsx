@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Animated, Platform, Pressable, View } from 'react-native';
 import { TapGestureHandler } from 'react-native-gesture-handler';
 import { HapticFeedbackTypes, trigger } from 'react-native-haptic-feedback';
@@ -19,9 +19,10 @@ import { MenuAction, MenuView } from '@react-native-menu/menu';
 import { useSelector } from 'react-redux';
 import { ProfileReducer } from '../redux/reducers/profileReducer';
 import { useMutation, useQuery } from '@apollo/client';
-import { DELETE_POST } from '../graphql/Post';
+import { DELETE_POST, GET_LIKES_COUNT_OF_POST, IS_LIKING_POST, LIKE_POST, UNLIKE_POST } from '../graphql/Post';
 import { GET_COMMENTS_BY_POST_ID } from '../graphql/Comment';
 import { getRelativeTime } from '../utils/Date';
+import { formatNumberWithSuffix } from '../utils/Number';
 
 interface Props {
   post: PostType;
@@ -32,7 +33,6 @@ interface Props {
 const CAPTION_LINES = 2;
 
 export default function Post({ post, goToProfile, onLayoutChange }: Props) {
-  const [postLiked, setPostLiked] = useState(false);
   const [moreCaption, setMoreCaption] = useState(false);
   const [showHeartIcon, setShowHeartIcon] = useState(false);
   const modalizeRef = useRef<Modalize>(null);
@@ -42,6 +42,15 @@ export default function Post({ post, goToProfile, onLayoutChange }: Props) {
   const isOwner = useMemo(() => ownerId === post.author.ownerId, [ownerId, post.author.Owner?.id]);
 
   const [deletePost] = useMutation(DELETE_POST, { variables: { id: post.id } });
+
+  const [likePost] = useMutation(LIKE_POST, { variables: { id: post.id } });
+  const [unlikePost] = useMutation(UNLIKE_POST, { variables: { id: post.id } });
+
+  const { data: likesCountData, refetch: refetchLikesCountData } = useQuery(GET_LIKES_COUNT_OF_POST, { variables: { id: post.id }, pollInterval: 3000 });
+  const likesCount: number = useMemo(() => likesCountData?.getPostById.post?.likesCount || 0, [likesCountData]);
+
+  const { data: isLikedData, refetch: refetchIsLikeData } = useQuery(IS_LIKING_POST, { variables: { id: post.id } });
+  const postLiked: boolean = useMemo(() => isLikedData?.isLikingPost || false, [isLikedData]);
 
   const { data: commentsData, refetch: refetchCommentData } = useQuery(GET_COMMENTS_BY_POST_ID, { variables: { postId: post.id }, pollInterval: 5000 });
   const comments: Comment[] = useMemo(() => commentsData?.getCommentsByPostId || [], [commentsData]);
@@ -113,14 +122,18 @@ export default function Post({ post, goToProfile, onLayoutChange }: Props) {
     ]).start();
   };
 
-  const handleLike = () => {
-    setPostLiked(true);
-    trigger(HapticFeedbackTypes.impactLight, options);
-  };
+  const handleLike = useCallback(async () => {
+    if (!postLiked) {
+      await likePost();
+      await refetchIsLikeData();
+      trigger(HapticFeedbackTypes.impactLight, options);
+    }
+  }, [likePost]);
 
-  const unlikePost = () => {
-    setPostLiked(false);
-  };
+  const handleUnlike = useCallback(async () => {
+    await unlikePost();
+    await refetchIsLikeData();
+  }, [unlikePost]);
 
   const handleMoreCaption = () => {
     if (moreCaption === true) {
@@ -201,7 +214,7 @@ export default function Post({ post, goToProfile, onLayoutChange }: Props) {
       <View className='flex-row items-center gap-x-4 px-4 py-1'>
         <View className='mt-1'>
           {postLiked ? (
-            <Pressable onPress={unlikePost}>
+            <Pressable onPress={handleUnlike}>
               <AntDesign name='heart' size={25} color={themeConfig.customColors.themeActive} />
             </Pressable>
           ) : (
@@ -214,6 +227,14 @@ export default function Post({ post, goToProfile, onLayoutChange }: Props) {
           <Ionicon name='chatbubble-outline' size={25} color={'#000000'} />
         </View>
       </View>
+
+      {likesCount && (
+        <View className='px-3'>
+          <Text className='text-themeText font-base text-lg' onPress={handleMoreCaption} suppressHighlighting>
+            {likesCount.toLocaleString()} like{likesCount > 1 && 's'}
+          </Text>
+        </View>
+      )}
 
       {post.description && (
         <View className='px-3'>
