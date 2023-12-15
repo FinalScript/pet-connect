@@ -90,6 +90,7 @@ const init = async () => {
 
     Comment.belongsTo(Owner, { as: 'author' });
 
+    await sequelize.sync({});
   });
 
   const port = process.env.PORT || 54321;
