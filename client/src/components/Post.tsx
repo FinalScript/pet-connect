@@ -228,11 +228,13 @@ export default function Post({ post, goToProfile, onLayoutChange }: Props) {
         </View>
       </View>
 
-      <View className='px-3'>
-        <Text className='text-themeText font-base text-lg' onPress={handleMoreCaption} suppressHighlighting>
-          {likesCount.toLocaleString()} like{likesCount > 1 && 's'}
-        </Text>
-      </View>
+      {likesCount > 0 && (
+        <View className='px-3'>
+          <Text className='text-themeText font-base text-lg' onPress={handleMoreCaption} suppressHighlighting>
+            {likesCount.toLocaleString()} like{likesCount > 1 && 's'}
+          </Text>
+        </View>
+      )}
 
       {post.description && (
         <View className='px-3'>
