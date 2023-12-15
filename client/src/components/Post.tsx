@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { Animated, Platform, Pressable, View } from 'react-native';
+import { Animated, Platform, Pressable, Touchable, TouchableOpacity, TouchableWithoutFeedback, View } from 'react-native';
 import { TapGestureHandler } from 'react-native-gesture-handler';
 import { HapticFeedbackTypes, trigger } from 'react-native-haptic-feedback';
 import { Modalize } from 'react-native-modalize';
@@ -149,7 +149,10 @@ export default function Post({ post, goToProfile, onLayoutChange }: Props) {
   }
 
   return (
-    <View className='bg-themeInput mb-5 pb-2 w-full border-t-[.2px] border-b-[.2px] border-gray-600' onLayout={onLayout}>
+    <View
+      style={{ shadowColor: themeConfig.customColors.themeText, shadowOpacity: 0.15, shadowRadius: 10 }}
+      className='bg-themeInput mb-5 pb-5 pt-2 w-full rounded-[30px]'
+      onLayout={onLayout}>
       <Portal>
         <Modalize
           ref={modalizeRef}
@@ -164,17 +167,16 @@ export default function Post({ post, goToProfile, onLayoutChange }: Props) {
           <CommentsModel postId={post.id} comments={comments} closeModal={() => closeCommentsModal()} refetchComments={refetchCommentData} />
         </Modalize>
       </Portal>
-      <View className='flex-row justify-between items-center px-3 py-2'>
-        <Pressable className='flex-row items-center ' onPress={() => goToProfile()}>
-          <View className='w-14 h-14 mr-2 aspect-square'>
-            <Image className='flex w-full h-full rounded-lg' source={{ uri: post.author.ProfilePicture?.url }} />
+      <View className='flex-row justify-between px-5 py-2'>
+        <Pressable className='flex-row items-center' onPress={() => goToProfile()}>
+          <View className='w-14 h-14 mr-3 aspect-square'>
+            <Image className='flex w-full h-full rounded-full' source={{ uri: post.author.ProfilePicture?.url }} />
           </View>
           <View className='flex justify-center'>
-            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-              <Text className='text-2xl font-semibold text-sky-700 -mb-2'>{post.author.name}</Text>
-              <PetTypeImage type={post.author.type} style={{ width: 20, height: 20, marginLeft: 5, marginTop: 5 }} />
+            <View className='flex-row'>
+              <Text className='text-xl font-bold text-[#694531] -mb-2'>{post.author.name}</Text>
+              <PetTypeImage type={post.author.type} style={{ width: 20, height: 20, marginLeft: 8, marginTop: 5 }} />
             </View>
-            <Text className='text-base font-light text-sky-500'>@{post.author.username}</Text>
           </View>
         </Pressable>
 
@@ -186,8 +188,8 @@ export default function Post({ post, goToProfile, onLayoutChange }: Props) {
               }
             }}
             actions={menuActions}>
-            <View className='pr-3'>
-              <Entypo name='dots-three-horizontal' size={18} />
+            <View className='px-2'>
+              <Entypo name='dots-three-horizontal' size={18} color={'#8f5f43'} />
             </View>
           </MenuView>
         </View>
@@ -207,17 +209,17 @@ export default function Post({ post, goToProfile, onLayoutChange }: Props) {
                 position: 'absolute',
                 transform: [{ scale: heartScale }],
               }}>
-              <AntDesign name='heart' size={100} color={themeConfig.customColors.themeActive} />
+              <AntDesign name='heart' size={100} color={'red'} />
             </Animated.View>
           )}
         </View>
       </TapGestureHandler>
 
-      <View className='flex-row items-center gap-x-4 px-3 py-1'>
+      <View className='flex-row items-center gap-x-4 px-5 py-1'>
         <View className='mt-1'>
           {postLiked ? (
             <Pressable onPress={handleUnlike}>
-              <AntDesign name='heart' size={25} color={themeConfig.customColors.themeActive} />
+              <AntDesign name='heart' size={25} color={'red'} />
             </Pressable>
           ) : (
             <Pressable onPress={handleLike}>
@@ -230,19 +232,22 @@ export default function Post({ post, goToProfile, onLayoutChange }: Props) {
         </View>
       </View>
 
-      <View className='px-3'>
-        <Text className='text-themeText font-base text-lg' onPress={handleMoreCaption} suppressHighlighting>
+      <View className='px-5'>
+        <Text className='text-themeText text-base' onPress={handleMoreCaption} suppressHighlighting>
           {likesCount.toLocaleString()} like{likesCount !== 1 && 's'}
         </Text>
       </View>
 
       {post.description && (
-        <View className='px-3'>
+        <View className='px-5'>
           <View className='flex flex-row min-h-[7rem]'>
-            <Text className='text-lg' numberOfLines={moreCaption ? 0 : CAPTION_LINES}>
-              <Text className='font-semibold text-sky-600'>{post.author.name} </Text>
+            <Text className='text-base' numberOfLines={moreCaption ? 0 : CAPTION_LINES}>
+              <TouchableWithoutFeedback onPress={() => goToProfile()}>
+                <Text className='text-base font-semibold text-[#694531]'>{post.author.name} </Text>
+              </TouchableWithoutFeedback>
               <Text className='text-themeText' onPress={handleMoreCaption} suppressHighlighting>
-                {post.description}
+                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce mi erat, aliquam sed vehicula non, lobortis aliquet mi. Interdum et malesuada
+                fames ac ante ipsum primis in faucibus.
               </Text>
             </Text>
           </View>
@@ -257,7 +262,7 @@ export default function Post({ post, goToProfile, onLayoutChange }: Props) {
         </Pressable>
       )}
 
-      <Text className='px-3 mt-1 text-xs text-[#838383]'>{getRelativeTime(post.createdAt)}</Text>
+      <Text className='px-5 mt-1 text-xs text-[#838383]'>{getRelativeTime(post.createdAt)}</Text>
     </View>
   );
 }

@@ -176,7 +176,11 @@ const PostPage = ({ navigation }: Props) => {
         </KeyboardAwareScrollView>
 
         <View className='mb-10 px-8 absolute bottom-0 w-full flex flex-row justify-between items-center'>
-          <TouchableHighlight disabled={loading} className='bg-themeBtn rounded-3xl shadow-sm shadow-themeShadow ml-auto' underlayColor={'#c59071'} onPress={handlePost}>
+          <TouchableHighlight
+            disabled={loading}
+            className='bg-themeBtn rounded-3xl shadow-sm shadow-themeShadow ml-auto'
+            underlayColor={'#c59071'}
+            onPress={handlePost}>
             <View className='px-6 py-1 flex flex-row justify-center items-center'>
               {loading && <ActivityIndicator className='mr-2 -ml-2' size='small' color={'#321411'} />}
               <Text className='text-xl font-semibold text-themeText'>Post</Text>
