@@ -150,7 +150,7 @@ export default function Post({ post, goToProfile, onLayoutChange }: Props) {
 
   return (
     <View
-      style={{ shadowColor: themeConfig.customColors.themeText, shadowOpacity: 0.25, shadowRadius: 10, shadowOffset:{height:3} }}
+      style={{ shadowColor: themeConfig.customColors.themeText, shadowOpacity: 0.25, shadowRadius: 10, shadowOffset: { height: 3, width: 0 } }}
       className='bg-themeInput mb-5 pb-5 pt-2 w-full rounded-[30px]'
       onLayout={onLayout}>
       <Portal>
@@ -246,8 +246,7 @@ export default function Post({ post, goToProfile, onLayoutChange }: Props) {
                 <Text className='text-base font-semibold text-[#694531]'>{post.author.name} </Text>
               </TouchableWithoutFeedback>
               <Text className='text-themeText' onPress={handleMoreCaption} suppressHighlighting>
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce mi erat, aliquam sed vehicula non, lobortis aliquet mi. Interdum et malesuada
-                fames ac ante ipsum primis in faucibus.
+                {post.description}
               </Text>
             </Text>
           </View>
