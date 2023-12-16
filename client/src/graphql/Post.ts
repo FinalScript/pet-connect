@@ -42,6 +42,7 @@ export const GET_ALL_POSTS = gql(`
           }
           postsCount
           followerCount
+          totalLikes
           ownerId
         }
       }
@@ -91,6 +92,7 @@ export const CREATE_POST = gql(`
           }
           postsCount
           followerCount
+          totalLikes
           ownerId
         }
       }
@@ -132,6 +134,7 @@ query getPostsByPetId($petId: String!) {
         }
         postsCount
         followerCount
+        totalLikes
         ownerId
       }
     }
@@ -171,6 +174,7 @@ export const GET_FOLLOWING = gql(`
         }
         postsCount
         followerCount
+        totalLikes
         ownerId
       }
     }
@@ -210,6 +214,7 @@ export const GET_FOR_YOU = gql(`
         }
         postsCount
         followerCount
+        totalLikes
         ownerId
       }
     }

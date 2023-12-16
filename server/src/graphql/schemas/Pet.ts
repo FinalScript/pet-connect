@@ -24,6 +24,7 @@ export const PetTypeDef = `#graphql
         Owner: Owner
         followerCount: Int
         postsCount: Int
+        totalLikes: Int
         ownerId: String
     }
     

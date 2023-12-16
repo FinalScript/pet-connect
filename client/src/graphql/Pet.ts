@@ -27,6 +27,7 @@ export const CREATE_PET = gql(`
         }
         postsCount
         followerCount
+        totalLikes
       }
     }
   }
@@ -104,6 +105,7 @@ export const GET_PET_BY_ID = gql(`
         }
         followerCount
         postsCount
+        totalLikes
       }
     }
   }
@@ -129,6 +131,7 @@ export const GET_PETS_BY_OWNER_ID = gql(`
         }
         postsCount
         followerCount
+        totalLikes
       }
     }
   }

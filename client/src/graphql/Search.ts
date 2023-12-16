@@ -43,6 +43,7 @@ export const SEARCH = gql(`
           }
           postsCount
           followerCount
+          totalLikes
         }
       }
     }
