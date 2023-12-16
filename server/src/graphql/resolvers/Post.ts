@@ -374,6 +374,20 @@ export const PostResolver = {
               },
             ],
           },
+          {
+            model: Pet,
+            as: 'Pets',
+            include: [
+              {
+                model: Post,
+                as: 'Posts',
+                include: [
+                  { model: Pet, as: 'author', include: [{ model: ProfilePicture, as: 'ProfilePicture' }] },
+                  { model: Media, as: 'Media' },
+                ],
+              },
+            ],
+          },
         ],
       });
 
@@ -381,17 +395,13 @@ export const PostResolver = {
         throw new GraphQLError('Owner not found');
       }
 
-      let following = [];
+      const followedPets: Pet[] = [...ownerWithFollowedPets.FollowedPets, ...ownerWithFollowedPets.Pets];
+      const allFollowedPosts = followedPets.reduce((allPosts, pet) => {
+        const posts = pet.Posts || [];
+        return [...allPosts, ...posts];
+      }, []);
 
-      if (ownerWithFollowedPets) {
-        const followedPets = ownerWithFollowedPets.FollowedPets || [];
-        const allFollowedPosts = followedPets.reduce((allPosts, pet) => {
-          const posts = pet.Posts || [];
-          return [...allPosts, ...posts];
-        }, []);
-
-        following = allFollowedPosts.sort((postA, postB) => postB.dateCreated - postA.dateCreated);
-      }
+      const following = allFollowedPosts.sort((postA, postB) => postB.dateCreated - postA.dateCreated);
 
       return following;
     },
@@ -475,8 +485,8 @@ export const PostResolver = {
         });
       }
 
-      const likedOwners = post.Likes || []; 
-      const liked = likedOwners.some((i) => i.id === owner.id); 
+      const likedOwners = post.Likes || [];
+      const liked = likedOwners.some((i) => i.id === owner.id);
 
       return liked;
     },
