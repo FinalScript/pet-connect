@@ -8,6 +8,7 @@ import { auth } from 'express-oauth2-jwt-bearer';
 import { connectToDB, sequelize } from './src/db/connection';
 import { schema } from './src/graphql/schemas/index';
 import { Comment } from './src/models/Comment';
+import { Follows } from './src/models/Follow';
 import { Media } from './src/models/Media';
 import { Owner } from './src/models/Owner';
 import { Pet } from './src/models/Pet';
@@ -15,7 +16,6 @@ import { Post } from './src/models/Post';
 import { ProfilePicture } from './src/models/ProfilePicture';
 import { OwnerRouter } from './src/routes/OwnerRoute';
 import { PetRouter } from './src/routes/PetRoute';
-import { Follows } from './src/models/Follow';
 
 dotenv.config();
 
@@ -79,18 +79,12 @@ const init = async () => {
       as: 'Comments',
     });
 
-    Post.hasMany(Owner, {
-      as: 'Likes',
-    });
-
-    Owner.hasMany(Post, {
-      foreignKey: 'ownerId',
-      as: 'Likes',
-    });
+    Post.belongsToMany(Owner, { through: 'PostLikes', as: 'Likes', foreignKey: 'postId' });
+    Owner.belongsToMany(Post, { through: 'LikesOwners', as: 'LikedPosts', foreignKey: 'ownerId' });
 
     Comment.belongsTo(Owner, { as: 'author' });
 
-    await sequelize.sync({});
+    await sequelize.sync({ alter: true });
   });
 
   const port = process.env.PORT || 54321;

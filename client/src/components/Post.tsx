@@ -46,10 +46,10 @@ export default function Post({ post, goToProfile, onLayoutChange }: Props) {
   const [likePost] = useMutation(LIKE_POST, { variables: { id: post.id } });
   const [unlikePost] = useMutation(UNLIKE_POST, { variables: { id: post.id } });
 
-  const { data: likesCountData, refetch: refetchLikesCountData } = useQuery(GET_LIKES_COUNT_OF_POST, { variables: { id: post.id }, pollInterval: 5000 });
+  const { data: likesCountData, refetch: refetchLikesCountData } = useQuery(GET_LIKES_COUNT_OF_POST, { variables: { id: post.id }, pollInterval: 2000 });
   const likesCount: number = useMemo(() => likesCountData?.getPostById.post?.likesCount || 0, [likesCountData]);
 
-  const { data: isLikedData, refetch: refetchIsLikeData } = useQuery(IS_LIKING_POST, { variables: { id: post.id } });
+  const { data: isLikedData, refetch: refetchIsLikeData } = useQuery(IS_LIKING_POST, { variables: { id: post.id }, pollInterval: 2000 });
   const postLiked: boolean = useMemo(() => isLikedData?.isLikingPost || false, [isLikedData]);
 
   const { data: commentsData, refetch: refetchCommentData } = useQuery(GET_COMMENTS_BY_POST_ID, { variables: { postId: post.id }, pollInterval: 5000 });
@@ -256,7 +256,7 @@ export default function Post({ post, goToProfile, onLayoutChange }: Props) {
 
       {comments.length > 0 && (
         <Pressable onPress={openCommentsModal}>
-          <Text className='px-3 text-md text-[#4b4b4b]'>
+          <Text className='px-5 text-md text-[#4b4b4b]'>
             View {comments.length > 1 && 'all'} {comments.length} comment{comments.length > 1 && 's'}
           </Text>
         </Pressable>

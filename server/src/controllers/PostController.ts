@@ -38,7 +38,7 @@ export const getPostByIdWithLikers = async (id: string) => {
     include: [
       { model: Pet, as: 'author', include: [{ model: ProfilePicture, as: 'ProfilePicture' }] },
       { model: Media, as: 'Media' },
-      { model: Owner, as: 'Likes' },
+      { association: 'Likes' },
     ],
   });
   return post;

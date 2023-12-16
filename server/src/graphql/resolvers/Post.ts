@@ -231,7 +231,6 @@ export const PostResolver = {
 
       try {
         await post.addLike(owner);
-        await owner.addLike(post);
 
         return { success: true };
       } catch (e) {
@@ -280,7 +279,6 @@ export const PostResolver = {
 
       try {
         await post.removeLike(owner);
-        await owner.removeLike(post);
 
         return { success: true };
       } catch (e) {

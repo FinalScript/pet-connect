@@ -46,9 +46,9 @@ export class Owner extends Model<InferAttributes<Owner>, InferCreationAttributes
   declare addFollowing: BelongsToManyAddAssociationMixin<Pet, number>;
   declare removeFollowing: BelongsToManyRemoveAssociationMixin<Pet, number>;
 
-  public readonly Likes?: Post[]; // Assuming likes are associated with Post model
-  public addLike!: HasManyAddAssociationMixin<Post, number>; // Method to add a like
-  public removeLike!: HasManyRemoveAssociationMixin<Post, number>; // Method to remove a like
+  public readonly LikedPosts?: Post[];
+  public addLikedPost!: BelongsToManyAddAssociationMixin<Post, string>;
+  public removeLikedPost!: BelongsToManyRemoveAssociationMixin<Post, string>;
 }
 
 Owner.init(
