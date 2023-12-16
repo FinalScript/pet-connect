@@ -150,7 +150,7 @@ export default function Post({ post, goToProfile, onLayoutChange }: Props) {
 
   return (
     <View
-      style={{ shadowColor: themeConfig.customColors.themeText, shadowOpacity: 0.15, shadowRadius: 10 }}
+      style={{ shadowColor: themeConfig.customColors.themeText, shadowOpacity: 0.25, shadowRadius: 10, shadowOffset:{height:3} }}
       className='bg-themeInput mb-5 pb-5 pt-2 w-full rounded-[30px]'
       onLayout={onLayout}>
       <Portal>
