@@ -43,6 +43,13 @@
 	<dict>
 		<key>NSExceptionDomains</key>
 		<dict>
+			<key>138.197.170.135</key>
+			<dict>
+				<key>NSExceptionAllowsInsecureHTTPLoads</key>
+				<true/>
+				<key>NSIncludesSubdomains</key>
+				<true/>
+			</dict>
 			<key>roynul.hopto.org</key>
 			<dict>
 				<key>NSExceptionAllowsInsecureHTTPLoads</key>
