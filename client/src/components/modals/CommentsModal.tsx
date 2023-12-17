@@ -44,7 +44,7 @@ const CommentsModel = ({ postId, comments, closeModal, refetchComments }: Props)
 
   return (
     <View style={{ height: Dimensions.get('screen').height * 0.85 }} className='flex w-full h-full pb-4 pt-5 rounded-t-xl bg-themeBg'>
-      <Text className='text-md font-bold text-center my-3'> 720 Comments</Text>
+      <Text className='text-md font-bold text-center my-3'> {comments.length} Comments</Text>
       <View className='flex-1'>
         {comments.length === 0 && <Text className='text-center mt-5'>Be the first to comment</Text>}
         <ScrollView className='px-2'>
@@ -87,7 +87,6 @@ const CommentsModel = ({ postId, comments, closeModal, refetchComments }: Props)
             returnKeyLabel='Send'
             className='flex-1 h-12 shadow-sm rounded-2xl px-5'
             placeholderTextColor='#444444bb'
-            maxLength={30}
             placeholder='Add a comment...'
           />
         </View>

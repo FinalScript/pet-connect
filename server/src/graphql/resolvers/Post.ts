@@ -400,9 +400,7 @@ export const PostResolver = {
         const posts = pet.Posts || [];
         return [...allPosts, ...posts];
       }, []);
-
-      const following = allFollowedPosts.sort((postA, postB) => postB.dateCreated - postA.dateCreated);
-
+      const following: Post[] = allFollowedPosts.sort((postA: Post, postB: Post) => Number(postB.createdAt) - Number(postA.createdAt));
       return following;
     },
     getForYou: async (_, {}, context) => {
