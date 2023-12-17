@@ -96,11 +96,14 @@ const init = async () => {
     res.status(200).send('Okay!');
   });
 
-  app.use('/api/private/owner', checkJwt, OwnerRouter);
+  app.get('/api/v2/private/permissions', checkJwt, (req, res) => {
+    if ((req.auth.payload.permissions as string[])?.includes('admin')) {
+      res.status(202).send({ message: 'Admin Authorized', permissions: req.auth.payload.permissions, sub: req.auth.payload.sub });
+      return;
+    }
 
-  app.use('/api/private/pet', checkJwt, PetRouter);
-
-  app.use('/uploads', express.static('uploads'));
+    res.status(403).send({ message: 'Unauthorized user.' });
+  });
 };
 
 init();
