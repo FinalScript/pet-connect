@@ -24,6 +24,7 @@ export const PetTypeDef = `#graphql
         Owner: Owner
         followerCount: Int
         postsCount: Int
+        totalLikes: Int
         ownerId: String
     }
     
@@ -43,7 +44,7 @@ export const PetTypeDef = `#graphql
         location: String
         id: String 
         ProfilePicture: ProfilePicture
-        OwnerId: String!
+        OwnerId: String
     }
 
     type ValidateUsernameResponse {

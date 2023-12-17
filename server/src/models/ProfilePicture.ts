@@ -13,6 +13,9 @@ export class ProfilePicture extends Model<InferAttributes<ProfilePicture>, Infer
   declare url: string;
   declare path: string;
   declare type: string;
+
+  public readonly createdAt: Date;
+  public readonly updatedAt: Date;
 }
 
 ProfilePicture.init(
@@ -39,10 +42,18 @@ ProfilePicture.init(
       type: DataTypes.STRING,
       allowNull: false,
     },
+    createdAt: {
+      type: DataTypes.DATE,
+      allowNull: false,
+      field: 'dateCreated',
+    },
+    updatedAt: {
+      type: DataTypes.DATE,
+      allowNull: false,
+      field: 'updateTimestamp',
+    },
   },
   {
-    sequelize, // We need to pass the connection instance
-    createdAt: 'dateCreated',
-    updatedAt: 'updateTimestamp',
+    sequelize,
   }
 );

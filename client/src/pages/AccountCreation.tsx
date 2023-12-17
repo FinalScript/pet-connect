@@ -32,6 +32,7 @@ export default function AccountCreation() {
   const [name, setName] = useState<string>();
   const [profilePicture, setProfilePicture] = useState<Asset>();
   const nameRef = useRef<TextInput>(null);
+  const usernameRef = useRef<TextInput>(null);
   const [focus, setFocus] = useState({ username: false, name: false });
 
   useEffect(() => {
@@ -90,14 +91,10 @@ export default function AccountCreation() {
     }
   }, [isUsernameValid, username, name, profilePicture, loading]);
 
-  const focusNameInput = () => {
-    nameRef.current?.focus();
-  };
-
   return (
     <Pressable onPress={Keyboard.dismiss}>
       <SafeAreaView className='bg-themeBg h-full p-5 flex flex-col justify-between'>
-        <KeyboardAwareScrollView enableAutomaticScroll enableOnAndroid keyboardOpeningTime={450}>
+        <KeyboardAwareScrollView enableAutomaticScroll enableOnAndroid>
           <View>
             <Text className='text-themeText font-semibold text-3xl'>We need more details about you to finish up your account!</Text>
             <View className='mt-5 px-2'>
@@ -141,10 +138,14 @@ export default function AccountCreation() {
                       return { ...prev, name: false };
                     });
                   }}
+                  onSubmitEditing={() => {
+                    usernameRef.current?.focus();
+                  }}
+                  blurOnSubmit={false}
                   autoCorrect={false}
                   autoComplete='name'
                   maxLength={30}
-                  returnKeyType='done'
+                  returnKeyType='next'
                   placeholder='Enter your name'
                   editable={!loading}
                 />
@@ -153,14 +154,14 @@ export default function AccountCreation() {
                 <View>
                   <Text className='mb-2 pl-4 text-lg font-bold text-themeText'>Give yourself a username.</Text>
                   <UsernameInput
+                    inputRef={usernameRef}
                     value={username}
                     setValue={setUsername}
                     isValid={isUsernameValid}
                     setIsValid={setIsUsernameValid}
-                    focusNext={focusNameInput}
                     maxLength={30}
                     placeholder='Enter your username'
-                    returnKeyType='next'
+                    returnKeyType='done'
                     forOwner
                     prefix
                   />

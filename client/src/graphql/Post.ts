@@ -7,6 +7,9 @@ export const GET_ALL_POSTS = gql(`
         id
         petId
         description
+        likesCount
+        createdAt
+        updatedAt
         Media {
           id
           name
@@ -39,6 +42,7 @@ export const GET_ALL_POSTS = gql(`
           }
           postsCount
           followerCount
+          totalLikes
           ownerId
         }
       }
@@ -53,6 +57,9 @@ export const CREATE_POST = gql(`
         id
         petId
         description
+        likesCount
+        createdAt
+        updatedAt
         Media {
           id
           name
@@ -85,6 +92,7 @@ export const CREATE_POST = gql(`
           }
           postsCount
           followerCount
+          totalLikes
           ownerId
         }
       }
@@ -99,6 +107,9 @@ query getPostsByPetId($petId: String!) {
       id
       petId
       description
+      likesCount
+      createdAt
+      updatedAt
       Media {
         id
         name
@@ -123,6 +134,7 @@ query getPostsByPetId($petId: String!) {
         }
         postsCount
         followerCount
+        totalLikes
         ownerId
       }
     }
@@ -135,6 +147,9 @@ export const GET_FOLLOWING = gql(`
       id
       petId
       description
+      likesCount
+      createdAt
+      updatedAt
       Media {
         id
         name
@@ -159,6 +174,7 @@ export const GET_FOLLOWING = gql(`
         }
         postsCount
         followerCount
+        totalLikes
         ownerId
       }
     }
@@ -171,6 +187,9 @@ export const GET_FOR_YOU = gql(`
       id
       petId
       description
+      likesCount
+      createdAt
+      updatedAt
       Media {
         id
         name
@@ -195,6 +214,7 @@ export const GET_FOR_YOU = gql(`
         }
         postsCount
         followerCount
+        totalLikes
         ownerId
       }
     }
@@ -205,6 +225,38 @@ export const DELETE_POST = gql(`
   mutation DeletePost($id: String!) {
     deletePost(id: $id) {
       message
+    }
+  }
+`);
+
+export const LIKE_POST = gql(`
+  mutation LikePost($id: String!) {
+    likePost(id: $id) {
+      success
+    }
+  }
+`);
+
+export const UNLIKE_POST = gql(`
+  mutation UnlikePost($id: String!) {
+    unlikePost(id: $id) {
+      success
+    }
+  }
+`);
+
+export const IS_LIKING_POST = gql(`
+  query IsLikingPost($id: String!) {
+    isLikingPost(id: $id)
+  }
+`);
+
+export const GET_LIKES_COUNT_OF_POST = gql(`
+  query GetLikesCountOfPost($id: String!) {
+    getPostById(id: $id) {
+      post {
+        likesCount
+      }
     }
   }
 `);

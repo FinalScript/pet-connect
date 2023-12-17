@@ -259,7 +259,11 @@ export const OwnerResolver = {
         });
       }
 
-      const owner = await getOwnerByUsername(username);
+      const owner = await Owner.findOne({
+        where: {
+          username,
+        },
+      });
 
       if (owner) {
         return { isAvailable: false };

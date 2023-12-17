@@ -65,7 +65,6 @@ export const getOwnerByUsername = async (username: string) => {
         model: Pet,
         as: 'Pets',
         include: [
-          { all: true, nested: true },
           { model: Post, as: 'Posts', include: [{ all: true, nested: true }] },
         ],
       },

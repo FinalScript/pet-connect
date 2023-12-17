@@ -17,9 +17,21 @@ interface Props extends TextInputProps {
   focusNext?: Function;
   forOwner?: boolean;
   prefix?: boolean;
+  inputRef?: React.RefObject<TextInput>;
 }
 
-export default function UsernameInput({ className, value, setValue, isValid, setIsValid, focusNext, forOwner = false, prefix = false, ...rest }: Props) {
+export default function UsernameInput({
+  inputRef,
+  className,
+  value,
+  setValue,
+  isValid,
+  setIsValid,
+  focusNext,
+  forOwner = false,
+  prefix = false,
+  ...rest
+}: Props) {
   const [ownerUsernameExists] = useLazyQuery(OWNER_USERNAME_EXISTS);
   const [petUsernameExists] = useLazyQuery(PET_USERNAME_EXISTS);
   const [inFocus, setInFocus] = useState(false);
@@ -124,6 +136,7 @@ export default function UsernameInput({ className, value, setValue, isValid, set
             </View>
           )}
           <TextInput
+            ref={inputRef}
             className={
               (isValid ? 'border-success' : isError ? 'border-danger' : inFocus ? 'border-themeActive' : 'border-transparent') +
               ' bg-themeInput border-[5px] text-themeText shadow-sm shadow-themeShadow w-full rounded-3xl px-5 py-3 pr-10 text-lg ' +

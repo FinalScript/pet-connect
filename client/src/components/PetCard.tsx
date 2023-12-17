@@ -73,7 +73,7 @@ const PetCard = ({ pet, goToProfile, isSelected = false, setIsSelected, isOwner 
                 <Text className='text-xs'>Followers</Text>
               </View>
               <View className='flex items-center mr-3'>
-                <Text className='text-base'>25</Text>
+                <Text className='text-base'>{pet.totalLikes}</Text>
                 <Text className='text-xs'>Likes</Text>
               </View>
             </View>

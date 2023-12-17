@@ -22,8 +22,14 @@ const Feed = ({ navigation, scrollViewRef }: Props) => {
   const [refreshing, setRefreshing] = useState(false);
   const { data: followingData, refetch: refetchFollowing } = useQuery(GET_FOLLOWING);
   const { data: forYouData, refetch: refetchForYou } = useQuery(GET_FOR_YOU);
-  const following: PostType[] = useMemo(() => followingData?.getFollowing || [], [followingData]);
-  const forYou: PostType[] = useMemo(() => forYouData?.getForYou || [], [forYouData]);
+  const following: PostType[] = useMemo(() => {
+    console.log(followingData?.getFollowing);
+    return followingData?.getFollowing || [];
+  }, [followingData]);
+  const forYou: PostType[] = useMemo(() => {
+    console.log(forYouData?.getForYou);
+    return forYouData?.getForYou || [];
+  }, [forYouData]);
 
   const onRefreshForYou = useCallback(async () => {
     setRefreshing(true);
@@ -79,29 +85,13 @@ const Feed = ({ navigation, scrollViewRef }: Props) => {
         <Tab.Screen
           name='Explore'
           children={() => {
-            return (
-              <ExploreTab
-                innerRef={scrollViewRef}
-                posts={forYou}
-                refreshing={refreshing}
-                onRefresh={onRefreshForYou}
-                navigation={navigation}
-              />
-            );
+            return <ExploreTab innerRef={scrollViewRef} posts={forYou} refreshing={refreshing} onRefresh={onRefreshForYou} navigation={navigation} />;
           }}
         />
         <Tab.Screen
           name='Following'
           children={() => {
-            return (
-              <FollowingTab
-                innerRef={scrollViewRef}
-                posts={following}
-                refreshing={refreshing}
-                onRefresh={onRefreshFollowing}
-                navigation={navigation}
-              />
-            );
+            return <FollowingTab innerRef={scrollViewRef} posts={following} refreshing={refreshing} onRefresh={onRefreshFollowing} navigation={navigation} />;
           }}
         />
       </Tab.Navigator>
@@ -136,6 +126,7 @@ const ExploreTab = ({ innerRef, posts, refreshing, onRefresh, navigation }: TabP
                 goToProfile={() => {
                   navigation.navigate('Pet Profile', { petId: post.author.id });
                 }}
+                navigation={navigation}
               />
             );
           })}
@@ -169,6 +160,7 @@ const FollowingTab = ({ innerRef, posts, refreshing, onRefresh, navigation }: Ta
                 goToProfile={() => {
                   navigation.navigate('Pet Profile', { petId: post.author.id });
                 }}
+                navigation={navigation}
               />
             );
           })}

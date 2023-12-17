@@ -15,6 +15,9 @@ export class Media extends Model<InferAttributes<Media>, InferCreationAttributes
   declare path: string;
   declare type: string;
   declare aspectRatio: number;
+
+  public readonly createdAt: Date;
+  public readonly updatedAt: Date;
 }
 
 Media.init(
@@ -42,10 +45,18 @@ Media.init(
     aspectRatio: {
       type: DataTypes.FLOAT,
     },
+    createdAt: {
+      type: DataTypes.DATE,
+      allowNull: false,
+      field: 'dateCreated',
+    },
+    updatedAt: {
+      type: DataTypes.DATE,
+      allowNull: false,
+      field: 'updateTimestamp',
+    },
   },
   {
-    sequelize, // We need to pass the connection instance
-    createdAt: 'dateCreated',
-    updatedAt: 'updateTimestamp',
+    sequelize,
   }
 );

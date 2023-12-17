@@ -8,7 +8,7 @@ import { auth } from 'express-oauth2-jwt-bearer';
 import { connectToDB, sequelize } from './src/db/connection';
 import { schema } from './src/graphql/schemas/index';
 import { Comment } from './src/models/Comment';
-import { Like } from './src/models/Like';
+import { Follows } from './src/models/Follow';
 import { Media } from './src/models/Media';
 import { Owner } from './src/models/Owner';
 import { Pet } from './src/models/Pet';
@@ -16,7 +16,6 @@ import { Post } from './src/models/Post';
 import { ProfilePicture } from './src/models/ProfilePicture';
 import { OwnerRouter } from './src/routes/OwnerRoute';
 import { PetRouter } from './src/routes/PetRoute';
-import { Follows } from './src/models/Follow';
 
 dotenv.config();
 
@@ -77,14 +76,13 @@ const init = async () => {
     Post.hasMany(Comment, {
       sourceKey: 'id',
       foreignKey: 'postId',
-      as: 'comments',
+      as: 'Comments',
     });
 
-    Post.hasMany(Like, {
-      sourceKey: 'id',
-      foreignKey: 'postId',
-      as: 'likes',
-    });
+    Post.belongsToMany(Owner, { through: 'PostLikes', as: 'Likes', foreignKey: 'postId' });
+    Owner.belongsToMany(Post, { through: 'LikesOwners', as: 'LikedPosts', foreignKey: 'ownerId' });
+
+    Comment.belongsTo(Owner, { as: 'author' });
 
     await sequelize.sync({ alter: true });
   });
@@ -98,11 +96,14 @@ const init = async () => {
     res.status(200).send('Okay!');
   });
 
-  app.use('/api/private/owner', checkJwt, OwnerRouter);
+  app.get('/api/v2/private/permissions', checkJwt, (req, res) => {
+    if ((req.auth.payload.permissions as string[])?.includes('admin')) {
+      res.status(202).send({ message: 'Admin Authorized', permissions: req.auth.payload.permissions, sub: req.auth.payload.sub });
+      return;
+    }
 
-  app.use('/api/private/pet', checkJwt, PetRouter);
-
-  app.use('/uploads', express.static('uploads'));
+    res.status(403).send({ message: 'Unauthorized user.' });
+  });
 };
 
 init();

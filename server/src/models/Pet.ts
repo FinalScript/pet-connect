@@ -37,21 +37,22 @@ export class Pet extends Model<InferAttributes<Pet>, InferCreationAttributes<Pet
   public location?: string | null;
 
   public readonly ownerId?: string;
-  // Define associations
-  public readonly createdAt: Date;
-  public readonly updatedAt: Date;
 
   public readonly Owner?: Owner;
   public readonly Followers?: Owner[];
   public readonly ProfilePicture?: ProfilePicture;
   public readonly Posts?: Post[];
 
-  public followerCount?: number = 0;
-  public postsCount?: number = 0;
+  public followerCount: number = 0;
+  public postsCount: number = 0;
+  public totalLikes: number = 0;
 
   public addFollower!: HasManyAddAssociationMixin<Owner, string>;
   public removeFollower!: HasManyRemoveAssociationMixin<Owner, string>;
   public setProfilePicture!: HasOneSetAssociationMixin<ProfilePicture, 'id'>;
+
+  public readonly createdAt: Date;
+  public readonly updatedAt: Date;
 }
 
 Pet.init(
@@ -87,6 +88,7 @@ Pet.init(
         // Use a getter to dynamically fetch follower count
         return sequelize.models.Follows.count({ where: { petId: this.id } });
       },
+      defaultValue: 0,
     },
     postsCount: {
       type: DataTypes.VIRTUAL(DataTypes.INTEGER),
@@ -94,6 +96,24 @@ Pet.init(
         // Use a getter to dynamically fetch posts count
         return sequelize.models.Post.count({ where: { petId: this.id } });
       },
+      defaultValue: 0,
+    },
+    totalLikes: {
+      type: DataTypes.VIRTUAL(DataTypes.INTEGER),
+      async get() {
+        const posts = await Post.findAll({
+          where: { petId: this.id }, // Assuming 'petId' is the foreign key in the Post model referencing Pet
+          include: [{ model: Owner, as: 'Likes' }], // Assuming the association between Post and Owner for likes is 'Likes'
+        });
+
+        // Calculate cumulative likes for the pet
+        const cumulativeLikes = posts.reduce((totalLikes, post) => {
+          return totalLikes + (post.Likes?.length || 0);
+        }, 0);
+
+        return cumulativeLikes;
+      },
+      defaultValue: 0,
     },
     createdAt: {
       type: DataTypes.DATE,

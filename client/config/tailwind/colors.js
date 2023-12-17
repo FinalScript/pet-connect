@@ -1,6 +1,6 @@
 module.exports = {
   themeMain: '#F4BF96',
-  themeBg: '#fae8e3',
+  themeBg: '#fff2ee',
   themeTabBg: '#efc3b6',
   themeText: '#1F1717',
   themeBtn: '#F4BF96',

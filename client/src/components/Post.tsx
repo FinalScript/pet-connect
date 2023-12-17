@@ -1,12 +1,12 @@
-import React, { useMemo, useRef, useState } from 'react';
-import { Animated, Platform, Pressable, View } from 'react-native';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { Animated, Platform, Pressable, Touchable, TouchableOpacity, TouchableWithoutFeedback, View } from 'react-native';
 import { TapGestureHandler } from 'react-native-gesture-handler';
 import { HapticFeedbackTypes, trigger } from 'react-native-haptic-feedback';
 import { Modalize } from 'react-native-modalize';
 import { Portal } from 'react-native-portalize';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import Ionicon from 'react-native-vector-icons/Ionicons';
-import { Post as PostType } from '../__generated__/graphql';
+import { Comment, Post as PostType } from '../__generated__/graphql';
 import { options } from '../utils/hapticFeedbackOptions';
 import Image from './Image';
 import PetTypeImage from './PetTypeImage';
@@ -18,41 +18,45 @@ import { Divider, Menu } from 'react-native-paper';
 import { MenuAction, MenuView } from '@react-native-menu/menu';
 import { useSelector } from 'react-redux';
 import { ProfileReducer } from '../redux/reducers/profileReducer';
-import { useMutation } from '@apollo/client';
-import { DELETE_POST } from '../graphql/Post';
+import { useMutation, useQuery } from '@apollo/client';
+import { DELETE_POST, GET_LIKES_COUNT_OF_POST, IS_LIKING_POST, LIKE_POST, UNLIKE_POST } from '../graphql/Post';
+import { GET_COMMENTS_BY_POST_ID } from '../graphql/Comment';
+import { getRelativeTime } from '../utils/Date';
+import { formatNumberWithSuffix } from '../utils/Number';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { RootStackParamList } from '../../App';
 
 interface Props {
   post: PostType;
   goToProfile: () => void;
   onLayoutChange?: (height: number) => void;
+  navigation: NativeStackNavigationProp<RootStackParamList, 'Home', undefined>;
 }
-
-const comments = [
-  {
-    username: 'jimmy16',
-    text: 'Wow so cute OMG 😍🥹',
-  },
-  {
-    username: 'catwoman',
-    text: 'eu, odio. Phasellus at augue id ante dictum cursus. Nunc',
-  },
-  {
-    username: 'bakrsdog',
-    text: 'suscipit, est ac facilisis facilisis, magna tellus faucibus leo, in',
-  },
-];
 
 const CAPTION_LINES = 2;
 
-export default function Post({ post, goToProfile, onLayoutChange }: Props) {
-  const [postLiked, setPostLiked] = useState(false);
+export default function Post({ post, goToProfile, onLayoutChange, navigation }: Props) {
   const [moreCaption, setMoreCaption] = useState(false);
   const [showHeartIcon, setShowHeartIcon] = useState(false);
   const modalizeRef = useRef<Modalize>(null);
   const heartScale = useRef(new Animated.Value(0)).current; // Ref for the animated value
+
   const ownerId = useSelector((state: ProfileReducer) => state.profile.owner?.id);
   const isOwner = useMemo(() => ownerId === post.author.ownerId, [ownerId, post.author.Owner?.id]);
+
   const [deletePost] = useMutation(DELETE_POST, { variables: { id: post.id } });
+
+  const [likePost] = useMutation(LIKE_POST, { variables: { id: post.id } });
+  const [unlikePost] = useMutation(UNLIKE_POST, { variables: { id: post.id } });
+
+  const { data: likesCountData, refetch: refetchLikesCountData } = useQuery(GET_LIKES_COUNT_OF_POST, { variables: { id: post.id }, pollInterval: 2000 });
+  const likesCount: number = useMemo(() => likesCountData?.getPostById.post?.likesCount || 0, [likesCountData]);
+
+  const { data: isLikedData, refetch: refetchIsLikeData } = useQuery(IS_LIKING_POST, { variables: { id: post.id }, pollInterval: 2000 });
+  const postLiked: boolean = useMemo(() => isLikedData?.isLikingPost || false, [isLikedData]);
+
+  const { data: commentsData, refetch: refetchCommentData } = useQuery(GET_COMMENTS_BY_POST_ID, { variables: { postId: post.id }, pollInterval: 5000 });
+  const comments: Comment[] = useMemo(() => commentsData?.getCommentsByPostId || [], [commentsData]);
 
   const menuActions: MenuAction[] = useMemo(() => {
     const actions: MenuAction[] = [
@@ -84,6 +88,10 @@ export default function Post({ post, goToProfile, onLayoutChange }: Props) {
 
     return actions;
   }, [isOwner, ownerId]);
+
+  useEffect(() => {
+    console.log(post.id);
+  }, [post]);
 
   const onLayout = (event: { nativeEvent: { layout: { height: number } } }) => {
     const height = event.nativeEvent.layout.height;
@@ -117,14 +125,20 @@ export default function Post({ post, goToProfile, onLayoutChange }: Props) {
     ]).start();
   };
 
-  const handleLike = () => {
-    setPostLiked(true);
-    trigger(HapticFeedbackTypes.impactLight, options);
-  };
+  const handleLike = useCallback(async () => {
+    if (!postLiked) {
+      await likePost();
+      await refetchIsLikeData();
+      await refetchLikesCountData();
+      trigger(HapticFeedbackTypes.impactLight, options);
+    }
+  }, [likePost]);
 
-  const unlikePost = () => {
-    setPostLiked(false);
-  };
+  const handleUnlike = useCallback(async () => {
+    await unlikePost();
+    await refetchIsLikeData();
+    await refetchLikesCountData();
+  }, [unlikePost]);
 
   const handleMoreCaption = () => {
     if (moreCaption === true) {
@@ -138,7 +152,10 @@ export default function Post({ post, goToProfile, onLayoutChange }: Props) {
   }
 
   return (
-    <View className='bg-themeInput mb-5 pb-2 w-full shadow-md shadow-themeShadow' onLayout={onLayout}>
+    <View
+      style={{ shadowColor: themeConfig.customColors.themeText, shadowOpacity: 0.25, shadowRadius: 10, shadowOffset: { height: 3, width: 0 } }}
+      className='bg-themeInput mb-5 pb-5 pt-2 w-full rounded-[30px]'
+      onLayout={onLayout}>
       <Portal>
         <Modalize
           ref={modalizeRef}
@@ -150,20 +167,25 @@ export default function Post({ post, goToProfile, onLayoutChange }: Props) {
           keyboardAvoidingBehavior=''
           propagateSwipe={true}
           useNativeDriver>
-          <CommentsModel comments={comments} closeModal={() => closeCommentsModal()} />
+          <CommentsModel
+            postId={post.id}
+            comments={comments}
+            closeModal={() => closeCommentsModal()}
+            refetchComments={refetchCommentData}
+            navigation={navigation}
+          />
         </Modalize>
       </Portal>
-      <View className='flex-row justify-between items-center px-3 py-2'>
-        <Pressable className='flex-row items-center ' onPress={() => goToProfile()}>
-          <View className='w-14 h-14 mr-2 aspect-square'>
-            <Image className='flex w-full h-full rounded-lg' source={{ uri: post.author.ProfilePicture?.url }} />
+      <View className='flex-row justify-between px-5 py-2'>
+        <Pressable className='flex-row items-center' onPress={() => goToProfile()}>
+          <View className='w-14 h-14 mr-3 aspect-square'>
+            <Image className='flex w-full h-full rounded-full' source={{ uri: post.author.ProfilePicture?.url }} />
           </View>
           <View className='flex justify-center'>
-            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-              <Text className='text-2xl font-semibold text-sky-700 -mb-2'>{post.author.name}</Text>
-              <PetTypeImage type={post.author.type} style={{ width: 20, height: 20, marginLeft: 5, marginTop: 5 }} />
+            <View className='flex-row'>
+              <Text className='text-xl font-bold text-[#694531] -mb-2'>{post.author.name}</Text>
+              <PetTypeImage type={post.author.type} style={{ width: 20, height: 20, marginLeft: 8, marginTop: 5 }} />
             </View>
-            <Text className='text-base font-light text-sky-500'>@{post.author.username}</Text>
           </View>
         </Pressable>
 
@@ -175,8 +197,8 @@ export default function Post({ post, goToProfile, onLayoutChange }: Props) {
               }
             }}
             actions={menuActions}>
-            <View className='pr-3'>
-              <Entypo name='dots-three-horizontal' size={18} />
+            <View className='px-2'>
+              <Entypo name='dots-three-horizontal' size={18} color={'#8f5f43'} />
             </View>
           </MenuView>
         </View>
@@ -196,17 +218,17 @@ export default function Post({ post, goToProfile, onLayoutChange }: Props) {
                 position: 'absolute',
                 transform: [{ scale: heartScale }],
               }}>
-              <AntDesign name='heart' size={100} color={themeConfig.customColors.themeActive} />
+              <AntDesign name='heart' size={100} color={'red'} />
             </Animated.View>
           )}
         </View>
       </TapGestureHandler>
 
-      <View className='flex-row items-center gap-x-4 px-4 py-1'>
+      <View className='flex-row items-center gap-x-4 px-5 py-1'>
         <View className='mt-1'>
           {postLiked ? (
-            <Pressable onPress={unlikePost}>
-              <AntDesign name='heart' size={25} color={themeConfig.customColors.themeActive} />
+            <Pressable onPress={handleUnlike}>
+              <AntDesign name='heart' size={25} color={'red'} />
             </Pressable>
           ) : (
             <Pressable onPress={handleLike}>
@@ -219,12 +241,19 @@ export default function Post({ post, goToProfile, onLayoutChange }: Props) {
         </View>
       </View>
 
-      {post.description && (
-        <View className='px-3 py-1'>
-          <View className='flex flex-row min-h-[7rem]'>
-            <Text className='text-lg' numberOfLines={moreCaption ? 0 : CAPTION_LINES}>
-              <Text className='font-semibold text-sky-600'>{post.author.name} </Text>
+      <View className='px-5'>
+        <Text className='text-themeText text-base' onPress={handleMoreCaption} suppressHighlighting>
+          {likesCount.toLocaleString()} like{likesCount !== 1 && 's'}
+        </Text>
+      </View>
 
+      {post.description && (
+        <View className='px-5'>
+          <View className='flex flex-row min-h-[7rem]'>
+            <Text className='text-base' numberOfLines={moreCaption ? 0 : CAPTION_LINES}>
+              <TouchableWithoutFeedback onPress={() => goToProfile()}>
+                <Text className='text-base font-semibold text-[#694531]'>{post.author.name} </Text>
+              </TouchableWithoutFeedback>
               <Text className='text-themeText' onPress={handleMoreCaption} suppressHighlighting>
                 {post.description}
               </Text>
@@ -232,6 +261,28 @@ export default function Post({ post, goToProfile, onLayoutChange }: Props) {
           </View>
         </View>
       )}
+
+      {comments.length > 0 && (
+        <Pressable onPress={openCommentsModal}>
+          <Text className='px-5 text-md text-[#4b4b4b]'>
+            View {comments.length > 1 && 'all'} {comments.length} comment{comments.length > 1 && 's'}
+          </Text>
+        </Pressable>
+      )}
+
+      {comments[0] && (
+        <View className='px-5 mt-1'>
+          <View className='flex-row'>
+            <Text className='font-semibold text-[#694531]'>{comments[0].author.name} </Text>
+
+            <Text ellipsizeMode='tail' numberOfLines={1} className='text-themeText w-[50%]' onPress={handleMoreCaption} suppressHighlighting>
+              {comments[0].text}
+            </Text>
+          </View>
+        </View>
+      )}
+
+      <Text className='px-5 mt-1 text-xs text-[#838383]'>{getRelativeTime(post.createdAt)}</Text>
     </View>
   );
 }
