@@ -56,8 +56,12 @@ export default function AppLoader({ children }: Props) {
       return;
     }
 
+    if (!__DEV__) {
+      setApiUrl(`http://petconnect-api.hopto.org:54321`);
+      return;
+    }
+
     SplashScreen.hide();
-    //Returns `LSNetworkInfo`
 
     let cancelScanHandle: any;
 
@@ -199,7 +203,7 @@ export default function AppLoader({ children }: Props) {
                         setApiUrl={setApiUrl}
                       />
                     )}
-                    <DeveloperPanel apiUrl={{ set: setApiUrl, value: apiUrl }} />
+                    {__DEV__ && <DeveloperPanel apiUrl={{ set: setApiUrl, value: apiUrl }} />}
 
                     {!apiStatus ? <ErrorContactingServer /> : <>{children}</>}
                   </BottomSheetModalProvider>
