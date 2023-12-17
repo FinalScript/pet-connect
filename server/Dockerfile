@@ -1,6 +1,6 @@
 # Stage 1 : Build Server
 
-FROM node:16.10-alpine
+FROM node:18-alpine
 
 WORKDIR /usr/src/app/server/
 COPY package*.json ./
