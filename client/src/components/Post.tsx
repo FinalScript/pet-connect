@@ -23,16 +23,19 @@ import { DELETE_POST, GET_LIKES_COUNT_OF_POST, IS_LIKING_POST, LIKE_POST, UNLIKE
 import { GET_COMMENTS_BY_POST_ID } from '../graphql/Comment';
 import { getRelativeTime } from '../utils/Date';
 import { formatNumberWithSuffix } from '../utils/Number';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { RootStackParamList } from '../../App';
 
 interface Props {
   post: PostType;
   goToProfile: () => void;
   onLayoutChange?: (height: number) => void;
+  navigation: NativeStackNavigationProp<RootStackParamList, 'Home', undefined>;
 }
 
 const CAPTION_LINES = 2;
 
-export default function Post({ post, goToProfile, onLayoutChange }: Props) {
+export default function Post({ post, goToProfile, onLayoutChange, navigation }: Props) {
   const [moreCaption, setMoreCaption] = useState(false);
   const [showHeartIcon, setShowHeartIcon] = useState(false);
   const modalizeRef = useRef<Modalize>(null);
@@ -164,7 +167,13 @@ export default function Post({ post, goToProfile, onLayoutChange }: Props) {
           keyboardAvoidingBehavior=''
           propagateSwipe={true}
           useNativeDriver>
-          <CommentsModel postId={post.id} comments={comments} closeModal={() => closeCommentsModal()} refetchComments={refetchCommentData} />
+          <CommentsModel
+            postId={post.id}
+            comments={comments}
+            closeModal={() => closeCommentsModal()}
+            refetchComments={refetchCommentData}
+            navigation={navigation}
+          />
         </Modalize>
       </Portal>
       <View className='flex-row justify-between px-5 py-2'>

@@ -126,6 +126,7 @@ const ExploreTab = ({ innerRef, posts, refreshing, onRefresh, navigation }: TabP
                 goToProfile={() => {
                   navigation.navigate('Pet Profile', { petId: post.author.id });
                 }}
+                navigation={navigation}
               />
             );
           })}
@@ -159,6 +160,7 @@ const FollowingTab = ({ innerRef, posts, refreshing, onRefresh, navigation }: Ta
                 goToProfile={() => {
                   navigation.navigate('Pet Profile', { petId: post.author.id });
                 }}
+                navigation={navigation}
               />
             );
           })}

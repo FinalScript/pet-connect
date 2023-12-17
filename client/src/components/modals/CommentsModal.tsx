@@ -11,6 +11,8 @@ import { ApolloQueryResult, useMutation } from '@apollo/client';
 import { CREATE_COMMENT } from '../../graphql/Comment';
 import { getRelativeTime } from '../../utils/Date';
 import { formatNumberWithSuffix } from '../../utils/Number';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { RootStackParamList } from '../../../App';
 
 interface Props {
   postId: string;
@@ -25,9 +27,10 @@ interface Props {
         >
       | undefined
   ) => Promise<ApolloQueryResult<GetCommentsByPostIdQuery>>;
+  navigation: NativeStackNavigationProp<RootStackParamList, 'Home', undefined>;
 }
 
-const CommentsModel = ({ postId, comments, closeModal, refetchComments }: Props) => {
+const CommentsModel = ({ postId, comments, closeModal, refetchComments, navigation }: Props) => {
   const owner = useSelector((state: ProfileReducer) => state.profile.owner);
   const keyboardHeight = useKeyboard();
   const inputAnimatedValue = new Animated.Value(0);
@@ -51,7 +54,13 @@ const CommentsModel = ({ postId, comments, closeModal, refetchComments }: Props)
           {comments.map((comment, index) => (
             <View key={`comment-${index}`} className='mb-4 pr-5'>
               <View className='flex-row rounded-lg'>
-                <Image className='w-9 h-9 rounded-full mr-3' source={{ uri: comment.author.ProfilePicture?.url }} />
+                <Pressable
+                  onPress={() => {
+                    closeModal();
+                    navigation.push('Owner Profile', { ownerId: comment.author.id });
+                  }}>
+                  <Image className='w-9 h-9 rounded-full mr-3' source={{ uri: comment.author.ProfilePicture?.url }} />
+                </Pressable>
                 <View className='flex-1 rounded-2xl'>
                   <Text className='text-xs text-gray-700'>{comment.author.name}</Text>
                   <Text className='text-sm font-medium text-themeText' numberOfLines={4}>
