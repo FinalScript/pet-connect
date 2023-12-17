@@ -1,0 +1,24 @@
+version: '3.9'
+services:
+    api:
+        build:
+            context: .
+            dockerfile: Dockerfile
+        ports:
+            - '54321:54321'
+        networks:
+            - petconnect-network
+        environment:
+            - DB_CONNECTION=${DB_CONNECTION}
+            - CLIENT_ID=${CLIENT_ID}
+            - CLIENT_SECRET=${CLIENT_SECRET}
+
+networks:
+    petconnect-network:
+        driver: bridge
+
+volumes:
+    data-volume:
+    node_modules:
+    web-root:
+        driver: local
