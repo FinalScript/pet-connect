@@ -261,6 +261,18 @@ export default function Post({ post, goToProfile, onLayoutChange }: Props) {
         </Pressable>
       )}
 
+      {comments[0] && (
+        <View className='px-5 mt-1'>
+          <View className='flex-row'>
+            <Text className='font-semibold text-[#694531]'>{comments[0].author.name} </Text>
+
+            <Text ellipsizeMode='tail' numberOfLines={1} className='text-themeText w-[50%]' onPress={handleMoreCaption} suppressHighlighting>
+              {comments[0].text}
+            </Text>
+          </View>
+        </View>
+      )}
+
       <Text className='px-5 mt-1 text-xs text-[#838383]'>{getRelativeTime(post.createdAt)}</Text>
     </View>
   );
