@@ -179,7 +179,7 @@ const PetProfile = ({
           </Pressable>
 
           <View className='flex items-center flex-1'>
-            <Text className='text-xl font-bold'>25</Text>
+            <Text className='text-xl font-bold'>{pet.totalLikes}</Text>
             <Text className='text-md'>Likes</Text>
           </View>
         </View>
