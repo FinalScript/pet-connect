@@ -89,11 +89,7 @@ export default function Post({ post, goToProfile, onLayoutChange, navigation }: 
 
     return actions;
   }, [isOwner, ownerId]);
-
-  useEffect(() => {
-    console.log(post.id);
-  }, [post]);
-
+  
   const onLayout = (event: { nativeEvent: { layout: { height: number } } }) => {
     const height = event.nativeEvent.layout.height;
     if (onLayoutChange) {
