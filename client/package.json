@@ -3,7 +3,7 @@
   "version": "0.0.1",
   "private": true,
   "scripts": {
-    "ios:dev": "react-native run-ios --scheme 'development' --simulator='iPhone 15 Pro Max'",
+    "ios:dev": "react-native run-ios --scheme 'development'",
     "ios:dev-release": "react-native run-ios --configuration Release --scheme 'development'",
     "ios:prod": "react-native run-ios --scheme 'production'",
     "ios:prod-release": "react-native run-ios --configuration Release --scheme 'production'",

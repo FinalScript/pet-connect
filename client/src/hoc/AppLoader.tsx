@@ -52,11 +52,12 @@ export default function AppLoader({ children }: Props) {
   }, []);
 
   useEffect(() => {
+    console.log(Config)
     if (apiStatus) {
       return;
     }
 
-    if (!__DEV__ && Config.APP_CONFIG === 'production') {
+    if (Config.APP_CONFIG === 'production') {
       setApiUrl(Config.API_URL);
       return;
     }
@@ -165,7 +166,7 @@ export default function AppLoader({ children }: Props) {
     if (fetchedApiUrl) {
       setApiUrl(fetchedApiUrl);
     } else {
-      setApiUrl('http://localhost:54321');
+      setApiUrl(Config.API_URL);
     }
 
     setDomain(Config.AUTH0_DOMAIN);
