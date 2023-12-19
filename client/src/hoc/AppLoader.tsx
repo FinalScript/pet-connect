@@ -56,8 +56,8 @@ export default function AppLoader({ children }: Props) {
       return;
     }
 
-    if (!__DEV__) {
-      setApiUrl(`http://petconnect-api.hopto.org:54321`);
+    if (!__DEV__ && Config.APP_CONFIG === 'production') {
+      setApiUrl(Config.API_URL);
       return;
     }
 
