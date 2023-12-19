@@ -27,18 +27,20 @@ const SettingsModal = ({ logout, closeModal }: Props) => {
         />
       </View>
 
-      <PressableOpacity
-        activeOpacity={0.8}
-        className='mt-5 bg-green-400 px-6 py-3 rounded-xl'
-        onPress={() => {
-          closeModal();
+      {__DEV__ && (
+        <PressableOpacity
+          activeOpacity={0.8}
+          className='mt-5 bg-green-400 px-6 py-3 rounded-xl'
+          onPress={() => {
+            closeModal();
 
-          setTimeout(() => {
-            dispatch({ type: DEVELOPER_PANEL_OPEN, payload: true });
-          }, 100);
-        }}>
-        <Text className='text-xl font-bold text-themeText text-center'>Open Developer Panel</Text>
-      </PressableOpacity>
+            setTimeout(() => {
+              dispatch({ type: DEVELOPER_PANEL_OPEN, payload: true });
+            }, 100);
+          }}>
+          <Text className='text-xl font-bold text-themeText text-center'>Open Developer Panel</Text>
+        </PressableOpacity>
+      )}
     </View>
   );
 };
