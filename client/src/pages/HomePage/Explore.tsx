@@ -117,38 +117,37 @@ const Explore = ({ navigation }: Props) => {
 
         {searchResultsOwners.map((result) => {
           return (
-            <View key={result.id} className='flex-row items-center mt-5'>
-              <Pressable
-                className={'h-[80px] flex flex-row flex-1 rounded-2xl bg-themeInput shadow-sm shadow-themeShadow'}
-                onPress={() => {
-                  navigation.push('Owner Profile', { ownerId: result.id });
-                }}>
-                <View className='w-[80px] aspect-square flex justify-center items-center mr-5 p-1'>
-                  {result?.ProfilePicture?.url ? (
-                    <Image
-                      className='w-full h-full rounded-xl'
-                      source={{
-                        uri: result.ProfilePicture.url,
-                      }}
-                    />
-                  ) : (
-                    <Ionicon name='person' size={50} style={{ opacity: 0.8 }} />
-                  )}
-                </View>
-                <View className='flex justify-center'>
-                  <Text className='text-2xl -mb-1'>{result?.name}</Text>
-                  <Text className='text-sm'>@{result?.username}</Text>
-                </View>
-
-                {ownerId === result.id && (
-                  <View className='flex-1 flex-row justify-end items-start px-3 py-2'>
-                    <View className='bg-emerald-200 px-3 rounded-xl'>
-                      <Text className='font-medium text-xs'>You</Text>
-                    </View>
-                  </View>
+            <Pressable
+              key={result.id}
+              className='flex-row items-center p-4 mt-4 bg-white rounded-xl shadow-md'
+              onPress={() => {
+                navigation.push('Owner Profile', { ownerId: result.id });
+              }}
+            >
+              <View className='w-14 h-14 mr-4'>
+                {result?.ProfilePicture?.url ? (
+                  <Image
+                    className='w-full h-full rounded-full'
+                    source={{
+                      uri: result.ProfilePicture.url,
+                    }}
+                  />
+                ) : (
+                  <Ionicon name='person' size={50} style={{ opacity: 0.8 }} />
                 )}
-              </Pressable>
-            </View>
+              </View>
+
+              <View className='flex-grow'>
+                <Text className='text-lg font-semibold'>{result?.name}</Text>
+                <Text className='text-sm text-gray-500'>@{result?.username}</Text>
+              </View>
+
+              {ownerId === result.id && (
+                <View className='px-2 py-1 bg-emerald-200 rounded-xl'>
+                  <Text className='font-medium text-xs'>You</Text>
+                </View>
+              )}
+            </Pressable>
           );
         })}
 
@@ -156,38 +155,37 @@ const Explore = ({ navigation }: Props) => {
 
         {searchResultsPets.map((result) => {
           return (
-            <View key={result.id} className='flex-row items-center mt-5'>
-              <Pressable
-                className={'h-[80px] flex flex-row flex-1 rounded-2xl bg-themeInput shadow-sm shadow-themeShadow'}
-                onPress={() => {
-                  navigation.push('Pet Profile', { petId: result.id });
-                }}>
-                <View className='w-[80px] aspect-square flex justify-center items-center mr-5 p-1'>
-                  {result?.ProfilePicture?.url ? (
-                    <Image
-                      className='w-full h-full rounded-xl'
-                      source={{
-                        uri: result.ProfilePicture.url,
-                      }}
-                    />
-                  ) : (
-                    <PetTypeImage type={result.type} className='w-full h-full' />
-                  )}
-                </View>
-                <View className='flex justify-center'>
-                  <Text className='text-2xl -mb-1'>{result?.name}</Text>
-                  <Text className='text-sm'>@{result?.username}</Text>
-                </View>
-
-                {ownerId === result.Owner?.id && (
-                  <View className='flex-1 flex-row justify-end items-start px-3 py-2'>
-                    <View className='bg-emerald-200 px-3 rounded-lg'>
-                      <Text className='font-medium text-xs'>Your Pet</Text>
-                    </View>
-                  </View>
+            <Pressable
+              key={result.id}
+              className='flex-row items-center p-4 mt-4 bg-white rounded-xl shadow-md'
+              onPress={() => {
+                navigation.push('Pet Profile', { petId: result.id });
+              }}
+            >
+              <View className='w-14 h-14 mr-4'>
+                {result?.ProfilePicture?.url ? (
+                  <Image
+                    className='w-full h-full rounded-full'
+                    source={{
+                      uri: result.ProfilePicture.url,
+                    }}
+                  />
+                ) : (
+                  <PetTypeImage type={result.type} className='w-full h-full' />
                 )}
-              </Pressable>
-            </View>
+              </View>
+
+              <View className='flex-grow'>
+                <Text className='text-lg font-semibold'>{result?.name}</Text>
+                <Text className='text-sm text-gray-500'>@{result?.username}</Text>
+              </View>
+
+              {ownerId === result.Owner?.id && (
+                <View className='px-2 py-1 bg-emerald-200 rounded-xl'>
+                  <Text className='font-medium text-xs'>Your Pet</Text>
+                </View>
+              )}
+            </Pressable>
           );
         })}
 
