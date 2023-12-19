@@ -17,6 +17,7 @@ import { Feather } from '../utils/Icons';
 import { themeConfig } from '../utils/theme';
 import { Post } from '../__generated__/graphql';
 import { POST_DATA } from '../redux/constants';
+import { GET_OWNER_BY_ID } from '../graphql/Owner';
 
 const useTabBarState = (initialState = 0): Partial<TabBarProps> => {
   const [selectedIndex, setSelectedIndex] = useState(initialState);
@@ -38,6 +39,7 @@ const PetProfile = ({
   const { data: isFollowingPet } = useQuery(IS_FOLLOWING_PET, { variables: { ownerId: ownerId || '', petId }, skip: !ownerId, pollInterval: 500 });
 
   const pet = useMemo(() => petData?.getPetById.pet, [petData, petId]);
+
   const isOwner = useMemo(() => ownerId === pet?.Owner?.id, [ownerId, pet?.Owner?.id]);
   const gridPosts: Post[] = useMemo(() => postsData?.getPostsByPetId?.posts || [], [postsData]);
 
@@ -192,7 +194,15 @@ const PetProfile = ({
               onPress={() => {
                 pet.Owner?.id && navigation.push('Owner Profile', { ownerId: pet.Owner.id });
               }}>
-              <Text className='font-medium text-themeTrim'>@{pet.Owner.username}</Text>
+              <Text className='font-medium text-themeTrim'>@{pet.Owner?.username}</Text>
+              <View className='w-36 h-36 flex items-center justify-center'>
+                <Image
+                  className='w-full h-full rounded-3xl border-2 border-themeActive'
+                  source={{
+                    uri: pet.Owner.ProfilePicture?.url,
+                  }}
+                />
+              </View>
             </Pressable>
           </View>
 
