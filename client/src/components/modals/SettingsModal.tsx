@@ -4,6 +4,7 @@ import { PressableOpacity } from 'react-native-pressable-opacity';
 import { useDispatch } from 'react-redux';
 import { DEVELOPER_PANEL_OPEN } from '../../redux/constants';
 import Text from '../Text';
+import Config from 'react-native-config';
 
 interface Props extends ModalProps {
   logout: () => void;
@@ -27,7 +28,7 @@ const SettingsModal = ({ logout, closeModal }: Props) => {
         />
       </View>
 
-      {__DEV__ && (
+      {Config.API_URL === 'development' && (
         <PressableOpacity
           activeOpacity={0.8}
           className='mt-5 bg-green-400 px-6 py-3 rounded-xl'

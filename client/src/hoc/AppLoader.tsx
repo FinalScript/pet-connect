@@ -52,7 +52,7 @@ export default function AppLoader({ children }: Props) {
   }, []);
 
   useEffect(() => {
-    console.log(Config)
+    console.log(Config);
     if (apiStatus) {
       return;
     }
@@ -204,7 +204,7 @@ export default function AppLoader({ children }: Props) {
                         setApiUrl={setApiUrl}
                       />
                     )}
-                    {__DEV__ && <DeveloperPanel apiUrl={{ set: setApiUrl, value: apiUrl }} />}
+                    {Config.API_URL === 'development' && <DeveloperPanel apiUrl={{ set: setApiUrl, value: apiUrl }} />}
 
                     {!apiStatus ? <ErrorContactingServer /> : <>{children}</>}
                   </BottomSheetModalProvider>
