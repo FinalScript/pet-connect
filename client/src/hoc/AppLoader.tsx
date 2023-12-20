@@ -57,11 +57,6 @@ export default function AppLoader({ children }: Props) {
       return;
     }
 
-    if (Config.APP_CONFIG === 'production') {
-      setApiUrl(Config.API_URL);
-      return;
-    }
-
     SplashScreen.hide();
 
     let cancelScanHandle: any;
@@ -163,12 +158,17 @@ export default function AppLoader({ children }: Props) {
       setBearerToken(`Bearer ${fetchedToken}`);
     }
 
-    const fetchedApiUrl = await AsyncStorage.getItem('@API_URL');
-
-    if (fetchedApiUrl) {
-      setApiUrl(fetchedApiUrl);
-    } else {
+    if (Config.APP_CONFIG === 'production') {
       setApiUrl(Config.API_URL);
+      return;
+    } else {
+      const fetchedApiUrl = await AsyncStorage.getItem('@API_URL');
+
+      if (fetchedApiUrl) {
+        setApiUrl(fetchedApiUrl);
+      } else {
+        setApiUrl(Config.API_URL);
+      }
     }
 
     setDomain(Config.AUTH0_DOMAIN);
@@ -198,7 +198,7 @@ export default function AppLoader({ children }: Props) {
                 }}>
                 <GestureHandlerRootView>
                   <BottomSheetModalProvider>
-                    {!apiStatus && (
+                    {!apiStatus && Config.API_URL === 'development' && (
                       <AvailableConnection
                         modalOpen={availableConnectionModal}
                         setModalOpen={setAvailableConnectionModal}
@@ -276,21 +276,23 @@ const ErrorContactingServer = () => {
     <SafeAreaView className='bg-themeBg h-full flex justify-center items-center'>
       <Text className='text-themeText font-bold text-3xl'>Error contacting server</Text>
 
-      <>
-        <PressableOpacity
-          activeOpacity={0.8}
-          className='mt-14 bg-green-400 px-6 py-3 rounded-xl'
-          onPress={() => {
-            dispatch({ type: DEVELOPER_PANEL_OPEN, payload: true });
-          }}>
-          <Text className='text-xl font-bold text-themeText text-center'>Open Developer Panel</Text>
-        </PressableOpacity>
+      {Config.API_URL === 'development' && (
+        <>
+          <PressableOpacity
+            activeOpacity={0.8}
+            className='mt-14 bg-green-400 px-6 py-3 rounded-xl'
+            onPress={() => {
+              dispatch({ type: DEVELOPER_PANEL_OPEN, payload: true });
+            }}>
+            <Text className='text-xl font-bold text-themeText text-center'>Open Developer Panel</Text>
+          </PressableOpacity>
 
-        <View className='absolute bottom-10'>
-          <ActivityIndicator size={'small'} />
-          <Text className='mt-5'>Searching for local devices with port 54321</Text>
-        </View>
-      </>
+          <View className='absolute bottom-10'>
+            <ActivityIndicator size={'small'} />
+            <Text className='mt-5'>Searching for local devices with port 54321</Text>
+          </View>
+        </>
+      )}
     </SafeAreaView>
   );
 };

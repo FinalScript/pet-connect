@@ -72,8 +72,9 @@ const App = () => {
   }, [owner?.id]);
 
   useEffect(() => {
-    if (ownerDataError) {
-      console.error(ownerDataError)
+    ownerDataError && console.error(ownerDataError, ownerDataError.message);
+
+    if (ownerDataError && ownerDataError.message === 'Owner not found') {
       dispatch({ type: LOADING, payload: false });
       trigger(HapticFeedbackTypes.notificationWarning, options);
       SplashScreen.hide();
