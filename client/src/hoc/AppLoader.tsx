@@ -105,6 +105,7 @@ export default function AppLoader({ children }: Props) {
   const pingApi = async () => {
     ping()
       .then((res) => {
+        console.log(JSON.stringify(res, null, 2));
         if (res.status === 200) {
           setApiStatus(true);
         } else {
@@ -114,7 +115,7 @@ export default function AppLoader({ children }: Props) {
       })
       .catch((err) => {
         console.error('Error connecting to api');
-        console.log(err);
+        console.log(JSON.stringify(err, null, 2));
         setApiStatus(false);
       });
   };
