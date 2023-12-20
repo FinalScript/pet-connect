@@ -109,16 +109,19 @@ const App = () => {
     }
 
     if (!token) {
-      console.log('token not found');
+      console.log('Token not found in cache');
       const credentials = await getCredentials('openid profile email');
 
+      console.log('Fetching token from Auth0');
       if (!credentials?.accessToken) {
+        console.log('Token not found from Auth0, redirecting to Get Started');
         dispatch({ type: LOADING, payload: false });
         SplashScreen.hide();
         navigationRef.dispatch(StackActions.replace('Get Started'));
         return;
       }
 
+      console.log('Token found from Auth0');
       try {
         await AsyncStorage.setItem('@token', credentials.accessToken);
       } catch (error) {
@@ -130,11 +133,12 @@ const App = () => {
       return;
     }
 
-    console.log('token found');
+    console.log('Token found in cache, veryifying token');
 
     const verifiedToken = await verifyToken();
 
     if (verifiedToken.error) {
+      console.log("Error verifying token, redirecting to 'Get Started");
       console.log(verifiedToken.error);
       await AsyncStorage.removeItem('@token');
       dispatch({ type: LOADING, payload: false });
@@ -142,6 +146,8 @@ const App = () => {
       navigationRef.dispatch(StackActions.replace('Get Started'));
       return;
     }
+
+    console.log('Token verified, fetching user data');
 
     await getUserData();
   }, [navigationRef, dispatch, verifyToken]);
