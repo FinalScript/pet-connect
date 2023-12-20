@@ -72,6 +72,8 @@ const App = () => {
   }, [owner?.id]);
 
   useEffect(() => {
+    ownerDataError && console.error(ownerDataError);
+    
     if (ownerDataError && ownerDataError.message === 'Owner not found') {
       dispatch({ type: LOADING, payload: false });
       trigger(HapticFeedbackTypes.notificationWarning, options);
@@ -122,6 +124,7 @@ const App = () => {
       }
 
       console.log('Token found from Auth0');
+
       try {
         await AsyncStorage.setItem('@token', credentials.accessToken);
       } catch (error) {
