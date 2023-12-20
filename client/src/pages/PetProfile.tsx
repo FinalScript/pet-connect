@@ -13,7 +13,7 @@ import EditProfileModal from '../components/modals/EditProfileModal';
 import { FOLLOW_PET, GET_PET_BY_ID, IS_FOLLOWING_PET, UNFOLOW_PET } from '../graphql/Pet';
 import { GET_POSTS_BY_PET_ID } from '../graphql/Post';
 import { PetDAO, ProfileReducer } from '../redux/reducers/profileReducer';
-import { Feather } from '../utils/Icons';
+import { Feather, Ionicon } from '../utils/Icons';
 import { themeConfig } from '../utils/theme';
 import { Post } from '../__generated__/graphql';
 import { POST_DATA } from '../redux/constants';
@@ -147,6 +147,25 @@ const PetProfile = ({
       )}
 
       <ScrollView className='w-full px-5'>
+        <Pressable
+          className='flex-row items-center p-3 mb-4 bg-gray-400 rounded-lg'
+          onPress={() => {
+            pet.Owner?.id && navigation.push('Owner Profile', { ownerId: pet.Owner.id });
+          }}
+          style={({ pressed }) => [{ backgroundColor: pressed ? '#f0f0f0' : 'bg-gray-100' }]}>
+          <View className='w-10 h-10 mr-3 rounded-full overflow-hidden bg-gray-300'>
+            {pet.Owner.ProfilePicture?.url ? (
+              <Image className='w-full h-full' source={{ uri: pet.Owner.ProfilePicture?.url }} resizeMode='cover' />
+            ) : (
+              <Ionicon name='person' size={30} style={{ color: '#a0a0a0' }} />
+            )}
+          </View>
+          <View>
+            <Text className='text-sm font-semibold text-gray-600'>Owned By</Text>
+            <Text className='text-md font-bold text-gray-800'>{pet.Owner?.name}</Text>
+          </View>
+        </Pressable>
+
         <View className='mt-5 flex flex-row items-center justify-center'>
           <Pressable
             className='flex-1'
@@ -187,25 +206,6 @@ const PetProfile = ({
         </View>
         <View className='mt-3 flex items-center'>
           <Text className='text-xl font-bold'>{pet?.name}</Text>
-
-          <View className='flex-row gap-x-1'>
-            <Text>Owned by</Text>
-            <Pressable
-              onPress={() => {
-                pet.Owner?.id && navigation.push('Owner Profile', { ownerId: pet.Owner.id });
-              }}>
-              <Text className='font-medium text-themeTrim'>@{pet.Owner?.username}</Text>
-              <View className='w-36 h-36 flex items-center justify-center'>
-                <Image
-                  className='w-full h-full rounded-3xl border-2 border-themeActive'
-                  source={{
-                    uri: pet.Owner.ProfilePicture?.url,
-                  }}
-                />
-              </View>
-            </Pressable>
-          </View>
-
           {pet.description && <Text className='text-md'>{pet.description}</Text>}
           {pet?.type && (
             <View className='flex-row items-center mt-4 bg-themeShadow px-3 rounded-xl'>
