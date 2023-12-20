@@ -113,10 +113,12 @@ export default function AppLoader({ children }: Props) {
         if (res.status === 200) {
           setApiStatus(true);
         } else {
+          console.error('Error connecting to api');
           setApiStatus(false);
         }
       })
       .catch((err) => {
+        console.error('Error connecting to api');
         console.log(err);
         setApiStatus(false);
       });
