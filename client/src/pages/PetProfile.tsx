@@ -147,26 +147,7 @@ const PetProfile = ({
       )}
 
       <ScrollView className='w-full px-5'>
-        <Pressable
-          className='flex-row items-center p-3 mb-4 bg-gray-400 rounded-lg'
-          onPress={() => {
-            pet.Owner?.id && navigation.push('Owner Profile', { ownerId: pet.Owner.id });
-          }}
-          style={({ pressed }) => [{ backgroundColor: pressed ? '#f0f0f0' : 'bg-gray-100' }]}>
-          <View className='w-10 h-10 mr-3 rounded-full overflow-hidden bg-gray-300'>
-            {pet.Owner.ProfilePicture?.url ? (
-              <Image className='w-full h-full' source={{ uri: pet.Owner.ProfilePicture?.url }} resizeMode='cover' />
-            ) : (
-              <Ionicon name='person' size={30} style={{ color: '#a0a0a0' }} />
-            )}
-          </View>
-          <View>
-            <Text className='text-sm font-semibold text-gray-600'>Owned By</Text>
-            <Text className='text-md font-bold text-gray-800'>{pet.Owner?.name}</Text>
-          </View>
-        </Pressable>
-
-        <View className='mt-5 flex flex-row items-center justify-center'>
+        <View className='mt-2.5 flex flex-row items-center justify-center'>
           <Pressable
             className='flex-1'
             onPress={() => {
@@ -204,8 +185,10 @@ const PetProfile = ({
             <Text className='text-md'>Likes</Text>
           </View>
         </View>
+
         <View className='mt-3 flex items-center'>
           <Text className='text-xl font-bold'>{pet?.name}</Text>
+
           {pet.description && <Text className='text-md'>{pet.description}</Text>}
           {pet?.type && (
             <View className='flex-row items-center mt-4 bg-themeShadow px-3 rounded-xl'>
@@ -214,10 +197,10 @@ const PetProfile = ({
             </View>
           )}
         </View>
+
         <View className='mt-5 flex-row gap-x-3'>
-          <PressableOpacity
+          <Pressable
             className='flex-1'
-            activeOpacity={0.6}
             onPress={() => {
               if (isOwner) {
                 setEditProfileModalVisible(true);
@@ -233,20 +216,18 @@ const PetProfile = ({
             <View className='bg-themeBtn px-7 py-2 rounded-lg'>
               <Text className='text-themeText text-base font-semibold text-center'>{isOwner ? 'Edit Profile' : isFollowing ? 'Unfollow' : 'Follow'}</Text>
             </View>
-          </PressableOpacity>
-          <PressableOpacity
+          </Pressable>
+          <Pressable
             className='flex-1'
-            activeOpacity={0.6}
             onPress={() => {
-              onShare();
+              pet.Owner?.id && navigation.push('Owner Profile', { ownerId: pet.Owner.id });
             }}>
             <View className='bg-themeBtn px-7 py-2 rounded-lg'>
-              <Text className='text-themeText text-base font-semibold text-center'>Share Profile</Text>
+              <Text className='text-themeText text-base font-semibold text-center'>Visit Owner</Text>
             </View>
-          </PressableOpacity>
+          </Pressable>
         </View>
-
-        <View className='w-full -mx-5 mt-7 h-full'>
+        <View className='w-full -mx-5 mt-5 h-full'>
           <TabView
             {...tabBarState}
             animationDuration={150}
@@ -257,7 +238,11 @@ const PetProfile = ({
               <Layout style={{ flex: 1, backgroundColor: themeConfig.customColors.themeBg }}>{renderPostsGrid()}</Layout>
             </Tab>
             <Tab icon={() => <Feather name='heart' size={18} color={themeConfig.customColors.themeText} />}>
-              <Layout style={{ flex: 1, backgroundColor: themeConfig.customColors.themeBg }}>{renderPostsGrid()}</Layout>
+              <Layout style={{ flex: 1, backgroundColor: themeConfig.customColors.themeBg }}>
+                <View className='flex items-center'>
+                  <Text className='mt-5'>Nothing to see here...</Text>
+                </View>
+              </Layout>
             </Tab>
           </TabView>
         </View>
