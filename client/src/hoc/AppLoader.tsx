@@ -160,7 +160,6 @@ export default function AppLoader({ children }: Props) {
 
     if (Config.APP_CONFIG === 'production') {
       setApiUrl(Config.API_URL);
-      return;
     } else {
       const fetchedApiUrl = await AsyncStorage.getItem('@API_URL');
 
