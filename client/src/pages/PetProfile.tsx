@@ -13,10 +13,11 @@ import EditProfileModal from '../components/modals/EditProfileModal';
 import { FOLLOW_PET, GET_PET_BY_ID, IS_FOLLOWING_PET, UNFOLOW_PET } from '../graphql/Pet';
 import { GET_POSTS_BY_PET_ID } from '../graphql/Post';
 import { PetDAO, ProfileReducer } from '../redux/reducers/profileReducer';
-import { Feather } from '../utils/Icons';
+import { Feather, Ionicon } from '../utils/Icons';
 import { themeConfig } from '../utils/theme';
 import { Post } from '../__generated__/graphql';
 import { POST_DATA } from '../redux/constants';
+import { GET_OWNER_BY_ID } from '../graphql/Owner';
 
 const useTabBarState = (initialState = 0): Partial<TabBarProps> => {
   const [selectedIndex, setSelectedIndex] = useState(initialState);
@@ -38,6 +39,7 @@ const PetProfile = ({
   const { data: isFollowingPet } = useQuery(IS_FOLLOWING_PET, { variables: { ownerId: ownerId || '', petId }, skip: !ownerId, pollInterval: 500 });
 
   const pet = useMemo(() => petData?.getPetById.pet, [petData, petId]);
+
   const isOwner = useMemo(() => ownerId === pet?.Owner?.id, [ownerId, pet?.Owner?.id]);
   const gridPosts: Post[] = useMemo(() => postsData?.getPostsByPetId?.posts || [], [postsData]);
 
@@ -145,7 +147,7 @@ const PetProfile = ({
       )}
 
       <ScrollView className='w-full px-5'>
-        <View className='mt-5 flex flex-row items-center justify-center'>
+        <View className='mt-2.5 flex flex-row items-center justify-center'>
           <Pressable
             className='flex-1'
             onPress={() => {
@@ -179,22 +181,13 @@ const PetProfile = ({
           </Pressable>
 
           <View className='flex items-center flex-1'>
-            <Text className='text-xl font-bold'>25</Text>
+            <Text className='text-xl font-bold'>{pet.totalLikes}</Text>
             <Text className='text-md'>Likes</Text>
           </View>
         </View>
+
         <View className='mt-3 flex items-center'>
           <Text className='text-xl font-bold'>{pet?.name}</Text>
-
-          <View className='flex-row gap-x-1'>
-            <Text>Owned by</Text>
-            <Pressable
-              onPress={() => {
-                pet.Owner?.id && navigation.push('Owner Profile', { ownerId: pet.Owner.id });
-              }}>
-              <Text className='font-medium text-themeTrim'>@{pet.Owner.username}</Text>
-            </Pressable>
-          </View>
 
           {pet.description && <Text className='text-md'>{pet.description}</Text>}
           {pet?.type && (
@@ -204,10 +197,10 @@ const PetProfile = ({
             </View>
           )}
         </View>
+
         <View className='mt-5 flex-row gap-x-3'>
-          <PressableOpacity
+          <Pressable
             className='flex-1'
-            activeOpacity={0.6}
             onPress={() => {
               if (isOwner) {
                 setEditProfileModalVisible(true);
@@ -223,20 +216,18 @@ const PetProfile = ({
             <View className='bg-themeBtn px-7 py-2 rounded-lg'>
               <Text className='text-themeText text-base font-semibold text-center'>{isOwner ? 'Edit Profile' : isFollowing ? 'Unfollow' : 'Follow'}</Text>
             </View>
-          </PressableOpacity>
-          <PressableOpacity
+          </Pressable>
+          <Pressable
             className='flex-1'
-            activeOpacity={0.6}
             onPress={() => {
-              onShare();
+              pet.Owner?.id && navigation.push('Owner Profile', { ownerId: pet.Owner.id });
             }}>
             <View className='bg-themeBtn px-7 py-2 rounded-lg'>
-              <Text className='text-themeText text-base font-semibold text-center'>Share Profile</Text>
+              <Text className='text-themeText text-base font-semibold text-center'>Visit Owner</Text>
             </View>
-          </PressableOpacity>
+          </Pressable>
         </View>
-
-        <View className='w-full -mx-5 mt-7 h-full'>
+        <View className='w-full -mx-5 mt-5 h-full'>
           <TabView
             {...tabBarState}
             animationDuration={150}
@@ -247,7 +238,11 @@ const PetProfile = ({
               <Layout style={{ flex: 1, backgroundColor: themeConfig.customColors.themeBg }}>{renderPostsGrid()}</Layout>
             </Tab>
             <Tab icon={() => <Feather name='heart' size={18} color={themeConfig.customColors.themeText} />}>
-              <Layout style={{ flex: 1, backgroundColor: themeConfig.customColors.themeBg }}>{renderPostsGrid()}</Layout>
+              <Layout style={{ flex: 1, backgroundColor: themeConfig.customColors.themeBg }}>
+                <View className='flex items-center'>
+                  <Text className='mt-5'>Nothing to see here...</Text>
+                </View>
+              </Layout>
             </Tab>
           </TabView>
         </View>

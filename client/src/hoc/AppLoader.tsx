@@ -52,12 +52,12 @@ export default function AppLoader({ children }: Props) {
   }, []);
 
   useEffect(() => {
+    console.log(Config);
     if (apiStatus) {
       return;
     }
 
     SplashScreen.hide();
-    //Returns `LSNetworkInfo`
 
     let cancelScanHandle: any;
 
@@ -105,14 +105,17 @@ export default function AppLoader({ children }: Props) {
   const pingApi = async () => {
     ping()
       .then((res) => {
+        console.log(JSON.stringify(res, null, 2));
         if (res.status === 200) {
           setApiStatus(true);
         } else {
+          console.error('Error connecting to api');
           setApiStatus(false);
         }
       })
       .catch((err) => {
-        console.log(err);
+        console.error('Error connecting to api');
+        console.log(JSON.stringify(err, null, 2));
         setApiStatus(false);
       });
   };
@@ -156,12 +159,16 @@ export default function AppLoader({ children }: Props) {
       setBearerToken(`Bearer ${fetchedToken}`);
     }
 
-    const fetchedApiUrl = await AsyncStorage.getItem('@API_URL');
-
-    if (fetchedApiUrl) {
-      setApiUrl(fetchedApiUrl);
+    if (Config.APP_CONFIG === 'production') {
+      setApiUrl(Config.API_URL);
     } else {
-      setApiUrl('http://localhost:54321');
+      const fetchedApiUrl = await AsyncStorage.getItem('@API_URL');
+
+      if (fetchedApiUrl) {
+        setApiUrl(fetchedApiUrl);
+      } else {
+        setApiUrl(Config.API_URL);
+      }
     }
 
     setDomain(Config.AUTH0_DOMAIN);
@@ -191,7 +198,7 @@ export default function AppLoader({ children }: Props) {
                 }}>
                 <GestureHandlerRootView>
                   <BottomSheetModalProvider>
-                    {!apiStatus && (
+                    {!apiStatus && Config.API_URL === 'development' && (
                       <AvailableConnection
                         modalOpen={availableConnectionModal}
                         setModalOpen={setAvailableConnectionModal}
@@ -199,7 +206,7 @@ export default function AppLoader({ children }: Props) {
                         setApiUrl={setApiUrl}
                       />
                     )}
-                    <DeveloperPanel apiUrl={{ set: setApiUrl, value: apiUrl }} />
+                    {Config.API_URL === 'development' && <DeveloperPanel apiUrl={{ set: setApiUrl, value: apiUrl }} />}
 
                     {!apiStatus ? <ErrorContactingServer /> : <>{children}</>}
                   </BottomSheetModalProvider>
@@ -269,21 +276,23 @@ const ErrorContactingServer = () => {
     <SafeAreaView className='bg-themeBg h-full flex justify-center items-center'>
       <Text className='text-themeText font-bold text-3xl'>Error contacting server</Text>
 
-      <>
-        <PressableOpacity
-          activeOpacity={0.8}
-          className='mt-14 bg-green-400 px-6 py-3 rounded-xl'
-          onPress={() => {
-            dispatch({ type: DEVELOPER_PANEL_OPEN, payload: true });
-          }}>
-          <Text className='text-xl font-bold text-themeText text-center'>Open Developer Panel</Text>
-        </PressableOpacity>
+      {Config.API_URL === 'development' && (
+        <>
+          <PressableOpacity
+            activeOpacity={0.8}
+            className='mt-14 bg-green-400 px-6 py-3 rounded-xl'
+            onPress={() => {
+              dispatch({ type: DEVELOPER_PANEL_OPEN, payload: true });
+            }}>
+            <Text className='text-xl font-bold text-themeText text-center'>Open Developer Panel</Text>
+          </PressableOpacity>
 
-        <View className='absolute bottom-10'>
-          <ActivityIndicator size={'small'} />
-          <Text className='mt-5'>Searching for local devices with port 54321</Text>
-        </View>
-      </>
+          <View className='absolute bottom-10'>
+            <ActivityIndicator size={'small'} />
+            <Text className='mt-5'>Searching for local devices with port 54321</Text>
+          </View>
+        </>
+      )}
     </SafeAreaView>
   );
 };

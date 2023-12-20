@@ -23,11 +23,9 @@ const Feed = ({ navigation, scrollViewRef }: Props) => {
   const { data: followingData, refetch: refetchFollowing } = useQuery(GET_FOLLOWING);
   const { data: forYouData, refetch: refetchForYou } = useQuery(GET_FOR_YOU);
   const following: PostType[] = useMemo(() => {
-    console.log(followingData?.getFollowing);
     return followingData?.getFollowing || [];
   }, [followingData]);
   const forYou: PostType[] = useMemo(() => {
-    console.log(forYouData?.getForYou);
     return forYouData?.getForYou || [];
   }, [forYouData]);
 

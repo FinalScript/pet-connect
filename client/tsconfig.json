@@ -1,6 +1,6 @@
 {
-  "extends": "@tsconfig/react-native/tsconfig.json",
   "compilerOptions": {
+    "jsx": "react",
     "types": ["node", "nativewind/types"],
     "esModuleInterop": true
   }

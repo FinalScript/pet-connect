@@ -36,6 +36,7 @@ export const getPetById = async (id: string) => {
       {
         model: Owner,
         as: 'Owner',
+        include: [{ model: ProfilePicture, as: 'ProfilePicture' }],
       },
       {
         model: ProfilePicture,

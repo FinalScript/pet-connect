@@ -1,4 +1,4 @@
-import { ref, uploadBytesResumable, getDownloadURL } from 'firebase/storage';
+import { ref, uploadBytesResumable, getDownloadURL, deleteObject } from 'firebase/storage';
 import { storage } from './firebaseConfig';
 import { Asset } from 'react-native-image-picker';
 
@@ -100,5 +100,18 @@ export const uploadToFirebase = (file: Asset, folder: storageFolders) => {
         });
       }
     );
+  });
+};
+
+export const deleteFromFirebase = (path: string) => {
+  return new Promise<void>((resolve, reject) => {
+    const storageRef = ref(storage, path);
+    deleteObject(storageRef)
+      .then(() => {
+        resolve();
+      })
+      .catch((err) => {
+        reject(err);
+      });
   });
 };

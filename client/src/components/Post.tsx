@@ -25,6 +25,7 @@ import { getRelativeTime } from '../utils/Date';
 import { formatNumberWithSuffix } from '../utils/Number';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../../App';
+import { deleteFromFirebase } from '../firebase/firebaseStorage';
 
 interface Props {
   post: PostType;
@@ -88,11 +89,7 @@ export default function Post({ post, goToProfile, onLayoutChange, navigation }: 
 
     return actions;
   }, [isOwner, ownerId]);
-
-  useEffect(() => {
-    console.log(post.id);
-  }, [post]);
-
+  
   const onLayout = (event: { nativeEvent: { layout: { height: number } } }) => {
     const height = event.nativeEvent.layout.height;
     if (onLayoutChange) {
@@ -124,6 +121,11 @@ export default function Post({ post, goToProfile, onLayoutChange, navigation }: 
       }),
     ]).start();
   };
+
+  const handleDelete = useCallback(async () => {
+    await deleteFromFirebase(post.Media.url);
+    await deletePost();
+  }, [deletePost]);
 
   const handleLike = useCallback(async () => {
     if (!postLiked) {
@@ -193,7 +195,7 @@ export default function Post({ post, goToProfile, onLayoutChange, navigation }: 
           <MenuView
             onPressAction={({ nativeEvent }) => {
               if (nativeEvent.event === 'delete') {
-                deletePost();
+                handleDelete();
               }
             }}
             actions={menuActions}>

@@ -102,6 +102,13 @@ export const GET_PET_BY_ID = gql(`
           username
           location
           followingCount
+          ProfilePicture {
+            id
+            name
+            url
+            path
+            type
+          }
         }
         followerCount
         postsCount
