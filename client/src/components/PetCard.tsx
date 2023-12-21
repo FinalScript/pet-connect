@@ -1,14 +1,18 @@
-import React, { Dispatch, SetStateAction, useCallback, useEffect, useState } from 'react';
-import { Modal, Pressable, View } from 'react-native';
+import React, { Dispatch, SetStateAction, useCallback, useEffect, useMemo, useState } from 'react';
+import { Modal, Platform, Pressable, View } from 'react-native';
 import Animated, { useSharedValue, withTiming } from 'react-native-reanimated';
 import { Pet } from '../__generated__/graphql';
 import { PetDAO } from '../redux/reducers/profileReducer';
-import { Ionicon, MaterialCommunityIcons } from '../utils/Icons';
+import { Entypo, Ionicon, MaterialCommunityIcons } from '../utils/Icons';
 import { themeConfig } from '../utils/theme';
 import Image from './Image';
 import PetTypeImage from './PetTypeImage';
 import Text from './Text';
-import PetSettingsModal from './modals/PetSettingsModal';
+import { MenuAction, MenuView } from '@react-native-menu/menu';
+import { useDispatch } from 'react-redux';
+import { useMutation } from '@apollo/client';
+import { DELETE_PET } from '../graphql/Pet';
+import { REMOVE_PET } from '../redux/constants';
 
 interface Props {
   pet: Pet;
@@ -20,6 +24,9 @@ interface Props {
 const PetCard = ({ pet, goToProfile, isSelected = false, setIsSelected, isOwner }: Props) => {
   const height = useSharedValue(80);
   const [modals, setModals] = useState({ petSettings: false });
+  const dispatch = useDispatch();
+  const [deletePet] = useMutation(DELETE_PET);
+
   useEffect(() => {
     if (isSelected) {
       height.value = withTiming(140);
@@ -34,8 +41,40 @@ const PetCard = ({ pet, goToProfile, isSelected = false, setIsSelected, isOwner 
     });
   }, []);
 
+  const menuActions: MenuAction[] = useMemo(() => {
+    const actions: MenuAction[] = [];
+
+    actions.push({
+      id: 'delete',
+      title: 'Delete',
+      attributes: {
+        destructive: true,
+      },
+      image: Platform.select({
+        ios: 'trash',
+        android: 'ic_menu_delete',
+      }),
+    });
+
+    return actions;
+  }, []);
+
+  const handleDeletePet = useCallback(() => {
+    if (!pet.id) return;
+
+    deletePet({ variables: { deletePetId: pet.id } })
+      .then(({ data }) => {
+        if (data?.deletePet) {
+          dispatch({ type: REMOVE_PET, payload: pet.id });
+        }
+      })
+      .catch((err) => {
+        console.log(JSON.stringify(err, null, 2));
+      });
+  }, []);
+
   return (
-    <Animated.View style={{ height }} className={'flex-1 rounded-2xl bg-themeInput shadow-sm shadow-themeShadow ' + (isSelected ? 'mb-6' : 'mb-3')}>
+    <Animated.View style={{ height }} className={'flex-1 rounded-2xl bg-white shadow-sm shadow-themeShadow ' + (isSelected ? 'mb-6' : 'mb-3')}>
       <Pressable
         className={'flex flex-row flex-1'}
         onPress={() => {
@@ -44,7 +83,7 @@ const PetCard = ({ pet, goToProfile, isSelected = false, setIsSelected, isOwner 
         <Animated.View style={{ width: height, minWidth: 80 }} className={'aspect-square flex justify-center items-center mr-5 p-1'}>
           {pet?.ProfilePicture?.url ? (
             <Image
-              className='w-full h-full rounded-xl'
+              className='w-full h-full rounded-full'
               source={{
                 uri: pet.ProfilePicture.url,
               }}
@@ -93,38 +132,26 @@ const PetCard = ({ pet, goToProfile, isSelected = false, setIsSelected, isOwner 
               });
             }}>
             {isSelected ? (
-              <Ionicon name='chevron-up' size={24} color={themeConfig.customColors.themeText} />
+              <Entypo name='chevron-up' size={28} color={'#8f5f43'} />
             ) : (
-              <Ionicon name='chevron-down' size={24} color={themeConfig.customColors.themeText} />
+              <Entypo name='chevron-down' size={28} color={'#8f5f43'} />
             )}
           </Pressable>
         </View>
       </Pressable>
       {isSelected && isOwner && (
-        <View className='absolute bottom-0 right-0'>
-          <Pressable
-            className='pr-5 pb-5'
-            onPress={() => {
-              setPetSettingsModalVisible(true);
-            }}>
-            <MaterialCommunityIcons name='dots-horizontal' size={24} color={themeConfig.customColors.themeText}></MaterialCommunityIcons>
-          </Pressable>
-          <View>
-            <Modal
-              visible={modals.petSettings}
-              presentationStyle='pageSheet'
-              animationType='slide'
-              onRequestClose={() => {
-                setPetSettingsModalVisible(false);
-              }}>
-              <PetSettingsModal
-                closeModal={() => {
-                  setPetSettingsModalVisible(false);
-                }}
-                pet={pet}
-              />
-            </Modal>
-          </View>
+        <View className='absolute bottom-0 right-0 pr-5 pb-5'>
+          <MenuView
+            onPressAction={({ nativeEvent }) => {
+              if (nativeEvent.event === 'delete') {
+                handleDeletePet();
+              }
+            }}
+            actions={menuActions}>
+            <View className=''>
+              <Entypo name='dots-three-horizontal' size={24} color={'#8f5f43'} />
+            </View>
+          </MenuView>
         </View>
       )}
     </Animated.View>
