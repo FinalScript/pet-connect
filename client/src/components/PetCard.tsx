@@ -23,7 +23,6 @@ interface Props {
 }
 const PetCard = ({ pet, goToProfile, isSelected = false, setIsSelected, isOwner }: Props) => {
   const height = useSharedValue(80);
-  const [modals, setModals] = useState({ petSettings: false });
   const dispatch = useDispatch();
   const [deletePet] = useMutation(DELETE_PET);
 
@@ -34,12 +33,6 @@ const PetCard = ({ pet, goToProfile, isSelected = false, setIsSelected, isOwner 
       height.value = withTiming(80);
     }
   }, [isSelected]);
-
-  const setPetSettingsModalVisible = useCallback((bool: boolean) => {
-    setModals((prev) => {
-      return { ...prev, petSettings: bool };
-    });
-  }, []);
 
   const menuActions: MenuAction[] = useMemo(() => {
     const actions: MenuAction[] = [];
@@ -80,10 +73,10 @@ const PetCard = ({ pet, goToProfile, isSelected = false, setIsSelected, isOwner 
         onPress={() => {
           goToProfile();
         }}>
-        <Animated.View style={{ width: height, minWidth: 80 }} className={'aspect-square flex justify-center items-center mr-5 p-1'}>
+        <Animated.View style={{ width: height, minWidth: 80 }} className={'aspect-square flex justify-center items-center mr-5 p-3'}>
           {pet?.ProfilePicture?.url ? (
             <Image
-              className='w-full h-full rounded-full'
+              className={'w-full h-full rounded-full'}
               source={{
                 uri: pet.ProfilePicture.url,
               }}
@@ -98,7 +91,7 @@ const PetCard = ({ pet, goToProfile, isSelected = false, setIsSelected, isOwner 
               <Text className='text-xl font-medium'>{pet.name}</Text>
               {pet.type && <PetTypeImage type={pet.type} className='w-5 h-5 ml-2' />}
             </View>
-            <Text className='text-sm'>@{pet.username}</Text>
+            <Text className='text-sm text-gray-500'>@{pet.username}</Text>
           </View>
 
           {isSelected && (
