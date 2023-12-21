@@ -50,7 +50,7 @@ export default function Post({ post, goToProfile, onLayoutChange, navigation }: 
   const [likePost] = useMutation(LIKE_POST, { variables: { id: post.id } });
   const [unlikePost] = useMutation(UNLIKE_POST, { variables: { id: post.id } });
 
-  const { data: likesCountData, refetch: refetchLikesCountData } = useQuery(GET_LIKES_COUNT_OF_POST, { variables: { id: post.id }, pollInterval: 2000 });
+  const { data: likesCountData, refetch: refetchLikesCountData} = useQuery(GET_LIKES_COUNT_OF_POST, { variables: { id: post.id }, pollInterval: 2000 });
   const likesCount: number = useMemo(() => likesCountData?.getPostById.post?.likesCount || 0, [likesCountData]);
 
   const { data: isLikedData, refetch: refetchIsLikeData } = useQuery(IS_LIKING_POST, { variables: { id: post.id }, pollInterval: 2000 });
@@ -89,7 +89,7 @@ export default function Post({ post, goToProfile, onLayoutChange, navigation }: 
 
     return actions;
   }, [isOwner, ownerId]);
-  
+
   const onLayout = (event: { nativeEvent: { layout: { height: number } } }) => {
     const height = event.nativeEvent.layout.height;
     if (onLayoutChange) {
@@ -129,7 +129,7 @@ export default function Post({ post, goToProfile, onLayoutChange, navigation }: 
 
   const handleLike = useCallback(async () => {
     if (!postLiked) {
-      await likePost();
+      await likePost().catch((err) => console.log(err));
       await refetchIsLikeData();
       await refetchLikesCountData();
       trigger(HapticFeedbackTypes.impactLight, options);

@@ -14,6 +14,7 @@ import { isTokenValid } from '../../middleware/token';
 import { Pet } from '../../models/Pet';
 import { ProfilePicture } from '../../models/ProfilePicture';
 import { Owner } from '../../models/Owner';
+import { redis } from '../../db/redis';
 
 export const PetResolver = {
   Mutation: {
@@ -273,7 +274,17 @@ export const PetResolver = {
 
       const authId = jwtResult.id;
 
-      const follower = await getOwner(authId);
+      const follower = await Owner.findOne({
+        where: {
+          authId,
+        },
+        include: [
+          {
+            model: ProfilePicture,
+            as: 'ProfilePicture',
+          },
+        ],
+      });
 
       if (!follower) {
         throw new GraphQLError('Owner does not exist', {
@@ -283,7 +294,22 @@ export const PetResolver = {
         });
       }
 
-      const pet = await getPetById(id);
+      const pet = await Pet.findOne({
+        where: {
+          id,
+        },
+        include: [
+          {
+            model: Owner,
+            as: 'Owner',
+            include: [{ model: ProfilePicture, as: 'ProfilePicture' }],
+          },
+          {
+            model: ProfilePicture,
+            as: 'ProfilePicture',
+          },
+        ],
+      });
 
       if (!pet) {
         throw new GraphQLError('Pet does not exist', {
@@ -303,6 +329,8 @@ export const PetResolver = {
 
       try {
         await pet.addFollower(follower);
+        await pet.reload({ include: [{ model: Owner, as: 'Followers', include: [{ model: ProfilePicture, as: 'ProfilePicture' }] }] });
+        await redis.set(`followersByPetId:${pet.id}`, JSON.stringify(pet.Followers.map((user) => user.get({ plain: true }))), 'EX', 300);
       } catch (e) {
         console.error(e);
       }
@@ -324,7 +352,17 @@ export const PetResolver = {
 
       const authId = jwtResult.id;
 
-      const owner = await getOwner(authId);
+      const owner = await Owner.findOne({
+        where: {
+          authId,
+        },
+        include: [
+          {
+            model: ProfilePicture,
+            as: 'ProfilePicture',
+          },
+        ],
+      });
 
       if (!owner) {
         throw new GraphQLError('Owner does not exist', {
@@ -334,7 +372,22 @@ export const PetResolver = {
         });
       }
 
-      const pet = await getPetById(id);
+      const pet = await Pet.findOne({
+        where: {
+          id,
+        },
+        include: [
+          {
+            model: Owner,
+            as: 'Owner',
+            include: [{ model: ProfilePicture, as: 'ProfilePicture' }],
+          },
+          {
+            model: ProfilePicture,
+            as: 'ProfilePicture',
+          },
+        ],
+      });
 
       if (!pet) {
         throw new GraphQLError('Pet does not exist', {
@@ -346,6 +399,8 @@ export const PetResolver = {
 
       try {
         await pet.removeFollower(owner);
+        await pet.reload({ include: [{ model: Owner, as: 'Followers', include: [{ model: ProfilePicture, as: 'ProfilePicture' }] }] });
+        await redis.set(`followersByPetId:${pet.id}`, JSON.stringify(pet.Followers.map((user) => user.get({ plain: true }))), 'EX', 300);
       } catch (e) {
         console.error(e);
       }

@@ -78,8 +78,9 @@ Owner.init(
       type: DataTypes.VIRTUAL(DataTypes.INTEGER),
       get() {
         // Use a getter to dynamically fetch following count
-        return sequelize.models.Follows.count({ where: { ownerId: this.id } });
+        return sequelize.models.Follows.count({ where: { ownerId: this.id } }) || 0;
       },
+      defaultValue: 0,
     },
   },
   {

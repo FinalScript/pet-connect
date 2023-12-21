@@ -4,16 +4,26 @@ import { Owner } from '../models/Owner';
 import { Pet, PetCreationDAO } from '../models/Pet';
 import { ProfilePicture } from '../models/ProfilePicture';
 import { PetUpdateDAO } from './../models/Pet';
+import { redis } from '../db/redis';
 
 export const getFollowersByPetId = async (id: string) => {
-  const pet = await Pet.findOne({
-    where: {
-      id,
-    },
-    include: [{ model: Owner, as: 'Followers', include: [{ model: ProfilePicture, as: 'ProfilePicture' }] }],
-  });
+  const cachedFollowers = await redis.get(`followersByPetId:${id}`);
 
-  return pet.Followers;
+  if (cachedFollowers) {
+    const followers: Owner[] = JSON.parse(cachedFollowers);
+    return followers;
+  } else {
+    const pet = await Pet.findOne({
+      where: {
+        id,
+      },
+      include: [{ model: Owner, as: 'Followers', include: [{ model: ProfilePicture, as: 'ProfilePicture' }] }],
+    });
+
+    await redis.set(`followersByPetId:${id}`, JSON.stringify(pet.Followers.map((user) => user.get({ plain: true }))), 'EX', 300);
+
+    return pet.Followers;
+  }
 };
 
 export const isFollowingPet = async (ownerId: string, petId: string) => {
@@ -28,65 +38,92 @@ export const isFollowingPet = async (ownerId: string, petId: string) => {
 };
 
 export const getPetById = async (id: string) => {
-  const pet = await Pet.findOne({
-    where: {
-      id,
-    },
-    include: [
-      {
-        model: Owner,
-        as: 'Owner',
-        include: [{ model: ProfilePicture, as: 'ProfilePicture' }],
-      },
-      {
-        model: ProfilePicture,
-        as: 'ProfilePicture',
-      },
-      { model: Owner, as: 'Followers', attributes: [] },
-    ],
-  });
+  const cachedPet = await redis.get(`pet:${id}`);
 
-  return pet;
+  if (cachedPet) {
+    const pet: Pet = JSON.parse(cachedPet);
+    return pet;
+  } else {
+    const pet = await Pet.findOne({
+      where: {
+        id,
+      },
+      include: [
+        {
+          model: Owner,
+          as: 'Owner',
+          include: [{ model: ProfilePicture, as: 'ProfilePicture' }],
+        },
+        {
+          model: ProfilePicture,
+          as: 'ProfilePicture',
+        },
+      ],
+    });
+
+    await redis.set(`pet:${id}`, JSON.stringify(pet.dataValues), 'EX', 300);
+
+    return pet;
+  }
 };
 
 export const getPetsByOwnerId = async (id: string) => {
-  const pets = await Pet.findAll({
-    where: {
-      ownerId: id,
-    },
-    include: [
-      {
-        model: Owner,
-        as: 'Owner',
-      },
-      {
-        model: ProfilePicture,
-        as: 'ProfilePicture',
-      },
-    ],
-  });
+  const cachedPets = await redis.get(`getPetsByOwnerId:${id}`);
 
-  return pets;
+  if (cachedPets) {
+    const pets: Pet[] = JSON.parse(cachedPets);
+    return pets;
+  } else {
+    const pets = await Pet.findAll({
+      where: {
+        ownerId: id,
+      },
+      include: [
+        {
+          model: Owner,
+          as: 'Owner',
+        },
+        {
+          model: ProfilePicture,
+          as: 'ProfilePicture',
+        },
+      ],
+    });
+
+    await redis.set(`getPetsByOwnerId:${id}`, JSON.stringify(pets.map((user) => user.get({ plain: true }))), 'EX', 30);
+
+    return pets;
+  }
 };
 
 export const getPetByUsername = async (username: string) => {
-  const pet = await Pet.findOne({
-    where: {
-      username,
-    },
-    include: [
-      {
-        model: Owner,
-        as: 'Owner',
-      },
-      {
-        model: ProfilePicture,
-        as: 'ProfilePicture',
-      },
-    ],
-  });
+  const cachedPet = await redis.get(`pet:${username}`);
 
-  return pet;
+  if (cachedPet) {
+    const pet: Pet = JSON.parse(cachedPet);
+    return pet;
+  } else {
+    const pet = await Pet.findOne({
+      where: {
+        username,
+      },
+      include: [
+        {
+          model: Owner,
+          as: 'Owner',
+          include: [{ model: ProfilePicture, as: 'ProfilePicture' }],
+        },
+        {
+          model: ProfilePicture,
+          as: 'ProfilePicture',
+        },
+      ],
+    });
+
+    await redis.set(`pet:${username}`, JSON.stringify(pet.dataValues), 'EX', 300);
+
+    return pet;
+  }
 };
 
 export const createPet = async (data: PetCreationDAO) => {
@@ -107,29 +144,43 @@ export const deletePet = async (id: string) => {
 };
 
 export const updatePet = async (id: string, data: PetUpdateDAO) => {
-  const pet = await Pet.update(data, { where: { id } });
+  const pet = await getPetById(id);
+
+  await pet.update(data);
+  await pet.reload();
+
+  await redis.set(`pet:${id}`, JSON.stringify(pet.dataValues), 'EX', 300);
 
   // Return the updated pet object
   return pet;
 };
 
 export const searchForPets = async (searchValue: string) => {
-  const pets = await Pet.findAll({
-    where: {
-      [Op.or]: [{ name: { [Op.like]: '%' + searchValue + '%' } }, { username: { [Op.like]: '%' + searchValue + '%' } }],
-    },
-    limit: 20,
-    include: [
-      {
-        model: Owner,
-        as: 'Owner',
-      },
-      {
-        model: ProfilePicture,
-        as: 'ProfilePicture',
-      },
-    ],
-  });
+  const cachedPets = await redis.get(`searchForPets:${searchValue}`);
 
-  return pets;
+  if (cachedPets) {
+    const pets: Pet[] = JSON.parse(cachedPets);
+    return pets;
+  } else {
+    const pets = await Pet.findAll({
+      where: {
+        [Op.or]: [{ name: { [Op.like]: '%' + searchValue + '%' } }, { username: { [Op.like]: '%' + searchValue + '%' } }],
+      },
+      limit: 20,
+      include: [
+        {
+          model: Owner,
+          as: 'Owner',
+        },
+        {
+          model: ProfilePicture,
+          as: 'ProfilePicture',
+        },
+      ],
+    });
+
+    await redis.set(`searchForPets:${searchValue}`, JSON.stringify(pets), 'EX', 20);
+
+    return pets;
+  }
 };

@@ -209,7 +209,7 @@ export const PostResolver = {
         });
       }
 
-      const owner = await getOwner(jwtResult.id);
+      const owner = await getOwner(jwtResult.id, false);
 
       if (!id) {
         throw new GraphQLError('Please provide petId', {
@@ -257,7 +257,7 @@ export const PostResolver = {
         });
       }
 
-      const owner = await getOwner(jwtResult.id);
+      const owner = await getOwner(jwtResult.id, false);
 
       if (!id) {
         throw new GraphQLError('Please provide petId', {
