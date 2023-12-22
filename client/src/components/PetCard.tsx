@@ -73,7 +73,7 @@ const PetCard = ({ pet, goToProfile, isSelected = false, setIsSelected, isOwner 
         onPress={() => {
           goToProfile();
         }}>
-        <Animated.View style={{ width: height, minWidth: 80 }} className={'aspect-square flex justify-center items-center mr-5 p-3'}>
+        <Animated.View style={{ width: height, minWidth: 80 }} className={'aspect-square flex justify-center items-center mr-2 p-3'}>
           {pet?.ProfilePicture?.url ? (
             <Image
               className={'w-full h-full rounded-full'}
@@ -85,7 +85,7 @@ const PetCard = ({ pet, goToProfile, isSelected = false, setIsSelected, isOwner 
             pet.type && <PetTypeImage type={pet.type} className='w-10 h-10' />
           )}
         </Animated.View>
-        <View className='flex justify-around h-full'>
+        <Animated.View className='flex justify-around h-full'>
           <View className='flex '>
             <View className='flex-row items-center'>
               <Text className='text-xl font-medium'>{pet.name}</Text>
@@ -110,7 +110,7 @@ const PetCard = ({ pet, goToProfile, isSelected = false, setIsSelected, isOwner 
               </View>
             </View>
           )}
-        </View>
+        </Animated.View>
 
         <View className='flex-1 flex-row justify-end'>
           <Pressable

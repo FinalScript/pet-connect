@@ -13,7 +13,7 @@ import EditProfileModal from '../../components/modals/EditProfileModal';
 import { GET_OWNER_BY_ID } from '../../graphql/Owner';
 import { GET_PETS_BY_OWNER_ID } from '../../graphql/Pet';
 import { OwnerDAO, ProfileReducer } from '../../redux/reducers/profileReducer';
-import { Ionicon } from '../../utils/Icons';
+import { Feather, Ionicon } from '../../utils/Icons';
 
 interface Props {
   ownerId: string;
@@ -172,6 +172,18 @@ const OwnerProfile = ({ ownerId, navigation }: Props) => {
               />
             );
           })}
+          <View className='flex-row items-center'>
+            <Pressable
+              className={'flex-1 rounded-2xl bg-white shadow-sm shadow-themeShadow flex-row items-center p-3'}
+              onPress={() => {
+                navigation.navigate('Pet Creation');
+              }}>
+              <View className='h-14 w-14 flex justify-center items-center mr-5 border-dashed border-2 rounded-2xl'>
+                <Feather name='plus' size={30} />
+              </View>
+              <Text className='text-xl font-medium'>Add Pet</Text>
+            </Pressable>
+          </View>
         </View>
       </ScrollView>
     </SafeAreaView>
