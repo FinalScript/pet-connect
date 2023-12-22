@@ -71,7 +71,7 @@ const init = async () => {
     Pet.hasMany(Post, { as: 'Posts', foreignKey: 'petId' });
 
     Post.hasOne(Media, { as: 'Media' });
-    Post.belongsTo(Pet, { as: 'author', foreignKey: 'petId' });
+    Post.belongsTo(Pet, { as: 'Author', foreignKey: 'petId' });
 
     Post.hasMany(Comment, {
       sourceKey: 'id',
@@ -82,7 +82,7 @@ const init = async () => {
     Post.belongsToMany(Owner, { through: 'PostLikes', as: 'Likes', foreignKey: 'postId' });
     Owner.belongsToMany(Post, { through: 'LikesOwners', as: 'LikedPosts', foreignKey: 'ownerId' });
 
-    Comment.belongsTo(Owner, { as: 'author' });
+    Comment.belongsTo(Owner, { as: 'Author' });
 
     await sequelize.sync({});
   });

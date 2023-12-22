@@ -5,7 +5,7 @@ type Post {
     petId: String!
     description: String
     Media: Media!
-    author: Pet!
+    Author: Pet!
     likesCount: Int!
     createdAt: Date!
     updatedAt: Date!

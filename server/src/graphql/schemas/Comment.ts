@@ -6,7 +6,7 @@ type Comment {
     text: String!
     ownerId: String!
     postId: String
-    author: Owner!
+    Author: Owner!
     createdAt: Date!
     updatedAt: Date!
 }
