@@ -276,7 +276,7 @@ const ErrorContactingServer = () => {
     <SafeAreaView className='bg-themeBg h-full flex justify-center items-center'>
       <Text className='text-themeText font-bold text-3xl'>Error contacting server</Text>
 
-      {Config.API_URL === 'development' && (
+      {Config.APP_CONFIG === 'development' && (
         <>
           <PressableOpacity
             activeOpacity={0.8}
