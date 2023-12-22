@@ -28,7 +28,7 @@ const SettingsModal = ({ logout, closeModal }: Props) => {
         />
       </View>
 
-      {Config.API_URL === 'development' && (
+      {Config.APP_CONFIG === 'development' && (
         <PressableOpacity
           activeOpacity={0.8}
           className='mt-5 bg-green-400 px-6 py-3 rounded-xl'

@@ -198,7 +198,7 @@ export default function AppLoader({ children }: Props) {
                 }}>
                 <GestureHandlerRootView>
                   <BottomSheetModalProvider>
-                    {!apiStatus && Config.API_URL === 'development' && (
+                    {!apiStatus && Config.APP_CONFIG === 'development' && (
                       <AvailableConnection
                         modalOpen={availableConnectionModal}
                         setModalOpen={setAvailableConnectionModal}
@@ -206,7 +206,7 @@ export default function AppLoader({ children }: Props) {
                         setApiUrl={setApiUrl}
                       />
                     )}
-                    {Config.API_URL === 'development' && <DeveloperPanel apiUrl={{ set: setApiUrl, value: apiUrl }} />}
+                    {Config.APP_CONFIG === 'development' && <DeveloperPanel apiUrl={{ set: setApiUrl, value: apiUrl }} />}
 
                     {!apiStatus ? <ErrorContactingServer /> : <>{children}</>}
                   </BottomSheetModalProvider>
