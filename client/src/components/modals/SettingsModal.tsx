@@ -1,12 +1,13 @@
-import { ModalProps, View } from 'react-native';
+import { View } from 'react-native';
 import { Button } from 'react-native';
 import { PressableOpacity } from 'react-native-pressable-opacity';
 import { useDispatch } from 'react-redux';
 import { DEVELOPER_PANEL_OPEN } from '../../redux/constants';
 import Text from '../Text';
 import Config from 'react-native-config';
+import React from 'react';
 
-interface Props extends ModalProps {
+interface Props {
   logout: () => void;
   closeModal: () => void;
 }
@@ -28,7 +29,7 @@ const SettingsModal = ({ logout, closeModal }: Props) => {
         />
       </View>
 
-      {Config.API_URL === 'development' && (
+      {Config.APP_CONFIG === 'development' && (
         <PressableOpacity
           activeOpacity={0.8}
           className='mt-5 bg-green-400 px-6 py-3 rounded-xl'
