@@ -26,11 +26,7 @@ const OwnerProfilePage = ({
     navigation.setOptions({ title: owner?.username });
   }, [owner?.username]);
 
-  return (
-    <View>
-      <OwnerProfile ownerId={owner.id} navigation={navigation} />
-    </View>
-  );
+  return <View>{owner?.id && <OwnerProfile ownerId={owner.id} navigation={navigation} />}</View>;
 };
 
 export default OwnerProfilePage;
