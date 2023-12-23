@@ -1,23 +1,21 @@
-import { useLazyQuery, useMutation, useQuery } from '@apollo/client';
+import { useMutation, useQuery } from '@apollo/client';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
-import { Icon, IconElement, IconProps, Layout, Tab, TabBarProps, TabView } from '@ui-kitten/components';
+import { Layout, Tab, TabBarProps, TabView } from '@ui-kitten/components';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { Dimensions, Modal, Pressable, SafeAreaView, ScrollView, Share, View } from 'react-native';
-import { PressableOpacity } from 'react-native-pressable-opacity';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootStackParamList } from '../../App';
+import { Post } from '../__generated__/graphql';
 import Image from '../components/Image';
 import PetTypeImage from '../components/PetTypeImage';
 import Text from '../components/Text';
 import EditProfileModal from '../components/modals/EditProfileModal';
 import { FOLLOW_PET, GET_PET_BY_ID, IS_FOLLOWING_PET, UNFOLOW_PET } from '../graphql/Pet';
 import { GET_POSTS_BY_PET_ID } from '../graphql/Post';
-import { PetDAO, ProfileReducer } from '../redux/reducers/profileReducer';
-import { Feather, Ionicon } from '../utils/Icons';
-import { themeConfig } from '../utils/theme';
-import { Post } from '../__generated__/graphql';
 import { POST_DATA } from '../redux/constants';
-import { GET_OWNER_BY_ID } from '../graphql/Owner';
+import { PetDAO, ProfileReducer } from '../redux/reducers/profileReducer';
+import { Feather } from '../utils/Icons';
+import { themeConfig } from '../utils/theme';
 
 const useTabBarState = (initialState = 0): Partial<TabBarProps> => {
   const [selectedIndex, setSelectedIndex] = useState(initialState);
@@ -34,14 +32,23 @@ const PetProfile = ({
 }: Props) => {
   const dispatch = useDispatch();
   const ownerId = useSelector((state: ProfileReducer) => state.profile.owner?.id);
-  const { data: petData } = useQuery(GET_PET_BY_ID, { variables: { id: petId }, pollInterval: 2000 });
-  const { data: postsData } = useQuery(GET_POSTS_BY_PET_ID, { variables: { petId }, pollInterval: 2000 });
-  const { data: isFollowingPet } = useQuery(IS_FOLLOWING_PET, { variables: { ownerId: ownerId || '', petId }, skip: !ownerId, pollInterval: 500 });
+  const { data: petData } = useQuery(GET_PET_BY_ID, { variables: { id: petId }, pollInterval: 10000 });
+  const { data: postsData } = useQuery(GET_POSTS_BY_PET_ID, { variables: { petId }, pollInterval: 10000 });
+  const { data: isFollowingData } = useQuery(IS_FOLLOWING_PET, { variables: { ownerId: ownerId || '', petId }, skip: !ownerId });
 
   const pet = useMemo(() => petData?.getPetById.pet, [petData, petId]);
-
+  const gridPosts: Post[] = useMemo(() => postsData?.getPetById.pet.Posts || [], [postsData]);
   const isOwner = useMemo(() => ownerId === pet?.Owner?.id, [ownerId, pet?.Owner?.id]);
-  const gridPosts: Post[] = useMemo(() => postsData?.getPostsByPetId?.posts || [], [postsData]);
+  const [followersCount, setFollowersCount] = useState(0);
+  const [isFollowing, setIsFollowing] = useState(isFollowingData?.isFollowingPet);
+
+  useEffect(() => {
+    setFollowersCount(pet?.followerCount);
+  }, [pet?.followerCount]);
+
+  useEffect(() => {
+    setIsFollowing(isFollowingData?.isFollowingPet);
+  }, [isFollowingData?.isFollowingPet]);
 
   useEffect(() => {
     dispatch({ type: POST_DATA, payload: gridPosts });
@@ -49,8 +56,6 @@ const PetProfile = ({
 
   const [followPet] = useMutation(FOLLOW_PET);
   const [unfollowPet] = useMutation(UNFOLOW_PET);
-
-  const isFollowing = useMemo(() => isFollowingPet?.isFollowingPet, [isFollowingPet]);
 
   const tabBarState = useTabBarState();
   const [modals, setModals] = useState({ accountSwitcher: false, settings: false, editProfile: false });
@@ -69,12 +74,16 @@ const PetProfile = ({
     if (!pet) return;
 
     await followPet({ variables: { id: pet.id } });
+    setFollowersCount((prev) => prev + 1);
+    setIsFollowing(true);
   }, [followPet, pet]);
 
   const handleUnfollow = useCallback(async () => {
     if (!pet) return;
 
     await unfollowPet({ variables: { id: pet.id } });
+    setFollowersCount((prev) => prev - 1);
+    setIsFollowing(false);
   }, [unfollowPet, pet]);
 
   const onShare = useCallback(async () => {
@@ -154,7 +163,7 @@ const PetProfile = ({
               navigation.push('Followers', { petId: pet.id });
             }}>
             <View className='flex items-center'>
-              <Text className='text-xl font-bold'>{pet.followerCount}</Text>
+              <Text className='text-xl font-bold'>{followersCount}</Text>
               <Text className='text-md'>Followers</Text>
             </View>
           </Pressable>

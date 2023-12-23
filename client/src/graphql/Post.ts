@@ -18,7 +18,7 @@ export const GET_ALL_POSTS = gql(`
           type
           aspectRatio
         }
-        author {
+        Author {
           id
           username
           name
@@ -68,7 +68,7 @@ export const CREATE_POST = gql(`
           type
           aspectRatio
         }
-        author {
+        Author {
           id
           username
           name
@@ -101,45 +101,48 @@ export const CREATE_POST = gql(`
 `);
 
 export const GET_POSTS_BY_PET_ID = gql(`
-query getPostsByPetId($petId: String!) {
-  getPostsByPetId(petId: $petId) {
-    posts {
-      id
-      petId
-      description
-      likesCount
-      createdAt
-      updatedAt
-      Media {
-        id
-        name
-        url
-        path
-        type
-        aspectRatio
-      }
-      author {
-        id
-        username
-        name
-        type
-        description
-        location
-        ProfilePicture {
+  query getPostsByPetId($petId: String!) {
+    getPetById(id: $petId) {
+      pet {
+        Posts {
           id
-          name
-          url
-          path
-          type
+          petId
+          description
+          likesCount
+          createdAt
+          updatedAt
+          Media {
+            id
+            name
+            url
+            path
+            type
+            aspectRatio
+          }
+          Author {
+            id
+            username
+            name
+            type
+            description
+            location
+            ProfilePicture {
+              id
+              name
+              url
+              path
+              type
+            }
+            postsCount
+            followerCount
+            totalLikes
+            ownerId
+          }
         }
-        postsCount
-        followerCount
-        totalLikes
-        ownerId
       }
     }
   }
-}`);
+`);
 
 export const GET_FOLLOWING = gql(`
   query GetFollowing {
@@ -158,7 +161,7 @@ export const GET_FOLLOWING = gql(`
         type
         aspectRatio
       }
-      author {
+      Author {
         id
         username
         name
@@ -198,7 +201,7 @@ export const GET_FOR_YOU = gql(`
         type
         aspectRatio
       }
-      author {
+      Author {
         id
         username
         name
@@ -232,7 +235,7 @@ export const DELETE_POST = gql(`
 export const LIKE_POST = gql(`
   mutation LikePost($id: String!) {
     likePost(id: $id) {
-      success
+      newLikesCount
     }
   }
 `);
@@ -240,7 +243,7 @@ export const LIKE_POST = gql(`
 export const UNLIKE_POST = gql(`
   mutation UnlikePost($id: String!) {
     unlikePost(id: $id) {
-      success
+      newLikesCount
     }
   }
 `);

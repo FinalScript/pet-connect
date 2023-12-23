@@ -11,7 +11,7 @@ export const SearchTypeDef = `#graphql
 
   # Query and Mutation definitions
 
-  type Query {
+  extend type Query {
     search(search: String!): SearchResponse!
   }
 `;

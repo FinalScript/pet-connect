@@ -9,6 +9,7 @@ import { options } from '../utils/hapticFeedbackOptions';
 import { Directions, Gesture, GestureDetector, TouchableWithoutFeedback } from 'react-native-gesture-handler';
 import Animated, { useAnimatedStyle, useSharedValue, withSpring } from 'react-native-reanimated';
 import Text from '../components/Text';
+import React from 'react';
 
 type NavigationProp = NativeStackNavigationProp<RootStackParamList, 'Get Started'>;
 

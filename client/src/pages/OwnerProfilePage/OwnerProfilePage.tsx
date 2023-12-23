@@ -16,20 +16,17 @@ const OwnerProfilePage = ({
   },
 }: Props) => {
   const [getOwner, { data: ownerData }] = useLazyQuery(GET_OWNER_BY_ID);
-  const [getPets, { data: petData }] = useLazyQuery(GET_PETS_BY_OWNER_ID);
   const owner = useMemo(() => ownerData?.getOwnerById.owner, [ownerData]);
-  const pets = useMemo(() => petData?.getPetsByOwnerId.pets || [], [getPets, petData]);
 
   useEffect(() => {
     getOwner({ variables: { id: ownerId } });
-    getPets({ variables: { id: ownerId } });
-  }, [ownerId, getOwner, getPets]);
+  }, [ownerId, getOwner]);
 
   useEffect(() => {
     navigation.setOptions({ title: owner?.username });
   }, [owner?.username]);
 
-  return <View>{owner && <OwnerProfile ownerId={owner.id} navigation={navigation} />}</View>;
+  return <View>{owner?.id && <OwnerProfile ownerId={owner.id} navigation={navigation} />}</View>;
 };
 
 export default OwnerProfilePage;

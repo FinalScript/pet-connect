@@ -11,6 +11,7 @@ import { options } from '../../utils/hapticFeedbackOptions';
 import PetTypeImage from '../PetTypeImage';
 import Text from '../Text';
 import Image from '../Image';
+import React from 'react';
 
 interface Props extends ModalProps {
   navigateNewPet: () => void;

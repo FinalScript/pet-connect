@@ -122,8 +122,7 @@ const Explore = ({ navigation }: Props) => {
               className='flex-row items-center p-4 mt-4 bg-white rounded-xl shadow-md'
               onPress={() => {
                 navigation.push('Owner Profile', { ownerId: result.id });
-              }}
-            >
+              }}>
               <View className='w-14 h-14 mr-4'>
                 {result?.ProfilePicture?.url ? (
                   <Image
@@ -160,8 +159,7 @@ const Explore = ({ navigation }: Props) => {
               className='flex-row items-center p-4 mt-4 bg-white rounded-xl shadow-md'
               onPress={() => {
                 navigation.push('Pet Profile', { petId: result.id });
-              }}
-            >
+              }}>
               <View className='w-14 h-14 mr-4'>
                 {result?.ProfilePicture?.url ? (
                   <Image

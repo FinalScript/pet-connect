@@ -74,13 +74,6 @@ Owner.init(
     location: {
       type: DataTypes.STRING,
     },
-    followingCount: {
-      type: DataTypes.VIRTUAL(DataTypes.INTEGER),
-      get() {
-        // Use a getter to dynamically fetch following count
-        return sequelize.models.Follows.count({ where: { ownerId: this.id } });
-      },
-    },
   },
   {
     sequelize, // We need to pass the connection instance

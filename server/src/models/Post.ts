@@ -28,7 +28,7 @@ export class Post extends Model<InferAttributes<Post>, InferCreationAttributes<P
   declare petId: string;
   declare description: string;
   declare Media?: Media;
-  declare author?: Pet;
+  declare Author?: Pet;
   declare setMedia: HasOneSetAssociationMixin<Media, 'id'>;
 
   public readonly Comments?: Comment[];
@@ -38,7 +38,7 @@ export class Post extends Model<InferAttributes<Post>, InferCreationAttributes<P
   public readonly Likes?: Owner[];
   public addLike!: HasManyAddAssociationMixin<Owner, string>;
   public removeLike!: HasManyRemoveAssociationMixin<Owner, string>;
-  public readonly likesCount = 0;
+  public readonly likesCount? = 0;
 
   public readonly createdAt: Date;
   public readonly updatedAt: Date;
@@ -63,14 +63,6 @@ Post.init(
     description: {
       type: DataTypes.TEXT,
       allowNull: true,
-    },
-    likesCount: {
-      type: DataTypes.VIRTUAL(DataTypes.INTEGER),
-      async get() {
-        const post = await Post.findByPk(this.id, { include: [{ association: 'Likes' }] });
-
-        return post?.Likes?.length || 0;
-      },
     },
     createdAt: {
       type: DataTypes.DATE,

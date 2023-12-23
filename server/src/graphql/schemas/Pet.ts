@@ -22,6 +22,8 @@ export const PetTypeDef = `#graphql
         location: String
         ProfilePicture: ProfilePicture
         Owner: Owner
+        Posts: [Post!]
+        Followers: [Owner!]
         followerCount: Int
         postsCount: Int
         totalLikes: Int
@@ -60,7 +62,6 @@ export const PetTypeDef = `#graphql
     }
 
     type Query {
-        getFollowersByPetId(petId: String!): [Owner!]!
         isFollowingPet(ownerId: String! , petId: String!): Boolean!
         getPetById(id: String!): PetResponse!
         getPetsByOwnerId(id: String!): PetsResponse!

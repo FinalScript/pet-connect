@@ -19,6 +19,7 @@ import { ADD_PET, CURRENT_USER, LOADING } from '../redux/constants';
 import { GeneralReducer } from '../redux/reducers/generalReducer';
 import { PetType, ProfileReducer } from '../redux/reducers/profileReducer';
 import { options } from '../utils/hapticFeedbackOptions';
+import React from 'react';
 
 const petTypes = [
   { type: PetType.Dog, img: require('../../assets/img/dog.png') },

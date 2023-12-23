@@ -72,7 +72,7 @@ const App = () => {
   }, [owner?.id]);
 
   useEffect(() => {
-    ownerDataError && console.error(ownerDataError, ownerDataError.message);
+    ownerDataError && console.log(ownerDataError, ownerDataError.message);
 
     if (ownerDataError && ownerDataError.message === 'Owner not found') {
       dispatch({ type: LOADING, payload: false });
@@ -131,7 +131,7 @@ const App = () => {
         // Error saving data
       }
 
-      await getUserData();
+      await getUserData({ variables: { authId: user?.sub } });
 
       return;
     }
@@ -152,8 +152,8 @@ const App = () => {
 
     console.log('Token verified, fetching user data');
 
-    await getUserData();
-  }, [navigationRef, dispatch, verifyToken]);
+    await getUserData({ variables: { authId: user?.sub } });
+  }, [navigationRef, dispatch, verifyToken, user]);
 
   return (
     <View className='bg-themeBg h-full'>

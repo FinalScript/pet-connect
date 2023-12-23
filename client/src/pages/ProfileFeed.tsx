@@ -42,17 +42,15 @@ const ProfileFeed = ({
   return (
     <SafeAreaView className={'flex-1 h-full bg-themeBg'}>
       <View className='flex-1 h-full bg-themeBg'>
-        <Animated.ScrollView
-          scrollEventThrottle={16}
-          ref={scrollViewRef}
-          className='w-full pt-10'>
+        <Animated.ScrollView scrollEventThrottle={16} ref={scrollViewRef} className='w-full pt-10'>
           <View className='flex justify-center items-center h-full pb-[100px]'>
             {posts?.map((post, index) => (
               <Post
                 key={index}
                 post={post}
-                goToProfile={() => navigation.navigate('Pet Profile', { petId: post.author.id })}
+                goToProfile={() => navigation.navigate('Pet Profile', { petId: post.Author.id })}
                 onLayoutChange={(height) => handlePostHeight(index, height)}
+                navigation={navigation as any}
               />
             ))}
             {posts?.length === 0 && <Text>Nothing to see here...</Text>}

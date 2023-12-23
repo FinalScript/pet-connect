@@ -198,7 +198,7 @@ export default function AppLoader({ children }: Props) {
                 }}>
                 <GestureHandlerRootView>
                   <BottomSheetModalProvider>
-                    {!apiStatus && Config.API_URL === 'development' && (
+                    {!apiStatus && Config.APP_CONFIG === 'development' && (
                       <AvailableConnection
                         modalOpen={availableConnectionModal}
                         setModalOpen={setAvailableConnectionModal}
@@ -206,7 +206,7 @@ export default function AppLoader({ children }: Props) {
                         setApiUrl={setApiUrl}
                       />
                     )}
-                    {Config.API_URL === 'development' && <DeveloperPanel apiUrl={{ set: setApiUrl, value: apiUrl }} />}
+                    {Config.APP_CONFIG === 'development' && <DeveloperPanel apiUrl={{ set: setApiUrl, value: apiUrl }} />}
 
                     {!apiStatus ? <ErrorContactingServer /> : <>{children}</>}
                   </BottomSheetModalProvider>
@@ -276,7 +276,7 @@ const ErrorContactingServer = () => {
     <SafeAreaView className='bg-themeBg h-full flex justify-center items-center'>
       <Text className='text-themeText font-bold text-3xl'>Error contacting server</Text>
 
-      {Config.API_URL === 'development' && (
+      {Config.APP_CONFIG === 'development' && (
         <>
           <PressableOpacity
             activeOpacity={0.8}

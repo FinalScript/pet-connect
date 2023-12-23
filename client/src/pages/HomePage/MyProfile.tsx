@@ -14,6 +14,7 @@ import { OwnerDAO, ProfileReducer } from '../../redux/reducers/profileReducer';
 import { FontAwesome, Ionicon } from '../../utils/Icons';
 import { themeConfig } from '../../utils/theme';
 import OwnerProfile from '../OwnerProfilePage/OwnerProfile';
+import React from 'react';
 
 interface Props {
   navigation: NativeStackNavigationProp<RootStackParamList, 'Home', undefined>;

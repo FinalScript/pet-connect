@@ -57,17 +57,17 @@ const CommentsModel = ({ postId, comments, closeModal, refetchComments, navigati
                 <Pressable
                   onPress={() => {
                     closeModal();
-                    navigation.push('Owner Profile', { ownerId: comment.author.id });
+                    navigation.push('Owner Profile', { ownerId: comment.Author.id });
                   }}>
-                  <Image className='w-9 h-9 rounded-full mr-3' source={{ uri: comment.author.ProfilePicture?.url }} />
+                  <Image className='w-9 h-9 rounded-full mr-3' source={{ uri: comment.Author.ProfilePicture?.url }} />
                 </Pressable>
                 <View className='flex-1 rounded-2xl'>
                   <Pressable
                     onPress={() => {
                       closeModal();
-                      navigation.push('Owner Profile', { ownerId: comment.author.id });
+                      navigation.push('Owner Profile', { ownerId: comment.Author.id });
                     }}>
-                    <Text className='text-xs text-gray-700'>{comment.author.name}</Text>
+                    <Text className='text-xs text-gray-700'>{comment.Author.name}</Text>
                   </Pressable>
                   <Text className='text-sm font-medium text-themeText' numberOfLines={4}>
                     {comment.text}

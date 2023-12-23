@@ -17,7 +17,7 @@ const Following = ({
   navigation,
 }: Props) => {
   const { data: followingData, refetch: refetchFollowingData } = useQuery(GET_FOLLOWING_BY_OWNER_ID, { variables: { ownerId }, pollInterval: 10000 });
-  const following = useMemo(() => followingData?.getFollowingByOwnerId || [], [followingData]);
+  const following = useMemo(() => followingData?.getOwnerById.owner.Following || [], [followingData]);
 
   return (
     <SafeAreaView className='flex-1 items-center bg-themeBg'>
