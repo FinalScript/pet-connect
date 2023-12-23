@@ -1,10 +1,10 @@
 import { GraphQLError } from 'graphql';
 import { deleteOwner, getOwnerByAuthId, getOwnerById, getOwnerByUsername, updateOwner } from '../../controllers/OwnerController';
+import { redis } from '../../db/redis';
 import { isTokenValid } from '../../middleware/token';
 import { Owner } from '../../models/Owner';
 import { Pet } from '../../models/Pet';
 import { ProfilePicture } from '../../models/ProfilePicture';
-import { auth } from 'express-oauth2-jwt-bearer';
 
 export const OwnerResolver = {
   Owner: {
@@ -19,15 +19,25 @@ export const OwnerResolver = {
 
       return following;
     },
-    followingCount: async (obj: Owner, {}, context) => {
-      const followingCount = (await obj.reload({ include: [{ model: Pet, as: 'FollowedPets' }] })).FollowedPets.length;
 
-      return followingCount;
-    },
     Pets: async (obj: Owner, {}, context) => {
       const pets = (await obj.reload({ include: [{ model: Pet, as: 'Pets' }] })).Pets;
 
       return pets;
+    },
+
+    followingCount: async (obj: Owner, {}, context) => {
+      const cachedFollowingCount = await redis.get(`followingCount:${obj.id}`);
+
+      if (cachedFollowingCount) {
+        return cachedFollowingCount;
+      } else {
+        const followingCount = (await obj.reload({ include: [{ model: Pet, as: 'FollowedPets' }] }))?.FollowedPets?.length;
+
+        await redis.set(`followingCount:${obj.id}`, followingCount, 'EX', 120);
+
+        return followingCount;
+      }
     },
   },
 

@@ -8,6 +8,7 @@ import { Media } from '../../models/Media';
 import { Pet } from '../../models/Pet';
 import { Post } from '../../models/Post';
 import { Owner } from '../../models/Owner';
+import { redis } from '../../db/redis';
 
 export const PostResolver = {
   Post: {
@@ -27,9 +28,17 @@ export const PostResolver = {
       return comments;
     },
     likesCount: async (obj: Post, {}, context) => {
-      const likesCount = (await obj.reload({ include: [{ association: 'Likes' }] })).Likes.length;
+      const cachedLikesCount = await redis.get(`likesCount:${obj.id}`);
 
-      return likesCount;
+      if (cachedLikesCount) {
+        return cachedLikesCount;
+      } else {
+        const likesCount = (await obj.reload({ include: [{ association: 'Likes' }] })).Likes.length;
+
+        await redis.set(`likesCount:${obj.id}`, likesCount, 'EX', 120);
+
+        return likesCount;
+      }
     },
   },
 
@@ -38,28 +47,6 @@ export const PostResolver = {
       const posts = await getAllPosts();
 
       return { posts };
-    },
-
-    getPostsByPetId: async (_, { petId }, context) => {
-      if (!petId) {
-        throw new GraphQLError('Pet ID missing', {
-          extensions: {
-            code: 'BAD_USER_INPUT',
-          },
-        });
-      }
-
-      try {
-        const posts = await getPostsByPetId(petId);
-        return { posts };
-      } catch (error) {
-        console.error(error);
-        throw new GraphQLError('Error fetching posts', {
-          extensions: {
-            code: 'INTERNAL_SERVER_ERROR',
-          },
-        });
-      }
     },
 
     getPostById: async (_, { id }, context) => {
@@ -334,8 +321,10 @@ export const PostResolver = {
 
       try {
         await post.addLike(owner);
+        await post.reload({ include: [{ association: 'Likes' }] });
 
-        return { success: true };
+        await redis.set(`likesCount:${post.id}`, post.Likes.length, 'EX', 120);
+        return { newLikesCount: post.Likes.length };
       } catch (e) {
         console.error(e);
 
@@ -383,7 +372,10 @@ export const PostResolver = {
       try {
         await post.removeLike(owner);
 
-        return { success: true };
+        await post.reload({ include: [{ association: 'Likes' }] });
+
+        await redis.set(`likesCount:${post.id}`, post.Likes.length, 'EX', 120);
+        return { newLikesCount: post.Likes.length };
       } catch (e) {
         console.error(e);
 

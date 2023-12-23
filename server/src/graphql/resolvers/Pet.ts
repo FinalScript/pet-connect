@@ -1,12 +1,13 @@
 import { GraphQLError } from 'graphql';
 import { getOwnerByAuthId } from '../../controllers/OwnerController';
 import { createPet, deletePet, getPetById, getPetByUsername, getPetsByOwnerId, isFollowingPet, updatePet } from '../../controllers/PetController';
+import { redis } from '../../db/redis';
 import { isTokenValid } from '../../middleware/token';
-import { Pet } from '../../models/Pet';
-import { ProfilePicture } from '../../models/ProfilePicture';
-import { Owner } from '../../models/Owner';
 import { Follows } from '../../models/Follow';
+import { Owner } from '../../models/Owner';
+import { Pet } from '../../models/Pet';
 import { Post } from '../../models/Post';
+import { ProfilePicture } from '../../models/ProfilePicture';
 
 export const PetResolver = {
   Pet: {
@@ -17,10 +18,12 @@ export const PetResolver = {
     },
 
     Followers: async (obj: Pet, {}, context) => {
-      const followers = (await obj.reload({ include: [{ model: Pet, as: 'FollowedPets' }] })).Followers;
+      const followers = (await obj.reload({ include: [{ model: Owner, as: 'Followers', include: [{ model: ProfilePicture, as: 'ProfilePicture' }] }] }))
+        .Followers;
 
       return followers;
     },
+
     Owner: async (obj: Pet, {}, context) => {
       const owner = (await obj.reload({ include: [{ model: Owner, as: 'Owner' }] })).Owner;
 
@@ -28,28 +31,62 @@ export const PetResolver = {
     },
 
     Posts: async (obj: Pet, {}, context) => {
-      const posts = (await obj.reload({ include: [{ model: Owner, as: 'Posts' }] })).Posts;
+      const posts = await Post.findAll({
+        where: { petId: obj.id },
+        order: [['createdAt', 'DESC']],
+      });
 
       return posts;
     },
+
     followerCount: async (obj: Pet, {}, context) => {
-      return Follows.count({ where: { petId: obj.id } });
+      const cachedFollowerCount = await redis.get(`followerCount:${obj.id}`);
+
+      if (cachedFollowerCount) {
+        return cachedFollowerCount;
+      } else {
+        const followerCount = await Follows.count({ where: { petId: obj.id } });
+
+        await redis.set(`followerCount:${obj.id}`, followerCount, 'EX', 120);
+
+        return followerCount;
+      }
     },
+
     postsCount: async (obj: Pet, {}, context) => {
-      return Post.count({ where: { petId: obj.id } });
+      const cachedPostsCount = await redis.get(`postsCount:${obj.id}`);
+
+      if (cachedPostsCount) {
+        return cachedPostsCount;
+      } else {
+        const postsCount = await Post.count({ where: { petId: obj.id } });
+
+        await redis.set(`postsCount:${obj.id}`, postsCount, 'EX', 120);
+
+        return postsCount;
+      }
     },
+
     totalLikes: async (obj: Pet, {}, context) => {
-      const posts = await Post.findAll({
-        where: { petId: obj.id },
-        include: [{ model: Owner, as: 'Likes' }], 
-      });
+      const cachedTotalLikes = await redis.get(`totalLikes:${obj.id}`);
 
-      // Calculate cumulative likes for the pet
-      const cumulativeLikes = posts.reduce((totalLikes, post) => {
-        return totalLikes + (post.Likes?.length || 0);
-      }, 0);
+      if (cachedTotalLikes) {
+        return cachedTotalLikes;
+      } else {
+        const posts = await Post.findAll({
+          where: { petId: obj.id },
+          include: [{ model: Owner, as: 'Likes' }],
+        });
 
-      return cumulativeLikes;
+        // Calculate cumulative likes for the pet
+        const cumulativeLikes = posts.reduce((totalLikes, post) => {
+          return totalLikes + (post.Likes?.length || 0);
+        }, 0);
+
+        await redis.set(`totalLikes:${obj.id}`, cumulativeLikes, 'EX', 120);
+
+        return cumulativeLikes;
+      }
     },
   },
 

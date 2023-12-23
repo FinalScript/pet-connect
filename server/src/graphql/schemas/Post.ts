@@ -36,13 +36,12 @@ type DeletePostResponse {
 }
 
 type LikeResponse {
-    success: Boolean!
+    newLikesCount: Int!
 }
 
 type Query{
     getAllPosts: AllPostsResponse! 
     getPostById(id: String!): PostResponse!
-    getPostsByPetId(petId: String!): PostsResponse!
     getFollowing: [Post!]!
     getForYou: [Post!]!
     isLikingPost( id: String! ): Boolean!
