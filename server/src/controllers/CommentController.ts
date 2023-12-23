@@ -1,6 +1,4 @@
 import { Comment, CommentCreationAttributes } from '../models/Comment';
-import { Owner } from '../models/Owner';
-import { ProfilePicture } from '../models/ProfilePicture';
 
 export const createComment = async (comment: CommentCreationAttributes) => {
   const newComment = await Comment.create(comment);

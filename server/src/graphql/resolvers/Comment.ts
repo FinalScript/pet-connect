@@ -4,11 +4,12 @@ import { getOwnerByAuthId } from '../../controllers/OwnerController';
 import { getPostById } from '../../controllers/PostController';
 import { isTokenValid } from '../../middleware/token';
 import { Comment } from '../../models/Comment';
+import { Owner } from '../../models/Owner';
 
 export const CommentResolver = {
   Comment: {
     Author: async (obj: Comment, {}, context) => {
-      const author = (await obj.reload({ include: [{ model: Comment, as: 'Author' }] })).Author;
+      const author = (await obj.reload({ include: [{ model: Owner, as: 'Author' }] })).Author;
 
       return author;
     },
@@ -88,7 +89,6 @@ export const CommentResolver = {
         await post.addComment(comment);
         await post.save();
         await comment.setAuthor(owner);
-        await comment.reload();
         return comment;
       } catch (e) {
         console.error(e);
