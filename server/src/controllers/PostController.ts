@@ -1,8 +1,4 @@
-import { Media } from '../models/Media';
-import { Owner } from '../models/Owner';
-import { Pet } from '../models/Pet';
-import { Post, PostAttributes, PostCreationAttributes } from '../models/Post';
-import { ProfilePicture } from '../models/ProfilePicture';
+import { Post, PostCreationAttributes } from '../models/Post';
 
 export const createPost = async (data: PostCreationAttributes) => {
   const newPost = await Post.create(data);

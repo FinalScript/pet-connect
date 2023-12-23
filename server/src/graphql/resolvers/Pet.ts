@@ -5,6 +5,8 @@ import { isTokenValid } from '../../middleware/token';
 import { Pet } from '../../models/Pet';
 import { ProfilePicture } from '../../models/ProfilePicture';
 import { Owner } from '../../models/Owner';
+import { Follows } from '../../models/Follow';
+import { Post } from '../../models/Post';
 
 export const PetResolver = {
   Pet: {
@@ -29,6 +31,25 @@ export const PetResolver = {
       const posts = (await obj.reload({ include: [{ model: Owner, as: 'Posts' }] })).Posts;
 
       return posts;
+    },
+    followerCount: async (obj: Pet, {}, context) => {
+      return Follows.count({ where: { petId: obj.id } });
+    },
+    postsCount: async (obj: Pet, {}, context) => {
+      return Post.count({ where: { petId: obj.id } });
+    },
+    totalLikes: async (obj: Pet, {}, context) => {
+      const posts = await Post.findAll({
+        where: { petId: obj.id },
+        include: [{ model: Owner, as: 'Likes' }], 
+      });
+
+      // Calculate cumulative likes for the pet
+      const cumulativeLikes = posts.reduce((totalLikes, post) => {
+        return totalLikes + (post.Likes?.length || 0);
+      }, 0);
+
+      return cumulativeLikes;
     },
   },
 
