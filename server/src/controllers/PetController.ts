@@ -1,20 +1,7 @@
-import { Op, Sequelize } from 'sequelize';
+import { Op } from 'sequelize';
 import { Follows } from '../models/Follow';
-import { Owner } from '../models/Owner';
 import { Pet, PetCreationDAO } from '../models/Pet';
-import { ProfilePicture } from '../models/ProfilePicture';
 import { PetUpdateDAO } from './../models/Pet';
-
-export const getFollowersByPetId = async (id: string) => {
-  const pet = await Pet.findOne({
-    where: {
-      id,
-    },
-    include: [{ model: Owner, as: 'Followers', include: [{ model: ProfilePicture, as: 'ProfilePicture' }] }],
-  });
-
-  return pet.Followers;
-};
 
 export const isFollowingPet = async (ownerId: string, petId: string) => {
   const isFollowing = await Follows.findOne({
@@ -32,18 +19,6 @@ export const getPetById = async (id: string) => {
     where: {
       id,
     },
-    include: [
-      {
-        model: Owner,
-        as: 'Owner',
-        include: [{ model: ProfilePicture, as: 'ProfilePicture' }],
-      },
-      {
-        model: ProfilePicture,
-        as: 'ProfilePicture',
-      },
-      { model: Owner, as: 'Followers', attributes: [] },
-    ],
   });
 
   return pet;
@@ -54,16 +29,6 @@ export const getPetsByOwnerId = async (id: string) => {
     where: {
       ownerId: id,
     },
-    include: [
-      {
-        model: Owner,
-        as: 'Owner',
-      },
-      {
-        model: ProfilePicture,
-        as: 'ProfilePicture',
-      },
-    ],
   });
 
   return pets;
@@ -74,16 +39,6 @@ export const getPetByUsername = async (username: string) => {
     where: {
       username,
     },
-    include: [
-      {
-        model: Owner,
-        as: 'Owner',
-      },
-      {
-        model: ProfilePicture,
-        as: 'ProfilePicture',
-      },
-    ],
   });
 
   return pet;
@@ -107,7 +62,10 @@ export const deletePet = async (id: string) => {
 };
 
 export const updatePet = async (id: string, data: PetUpdateDAO) => {
-  const pet = await Pet.update(data, { where: { id } });
+  const pet = await getPetById(id);
+
+  await pet.update(data);
+  await pet.reload();
 
   // Return the updated pet object
   return pet;
@@ -119,16 +77,6 @@ export const searchForPets = async (searchValue: string) => {
       [Op.or]: [{ name: { [Op.like]: '%' + searchValue + '%' } }, { username: { [Op.like]: '%' + searchValue + '%' } }],
     },
     limit: 20,
-    include: [
-      {
-        model: Owner,
-        as: 'Owner',
-      },
-      {
-        model: ProfilePicture,
-        as: 'ProfilePicture',
-      },
-    ],
   });
 
   return pets;

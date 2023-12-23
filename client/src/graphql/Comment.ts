@@ -9,7 +9,7 @@ export const GET_COMMENTS_BY_POST_ID = gql(`
       postId
       createdAt
       updatedAt
-      author {
+      Author {
         id
         authId
         name
@@ -35,7 +35,7 @@ export const CREATE_COMMENT = gql(`
       postId
       createdAt
       updatedAt
-      author {
+      Author {
         id
         authId
         name

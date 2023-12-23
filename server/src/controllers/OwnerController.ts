@@ -1,39 +1,11 @@
-import { Op, Sequelize } from 'sequelize';
+import { Op } from 'sequelize';
 import { Owner, OwnerCreationDAO, OwnerUpdateDAO } from '../models/Owner';
-import { Pet } from '../models/Pet';
-import { ProfilePicture } from '../models/ProfilePicture';
-import { Post } from '../models/Post';
 
-export const getFollowingByOwnerId = async (id: string) => {
-  const owner = await Owner.findOne({
-    where: {
-      id,
-    },
-    include: [{ model: Pet, as: 'FollowedPets', include: [{ model: ProfilePicture, as: 'ProfilePicture' }] }],
-  });
-
-  return owner.FollowedPets;
-};
-
-export const getOwner = async (authId: string) => {
+export const getOwnerByAuthId = async (authId: string) => {
   const owner = await Owner.findOne({
     where: {
       authId,
     },
-    include: [
-      {
-        model: ProfilePicture,
-        as: 'ProfilePicture',
-      },
-      {
-        model: Pet,
-        as: 'Pets',
-        include: [
-          { all: true, nested: true },
-          { model: Post, as: 'Posts', attributes: ['id'] },
-        ],
-      },
-    ],
   });
 
   return owner;
@@ -44,12 +16,6 @@ export const getOwnerById = async (id: string) => {
     where: {
       id,
     },
-    include: [
-      {
-        model: ProfilePicture,
-        as: 'ProfilePicture',
-      },
-    ],
   });
 
   return owner;
@@ -60,26 +26,13 @@ export const getOwnerByUsername = async (username: string) => {
     where: {
       username,
     },
-    include: [
-      {
-        model: Pet,
-        as: 'Pets',
-        include: [
-          { model: Post, as: 'Posts', include: [{ all: true, nested: true }] },
-        ],
-      },
-      {
-        all: true,
-        nested: true,
-      },
-    ],
   });
 
   return owner;
 };
 
 export const createOwner = async ({ authId, username, name, location }: OwnerCreationDAO) => {
-  const doesOwnerExist = await getOwner(authId);
+  const doesOwnerExist = await getOwnerByAuthId(authId);
 
   if (doesOwnerExist) {
     throw { status: 409, message: 'Duplicate Entry' };
@@ -91,14 +44,16 @@ export const createOwner = async ({ authId, username, name, location }: OwnerCre
 };
 
 export const updateOwner = async (authId: string, data: OwnerUpdateDAO) => {
-  const owner = await Owner.update(data, { where: { authId } });
+  const owner = await getOwnerByAuthId(authId);
 
-  // Return the updated owner object
+  await owner.update(data);
+  await owner.reload();
+
   return owner;
 };
 
 export const deleteOwner = async (authId: string) => {
-  const owner = await getOwner(authId);
+  const owner = await getOwnerByAuthId(authId);
 
   await owner.destroy();
 
@@ -111,12 +66,6 @@ export const searchForOwners = async (searchValue: string) => {
       [Op.or]: [{ name: { [Op.like]: '%' + searchValue + '%' } }, { username: { [Op.like]: '%' + searchValue + '%' } }],
     },
     limit: 20,
-    include: [
-      {
-        model: ProfilePicture,
-        as: 'ProfilePicture',
-      },
-    ],
   });
 
   return owners;

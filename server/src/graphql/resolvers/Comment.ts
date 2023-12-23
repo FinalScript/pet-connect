@@ -1,19 +1,42 @@
 import { GraphQLError } from 'graphql/error';
-import { getPetById } from '../../controllers/PetController';
-import { createPost, deletePost, getAllPosts, getPostById, getPostsByPetId, updatePost } from '../../controllers/PostController';
-import { Post } from '../../models/Post';
-import { Media } from '../../models/Media';
-import { Pet } from '../../models/Pet';
-import { isTokenValid } from '../../middleware/token';
-import { getOwner } from '../../controllers/OwnerController';
-import { Owner } from '../../models/Owner';
-import { Follows } from '../../models/Follow';
-import { ProfilePicture } from '../../models/ProfilePicture';
-import { Sequelize } from 'sequelize';
 import { createComment, getCommentsByPostId } from '../../controllers/CommentController';
+import { getOwnerByAuthId } from '../../controllers/OwnerController';
+import { getPostById } from '../../controllers/PostController';
+import { isTokenValid } from '../../middleware/token';
 import { Comment } from '../../models/Comment';
+import { Owner } from '../../models/Owner';
 
 export const CommentResolver = {
+  Comment: {
+    Author: async (obj: Comment, {}, context) => {
+      const author = (await obj.reload({ include: [{ model: Owner, as: 'Author' }] })).Author;
+
+      return author;
+    },
+  },
+  Query: {
+    getCommentsByPostId: async (_, { postId }, context) => {
+      if (!postId) {
+        throw new GraphQLError('postId missing', {
+          extensions: {
+            code: 'BAD_USER_INPUT',
+          },
+        });
+      }
+
+      try {
+        const comments = await getCommentsByPostId(postId);
+        return comments;
+      } catch (error) {
+        console.error(error);
+        throw new GraphQLError('Error fetching comments', {
+          extensions: {
+            code: 'INTERNAL_SERVER_ERROR',
+          },
+        });
+      }
+    },
+  },
   Mutation: {
     createComment: async (_, { postId, text }, context) => {
       const { token } = context;
@@ -38,7 +61,7 @@ export const CommentResolver = {
 
       const authId = jwtResult.id;
 
-      const owner = await getOwner(authId);
+      const owner = await getOwnerByAuthId(authId);
 
       if (!owner) {
         throw new GraphQLError('Owner does not exist', {
@@ -66,9 +89,6 @@ export const CommentResolver = {
         await post.addComment(comment);
         await post.save();
         await comment.setAuthor(owner);
-        await comment.reload({
-          include: [{ model: Owner, as: 'author', include: [{ model: ProfilePicture, as: 'ProfilePicture' }] }],
-        });
         return comment;
       } catch (e) {
         console.error(e);
@@ -76,30 +96,6 @@ export const CommentResolver = {
         throw new GraphQLError(e.message, {
           extensions: {
             code: 'SQL_ERROR',
-          },
-        });
-      }
-    },
-  },
-
-  Query: {
-    getCommentsByPostId: async (_, { postId }, context) => {
-      if (!postId) {
-        throw new GraphQLError('postId missing', {
-          extensions: {
-            code: 'BAD_USER_INPUT',
-          },
-        });
-      }
-
-      try {
-        const comments = await getCommentsByPostId(postId);
-        return comments;
-      } catch (error) {
-        console.error(error);
-        throw new GraphQLError('Error fetching comments', {
-          extensions: {
-            code: 'INTERNAL_SERVER_ERROR',
           },
         });
       }

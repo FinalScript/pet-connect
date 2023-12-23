@@ -1,17 +1,179 @@
 import { GraphQLError } from 'graphql/error';
+import { Sequelize } from 'sequelize';
+import { getOwnerByAuthId } from '../../controllers/OwnerController';
 import { getPetById } from '../../controllers/PetController';
-import { createPost, deletePost, getAllPosts, getPostById, getPostByIdWithLikers, getPostsByPetId, updatePost } from '../../controllers/PostController';
-import { Post } from '../../models/Post';
+import { createPost, deletePost, getAllPosts, getPostById, getPostByIdWithLikers, getPostsByPetId } from '../../controllers/PostController';
+import { isTokenValid } from '../../middleware/token';
 import { Media } from '../../models/Media';
 import { Pet } from '../../models/Pet';
-import { isTokenValid } from '../../middleware/token';
-import { getOwner, getOwnerById } from '../../controllers/OwnerController';
+import { Post } from '../../models/Post';
 import { Owner } from '../../models/Owner';
-import { Follows } from '../../models/Follow';
-import { ProfilePicture } from '../../models/ProfilePicture';
-import { Sequelize } from 'sequelize';
+import { redis } from '../../db/redis';
 
 export const PostResolver = {
+  Post: {
+    Media: async (obj: Post, {}, context) => {
+      const cachedMedia = await redis.get(`mediaByPostId:${obj.id}`);
+
+      if (cachedMedia) {
+        return JSON.parse(cachedMedia);
+      } else {
+        const media = (await obj.reload({ include: [{ model: Media, as: 'Media' }] })).Media;
+
+        await redis.set(`mediaByPostId:${obj.id}`, JSON.stringify(media), 'EX', 300);
+
+        return media;
+      }
+    },
+    Author: async (obj: Post, {}, context) => {
+      const author = (await obj.reload({ include: [{ model: Pet, as: 'Author' }] })).Author;
+
+      return author;
+    },
+    Comments: async (obj: Post, {}, context) => {
+      const comments = (await obj.reload({ include: [{ model: Pet, as: 'Comments' }] })).Comments;
+
+      return comments;
+    },
+    likesCount: async (obj: Post, {}, context) => {
+      const cachedLikesCount = await redis.get(`likesCount:${obj.id}`);
+
+      if (cachedLikesCount) {
+        return cachedLikesCount;
+      } else {
+        const likesCount = (await obj.reload({ include: [{ association: 'Likes' }] })).Likes.length;
+
+        await redis.set(`likesCount:${obj.id}`, likesCount, 'EX', 120);
+
+        return likesCount;
+      }
+    },
+  },
+
+  Query: {
+    getAllPosts: async (_, {}, context) => {
+      const posts = await getAllPosts();
+
+      return { posts };
+    },
+
+    getPostById: async (_, { id }, context) => {
+      if (!id) {
+        throw new GraphQLError('ID missing', {
+          extensions: {
+            code: 'BAD_USER_INPUT',
+          },
+        });
+      }
+
+      const post = await getPostById(id);
+
+      if (!post) {
+        throw new GraphQLError('Post does not exist', {
+          extensions: {
+            code: 'BAD_USER_INPUT',
+          },
+        });
+      }
+
+      return { post };
+    },
+
+    getFollowing: async (_, {}, context) => {
+      const { token } = context;
+
+      const jwtResult = await isTokenValid(token);
+
+      if (jwtResult?.error || !jwtResult?.id) {
+        throw new GraphQLError(jwtResult?.error.toString(), {
+          extensions: {
+            code: 'UNAUTHORIZED',
+          },
+        });
+      }
+
+      const ownerWithFollowedPets = await Owner.findOne({
+        where: {
+          authId: jwtResult.id,
+        },
+        include: [
+          { model: Pet, as: 'FollowedPets', include: [{ model: Post, as: 'Posts' }] },
+          { model: Pet, as: 'Pets', include: [{ model: Post, as: 'Posts' }] },
+        ],
+      });
+
+      if (!ownerWithFollowedPets) {
+        throw new GraphQLError('Owner not found');
+      }
+
+      const followedPets: Pet[] = [...ownerWithFollowedPets.FollowedPets, ...ownerWithFollowedPets.Pets];
+      const allFollowedPosts = followedPets.reduce((allPosts, pet) => {
+        const posts = pet.Posts || [];
+        return [...allPosts, ...posts];
+      }, []);
+      const following: Post[] = allFollowedPosts.sort((postA: Post, postB: Post) => Number(postB.createdAt) - Number(postA.createdAt));
+      return following;
+    },
+    getForYou: async (_, {}, context) => {
+      const { token } = context;
+
+      const jwtResult = await isTokenValid(token);
+
+      if (jwtResult?.error || !jwtResult?.id) {
+        throw new GraphQLError(jwtResult?.error.toString(), {
+          extensions: {
+            code: 'UNAUTHORIZED',
+          },
+        });
+      }
+
+      const forYou = await Post.findAll({
+        order: Sequelize.literal('rand()'),
+        limit: 20,
+      });
+
+      return forYou;
+    },
+
+    isLikingPost: async (_, { id }, context) => {
+      const { token } = context;
+
+      const jwtResult = await isTokenValid(token);
+
+      if (jwtResult?.error || !jwtResult?.id) {
+        throw new GraphQLError(jwtResult?.error.toString(), {
+          extensions: {
+            code: 'UNAUTHORIZED',
+          },
+        });
+      }
+
+      const owner = await getOwnerByAuthId(jwtResult.id);
+
+      if (!id) {
+        throw new GraphQLError('ID missing', {
+          extensions: {
+            code: 'BAD_USER_INPUT',
+          },
+        });
+      }
+
+      const post = await getPostByIdWithLikers(id);
+
+      if (!post) {
+        throw new GraphQLError('Post does not exist', {
+          extensions: {
+            code: 'BAD_USER_INPUT',
+          },
+        });
+      }
+
+      const likedOwners = post.Likes || [];
+      const liked = likedOwners.some((i) => i.id === owner.id);
+
+      return liked;
+    },
+  },
   Mutation: {
     createPost: async (_, { petId, description, media }, context) => {
       const { token } = context;
@@ -61,75 +223,7 @@ export const PostResolver = {
 
         await post.setMedia(mediaDAO);
         await post.save();
-        await post.reload({
-          include: [
-            {
-              model: Media,
-              as: 'Media',
-            },
-            {
-              model: Pet,
-              as: 'author',
-              include: [{ all: true }],
-            },
-          ],
-        });
-      } catch (e) {
-        console.error(e);
-
-        throw new GraphQLError(e.message, {
-          extensions: {
-            code: 'SQL_ERROR',
-          },
-        });
-      }
-
-      return { post: { ...post.dataValues, Media: post.dataValues.Media.dataValues, author: post.dataValues.author.dataValues } };
-    },
-
-    updatePost: async (_, { id, description, media }, context) => {
-      const { token } = context;
-
-      const jwtResult = await isTokenValid(token);
-
-      if (jwtResult?.error || !jwtResult?.id) {
-        throw new GraphQLError(jwtResult?.error.toString(), {
-          extensions: {
-            code: 'UNAUTHORIZED',
-          },
-        });
-      }
-
-      if (!id) {
-        throw new GraphQLError('ID missing', {
-          extensions: {
-            code: 'BAD_USER_INPUT',
-          },
-        });
-      }
-
-      const post = await getPostById(id);
-
-      if (!post) {
-        throw new GraphQLError('Post does not exist', {
-          extensions: {
-            code: 'BAD_USER_INPUT',
-          },
-        });
-      }
-
-      if (!media) {
-        throw new GraphQLError('Media cannot be null', {
-          extensions: {
-            code: 'BAD_USER_INPUT',
-          },
-        });
-      }
-
-      try {
-        await updatePost(post.id, { description, media });
         await post.reload();
-        return post;
       } catch (e) {
         console.error(e);
 
@@ -139,6 +233,8 @@ export const PostResolver = {
           },
         });
       }
+
+      return { post };
     },
 
     deletePost: async (_, { id }, context) => {
@@ -154,7 +250,7 @@ export const PostResolver = {
         });
       }
 
-      const owner = await getOwner(jwtResult.id);
+      const owner = await getOwnerByAuthId(jwtResult.id);
 
       if (!id) {
         throw new GraphQLError('ID missing', {
@@ -164,7 +260,9 @@ export const PostResolver = {
         });
       }
 
-      const post = await getPostById(id);
+      const post = await Post.findByPk(id, {
+        include: [{ model: Pet, as: 'Author' }],
+      });
 
       if (!post) {
         throw new GraphQLError('Post does not exist', {
@@ -174,7 +272,7 @@ export const PostResolver = {
         });
       }
 
-      if (post.author.ownerId !== owner.id) {
+      if (post.Author.ownerId !== owner.id) {
         throw new GraphQLError("You don't have permissions to delete this post.", {
           extensions: {
             code: 'FORBIDDEN',
@@ -209,7 +307,7 @@ export const PostResolver = {
         });
       }
 
-      const owner = await getOwner(jwtResult.id);
+      const owner = await getOwnerByAuthId(jwtResult.id);
 
       if (!id) {
         throw new GraphQLError('Please provide petId', {
@@ -231,8 +329,10 @@ export const PostResolver = {
 
       try {
         await post.addLike(owner);
+        await post.reload({ include: [{ association: 'Likes' }] });
 
-        return { success: true };
+        await redis.set(`likesCount:${post.id}`, post.Likes.length, 'EX', 120);
+        return { newLikesCount: post.Likes.length };
       } catch (e) {
         console.error(e);
 
@@ -257,7 +357,7 @@ export const PostResolver = {
         });
       }
 
-      const owner = await getOwner(jwtResult.id);
+      const owner = await getOwnerByAuthId(jwtResult.id);
 
       if (!id) {
         throw new GraphQLError('Please provide petId', {
@@ -280,7 +380,10 @@ export const PostResolver = {
       try {
         await post.removeLike(owner);
 
-        return { success: true };
+        await post.reload({ include: [{ association: 'Likes' }] });
+
+        await redis.set(`likesCount:${post.id}`, post.Likes.length, 'EX', 120);
+        return { newLikesCount: post.Likes.length };
       } catch (e) {
         console.error(e);
 
@@ -290,203 +393,6 @@ export const PostResolver = {
           },
         });
       }
-    },
-  },
-
-  Query: {
-    getAllPosts: async (_, {}, context) => {
-      const posts = await getAllPosts();
-
-      return { posts };
-    },
-
-    getPostsByPetId: async (_, { petId }, context) => {
-      if (!petId) {
-        throw new GraphQLError('Pet ID missing', {
-          extensions: {
-            code: 'BAD_USER_INPUT',
-          },
-        });
-      }
-
-      try {
-        const posts = await getPostsByPetId(petId);
-        return { posts };
-      } catch (error) {
-        console.error(error);
-        throw new GraphQLError('Error fetching posts', {
-          extensions: {
-            code: 'INTERNAL_SERVER_ERROR',
-          },
-        });
-      }
-    },
-
-    getPostById: async (_, { id }, context) => {
-      if (!id) {
-        throw new GraphQLError('ID missing', {
-          extensions: {
-            code: 'BAD_USER_INPUT',
-          },
-        });
-      }
-
-      const post = await getPostById(id);
-
-      if (!post) {
-        throw new GraphQLError('Post does not exist', {
-          extensions: {
-            code: 'BAD_USER_INPUT',
-          },
-        });
-      }
-
-      return { post };
-    },
-
-    getFollowing: async (_, {}, context) => {
-      const { token } = context;
-
-      const jwtResult = await isTokenValid(token);
-
-      if (jwtResult?.error || !jwtResult?.id) {
-        throw new GraphQLError(jwtResult?.error.toString(), {
-          extensions: {
-            code: 'UNAUTHORIZED',
-          },
-        });
-      }
-
-      const ownerWithFollowedPets = await Owner.findOne({
-        where: { authId: jwtResult.id },
-        include: [
-          {
-            model: Pet,
-            as: 'FollowedPets',
-            include: [
-              {
-                model: Post,
-                as: 'Posts',
-                include: [
-                  { model: Pet, as: 'author', include: [{ model: ProfilePicture, as: 'ProfilePicture' }] },
-                  { model: Media, as: 'Media' },
-                ],
-              },
-            ],
-          },
-          {
-            model: Pet,
-            as: 'Pets',
-            include: [
-              {
-                model: Post,
-                as: 'Posts',
-                include: [
-                  { model: Pet, as: 'author', include: [{ model: ProfilePicture, as: 'ProfilePicture' }] },
-                  { model: Media, as: 'Media' },
-                ],
-              },
-            ],
-          },
-        ],
-      });
-
-      if (!ownerWithFollowedPets) {
-        throw new GraphQLError('Owner not found');
-      }
-
-      const followedPets: Pet[] = [...ownerWithFollowedPets.FollowedPets, ...ownerWithFollowedPets.Pets];
-      const allFollowedPosts = followedPets.reduce((allPosts, pet) => {
-        const posts = pet.Posts || [];
-        return [...allPosts, ...posts];
-      }, []);
-      const following: Post[] = allFollowedPosts.sort((postA: Post, postB: Post) => Number(postB.createdAt) - Number(postA.createdAt));
-      return following;
-    },
-    getForYou: async (_, {}, context) => {
-      const { token } = context;
-
-      const jwtResult = await isTokenValid(token);
-
-      if (jwtResult?.error || !jwtResult?.id) {
-        throw new GraphQLError(jwtResult?.error.toString(), {
-          extensions: {
-            code: 'UNAUTHORIZED',
-          },
-        });
-      }
-
-      const forYou = await Post.findAll({
-        order: Sequelize.literal('rand()'),
-        limit: 20,
-        include: [
-          { model: Pet, as: 'author', include: [{ model: ProfilePicture, as: 'ProfilePicture' }] },
-          { model: Media, as: 'Media' },
-        ],
-      });
-
-      return forYou;
-    },
-
-    getAllLikersByPostId: async (_, { id }, context) => {
-      if (!id) {
-        throw new GraphQLError('ID missing', {
-          extensions: {
-            code: 'BAD_USER_INPUT',
-          },
-        });
-      }
-
-      const post = await getPostByIdWithLikers(id);
-
-      if (!post) {
-        throw new GraphQLError('Post does not exist', {
-          extensions: {
-            code: 'BAD_USER_INPUT',
-          },
-        });
-      }
-
-      return post.Likes || [];
-    },
-
-    isLikingPost: async (_, { id }, context) => {
-      const { token } = context;
-
-      const jwtResult = await isTokenValid(token);
-
-      if (jwtResult?.error || !jwtResult?.id) {
-        throw new GraphQLError(jwtResult?.error.toString(), {
-          extensions: {
-            code: 'UNAUTHORIZED',
-          },
-        });
-      }
-
-      const owner = await getOwner(jwtResult.id);
-
-      if (!id) {
-        throw new GraphQLError('ID missing', {
-          extensions: {
-            code: 'BAD_USER_INPUT',
-          },
-        });
-      }
-
-      const post = await getPostByIdWithLikers(id);
-
-      if (!post) {
-        throw new GraphQLError('Post does not exist', {
-          extensions: {
-            code: 'BAD_USER_INPUT',
-          },
-        });
-      }
-
-      const likedOwners = post.Likes || [];
-      const liked = likedOwners.some((i) => i.id === owner.id);
-
-      return liked;
     },
   },
 };

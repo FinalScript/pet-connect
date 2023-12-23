@@ -18,7 +18,7 @@ const Followers = ({
   navigation,
 }: Props) => {
   const { data: followersData, refetch: refetchFollowersData } = useQuery(GET_FOLLOWERS_BY_PET_ID, { variables: { petId }, pollInterval: 10000 });
-  const followers = useMemo(() => followersData?.getFollowersByPetId || [], [followersData]);
+  const followers = useMemo(() => followersData?.getPetById.pet.Followers || [], [followersData]);
 
   return (
     <SafeAreaView className='flex-1 items-center bg-themeBg'>

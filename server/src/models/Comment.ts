@@ -17,7 +17,7 @@ export class Comment extends Model<InferAttributes<Comment>, InferCreationAttrib
   public text!: string;
   declare ownerId: string;
   declare postId: string;
-  declare author?: Owner;
+  declare Author?: Owner;
   declare setAuthor: HasOneSetAssociationMixin<Owner, 'id'>;
   public readonly createdAt!: Date;
   public readonly updatedAt!: Date;
