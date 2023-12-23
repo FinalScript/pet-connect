@@ -1,9 +1,7 @@
-import { Op, Sequelize } from 'sequelize';
+import { Op } from 'sequelize';
 import { Owner, OwnerCreationDAO, OwnerUpdateDAO } from '../models/Owner';
 import { Pet } from '../models/Pet';
 import { ProfilePicture } from '../models/ProfilePicture';
-import { Post } from '../models/Post';
-import { redis } from '../db/redis';
 
 export const getFollowingByOwnerId = async (id: string) => {
   const owner = await Owner.findOne({
@@ -16,82 +14,38 @@ export const getFollowingByOwnerId = async (id: string) => {
   return owner.FollowedPets;
 };
 
-export const getOwner = async (authId: string, useCache = true) => {
-  const cachedOwner = await redis.get(`owner:${authId}`);
+export const getOwnerByAuthId = async (authId: string) => {
+  const owner = await Owner.findOne({
+    where: {
+      authId,
+    },
+  });
 
-  if (cachedOwner && useCache) {
-    return JSON.parse(cachedOwner);
-  } else {
-    const owner = await Owner.findOne({
-      where: {
-        authId,
-      },
-      include: [
-        {
-          model: ProfilePicture,
-          as: 'ProfilePicture',
-        },
-      ],
-    });
-
-    await redis.set(`owner:${authId}`, JSON.stringify(owner.dataValues), 'EX', 300);
-
-    return owner;
-  }
+  return owner;
 };
 
 export const getOwnerById = async (id: string) => {
-  const cachedOwner = await redis.get(`owner:${id}`);
+  const owner = await Owner.findOne({
+    where: {
+      id,
+    },
+  });
 
-  if (cachedOwner) {
-    const owner: Owner = JSON.parse(cachedOwner);
-    return owner;
-  } else {
-    const owner = await Owner.findOne({
-      where: {
-        id,
-      },
-      include: [
-        {
-          model: ProfilePicture,
-          as: 'ProfilePicture',
-        },
-      ],
-    });
-
-    await redis.set(`owner:${id}`, JSON.stringify(owner.dataValues), 'EX', 300);
-
-    return owner;
-  }
+  return owner;
 };
 
 export const getOwnerByUsername = async (username: string) => {
-  const cachedOwner = await redis.get(`owner:${username}`);
+  const owner = await Owner.findOne({
+    where: {
+      username,
+    },
+  });
 
-  if (cachedOwner) {
-    const owner: Owner = JSON.parse(cachedOwner);
-    return owner;
-  } else {
-    const owner = await Owner.findOne({
-      where: {
-        username,
-      },
-      include: [
-        {
-          model: ProfilePicture,
-          as: 'ProfilePicture',
-        },
-      ],
-    });
-
-    await redis.set(`owner:${username}`, JSON.stringify(owner.dataValues), 'EX', 300);
-
-    return owner;
-  }
+  return owner;
 };
 
 export const createOwner = async ({ authId, username, name, location }: OwnerCreationDAO) => {
-  const doesOwnerExist = await getOwner(authId);
+  const doesOwnerExist = await getOwnerByAuthId(authId);
 
   if (doesOwnerExist) {
     throw { status: 409, message: 'Duplicate Entry' };
@@ -103,19 +57,16 @@ export const createOwner = async ({ authId, username, name, location }: OwnerCre
 };
 
 export const updateOwner = async (authId: string, data: OwnerUpdateDAO) => {
-  const owner = await getOwner(authId);
+  const owner = await getOwnerByAuthId(authId);
 
   await owner.update(data);
   await owner.reload();
 
-  await redis.set(`owner:${authId}`, JSON.stringify(owner.dataValues), 'EX', 300);
-
-  // Return the updated owner object
   return owner;
 };
 
 export const deleteOwner = async (authId: string) => {
-  const owner = await getOwner(authId);
+  const owner = await getOwnerByAuthId(authId);
 
   await owner.destroy();
 
@@ -123,27 +74,12 @@ export const deleteOwner = async (authId: string) => {
 };
 
 export const searchForOwners = async (searchValue: string) => {
-  const cachedOwners = await redis.get(`searchForOwners:${searchValue}`);
+  const owners = await Owner.findAll({
+    where: {
+      [Op.or]: [{ name: { [Op.like]: '%' + searchValue + '%' } }, { username: { [Op.like]: '%' + searchValue + '%' } }],
+    },
+    limit: 20,
+  });
 
-  if (cachedOwners) {
-    const owners: Owner[] = JSON.parse(cachedOwners);
-    return owners;
-  } else {
-    const owners = await Owner.findAll({
-      where: {
-        [Op.or]: [{ name: { [Op.like]: '%' + searchValue + '%' } }, { username: { [Op.like]: '%' + searchValue + '%' } }],
-      },
-      limit: 20,
-      include: [
-        {
-          model: ProfilePicture,
-          as: 'ProfilePicture',
-        },
-      ],
-    });
-
-    await redis.set(`searchForOwners:${searchValue}`, JSON.stringify(owners), 'EX', 20);
-
-    return owners;
-  }
+  return owners;
 };

@@ -18,7 +18,7 @@ export const GET_ALL_POSTS = gql(`
           type
           aspectRatio
         }
-        author {
+        Author {
           id
           username
           name
@@ -68,7 +68,7 @@ export const CREATE_POST = gql(`
           type
           aspectRatio
         }
-        author {
+        Author {
           id
           username
           name
@@ -118,7 +118,7 @@ query getPostsByPetId($petId: String!) {
         type
         aspectRatio
       }
-      author {
+      Author {
         id
         username
         name
@@ -158,7 +158,7 @@ export const GET_FOLLOWING = gql(`
         type
         aspectRatio
       }
-      author {
+      Author {
         id
         username
         name
@@ -198,7 +198,7 @@ export const GET_FOR_YOU = gql(`
         type
         aspectRatio
       }
-      author {
+      Author {
         id
         username
         name

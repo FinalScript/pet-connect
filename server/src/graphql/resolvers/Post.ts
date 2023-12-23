@@ -1,15 +1,14 @@
 import { GraphQLError } from 'graphql/error';
+import { Sequelize } from 'sequelize';
+import { getOwnerByAuthId } from '../../controllers/OwnerController';
 import { getPetById } from '../../controllers/PetController';
 import { createPost, deletePost, getAllPosts, getPostById, getPostByIdWithLikers, getPostsByPetId, updatePost } from '../../controllers/PostController';
-import { Post } from '../../models/Post';
-import { Media } from '../../models/Media';
-import { Pet } from '../../models/Pet';
 import { isTokenValid } from '../../middleware/token';
-import { getOwner, getOwnerById } from '../../controllers/OwnerController';
+import { Media } from '../../models/Media';
 import { Owner } from '../../models/Owner';
-import { Follows } from '../../models/Follow';
+import { Pet } from '../../models/Pet';
+import { Post } from '../../models/Post';
 import { ProfilePicture } from '../../models/ProfilePicture';
-import { Sequelize } from 'sequelize';
 
 export const PostResolver = {
   Mutation: {
@@ -154,7 +153,7 @@ export const PostResolver = {
         });
       }
 
-      const owner = await getOwner(jwtResult.id);
+      const owner = await getOwnerByAuthId(jwtResult.id);
 
       if (!id) {
         throw new GraphQLError('ID missing', {
@@ -209,7 +208,7 @@ export const PostResolver = {
         });
       }
 
-      const owner = await getOwner(jwtResult.id, false);
+      const owner = await getOwnerByAuthId(jwtResult.id);
 
       if (!id) {
         throw new GraphQLError('Please provide petId', {
@@ -257,7 +256,7 @@ export const PostResolver = {
         });
       }
 
-      const owner = await getOwner(jwtResult.id, false);
+      const owner = await getOwnerByAuthId(jwtResult.id);
 
       if (!id) {
         throw new GraphQLError('Please provide petId', {
@@ -463,7 +462,7 @@ export const PostResolver = {
         });
       }
 
-      const owner = await getOwner(jwtResult.id);
+      const owner = await getOwnerByAuthId(jwtResult.id);
 
       if (!id) {
         throw new GraphQLError('ID missing', {

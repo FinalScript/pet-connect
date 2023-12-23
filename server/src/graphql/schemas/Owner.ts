@@ -5,7 +5,9 @@ export const OwnerTypeDef = `#graphql
     name: String
     username: String!
     location: String
+    Pets: [Pet!]!
     ProfilePicture: ProfilePicture
+    Following: [Pet!]!
     followingCount: Int
   }
 
@@ -42,17 +44,16 @@ export const OwnerTypeDef = `#graphql
 
   # Query and Mutation definitions
 
-  type Query {
-    getFollowingByOwnerId(ownerId: String!): [Pet!]!
-    getOwner: OwnerResponse!
+  extend type Query {
+    getOwner(authId: String!): OwnerResponse!
     getOwnerById(id: String!): OwnerResponse!
     validateUsername(username: String!): ValidateUsernameResponse!
     verifyToken: VerifyTokenResponse!
   }
 
-  type Mutation { 
-    signup(username: String!, name: String, location: String, profilePicture: MediaInput): SignUpResponse!
-    updateOwner(username: String, name: String, location: String, profilePicture: MediaInput): OwnerUpdatedResponse!
+  extend type Mutation { 
+    signup(username: String!, name: String, location: String, profilePicture: MediaInput): OwnerResponse!
+    updateOwner(username: String, name: String, location: String, profilePicture: MediaInput): OwnerResponse!
     deleteOwner: DeleteOwnerResponse!
   }
 `;

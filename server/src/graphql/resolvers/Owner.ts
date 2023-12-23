@@ -1,11 +1,66 @@
 import { GraphQLError } from 'graphql';
-import { deleteOwner, getFollowingByOwnerId, getOwner, getOwnerById, getOwnerByUsername, updateOwner } from '../../controllers/OwnerController';
+import { deleteOwner, getOwnerByAuthId, getOwnerById, getOwnerByUsername, updateOwner } from '../../controllers/OwnerController';
 import { isTokenValid } from '../../middleware/token';
 import { Owner } from '../../models/Owner';
+import { Pet } from '../../models/Pet';
 import { ProfilePicture } from '../../models/ProfilePicture';
-import { getFollowersByPetId } from '../../controllers/PetController';
 
 export const OwnerResolver = {
+  Query: {
+    verifyToken: async (_, {}, context) => {
+      const { token } = context;
+
+      const jwtResult = await isTokenValid(token);
+
+      if (jwtResult?.error || !jwtResult?.id) {
+        throw new GraphQLError(jwtResult?.error.toString(), {
+          extensions: {
+            code: 'UNAUTHORIZED',
+          },
+        });
+      }
+
+      return { valid: true };
+    },
+
+    getOwner: async (_, { authId }, context) => {
+      const owner = await getOwnerByAuthId(authId);
+
+      if (!owner) {
+        throw new GraphQLError('Owner not found');
+      }
+
+      return { owner };
+    },
+
+    getOwnerById: async (_, { id }, context) => {
+      const owner = await getOwnerById(id);
+
+      if (!owner) {
+        throw new GraphQLError('Owner not found');
+      }
+
+      return { owner };
+    },
+
+    validateUsername: async (_, { username }) => {
+      if (!username) {
+        throw new GraphQLError('Username missing', {
+          extensions: {
+            code: 'BAD_USER_INPUT',
+          },
+        });
+      }
+
+      const owner = await getOwnerByUsername(username);
+
+      if (owner) {
+        return { isAvailable: false };
+      }
+
+      return { isAvailable: true };
+    },
+  },
   Mutation: {
     signup: async (_, { username, name, location, profilePicture }, context) => {
       const { token } = context;
@@ -28,11 +83,7 @@ export const OwnerResolver = {
         });
       }
 
-      const user = await Owner.findOne({
-        where: {
-          username,
-        },
-      });
+      const user = await getOwnerByUsername(username);
 
       if (user) {
         throw new GraphQLError('Username taken', {
@@ -49,14 +100,6 @@ export const OwnerResolver = {
 
         await owner.setProfilePicture(profilePictureDAO);
         await owner.save();
-        await owner.reload({
-          include: [
-            {
-              model: ProfilePicture,
-              as: 'ProfilePicture',
-            },
-          ],
-        });
       }
 
       return { owner };
@@ -74,7 +117,7 @@ export const OwnerResolver = {
         });
       }
 
-      const owner = await getOwner(jwtResult.id);
+      const owner = await getOwnerByAuthId(jwtResult.id);
 
       if (!owner) {
         throw new GraphQLError('Owner not found', {
@@ -133,14 +176,6 @@ export const OwnerResolver = {
 
         await owner.setProfilePicture(profilePictureDAO);
         await owner.save();
-        await owner.reload({
-          include: [
-            {
-              model: ProfilePicture,
-              as: 'ProfilePicture',
-            },
-          ],
-        });
       }
 
       try {
@@ -171,7 +206,7 @@ export const OwnerResolver = {
         });
       }
 
-      const owner = await getOwner(jwtResult.id);
+      const owner = await getOwnerByAuthId(jwtResult.id);
 
       if (!owner) {
         throw new GraphQLError('Owner not found', {
@@ -187,89 +222,17 @@ export const OwnerResolver = {
     },
   },
 
-  Query: {
-    verifyToken: async (_, {}, context) => {
-      const { token } = context;
+  Owner: {
+    ProfilePicture: async (obj: Owner, {}, context) => {
+      const profilePicture = (await obj.reload({ include: [{ model: ProfilePicture, as: 'ProfilePicture' }] })).ProfilePicture;
 
-      const jwtResult = await isTokenValid(token);
-
-      if (jwtResult?.error || !jwtResult?.id) {
-        throw new GraphQLError(jwtResult?.error.toString(), {
-          extensions: {
-            code: 'UNAUTHORIZED',
-          },
-        });
-      }
-
-      return { valid: true };
+      return profilePicture;
     },
 
-    getFollowingByOwnerId: async (_, { ownerId }, context) => {
-      if (!ownerId) {
-        throw new GraphQLError('ownerId missing', {
-          extensions: {
-            code: 'BAD_USER_INPUT',
-          },
-        });
-      }
-
-      const following = await getFollowingByOwnerId(ownerId);
+    Following: async (obj: Owner, {}, context) => {
+      const following = (await obj.reload({ include: [{ model: Pet, as: 'FollowedPets' }] })).FollowedPets;
 
       return following;
-    },
-
-    getOwner: async (_, {}, context) => {
-      const { token } = context;
-
-      const jwtResult = await isTokenValid(token);
-
-      if (jwtResult?.error || !jwtResult?.id) {
-        throw new GraphQLError(jwtResult?.error.toString(), {
-          extensions: {
-            code: 'UNAUTHORIZED',
-          },
-        });
-      }
-
-      const owner = await getOwner(jwtResult.id);
-
-      if (!owner) {
-        throw new GraphQLError('Owner not found');
-      }
-
-      return { owner };
-    },
-
-    getOwnerById: async (_, { id }, context) => {
-      const owner = await getOwnerById(id);
-
-      if (!owner) {
-        throw new GraphQLError('Owner not found');
-      }
-
-      return { owner };
-    },
-
-    validateUsername: async (_, { username }) => {
-      if (!username) {
-        throw new GraphQLError('Username missing', {
-          extensions: {
-            code: 'BAD_USER_INPUT',
-          },
-        });
-      }
-
-      const owner = await Owner.findOne({
-        where: {
-          username,
-        },
-      });
-
-      if (owner) {
-        return { isAvailable: false };
-      }
-
-      return { isAvailable: true };
     },
   },
 };

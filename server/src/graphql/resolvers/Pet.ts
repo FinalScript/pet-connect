@@ -1,5 +1,5 @@
 import { GraphQLError } from 'graphql';
-import { getOwner } from '../../controllers/OwnerController';
+import { getOwnerByAuthId } from '../../controllers/OwnerController';
 import {
   createPet,
   deletePet,
@@ -10,11 +10,11 @@ import {
   isFollowingPet,
   updatePet,
 } from '../../controllers/PetController';
+import { redis } from '../../db/redis';
 import { isTokenValid } from '../../middleware/token';
+import { Owner } from '../../models/Owner';
 import { Pet } from '../../models/Pet';
 import { ProfilePicture } from '../../models/ProfilePicture';
-import { Owner } from '../../models/Owner';
-import { redis } from '../../db/redis';
 
 export const PetResolver = {
   Mutation: {
@@ -32,7 +32,7 @@ export const PetResolver = {
 
       const authId = jwtResult.id;
 
-      const owner = await getOwner(authId);
+      const owner = await getOwnerByAuthId(authId);
 
       if (!owner) {
         throw new GraphQLError('Owner does not exist', {

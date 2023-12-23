@@ -1,17 +1,11 @@
 import { GraphQLError } from 'graphql/error';
-import { getPetById } from '../../controllers/PetController';
-import { createPost, deletePost, getAllPosts, getPostById, getPostsByPetId, updatePost } from '../../controllers/PostController';
-import { Post } from '../../models/Post';
-import { Media } from '../../models/Media';
-import { Pet } from '../../models/Pet';
-import { isTokenValid } from '../../middleware/token';
-import { getOwner } from '../../controllers/OwnerController';
-import { Owner } from '../../models/Owner';
-import { Follows } from '../../models/Follow';
-import { ProfilePicture } from '../../models/ProfilePicture';
-import { Sequelize } from 'sequelize';
 import { createComment, getCommentsByPostId } from '../../controllers/CommentController';
+import { getOwnerByAuthId } from '../../controllers/OwnerController';
+import { getPostById } from '../../controllers/PostController';
+import { isTokenValid } from '../../middleware/token';
 import { Comment } from '../../models/Comment';
+import { Owner } from '../../models/Owner';
+import { ProfilePicture } from '../../models/ProfilePicture';
 
 export const CommentResolver = {
   Mutation: {
@@ -38,7 +32,7 @@ export const CommentResolver = {
 
       const authId = jwtResult.id;
 
-      const owner = await getOwner(authId);
+      const owner = await getOwnerByAuthId(authId);
 
       if (!owner) {
         throw new GraphQLError('Owner does not exist', {
