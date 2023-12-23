@@ -4,10 +4,38 @@ import { getOwnerByAuthId } from '../../controllers/OwnerController';
 import { getPostById } from '../../controllers/PostController';
 import { isTokenValid } from '../../middleware/token';
 import { Comment } from '../../models/Comment';
-import { Owner } from '../../models/Owner';
-import { ProfilePicture } from '../../models/ProfilePicture';
 
 export const CommentResolver = {
+  Comment: {
+    Author: async (obj: Comment, {}, context) => {
+      const author = (await obj.reload({ include: [{ model: Comment, as: 'Author' }] })).Author;
+
+      return author;
+    },
+  },
+  Query: {
+    getCommentsByPostId: async (_, { postId }, context) => {
+      if (!postId) {
+        throw new GraphQLError('postId missing', {
+          extensions: {
+            code: 'BAD_USER_INPUT',
+          },
+        });
+      }
+
+      try {
+        const comments = await getCommentsByPostId(postId);
+        return comments;
+      } catch (error) {
+        console.error(error);
+        throw new GraphQLError('Error fetching comments', {
+          extensions: {
+            code: 'INTERNAL_SERVER_ERROR',
+          },
+        });
+      }
+    },
+  },
   Mutation: {
     createComment: async (_, { postId, text }, context) => {
       const { token } = context;
@@ -60,9 +88,7 @@ export const CommentResolver = {
         await post.addComment(comment);
         await post.save();
         await comment.setAuthor(owner);
-        await comment.reload({
-          include: [{ model: Owner, as: 'author', include: [{ model: ProfilePicture, as: 'ProfilePicture' }] }],
-        });
+        await comment.reload();
         return comment;
       } catch (e) {
         console.error(e);
@@ -70,30 +96,6 @@ export const CommentResolver = {
         throw new GraphQLError(e.message, {
           extensions: {
             code: 'SQL_ERROR',
-          },
-        });
-      }
-    },
-  },
-
-  Query: {
-    getCommentsByPostId: async (_, { postId }, context) => {
-      if (!postId) {
-        throw new GraphQLError('postId missing', {
-          extensions: {
-            code: 'BAD_USER_INPUT',
-          },
-        });
-      }
-
-      try {
-        const comments = await getCommentsByPostId(postId);
-        return comments;
-      } catch (error) {
-        console.error(error);
-        throw new GraphQLError('Error fetching comments', {
-          extensions: {
-            code: 'INTERNAL_SERVER_ERROR',
           },
         });
       }

@@ -7,6 +7,7 @@ import { DELETE_PET } from '../../graphql/Pet';
 import { REMOVE_PET } from '../../redux/constants';
 import Text from '../Text';
 import { Pet } from '../../__generated__/graphql';
+import React from 'react';
 
 interface Props extends ModalProps {
   closeModal: () => void;

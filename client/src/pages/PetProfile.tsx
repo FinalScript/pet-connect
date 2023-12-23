@@ -41,7 +41,7 @@ const PetProfile = ({
   const pet = useMemo(() => petData?.getPetById.pet, [petData, petId]);
 
   const isOwner = useMemo(() => ownerId === pet?.Owner?.id, [ownerId, pet?.Owner?.id]);
-  const gridPosts: Post[] = useMemo(() => postsData?.getPostsByPetId?.posts || [], [postsData]);
+  const gridPosts: Post[] = useMemo(() => postsData?.getPostsByPetId.posts || [], [postsData]);
 
   useEffect(() => {
     dispatch({ type: POST_DATA, payload: gridPosts });

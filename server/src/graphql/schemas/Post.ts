@@ -5,7 +5,8 @@ type Post {
     petId: String!
     description: String
     Media: Media!
-    Author: Pet!
+    Author: Pet
+    Comments: [Comment!]
     likesCount: Int!
     createdAt: Date!
     updatedAt: Date!
@@ -44,7 +45,6 @@ type Query{
     getPostsByPetId(petId: String!): PostsResponse!
     getFollowing: [Post!]!
     getForYou: [Post!]!
-    getAllLikersByPostId( id: String! ): [Owner!]!
     isLikingPost( id: String! ): Boolean!
 }
 

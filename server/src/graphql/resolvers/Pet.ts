@@ -1,22 +1,131 @@
 import { GraphQLError } from 'graphql';
 import { getOwnerByAuthId } from '../../controllers/OwnerController';
-import {
-  createPet,
-  deletePet,
-  getFollowersByPetId,
-  getPetById,
-  getPetByUsername,
-  getPetsByOwnerId,
-  isFollowingPet,
-  updatePet,
-} from '../../controllers/PetController';
-import { redis } from '../../db/redis';
+import { createPet, deletePet, getPetById, getPetByUsername, getPetsByOwnerId, isFollowingPet, updatePet } from '../../controllers/PetController';
 import { isTokenValid } from '../../middleware/token';
-import { Owner } from '../../models/Owner';
 import { Pet } from '../../models/Pet';
 import { ProfilePicture } from '../../models/ProfilePicture';
+import { Owner } from '../../models/Owner';
 
 export const PetResolver = {
+  Pet: {
+    ProfilePicture: async (obj: Pet, {}, context) => {
+      const profilePicture = (await obj.reload({ include: [{ model: ProfilePicture, as: 'ProfilePicture' }] })).ProfilePicture;
+
+      return profilePicture;
+    },
+
+    Followers: async (obj: Pet, {}, context) => {
+      const followers = (await obj.reload({ include: [{ model: Pet, as: 'FollowedPets' }] })).Followers;
+
+      return followers;
+    },
+    Owner: async (obj: Pet, {}, context) => {
+      const owner = (await obj.reload({ include: [{ model: Owner, as: 'Owner' }] })).Owner;
+
+      return owner;
+    },
+
+    Posts: async (obj: Pet, {}, context) => {
+      const posts = (await obj.reload({ include: [{ model: Owner, as: 'Posts' }] })).Posts;
+
+      return posts;
+    },
+  },
+
+  Query: {
+    isFollowingPet: async (_, { ownerId, petId }, context) => {
+      if (!ownerId) {
+        throw new GraphQLError('ownerId missing', {
+          extensions: {
+            code: 'BAD_USER_INPUT',
+          },
+        });
+      }
+
+      if (!petId) {
+        throw new GraphQLError('petId missing', {
+          extensions: {
+            code: 'BAD_USER_INPUT',
+          },
+        });
+      }
+
+      const isFollowing = await isFollowingPet(ownerId, petId);
+
+      return isFollowing;
+    },
+    getPetById: async (_, { id }, context) => {
+      if (!id) {
+        throw new GraphQLError('ID missing', {
+          extensions: {
+            code: 'BAD_USER_INPUT',
+          },
+        });
+      }
+
+      const pet = await getPetById(id);
+
+      if (!pet) {
+        throw new GraphQLError('Pet does not exist', {
+          extensions: {
+            code: 'BAD_USER_INPUT',
+          },
+        });
+      }
+
+      return { pet };
+    },
+    getPetsByOwnerId: async (_, { id }, context) => {
+      if (!id) {
+        throw new GraphQLError('ID missing', {
+          extensions: {
+            code: 'BAD_USER_INPUT',
+          },
+        });
+      }
+
+      const pets = await getPetsByOwnerId(id);
+
+      return { pets };
+    },
+
+    getPetByUsername: async (_, { username }, context) => {
+      if (!username) {
+        throw new GraphQLError('Username missing', {
+          extensions: {
+            code: 'BAD_USER_INPUT',
+          },
+        });
+      }
+
+      const pet = await getPetByUsername(username);
+
+      if (!pet) {
+        throw new GraphQLError('Pet does not exist', {
+          extensions: {
+            code: 'BAD_USER_INPUT',
+          },
+        });
+      }
+
+      return { pet };
+    },
+
+    validatePetUsername: async (_, { username }, context) => {
+      if (!username) {
+        throw new GraphQLError('Username missing', {
+          extensions: {
+            code: 'BAD_USER_INPUT',
+          },
+        });
+      }
+
+      const pet = await getPetByUsername(username);
+
+      return { isAvailable: pet ? false : true };
+    },
+  },
+
   Mutation: {
     createPet: async (_, { username, name, type, description, location, profilePicture }, context) => {
       const { token } = context;
@@ -94,15 +203,7 @@ export const PetResolver = {
 
           await newPet.setProfilePicture(profilePictureDAO);
           await newPet.save();
-          await newPet.reload({
-            include: [
-              {
-                model: ProfilePicture,
-                as: 'ProfilePicture',
-              },
-              { model: Owner, attributes: ['id'], as: 'Owner' },
-            ],
-          });
+          await newPet.reload({});
         }
       } catch (e) {
         console.error(e);
@@ -274,17 +375,7 @@ export const PetResolver = {
 
       const authId = jwtResult.id;
 
-      const follower = await Owner.findOne({
-        where: {
-          authId,
-        },
-        include: [
-          {
-            model: ProfilePicture,
-            as: 'ProfilePicture',
-          },
-        ],
-      });
+      const follower = await getOwnerByAuthId(authId);
 
       if (!follower) {
         throw new GraphQLError('Owner does not exist', {
@@ -294,22 +385,7 @@ export const PetResolver = {
         });
       }
 
-      const pet = await Pet.findOne({
-        where: {
-          id,
-        },
-        include: [
-          {
-            model: Owner,
-            as: 'Owner',
-            include: [{ model: ProfilePicture, as: 'ProfilePicture' }],
-          },
-          {
-            model: ProfilePicture,
-            as: 'ProfilePicture',
-          },
-        ],
-      });
+      const pet = await getPetById(id);
 
       if (!pet) {
         throw new GraphQLError('Pet does not exist', {
@@ -329,8 +405,7 @@ export const PetResolver = {
 
       try {
         await pet.addFollower(follower);
-        await pet.reload({ include: [{ model: Owner, as: 'Followers', include: [{ model: ProfilePicture, as: 'ProfilePicture' }] }] });
-        await redis.set(`followersByPetId:${pet.id}`, JSON.stringify(pet.Followers.map((user) => user.get({ plain: true }))), 'EX', 300);
+        await pet.reload();
       } catch (e) {
         console.error(e);
       }
@@ -352,102 +427,10 @@ export const PetResolver = {
 
       const authId = jwtResult.id;
 
-      const owner = await Owner.findOne({
-        where: {
-          authId,
-        },
-        include: [
-          {
-            model: ProfilePicture,
-            as: 'ProfilePicture',
-          },
-        ],
-      });
+      const owner = await getOwnerByAuthId(authId);
 
       if (!owner) {
         throw new GraphQLError('Owner does not exist', {
-          extensions: {
-            code: 'BAD_USER_INPUT',
-          },
-        });
-      }
-
-      const pet = await Pet.findOne({
-        where: {
-          id,
-        },
-        include: [
-          {
-            model: Owner,
-            as: 'Owner',
-            include: [{ model: ProfilePicture, as: 'ProfilePicture' }],
-          },
-          {
-            model: ProfilePicture,
-            as: 'ProfilePicture',
-          },
-        ],
-      });
-
-      if (!pet) {
-        throw new GraphQLError('Pet does not exist', {
-          extensions: {
-            code: 'BAD_USER_INPUT',
-          },
-        });
-      }
-
-      try {
-        await pet.removeFollower(owner);
-        await pet.reload({ include: [{ model: Owner, as: 'Followers', include: [{ model: ProfilePicture, as: 'ProfilePicture' }] }] });
-        await redis.set(`followersByPetId:${pet.id}`, JSON.stringify(pet.Followers.map((user) => user.get({ plain: true }))), 'EX', 300);
-      } catch (e) {
-        console.error(e);
-      }
-
-      return { success: true };
-    },
-  },
-
-  Query: {
-    getFollowersByPetId: async (_, { petId }, context) => {
-      if (!petId) {
-        throw new GraphQLError('petId missing', {
-          extensions: {
-            code: 'BAD_USER_INPUT',
-          },
-        });
-      }
-
-      const followers = await getFollowersByPetId(petId);
-
-      return followers;
-    },
-
-    isFollowingPet: async (_, { ownerId, petId }, context) => {
-      if (!ownerId) {
-        throw new GraphQLError('ownerId missing', {
-          extensions: {
-            code: 'BAD_USER_INPUT',
-          },
-        });
-      }
-
-      if (!petId) {
-        throw new GraphQLError('petId missing', {
-          extensions: {
-            code: 'BAD_USER_INPUT',
-          },
-        });
-      }
-
-      const isFollowing = await isFollowingPet(ownerId, petId);
-
-      return isFollowing;
-    },
-    getPetById: async (_, { id }, context) => {
-      if (!id) {
-        throw new GraphQLError('ID missing', {
           extensions: {
             code: 'BAD_USER_INPUT',
           },
@@ -464,56 +447,14 @@ export const PetResolver = {
         });
       }
 
-      return { pet };
-    },
-    getPetsByOwnerId: async (_, { id }, context) => {
-      if (!id) {
-        throw new GraphQLError('ID missing', {
-          extensions: {
-            code: 'BAD_USER_INPUT',
-          },
-        });
+      try {
+        await pet.removeFollower(owner);
+        await pet.reload();
+      } catch (e) {
+        console.error(e);
       }
 
-      const pets = await getPetsByOwnerId(id);
-
-      return { pets };
-    },
-
-    getPetByUsername: async (_, { username }, context) => {
-      if (!username) {
-        throw new GraphQLError('Username missing', {
-          extensions: {
-            code: 'BAD_USER_INPUT',
-          },
-        });
-      }
-
-      const pet = await getPetByUsername(username);
-
-      if (!pet) {
-        throw new GraphQLError('Pet does not exist', {
-          extensions: {
-            code: 'BAD_USER_INPUT',
-          },
-        });
-      }
-
-      return { pet };
-    },
-
-    validatePetUsername: async (_, { username }, context) => {
-      if (!username) {
-        throw new GraphQLError('Username missing', {
-          extensions: {
-            code: 'BAD_USER_INPUT',
-          },
-        });
-      }
-
-      const pet = await getPetByUsername(username);
-
-      return { isAvailable: pet ? false : true };
+      return { success: true };
     },
   },
 };

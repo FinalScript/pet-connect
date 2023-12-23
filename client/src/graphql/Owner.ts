@@ -1,7 +1,7 @@
 import { gql } from '../__generated__';
 
 export const GET_OWNER = gql(`
-  query GetOwner($authId: String!) {
+  query GetOwner($authId: String) {
     getOwner(authId: $authId) {
       owner {
         id
@@ -23,8 +23,8 @@ export const GET_OWNER = gql(`
 `);
 
 export const GET_FOLLOWING_BY_OWNER_ID = gql(`
-  query GetOwnerFollowers($authId: String!) {
-    getOwner(authId: $authId) {
+  query GetOwnerFollowers($ownerId: String!) {
+    getOwnerById(id: $ownerId) {
       owner {
         Following {
           id

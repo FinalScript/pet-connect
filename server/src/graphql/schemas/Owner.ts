@@ -5,9 +5,9 @@ export const OwnerTypeDef = `#graphql
     name: String
     username: String!
     location: String
-    Pets: [Pet!]!
+    Pets: [Pet!]
     ProfilePicture: ProfilePicture
-    Following: [Pet!]!
+    Following: [Pet!]
     followingCount: Int
   }
 
@@ -45,7 +45,7 @@ export const OwnerTypeDef = `#graphql
   # Query and Mutation definitions
 
   extend type Query {
-    getOwner(authId: String!): OwnerResponse!
+    getOwner(authId: String): OwnerResponse!
     getOwnerById(id: String!): OwnerResponse!
     validateUsername(username: String!): ValidateUsernameResponse!
     verifyToken: VerifyTokenResponse!

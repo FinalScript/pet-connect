@@ -1,18 +1,5 @@
 import { Op } from 'sequelize';
 import { Owner, OwnerCreationDAO, OwnerUpdateDAO } from '../models/Owner';
-import { Pet } from '../models/Pet';
-import { ProfilePicture } from '../models/ProfilePicture';
-
-export const getFollowingByOwnerId = async (id: string) => {
-  const owner = await Owner.findOne({
-    where: {
-      id,
-    },
-    include: [{ model: Pet, as: 'FollowedPets', include: [{ model: ProfilePicture, as: 'ProfilePicture' }] }],
-  });
-
-  return owner.FollowedPets;
-};
 
 export const getOwnerByAuthId = async (authId: string) => {
   const owner = await Owner.findOne({

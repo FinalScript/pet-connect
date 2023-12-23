@@ -4,8 +4,33 @@ import { isTokenValid } from '../../middleware/token';
 import { Owner } from '../../models/Owner';
 import { Pet } from '../../models/Pet';
 import { ProfilePicture } from '../../models/ProfilePicture';
+import { auth } from 'express-oauth2-jwt-bearer';
 
 export const OwnerResolver = {
+  Owner: {
+    ProfilePicture: async (obj: Owner, {}, context) => {
+      const profilePicture = (await obj.reload({ include: [{ model: ProfilePicture, as: 'ProfilePicture' }] })).ProfilePicture;
+
+      return profilePicture;
+    },
+
+    Following: async (obj: Owner, {}, context) => {
+      const following = (await obj.reload({ include: [{ model: Pet, as: 'FollowedPets' }] })).FollowedPets;
+
+      return following;
+    },
+    followingCount: async (obj: Owner, {}, context) => {
+      const followingCount = (await obj.reload({ include: [{ model: Pet, as: 'FollowedPets' }] })).FollowedPets.length;
+
+      return followingCount;
+    },
+    Pets: async (obj: Owner, {}, context) => {
+      const pets = (await obj.reload({ include: [{ model: Pet, as: 'Pets' }] })).Pets;
+
+      return pets;
+    },
+  },
+
   Query: {
     verifyToken: async (_, {}, context) => {
       const { token } = context;
@@ -24,7 +49,25 @@ export const OwnerResolver = {
     },
 
     getOwner: async (_, { authId }, context) => {
-      const owner = await getOwnerByAuthId(authId);
+      if (!authId && !context.token) {
+        throw new GraphQLError('Unauthorized', {
+          extensions: {
+            code: 'UNAUTHORIZED',
+          },
+        });
+      }
+
+      const { token } = context;
+
+      const jwtResult = await isTokenValid(token);
+
+      let authIdToUse = jwtResult.id;
+
+      if (jwtResult?.error || !jwtResult?.id) {
+        authIdToUse = authId;
+      }
+
+      const owner = await getOwnerByAuthId(authIdToUse);
 
       if (!owner) {
         throw new GraphQLError('Owner not found');
@@ -169,7 +212,8 @@ export const OwnerResolver = {
         if (profilePictureDAO) {
           profilePictureDAO.update(profilePicture);
 
-          profilePictureDAO.save();
+          await profilePictureDAO.save();
+          await profilePictureDAO.reload();
         } else {
           profilePictureDAO = ProfilePicture.build(profilePicture);
         }
@@ -219,20 +263,6 @@ export const OwnerResolver = {
       await deleteOwner(jwtResult.id);
 
       return { message: 'Account successfully deleted' };
-    },
-  },
-
-  Owner: {
-    ProfilePicture: async (obj: Owner, {}, context) => {
-      const profilePicture = (await obj.reload({ include: [{ model: ProfilePicture, as: 'ProfilePicture' }] })).ProfilePicture;
-
-      return profilePicture;
-    },
-
-    Following: async (obj: Owner, {}, context) => {
-      const following = (await obj.reload({ include: [{ model: Pet, as: 'FollowedPets' }] })).FollowedPets;
-
-      return following;
     },
   },
 };

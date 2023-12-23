@@ -43,14 +43,14 @@ export default function Post({ post, goToProfile, onLayoutChange, navigation }: 
   const heartScale = useRef(new Animated.Value(0)).current; // Ref for the animated value
 
   const ownerId = useSelector((state: ProfileReducer) => state.profile.owner?.id);
-  const isOwner = useMemo(() => ownerId === post.author.ownerId, [ownerId, post.author.Owner?.id]);
+  const isOwner = useMemo(() => ownerId === post.Author.ownerId, [ownerId, post.Author.Owner?.id]);
 
   const [deletePost] = useMutation(DELETE_POST, { variables: { id: post.id } });
 
   const [likePost] = useMutation(LIKE_POST, { variables: { id: post.id } });
   const [unlikePost] = useMutation(UNLIKE_POST, { variables: { id: post.id } });
 
-  const { data: likesCountData, refetch: refetchLikesCountData} = useQuery(GET_LIKES_COUNT_OF_POST, { variables: { id: post.id }, pollInterval: 2000 });
+  const { data: likesCountData, refetch: refetchLikesCountData } = useQuery(GET_LIKES_COUNT_OF_POST, { variables: { id: post.id }, pollInterval: 2000 });
   const likesCount: number = useMemo(() => likesCountData?.getPostById.post?.likesCount || 0, [likesCountData]);
 
   const { data: isLikedData, refetch: refetchIsLikeData } = useQuery(IS_LIKING_POST, { variables: { id: post.id }, pollInterval: 2000 });
@@ -123,9 +123,13 @@ export default function Post({ post, goToProfile, onLayoutChange, navigation }: 
   };
 
   const handleDelete = useCallback(async () => {
-    await deleteFromFirebase(post.Media.url);
+    try {
+      await deleteFromFirebase(post.Media.url);
+    } catch (err) {
+      console.log(err);
+    }
     await deletePost();
-  }, [deletePost]);
+  }, [deletePost, post]);
 
   const handleLike = useCallback(async () => {
     if (!postLiked) {
@@ -149,7 +153,7 @@ export default function Post({ post, goToProfile, onLayoutChange, navigation }: 
     setMoreCaption(true);
   };
 
-  if (!post.author) {
+  if (!post.Author) {
     return <View></View>;
   }
 
@@ -181,12 +185,12 @@ export default function Post({ post, goToProfile, onLayoutChange, navigation }: 
       <View className='flex-row justify-between px-5 py-2'>
         <Pressable className='flex-row items-center' onPress={() => goToProfile()}>
           <View className='w-14 h-14 mr-3 aspect-square'>
-            <Image className='flex w-full h-full rounded-full' source={{ uri: post.author.ProfilePicture?.url }} />
+            <Image className='flex w-full h-full rounded-full' source={{ uri: post.Author.ProfilePicture?.url }} />
           </View>
           <View className='flex justify-center'>
             <View className='flex-row'>
-              <Text className='text-xl font-bold text-[#694531] -mb-2'>{post.author.name}</Text>
-              <PetTypeImage type={post.author.type} style={{ width: 20, height: 20, marginLeft: 8, marginTop: 5 }} />
+              <Text className='text-xl font-bold text-[#694531] -mb-2'>{post.Author.name}</Text>
+              <PetTypeImage type={post.Author.type} style={{ width: 20, height: 20, marginLeft: 8, marginTop: 5 }} />
             </View>
           </View>
         </Pressable>
@@ -254,7 +258,7 @@ export default function Post({ post, goToProfile, onLayoutChange, navigation }: 
           <View className='flex flex-row min-h-[7rem]'>
             <Text className='text-base' numberOfLines={moreCaption ? 0 : CAPTION_LINES}>
               <TouchableWithoutFeedback onPress={() => goToProfile()}>
-                <Text className='text-base font-semibold text-[#694531]'>{post.author.name} </Text>
+                <Text className='text-base font-semibold text-[#694531]'>{post.Author.name} </Text>
               </TouchableWithoutFeedback>
               <Text className='text-themeText' onPress={handleMoreCaption} suppressHighlighting>
                 {post.description}
@@ -275,7 +279,7 @@ export default function Post({ post, goToProfile, onLayoutChange, navigation }: 
       {comments[0] && (
         <View className='px-5 mt-1'>
           <View className='flex-row'>
-            <Text className='font-semibold text-[#694531]'>{comments[0].author.name} </Text>
+            <Text className='font-semibold text-[#694531]'>{comments[0].Author.name} </Text>
 
             <Text ellipsizeMode='tail' numberOfLines={1} className='text-themeText w-[50%]' onPress={handleMoreCaption} suppressHighlighting>
               {comments[0].text}

@@ -101,45 +101,46 @@ export const CREATE_POST = gql(`
 `);
 
 export const GET_POSTS_BY_PET_ID = gql(`
-query getPostsByPetId($petId: String!) {
-  getPostsByPetId(petId: $petId) {
-    posts {
-      id
-      petId
-      description
-      likesCount
-      createdAt
-      updatedAt
-      Media {
+  query getPostsByPetId($petId: String!) {
+    getPostsByPetId(petId: $petId) {
+      posts {
         id
-        name
-        url
-        path
-        type
-        aspectRatio
-      }
-      Author {
-        id
-        username
-        name
-        type
+        petId
         description
-        location
-        ProfilePicture {
+        likesCount
+        createdAt
+        updatedAt
+        Media {
           id
           name
           url
           path
           type
+          aspectRatio
         }
-        postsCount
-        followerCount
-        totalLikes
-        ownerId
+        Author {
+          id
+          username
+          name
+          type
+          description
+          location
+          ProfilePicture {
+            id
+            name
+            url
+            path
+            type
+          }
+          postsCount
+          followerCount
+          totalLikes
+          ownerId
+        }
       }
     }
   }
-}`);
+`);
 
 export const GET_FOLLOWING = gql(`
   query GetFollowing {
