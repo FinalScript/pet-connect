@@ -55,7 +55,7 @@ export const PetResolver = {
       } else {
         const followerCount = await Follows.count({ where: { petId: obj.id } });
 
-        await redis.set(`followerCount:${obj.id}`, followerCount, 'EX', 120);
+        await redis.set(`followerCount:${obj.id}`, followerCount, 'EX', 60);
 
         return followerCount;
       }
@@ -69,7 +69,7 @@ export const PetResolver = {
       } else {
         const postsCount = await Post.count({ where: { petId: obj.id } });
 
-        await redis.set(`postsCount:${obj.id}`, postsCount, 'EX', 120);
+        await redis.set(`postsCount:${obj.id}`, postsCount, 'EX', 60);
 
         return postsCount;
       }
@@ -91,7 +91,7 @@ export const PetResolver = {
           return totalLikes + (post.Likes?.length || 0);
         }, 0);
 
-        await redis.set(`totalLikes:${obj.id}`, cumulativeLikes, 'EX', 120);
+        await redis.set(`totalLikes:${obj.id}`, cumulativeLikes, 'EX', 60);
 
         return cumulativeLikes;
       }
@@ -451,7 +451,12 @@ export const PetResolver = {
         });
       }
 
-      const pet = await getPetById(id);
+      const pet = await Pet.findOne({
+        where: {
+          id,
+        },
+        include: [{ model: Owner, as: 'Owner' }],
+      });
 
       if (!pet) {
         throw new GraphQLError('Pet does not exist', {
@@ -472,6 +477,9 @@ export const PetResolver = {
       try {
         await pet.addFollower(follower);
         await pet.reload();
+
+        const cachedFollowerCount = Number(await redis.get(`followerCount:${pet.id}`));
+        await redis.set(`followerCount:${pet.id}`, cachedFollowerCount + 1, 'EX', 60);
       } catch (e) {
         console.error(e);
       }
@@ -516,6 +524,8 @@ export const PetResolver = {
       try {
         await pet.removeFollower(owner);
         await pet.reload();
+        const cachedFollowerCount = Number(await redis.get(`followerCount:${pet.id}`));
+        await redis.set(`followerCount:${pet.id}`, cachedFollowerCount - 1, 'EX', 60);
       } catch (e) {
         console.error(e);
       }
