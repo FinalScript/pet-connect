@@ -1,19 +1,18 @@
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useRef, useState } from 'react';
 import { Modal, Pressable, SafeAreaView, View } from 'react-native';
 import { useAuth0 } from 'react-native-auth0';
 import { Modalize } from 'react-native-modalize';
-import { Portal } from 'react-native-portalize';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootStackParamList } from '../../../App';
 import Text from '../../components/Text';
-import AccountSwitcherModal from '../../components/modals/AccountSwitcherModal';
 import SettingsModal from '../../components/modals/SettingsModal';
 import { LOGOUT } from '../../redux/constants';
-import { OwnerDAO, ProfileReducer } from '../../redux/reducers/profileReducer';
+import { ProfileReducer } from '../../redux/reducers/profileReducer';
 import { FontAwesome, Ionicon } from '../../utils/Icons';
 import { themeConfig } from '../../utils/theme';
 import OwnerProfile from '../OwnerProfilePage/OwnerProfile';
+import React from 'react';
 
 interface Props {
   navigation: NativeStackNavigationProp<RootStackParamList, 'Home', undefined>;
@@ -26,11 +25,14 @@ const MyProfile = ({ navigation }: Props) => {
   const [modals, setModals] = useState({ accountSwitcher: false, settings: false, editProfile: false });
   const accountSwitcherModalRef = useRef<Modalize>(null);
 
-  const setSettingsModalVisible = useCallback((bool: boolean) => {
-    setModals((prev) => {
-      return { ...prev, settings: bool };
-    });
-  }, [setModals]);
+  const setSettingsModalVisible = useCallback(
+    (bool: boolean) => {
+      setModals((prev) => {
+        return { ...prev, settings: bool };
+      });
+    },
+    [setModals]
+  );
 
   const logout = useCallback(async () => {
     try {
@@ -50,23 +52,6 @@ const MyProfile = ({ navigation }: Props) => {
 
   return (
     <SafeAreaView className='flex-1 h-full items-center bg-themeBg'>
-      <Portal>
-        <Modalize
-          ref={accountSwitcherModalRef}
-          handlePosition='inside'
-          handleStyle={{ backgroundColor: themeConfig.customColors.themeText }}
-          adjustToContentHeight
-          scrollViewProps={{ scrollEnabled: false }}
-          useNativeDriver>
-          <AccountSwitcherModal
-            navigateNewPet={navigateNewPet}
-            currentUser={owner as OwnerDAO}
-            closeModal={() => {
-              accountSwitcherModalRef.current?.close();
-            }}
-          />
-        </Modalize>
-      </Portal>
       <Modal
         visible={modals.settings}
         presentationStyle='pageSheet'
@@ -82,13 +67,10 @@ const MyProfile = ({ navigation }: Props) => {
         />
       </Modal>
       <View className='flex-row items-center justify-between w-full px-5'>
-        <Pressable onPress={() => accountSwitcherModalRef.current?.open()}>
-          <View className='flex-row items-center gap-x-2'>
-            <FontAwesome name='lock' style={{ marginBottom: 5 }} size={25} color={themeConfig.customColors.themeText} />
-            <Text className='font-bold text-3xl'>{owner?.username}</Text>
-            <Ionicon name='chevron-down' size={15} />
-          </View>
-        </Pressable>
+        <View className='flex-row items-center gap-x-2'>
+          <FontAwesome name='lock' style={{ marginBottom: 5 }} size={25} color={themeConfig.customColors.themeText} />
+          <Text className='font-bold text-3xl'>{owner?.username}</Text>
+        </View>
 
         <Pressable
           onPress={() => {
