@@ -1,7 +1,7 @@
 diff --git a/node_modules/react-native-fast-image/RNFastImage.podspec b/node_modules/react-native-fast-image/RNFastImage.podspec
 index db0fada..af624ff 100644
---- a/node_modules/react-native-fast-image/RNFastImage.podspec
-+++ b/node_modules/react-native-fast-image/RNFastImage.podspec
+--- a/client/node_modules/react-native-fast-image/RNFastImage.podspec
++++ b/client/node_modules/react-native-fast-image/RNFastImage.podspec
 @@ -16,6 +16,6 @@ Pod::Spec.new do |s|
    s.source_files  = "ios/**/*.{h,m}"
  
