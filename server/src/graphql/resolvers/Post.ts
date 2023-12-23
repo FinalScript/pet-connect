@@ -13,9 +13,17 @@ import { redis } from '../../db/redis';
 export const PostResolver = {
   Post: {
     Media: async (obj: Post, {}, context) => {
-      const media = (await obj.reload({ include: [{ model: Media, as: 'Media' }] })).Media;
+      const cachedMedia = await redis.get(`mediaByPostId:${obj.id}`);
 
-      return media;
+      if (cachedMedia) {
+        return JSON.parse(cachedMedia);
+      } else {
+        const media = (await obj.reload({ include: [{ model: Media, as: 'Media' }] })).Media;
+
+        await redis.set(`mediaByPostId:${obj.id}`, JSON.stringify(media), 'EX', 300);
+
+        return media;
+      }
     },
     Author: async (obj: Post, {}, context) => {
       const author = (await obj.reload({ include: [{ model: Pet, as: 'Author' }] })).Author;
