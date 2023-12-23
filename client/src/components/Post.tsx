@@ -195,7 +195,7 @@ export default function Post({ post, goToProfile, onLayoutChange, navigation }: 
           </View>
         </Pressable>
 
-        <View>
+        <View className='flex justify-center'>
           <MenuView
             onPressAction={({ nativeEvent }) => {
               if (nativeEvent.event === 'delete') {
@@ -203,8 +203,8 @@ export default function Post({ post, goToProfile, onLayoutChange, navigation }: 
               }
             }}
             actions={menuActions}>
-            <View className='px-2'>
-              <Entypo name='dots-three-horizontal' size={18} color={'#8f5f43'} />
+            <View className=''>
+              <Entypo name='dots-three-horizontal' size={20} color={'#8f5f43'} />
             </View>
           </MenuView>
         </View>
