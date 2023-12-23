@@ -1,13 +1,8 @@
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { useCallback, useRef, useState } from 'react';
-import { Modal, Pressable, SafeAreaView, View } from 'react-native';
-import { useAuth0 } from 'react-native-auth0';
-import { Modalize } from 'react-native-modalize';
-import { useDispatch, useSelector } from 'react-redux';
+import { Pressable, SafeAreaView, View } from 'react-native';
+import { useSelector } from 'react-redux';
 import { RootStackParamList } from '../../../App';
 import Text from '../../components/Text';
-import SettingsModal from '../../components/modals/SettingsModal';
-import { LOGOUT } from '../../redux/constants';
 import { ProfileReducer } from '../../redux/reducers/profileReducer';
 import { FontAwesome, Ionicon } from '../../utils/Icons';
 import { themeConfig } from '../../utils/theme';
@@ -19,53 +14,10 @@ interface Props {
 }
 
 const MyProfile = ({ navigation }: Props) => {
-  const dispatch = useDispatch();
   const owner = useSelector((state: ProfileReducer) => state.profile.owner);
-  const { clearSession } = useAuth0();
-  const [modals, setModals] = useState({ accountSwitcher: false, settings: false, editProfile: false });
-  const accountSwitcherModalRef = useRef<Modalize>(null);
-
-  const setSettingsModalVisible = useCallback(
-    (bool: boolean) => {
-      setModals((prev) => {
-        return { ...prev, settings: bool };
-      });
-    },
-    [setModals]
-  );
-
-  const logout = useCallback(async () => {
-    try {
-      await clearSession({}, { skipLegacyListener: true });
-
-      dispatch({ type: LOGOUT });
-      navigation.replace('Get Started');
-    } catch (e) {
-      console.log(e);
-      console.log('Log out cancelled');
-    }
-  }, [dispatch, navigation]);
-
-  const navigateNewPet = useCallback(() => {
-    navigation.navigate('Pet Creation');
-  }, [navigation]);
 
   return (
     <SafeAreaView className='flex-1 h-full items-center bg-themeBg'>
-      <Modal
-        visible={modals.settings}
-        presentationStyle='pageSheet'
-        animationType='slide'
-        onRequestClose={() => {
-          setSettingsModalVisible(false);
-        }}>
-        <SettingsModal
-          logout={logout}
-          closeModal={() => {
-            setSettingsModalVisible(false);
-          }}
-        />
-      </Modal>
       <View className='flex-row items-center justify-between w-full px-5'>
         <View className='flex-row items-center gap-x-2'>
           <FontAwesome name='lock' style={{ marginBottom: 5 }} size={25} color={themeConfig.customColors.themeText} />
@@ -74,7 +26,7 @@ const MyProfile = ({ navigation }: Props) => {
 
         <Pressable
           onPress={() => {
-            setSettingsModalVisible(true);
+            navigation.navigate('Settings Page');
           }}>
           <Ionicon name='menu-outline' size={30} />
         </Pressable>

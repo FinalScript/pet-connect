@@ -22,6 +22,7 @@ import HomeNavigator from './src/pages/HomePage/HomeNavigator';
 import PostPage from './src/pages/HomePage/PostPage';
 import Loading from './src/pages/Loading';
 import OwnerProfilePage from './src/pages/OwnerProfilePage/OwnerProfilePage';
+import SettingsPage from './src/pages/Settings';
 import PetCreation from './src/pages/PetCreation';
 import PetProfile from './src/pages/PetProfile';
 import ProfileFeed from './src/pages/ProfileFeed';
@@ -42,6 +43,7 @@ export type RootStackParamList = {
   'Pet Profile': { petId: string };
   'Owner Profile': { ownerId: string };
   'New Post': undefined;
+  'Settings Page': undefined;
   'Profile Picture': { profilePicture?: ProfilePictureType | null };
   'Profile Feed': { petUsername: string; initialPostIndex: number };
   Following: { ownerId: string };
@@ -250,6 +252,18 @@ const App = () => {
             <Stack.Screen
               name='Followers'
               component={FollowersPage}
+              options={{
+                headerShown: true,
+                headerBackVisible: true,
+                animation: 'slide_from_right',
+                animationTypeForReplace: 'push',
+                contentStyle: { backgroundColor: '#f6f6f6f' },
+                headerTransparent: true,
+              }}
+            />
+            <Stack.Screen
+              name='Settings Page'
+              component={SettingsPage}
               options={{
                 headerShown: true,
                 headerBackVisible: true,
