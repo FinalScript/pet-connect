@@ -48,7 +48,7 @@ const PetProfile = ({
 
   useEffect(() => {
     setIsFollowing(isFollowingData?.isFollowingPet);
-  }, [isFollowingData.isFollowingPet]);
+  }, [isFollowingData?.isFollowingPet]);
 
   useEffect(() => {
     dispatch({ type: POST_DATA, payload: gridPosts });
