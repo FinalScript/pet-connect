@@ -9,9 +9,17 @@ import { ProfilePicture } from '../../models/ProfilePicture';
 export const OwnerResolver = {
   Owner: {
     ProfilePicture: async (obj: Owner, {}, context) => {
-      const profilePicture = (await obj.reload({ include: [{ model: ProfilePicture, as: 'ProfilePicture' }] })).ProfilePicture;
+      const cachedProfilePicture = await redis.get(`profilePictureByOwnerId:${obj.id}`);
 
-      return profilePicture;
+      if (cachedProfilePicture) {
+        return JSON.parse(cachedProfilePicture);
+      } else {
+        const profilePicture = (await obj.reload({ include: [{ model: ProfilePicture, as: 'ProfilePicture' }] })).ProfilePicture;
+
+        await redis.set(`profilePictureByOwnerId:${obj.id}`, JSON.stringify(profilePicture), 'EX', 120);
+
+        return profilePicture;
+      }
     },
 
     Following: async (obj: Owner, {}, context) => {

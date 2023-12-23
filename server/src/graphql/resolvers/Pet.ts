@@ -12,9 +12,17 @@ import { ProfilePicture } from '../../models/ProfilePicture';
 export const PetResolver = {
   Pet: {
     ProfilePicture: async (obj: Pet, {}, context) => {
-      const profilePicture = (await obj.reload({ include: [{ model: ProfilePicture, as: 'ProfilePicture' }] })).ProfilePicture;
+      const cachedProfilePicture = await redis.get(`profilePictureByPetId:${obj.id}`);
 
-      return profilePicture;
+      if (cachedProfilePicture) {
+        return JSON.parse(cachedProfilePicture);
+      } else {
+        const profilePicture = (await obj.reload({ include: [{ model: ProfilePicture, as: 'ProfilePicture' }] })).ProfilePicture;
+
+        await redis.set(`profilePictureByPetId:${obj.id}`, JSON.stringify(profilePicture), 'EX', 120);
+
+        return profilePicture;
+      }
     },
 
     Followers: async (obj: Pet, {}, context) => {
