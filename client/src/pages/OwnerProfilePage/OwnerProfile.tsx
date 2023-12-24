@@ -172,18 +172,20 @@ const OwnerProfile = ({ ownerId, navigation }: Props) => {
               />
             );
           })}
-          <View className='flex-row items-center'>
-            <Pressable
-              className={'flex-1 rounded-2xl bg-white shadow-sm shadow-themeShadow flex-row items-center p-3'}
-              onPress={() => {
-                navigation.navigate('Pet Creation');
-              }}>
-              <View className='h-14 w-14 flex justify-center items-center mr-5 border-dashed border-2 rounded-2xl'>
-                <Feather name='plus' size={30} />
-              </View>
-              <Text className='text-xl font-medium'>Add Pet</Text>
-            </Pressable>
-          </View>
+          {isOwner ?? (
+            <View className='flex-row items-center'>
+              <Pressable
+                className={'flex-1 rounded-2xl bg-white shadow-sm shadow-themeShadow flex-row items-center p-3'}
+                onPress={() => {
+                  navigation.navigate('Pet Creation');
+                }}>
+                <View className='h-14 w-14 flex justify-center items-center mr-5 border-dashed border-2 rounded-2xl'>
+                  <Feather name='plus' size={30} />
+                </View>
+                <Text className='text-xl font-medium'>Add Pet</Text>
+              </Pressable>
+            </View>
+          )}
         </View>
       </ScrollView>
     </SafeAreaView>
