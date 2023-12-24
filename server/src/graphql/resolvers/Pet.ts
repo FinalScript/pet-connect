@@ -197,7 +197,7 @@ export const PetResolver = {
         const pets = JSON.parse(cachedPets).map((pet) => {
           return Pet.build(pet);
         });
-        return pets;
+        return { pets };
       } else {
         const pets = await getPetsByOwnerId(id);
 
