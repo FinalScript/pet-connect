@@ -238,12 +238,14 @@ export const OwnerResolver = {
 
         await owner.setProfilePicture(profilePictureDAO);
         await owner.save();
+
+        await redis.set(`profilePictureByOwnerId:${owner.id}`, JSON.stringify(profilePictureDAO), 'EX', 120);
       }
 
       try {
         await updateOwner(jwtResult.id, { name, username, location });
         await owner.reload();
-        return owner;
+        return { owner };
       } catch (e) {
         console.error(e);
 

@@ -378,6 +378,8 @@ export const PetResolver = {
 
           await pet.save();
           await pet.reload();
+
+          await redis.set(`profilePictureByPetId:${pet.id}`, JSON.stringify(profilePictureDAO), 'EX', 120);
         }
 
         await updatePet(pet.id, { username, name, location, type, description });
