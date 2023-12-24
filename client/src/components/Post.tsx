@@ -1,7 +1,7 @@
 import { useMutation, useQuery } from '@apollo/client';
 import { MenuAction, MenuView } from '@react-native-menu/menu';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import React, { useCallback, useMemo, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Animated, Platform, Pressable, TouchableWithoutFeedback, View } from 'react-native';
 import { TapGestureHandler } from 'react-native-gesture-handler';
 import { HapticFeedbackTypes, trigger } from 'react-native-haptic-feedback';

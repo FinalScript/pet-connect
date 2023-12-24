@@ -9,6 +9,7 @@ import { Pet } from '../../models/Pet';
 import { Post } from '../../models/Post';
 import { Owner } from '../../models/Owner';
 import { redis } from '../../db/redis';
+import { Comment } from '../../models/Comment';
 
 export const PostResolver = {
   Post: {
@@ -18,7 +19,7 @@ export const PostResolver = {
       if (cachedMedia) {
         return JSON.parse(cachedMedia);
       } else {
-        const media = (await obj.reload({ include: [{ model: Media, as: 'Media' }] })).Media;
+        const media = (await Post.findByPk(obj.id, { include: [{ model: Media, as: 'Media' }] })).Media;
 
         await redis.set(`mediaByPostId:${obj.id}`, JSON.stringify(media), 'EX', 300);
 
@@ -26,14 +27,33 @@ export const PostResolver = {
       }
     },
     Author: async (obj: Post, {}, context) => {
-      const author = (await obj.reload({ include: [{ model: Pet, as: 'Author' }] })).Author;
+      const cachedAuthor = await redis.get(`pet:${obj.id}`);
 
-      return author;
+      if (cachedAuthor) {
+        return JSON.parse(cachedAuthor);
+      } else {
+        const author = (await Post.findByPk(obj.id, { include: [{ model: Pet, as: 'Author' }] })).Author;
+
+        await redis.set(`pet:${obj.id}`, JSON.stringify(author), 'EX', 300);
+
+        return author;
+      }
     },
     Comments: async (obj: Post, {}, context) => {
-      const comments = (await obj.reload({ include: [{ model: Pet, as: 'Comments' }] })).Comments;
+      const cachedComments = await redis.get(`commentsByPostId:${obj.id}`);
 
-      return comments;
+      if (cachedComments) {
+        const comments = JSON.parse(cachedComments).map((comment) => {
+          return Comment.build(comment);
+        });
+        return comments;
+      } else {
+        const comments = (await Post.findByPk(obj.id, { include: [{ model: Pet, as: 'Comments' }] })).Comments;
+
+        await redis.set(`commentsByPostId:${obj.id}`, JSON.stringify(comments), 'EX', 300);
+
+        return comments;
+      }
     },
     likesCount: async (obj: Post, {}, context) => {
       const cachedLikesCount = await redis.get(`likesCount:${obj.id}`);
@@ -41,7 +61,7 @@ export const PostResolver = {
       if (cachedLikesCount) {
         return cachedLikesCount;
       } else {
-        const likesCount = (await obj.reload({ include: [{ association: 'Likes' }] })).Likes.length;
+        const likesCount = (await Post.findByPk(obj.id, { include: [{ association: 'Likes' }] })).Likes.length;
 
         await redis.set(`likesCount:${obj.id}`, likesCount, 'EX', 120);
 
@@ -66,17 +86,25 @@ export const PostResolver = {
         });
       }
 
-      const post = await getPostById(id);
+      const cachedPost = await redis.get(`post:${id}`);
 
-      if (!post) {
-        throw new GraphQLError('Post does not exist', {
-          extensions: {
-            code: 'BAD_USER_INPUT',
-          },
-        });
+      if (cachedPost) {
+        return { post: JSON.parse(cachedPost) };
+      } else {
+        const post = await getPostById(id);
+
+        if (!post) {
+          throw new GraphQLError('Post does not exist', {
+            extensions: {
+              code: 'BAD_USER_INPUT',
+            },
+          });
+        }
+
+        await redis.set(`post:${id}`, JSON.stringify(post), 'EX', 300);
+
+        return { post };
       }
-
-      return { post };
     },
 
     getFollowing: async (_, {}, context) => {
@@ -148,7 +176,17 @@ export const PostResolver = {
         });
       }
 
-      const owner = await getOwnerByAuthId(jwtResult.id);
+      const cachedIsLikingPost = await redis.get(`isLikingPost:${jwtResult.id}:${id}`);
+
+      if (cachedIsLikingPost) {
+        return JSON.parse(cachedIsLikingPost);
+      }
+
+      let owner = JSON.parse(await redis.get(`owner:${jwtResult.id}`));
+
+      if (!owner) {
+        owner = await getOwnerByAuthId(jwtResult.id);
+      }
 
       if (!id) {
         throw new GraphQLError('ID missing', {
@@ -170,6 +208,8 @@ export const PostResolver = {
 
       const likedOwners = post.Likes || [];
       const liked = likedOwners.some((i) => i.id === owner.id);
+
+      await redis.set(`isLikingPost:${jwtResult.id}:${id}`, JSON.stringify(liked), 'EX', 120);
 
       return liked;
     },
@@ -329,9 +369,17 @@ export const PostResolver = {
 
       try {
         await post.addLike(owner);
-        await post.reload({ include: [{ association: 'Likes' }] });
+        await post.reload({ include: [{ association: 'Likes' }, { model: Pet, as: 'Author' }] });
 
         await redis.set(`likesCount:${post.id}`, post.Likes.length, 'EX', 120);
+        await redis.set(`isLikingPost:${jwtResult.id}:${id}`, JSON.stringify(true), 'EX', 120);
+
+        const cachedTotalLikes = await redis.get(`totalLikes:${post.Author.id}`);
+
+        if (cachedTotalLikes) {
+          await redis.set(`totalLikes:${post.Author.id}`, Number(cachedTotalLikes) + 1, 'EX', 300);
+        }
+
         return { newLikesCount: post.Likes.length };
       } catch (e) {
         console.error(e);
@@ -380,9 +428,17 @@ export const PostResolver = {
       try {
         await post.removeLike(owner);
 
-        await post.reload({ include: [{ association: 'Likes' }] });
+        await post.reload({ include: [{ association: 'Likes' }, { model: Pet, as: 'Author' }] });
 
         await redis.set(`likesCount:${post.id}`, post.Likes.length, 'EX', 120);
+        await redis.set(`isLikingPost:${jwtResult.id}:${id}`, JSON.stringify(false), 'EX', 120);
+
+        const cachedTotalLikes = await redis.get(`totalLikes:${post.Author.id}`);
+
+        if (cachedTotalLikes) {
+          await redis.set(`totalLikes:${post.Author.id}`, Number(cachedTotalLikes) - 1, 'EX', 300);
+        }
+
         return { newLikesCount: post.Likes.length };
       } catch (e) {
         console.error(e);

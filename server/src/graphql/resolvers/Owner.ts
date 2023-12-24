@@ -14,7 +14,7 @@ export const OwnerResolver = {
       if (cachedProfilePicture) {
         return JSON.parse(cachedProfilePicture);
       } else {
-        const profilePicture = (await obj.reload({ include: [{ model: ProfilePicture, as: 'ProfilePicture' }] })).ProfilePicture;
+        const profilePicture = (await Owner.findByPk(obj.id, { include: [{ model: ProfilePicture, as: 'ProfilePicture' }] })).ProfilePicture;
 
         await redis.set(`profilePictureByOwnerId:${obj.id}`, JSON.stringify(profilePicture), 'EX', 120);
 
@@ -23,15 +23,31 @@ export const OwnerResolver = {
     },
 
     Following: async (obj: Owner, {}, context) => {
-      const following = (await obj.reload({ include: [{ model: Pet, as: 'FollowedPets' }] })).FollowedPets;
+      const cachedFollowing = await redis.get(`following:${obj.id}`);
 
-      return following;
+      if (cachedFollowing) {
+        return JSON.parse(cachedFollowing);
+      } else {
+        const following = (await Owner.findByPk(obj.id, { include: [{ model: Pet, as: 'FollowedPets' }] })).FollowedPets;
+
+        await redis.set(`following:${obj.id}`, JSON.stringify(following), 'EX', 120);
+
+        return following;
+      }
     },
 
     Pets: async (obj: Owner, {}, context) => {
-      const pets = (await obj.reload({ include: [{ model: Pet, as: 'Pets' }] })).Pets;
+      const cachedPets = await redis.get(`pets:${obj.id}`);
 
-      return pets;
+      if (cachedPets) {
+        return JSON.parse(cachedPets);
+      } else {
+        const pets = (await Owner.findByPk(obj.id, { include: [{ model: Pet, as: 'Pets' }] })).Pets;
+
+        await redis.set(`pets:${obj.id}`, JSON.stringify(pets), 'EX', 120);
+
+        return pets;
+      }
     },
 
     followingCount: async (obj: Owner, {}, context) => {
@@ -40,7 +56,7 @@ export const OwnerResolver = {
       if (cachedFollowingCount) {
         return cachedFollowingCount;
       } else {
-        const followingCount = (await obj.reload({ include: [{ model: Pet, as: 'FollowedPets' }] }))?.FollowedPets?.length;
+        const followingCount = (await Owner.findByPk(obj.id, { include: [{ model: Pet, as: 'FollowedPets' }] }))?.FollowedPets?.length;
 
         await redis.set(`followingCount:${obj.id}`, followingCount, 'EX', 120);
 
@@ -85,23 +101,47 @@ export const OwnerResolver = {
         authIdToUse = authId;
       }
 
-      const owner = await getOwnerByAuthId(authIdToUse);
+      const cachedOwner = await redis.get(`owner:${authIdToUse}`);
 
-      if (!owner) {
-        throw new GraphQLError('Owner not found');
+      if (cachedOwner) {
+        return { owner: JSON.parse(cachedOwner) };
+      } else {
+        const owner = await getOwnerByAuthId(authIdToUse);
+
+        if (!owner) {
+          throw new GraphQLError('Owner not found');
+        }
+
+        await redis.set(`owner:${authIdToUse}`, JSON.stringify(owner), 'EX', 300);
+
+        return { owner };
       }
-
-      return { owner };
     },
 
     getOwnerById: async (_, { id }, context) => {
-      const owner = await getOwnerById(id);
-
-      if (!owner) {
-        throw new GraphQLError('Owner not found');
+      if (!id) {
+        throw new GraphQLError('Id missing', {
+          extensions: {
+            code: 'BAD_USER_INPUT',
+          },
+        });
       }
 
-      return { owner };
+      const cachedOwner = await redis.get(`owner:${id}`);
+
+      if (cachedOwner) {
+        return { owner: JSON.parse(cachedOwner) };
+      } else {
+        const owner = await getOwnerById(id);
+
+        if (!owner) {
+          throw new GraphQLError('Owner not found');
+        }
+
+        await redis.set(`owner:${id}`, JSON.stringify(owner), 'EX', 300);
+
+        return { owner };
+      }
     },
 
     validateUsername: async (_, { username }) => {
@@ -113,13 +153,21 @@ export const OwnerResolver = {
         });
       }
 
-      const owner = await getOwnerByUsername(username);
+      const cachedOwner = await redis.get(`owner:${username}`);
 
-      if (owner) {
+      if (cachedOwner) {
+        return { isAvailable: false };
+      } else {
+        const owner = await getOwnerByUsername(username);
+
+        await redis.set(`owner:${username}`, JSON.stringify(owner), 'EX', 300);
+
+        if (!owner) {
+          return { isAvailable: true };
+        }
+
         return { isAvailable: false };
       }
-
-      return { isAvailable: true };
     },
   },
   Mutation: {
@@ -238,12 +286,17 @@ export const OwnerResolver = {
 
         await owner.setProfilePicture(profilePictureDAO);
         await owner.save();
+
+        await redis.set(`profilePictureByOwnerId:${owner.id}`, JSON.stringify(profilePictureDAO), 'EX', 120);
       }
 
       try {
         await updateOwner(jwtResult.id, { name, username, location });
         await owner.reload();
-        return owner;
+        await redis.set(`owner:${owner.id}`, JSON.stringify(owner), 'EX', 300);
+        await redis.set(`owner:${owner.username}`, JSON.stringify(owner), 'EX', 300);
+        await redis.set(`owner:${owner.authId}`, JSON.stringify(owner), 'EX', 300);
+        return { owner };
       } catch (e) {
         console.error(e);
 

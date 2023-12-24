@@ -17,7 +17,7 @@ export const PetResolver = {
       if (cachedProfilePicture) {
         return JSON.parse(cachedProfilePicture);
       } else {
-        const profilePicture = (await obj.reload({ include: [{ model: ProfilePicture, as: 'ProfilePicture' }] })).ProfilePicture;
+        const profilePicture = (await Pet.findByPk(obj.id, { include: [{ model: ProfilePicture, as: 'ProfilePicture' }] })).ProfilePicture;
 
         await redis.set(`profilePictureByPetId:${obj.id}`, JSON.stringify(profilePicture), 'EX', 120);
 
@@ -26,25 +26,58 @@ export const PetResolver = {
     },
 
     Followers: async (obj: Pet, {}, context) => {
-      const followers = (await obj.reload({ include: [{ model: Owner, as: 'Followers', include: [{ model: ProfilePicture, as: 'ProfilePicture' }] }] }))
-        .Followers;
+      const cachedFollowers = await redis.get(`followersByPetId:${obj.id}`);
 
-      return followers;
+      if (cachedFollowers) {
+        const followers = JSON.parse(cachedFollowers).map((follower) => {
+          return Owner.build(follower);
+        });
+        return followers;
+      } else {
+        const followers = (
+          await Pet.findByPk(obj.id, {
+            include: [{ model: Owner, as: 'Followers' }],
+          })
+        ).Followers;
+
+        await redis.set(`followersByPetId:${obj.id}`, JSON.stringify(followers), 'EX', 300);
+
+        return followers;
+      }
     },
 
     Owner: async (obj: Pet, {}, context) => {
-      const owner = (await obj.reload({ include: [{ model: Owner, as: 'Owner' }] })).Owner;
+      const cachedOwner = await redis.get(`owner:${obj.id}`);
 
-      return owner;
+      if (cachedOwner) {
+        return JSON.parse(cachedOwner);
+      } else {
+        const owner = (await Pet.findByPk(obj.id, { include: [{ model: Owner, as: 'Owner' }] })).Owner;
+
+        await redis.set(`owner:${obj.id}`, JSON.stringify(owner), 'EX', 300);
+
+        return owner;
+      }
     },
 
     Posts: async (obj: Pet, {}, context) => {
-      const posts = await Post.findAll({
-        where: { petId: obj.id },
-        order: [['createdAt', 'DESC']],
-      });
+      const cachedPosts = await redis.get(`postsByPetId:${obj.id}`);
 
-      return posts;
+      if (cachedPosts) {
+        const posts = JSON.parse(cachedPosts).map((post) => {
+          return Post.build(post);
+        });
+        return posts;
+      } else {
+        const posts = await Post.findAll({
+          where: { petId: obj.id },
+          order: [['createdAt', 'DESC']],
+        });
+
+        await redis.set(`postsByPetId:${obj.id}`, JSON.stringify(posts), 'EX', 120);
+
+        return posts;
+      }
     },
 
     followerCount: async (obj: Pet, {}, context) => {
@@ -91,7 +124,7 @@ export const PetResolver = {
           return totalLikes + (post.Likes?.length || 0);
         }, 0);
 
-        await redis.set(`totalLikes:${obj.id}`, cumulativeLikes, 'EX', 60);
+        await redis.set(`totalLikes:${obj.id}`, cumulativeLikes, 'EX', 300);
 
         return cumulativeLikes;
       }
@@ -129,17 +162,25 @@ export const PetResolver = {
         });
       }
 
-      const pet = await getPetById(id);
+      const cachedPet = await redis.get(`pet:${id}`);
 
-      if (!pet) {
-        throw new GraphQLError('Pet does not exist', {
-          extensions: {
-            code: 'BAD_USER_INPUT',
-          },
-        });
+      if (cachedPet) {
+        return { pet: JSON.parse(cachedPet) };
+      } else {
+        const pet = await getPetById(id);
+
+        if (!pet) {
+          throw new GraphQLError('Pet does not exist', {
+            extensions: {
+              code: 'BAD_USER_INPUT',
+            },
+          });
+        }
+
+        await redis.set(`pet:${id}`, JSON.stringify(pet), 'EX', 300);
+
+        return { pet };
       }
-
-      return { pet };
     },
     getPetsByOwnerId: async (_, { id }, context) => {
       if (!id) {
@@ -150,9 +191,20 @@ export const PetResolver = {
         });
       }
 
-      const pets = await getPetsByOwnerId(id);
+      const cachedPets = await redis.get(`petsByOwnerId:${id}`);
 
-      return { pets };
+      if (cachedPets) {
+        const pets = JSON.parse(cachedPets).map((pet) => {
+          return Pet.build(pet);
+        });
+        return pets;
+      } else {
+        const pets = await getPetsByOwnerId(id);
+
+        await redis.set(`petsByOwnerId:${id}`, JSON.stringify(pets), 'EX', 300);
+
+        return { pets };
+      }
     },
 
     getPetByUsername: async (_, { username }, context) => {
@@ -164,17 +216,25 @@ export const PetResolver = {
         });
       }
 
-      const pet = await getPetByUsername(username);
+      const cachedPet = await redis.get(`pet:${username}`);
 
-      if (!pet) {
-        throw new GraphQLError('Pet does not exist', {
-          extensions: {
-            code: 'BAD_USER_INPUT',
-          },
-        });
+      if (cachedPet) {
+        return { pet: JSON.parse(cachedPet) };
+      } else {
+        const pet = await getPetByUsername(username);
+
+        if (!pet) {
+          throw new GraphQLError('Pet does not exist', {
+            extensions: {
+              code: 'BAD_USER_INPUT',
+            },
+          });
+        }
+
+        await redis.set(`pet:${username}`, JSON.stringify(pet), 'EX', 300);
+
+        return { pet };
       }
-
-      return { pet };
     },
 
     validatePetUsername: async (_, { username }, context) => {
@@ -186,9 +246,21 @@ export const PetResolver = {
         });
       }
 
-      const pet = await getPetByUsername(username);
+      const cachedPet = await redis.get(`pet:${username}`);
 
-      return { isAvailable: pet ? false : true };
+      if (cachedPet) {
+        return { isAvailable: false };
+      } else {
+        const pet = await getPetByUsername(username);
+
+        await redis.set(`pet:${username}`, JSON.stringify(pet), 'EX', 300);
+
+        if (!pet) {
+          return { isAvailable: true };
+        }
+
+        return { isAvailable: false };
+      }
     },
   },
 
@@ -378,10 +450,14 @@ export const PetResolver = {
 
           await pet.save();
           await pet.reload();
+
+          await redis.set(`profilePictureByPetId:${pet.id}`, JSON.stringify(profilePictureDAO), 'EX', 120);
         }
 
         await updatePet(pet.id, { username, name, location, type, description });
         await pet.reload();
+
+        await redis.set(`pet:${pet.id}`, JSON.stringify(pet), 'EX', 300);
         return pet;
       } catch (e) {
         console.error(e);

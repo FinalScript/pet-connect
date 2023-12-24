@@ -10,7 +10,7 @@ import Image from '../components/Image';
 import PetTypeImage from '../components/PetTypeImage';
 import Text from '../components/Text';
 import EditProfileModal from '../components/modals/EditProfileModal';
-import { FOLLOW_PET, GET_PET_BY_ID, IS_FOLLOWING_PET, UNFOLOW_PET } from '../graphql/Pet';
+import { FOLLOW_PET, GET_PET_BY_ID, GET_PET_FOLLOWER_COUNT, IS_FOLLOWING_PET, UNFOLOW_PET } from '../graphql/Pet';
 import { GET_POSTS_BY_PET_ID } from '../graphql/Post';
 import { POST_DATA } from '../redux/constants';
 import { PetDAO, ProfileReducer } from '../redux/reducers/profileReducer';
@@ -34,21 +34,17 @@ const PetProfile = ({
   const ownerId = useSelector((state: ProfileReducer) => state.profile.owner?.id);
   const { data: petData } = useQuery(GET_PET_BY_ID, { variables: { id: petId }, pollInterval: 10000 });
   const { data: postsData } = useQuery(GET_POSTS_BY_PET_ID, { variables: { petId }, pollInterval: 10000 });
-  const { data: isFollowingData } = useQuery(IS_FOLLOWING_PET, { variables: { ownerId: ownerId || '', petId }, skip: !ownerId });
+  const { data: isFollowingData, refetch: refetchIsFollowingData } = useQuery(IS_FOLLOWING_PET, {
+    variables: { ownerId: ownerId || '', petId },
+    skip: !ownerId,
+  });
+  const { data: petFollowersData, refetch: refetchFollowerCount } = useQuery(GET_PET_FOLLOWER_COUNT, { variables: { id: petId }, pollInterval: 10000 });
 
   const pet = useMemo(() => petData?.getPetById.pet, [petData, petId]);
   const gridPosts: Post[] = useMemo(() => postsData?.getPetById.pet.Posts || [], [postsData]);
   const isOwner = useMemo(() => ownerId === pet?.Owner?.id, [ownerId, pet?.Owner?.id]);
-  const [followersCount, setFollowersCount] = useState(0);
-  const [isFollowing, setIsFollowing] = useState(isFollowingData?.isFollowingPet);
-
-  useEffect(() => {
-    setFollowersCount(pet?.followerCount);
-  }, [pet?.followerCount]);
-
-  useEffect(() => {
-    setIsFollowing(isFollowingData?.isFollowingPet);
-  }, [isFollowingData?.isFollowingPet]);
+  const followersCount = useMemo(() => petFollowersData?.getPetById.pet.followerCount || 0, [petFollowersData]);
+  const isFollowing = useMemo(() => isFollowingData?.isFollowingPet, [isFollowingData]);
 
   useEffect(() => {
     dispatch({ type: POST_DATA, payload: gridPosts });
@@ -59,6 +55,10 @@ const PetProfile = ({
 
   const tabBarState = useTabBarState();
   const [modals, setModals] = useState({ accountSwitcher: false, settings: false, editProfile: false });
+
+  useEffect(() => {
+   console.log(petId)
+  }, [petId])
 
   useEffect(() => {
     navigation.setOptions({ title: pet?.username });
@@ -74,16 +74,16 @@ const PetProfile = ({
     if (!pet) return;
 
     await followPet({ variables: { id: pet.id } });
-    setFollowersCount((prev) => prev + 1);
-    setIsFollowing(true);
+    await refetchIsFollowingData();
+    await refetchFollowerCount();
   }, [followPet, pet]);
 
   const handleUnfollow = useCallback(async () => {
     if (!pet) return;
 
     await unfollowPet({ variables: { id: pet.id } });
-    setFollowersCount((prev) => prev - 1);
-    setIsFollowing(false);
+    await refetchIsFollowingData();
+    await refetchFollowerCount();
   }, [unfollowPet, pet]);
 
   const onShare = useCallback(async () => {
