@@ -157,9 +157,12 @@ const OwnerProfile = ({ ownerId, navigation }: Props) => {
             </View>
           </PressableOpacity>
         </View>
-        <View className='mt-10 flex-col justify-center'>
-          {pets.map((pet) => {
-            return (
+        <View className='flex-col justify-center'>
+          <View className='mt-5 flex-col justify-center'>
+            <View className='mb-5'>
+              <Text className='text-2xl font-bold text-themePrimary'>{pets.length === 0 ? 'No Pets' : isOwner ? 'My Pets' : 'Pet List'}</Text>
+            </View>
+            {pets.map((pet) => (
               <PetCard
                 key={pet.id}
                 pet={pet}
@@ -170,8 +173,8 @@ const OwnerProfile = ({ ownerId, navigation }: Props) => {
                 setIsSelected={setSelectedPetId}
                 isOwner={isOwner}
               />
-            );
-          })}
+            ))}
+          </View>
           {isOwner && (
             <View className='flex-row items-center mt-4'>
               <Pressable
