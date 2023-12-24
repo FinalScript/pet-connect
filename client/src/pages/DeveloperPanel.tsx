@@ -191,16 +191,16 @@ export default function DeveloperPanel({ apiUrl }: Props) {
             renderItem={({ item }) => (
               <TouchableOpacity
                 onPress={() => onApiUrlItemPress(item.apiUrl)}
-                style={{ flexDirection: 'row', alignItems: 'center', paddingVertical: 8 }}>
-                <Text style={{ paddingHorizontal: 16 }}>{item.apiUrl}</Text>
-                <TouchableOpacity onPress={() => onRemoveApiUrl(item.id)} style={{ paddingHorizontal: 8 }}>
-                  <Text style={{ color: 'red' }}>Remove</Text>
+                className='flex-row items-center py-2 px-4 border-b border-gray-300'>
+                <Text className='flex-grow px-4'>{item.apiUrl}</Text>
+                <TouchableOpacity onPress={() => onRemoveApiUrl(item.id)} className='px-2'>
+                  <Text className='text-red-500'>Remove</Text>
                 </TouchableOpacity>
               </TouchableOpacity>
             )}
           />
-          <TouchableOpacity onPress={onAddApiUrl} style={{ flexDirection: 'row', alignItems: 'center', paddingVertical: 8 }}>
-            <Text style={{ paddingHorizontal: 16 }}>Add API_URL</Text>
+          <TouchableOpacity onPress={onAddApiUrl} className='flex-row items-center py-2 px-4 border-b border-gray-300'>
+            <Text className='px-4 text-blue-500'>+ Add API_URL</Text>
           </TouchableOpacity>
         </View>
       </View>
