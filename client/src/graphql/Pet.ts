@@ -119,6 +119,16 @@ export const GET_PET_BY_ID = gql(`
 
 `);
 
+export const GET_PET_FOLLOWER_COUNT = gql(`
+ query GetPetFollowerCount($id: String!) {
+    getPetById(id: $id) {
+      pet {
+        followerCount
+      }
+    }
+  }
+`);
+
 export const GET_PETS_BY_OWNER_ID = gql(`
   query GetPetsByOwnerId($id: String!) {
     getPetsByOwnerId(id: $id) {
