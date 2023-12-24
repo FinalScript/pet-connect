@@ -162,17 +162,25 @@ export const PetResolver = {
         });
       }
 
-      const pet = await getPetById(id);
+      const cachedPet = await redis.get(`pet:${id}`);
 
-      if (!pet) {
-        throw new GraphQLError('Pet does not exist', {
-          extensions: {
-            code: 'BAD_USER_INPUT',
-          },
-        });
+      if (cachedPet) {
+        return { pet: JSON.parse(cachedPet) };
+      } else {
+        const pet = await getPetById(id);
+
+        if (!pet) {
+          throw new GraphQLError('Pet does not exist', {
+            extensions: {
+              code: 'BAD_USER_INPUT',
+            },
+          });
+        }
+
+        await redis.set(`pet:${id}`, JSON.stringify(pet), 'EX', 300);
+
+        return { pet };
       }
-
-      return { pet };
     },
     getPetsByOwnerId: async (_, { id }, context) => {
       if (!id) {
@@ -183,9 +191,20 @@ export const PetResolver = {
         });
       }
 
-      const pets = await getPetsByOwnerId(id);
+      const cachedPets = await redis.get(`petsByOwnerId:${id}`);
 
-      return { pets };
+      if (cachedPets) {
+        const pets = JSON.parse(cachedPets).map((pet) => {
+          return Pet.build(pet);
+        });
+        return pets;
+      } else {
+        const pets = await getPetsByOwnerId(id);
+
+        await redis.set(`petsByOwnerId:${id}`, JSON.stringify(pets), 'EX', 300);
+
+        return { pets };
+      }
     },
 
     getPetByUsername: async (_, { username }, context) => {
@@ -197,17 +216,25 @@ export const PetResolver = {
         });
       }
 
-      const pet = await getPetByUsername(username);
+      const cachedPet = await redis.get(`pet:${username}`);
 
-      if (!pet) {
-        throw new GraphQLError('Pet does not exist', {
-          extensions: {
-            code: 'BAD_USER_INPUT',
-          },
-        });
+      if (cachedPet) {
+        return { pet: JSON.parse(cachedPet) };
+      } else {
+        const pet = await getPetByUsername(username);
+
+        if (!pet) {
+          throw new GraphQLError('Pet does not exist', {
+            extensions: {
+              code: 'BAD_USER_INPUT',
+            },
+          });
+        }
+
+        await redis.set(`pet:${username}`, JSON.stringify(pet), 'EX', 300);
+
+        return { pet };
       }
-
-      return { pet };
     },
 
     validatePetUsername: async (_, { username }, context) => {
@@ -219,9 +246,21 @@ export const PetResolver = {
         });
       }
 
-      const pet = await getPetByUsername(username);
+      const cachedPet = await redis.get(`pet:${username}`);
 
-      return { isAvailable: pet ? false : true };
+      if (cachedPet) {
+        return { isAvailable: false };
+      } else {
+        const pet = await getPetByUsername(username);
+
+        await redis.set(`pet:${username}`, JSON.stringify(pet), 'EX', 300);
+
+        if (!pet) {
+          return { isAvailable: true };
+        }
+
+        return { isAvailable: false };
+      }
     },
   },
 
@@ -417,6 +456,8 @@ export const PetResolver = {
 
         await updatePet(pet.id, { username, name, location, type, description });
         await pet.reload();
+
+        await redis.set(`pet:${pet.id}`, JSON.stringify(pet), 'EX', 300);
         return pet;
       } catch (e) {
         console.error(e);

@@ -101,23 +101,47 @@ export const OwnerResolver = {
         authIdToUse = authId;
       }
 
-      const owner = await getOwnerByAuthId(authIdToUse);
+      const cachedOwner = await redis.get(`owner:${authIdToUse}`);
 
-      if (!owner) {
-        throw new GraphQLError('Owner not found');
+      if (cachedOwner) {
+        return { owner: JSON.parse(cachedOwner) };
+      } else {
+        const owner = await getOwnerByAuthId(authIdToUse);
+
+        if (!owner) {
+          throw new GraphQLError('Owner not found');
+        }
+
+        await redis.set(`owner:${authIdToUse}`, JSON.stringify(owner), 'EX', 300);
+
+        return { owner };
       }
-
-      return { owner };
     },
 
     getOwnerById: async (_, { id }, context) => {
-      const owner = await getOwnerById(id);
-
-      if (!owner) {
-        throw new GraphQLError('Owner not found');
+      if (!id) {
+        throw new GraphQLError('Id missing', {
+          extensions: {
+            code: 'BAD_USER_INPUT',
+          },
+        });
       }
 
-      return { owner };
+      const cachedOwner = await redis.get(`owner:${id}`);
+
+      if (cachedOwner) {
+        return { owner: JSON.parse(cachedOwner) };
+      } else {
+        const owner = await getOwnerById(id);
+
+        if (!owner) {
+          throw new GraphQLError('Owner not found');
+        }
+
+        await redis.set(`owner:${id}`, JSON.stringify(owner), 'EX', 300);
+
+        return { owner };
+      }
     },
 
     validateUsername: async (_, { username }) => {
@@ -129,13 +153,21 @@ export const OwnerResolver = {
         });
       }
 
-      const owner = await getOwnerByUsername(username);
+      const cachedOwner = await redis.get(`owner:${username}`);
 
-      if (owner) {
+      if (cachedOwner) {
+        return { isAvailable: false };
+      } else {
+        const owner = await getOwnerByUsername(username);
+
+        await redis.set(`owner:${username}`, JSON.stringify(owner), 'EX', 300);
+
+        if (!owner) {
+          return { isAvailable: true };
+        }
+
         return { isAvailable: false };
       }
-
-      return { isAvailable: true };
     },
   },
   Mutation: {
@@ -261,6 +293,9 @@ export const OwnerResolver = {
       try {
         await updateOwner(jwtResult.id, { name, username, location });
         await owner.reload();
+        await redis.set(`owner:${owner.id}`, JSON.stringify(owner), 'EX', 300);
+        await redis.set(`owner:${owner.username}`, JSON.stringify(owner), 'EX', 300);
+        await redis.set(`owner:${owner.authId}`, JSON.stringify(owner), 'EX', 300);
         return { owner };
       } catch (e) {
         console.error(e);
