@@ -26,25 +26,58 @@ export const PetResolver = {
     },
 
     Followers: async (obj: Pet, {}, context) => {
-      const followers = (await obj.reload({ include: [{ model: Owner, as: 'Followers', include: [{ model: ProfilePicture, as: 'ProfilePicture' }] }] }))
-        .Followers;
+      const cachedFollowers = await redis.get(`followersByPetId:${obj.id}`);
 
-      return followers;
+      if (cachedFollowers) {
+        const followers = JSON.parse(cachedFollowers).map((follower) => {
+          return Owner.build(follower);
+        });
+        return followers;
+      } else {
+        const followers = (
+          await Pet.findByPk(obj.id, {
+            include: [{ model: Owner, as: 'Followers' }],
+          })
+        ).Followers;
+
+        await redis.set(`followersByPetId:${obj.id}`, JSON.stringify(followers), 'EX', 300);
+
+        return followers;
+      }
     },
 
     Owner: async (obj: Pet, {}, context) => {
-      const owner = (await obj.reload({ include: [{ model: Owner, as: 'Owner' }] })).Owner;
+      const cachedOwner = await redis.get(`owner:${obj.id}`);
 
-      return owner;
+      if (cachedOwner) {
+        return JSON.parse(cachedOwner);
+      } else {
+        const owner = (await Pet.findByPk(obj.id, { include: [{ model: Owner, as: 'Owner' }] })).Owner;
+
+        await redis.set(`owner:${obj.id}`, JSON.stringify(owner), 'EX', 300);
+
+        return owner;
+      }
     },
 
     Posts: async (obj: Pet, {}, context) => {
-      const posts = await Post.findAll({
-        where: { petId: obj.id },
-        order: [['createdAt', 'DESC']],
-      });
+      const cachedPosts = await redis.get(`postsByPetId:${obj.id}`);
 
-      return posts;
+      if (cachedPosts) {
+        const posts = JSON.parse(cachedPosts).map((post) => {
+          return Post.build(post);
+        });
+        return posts;
+      } else {
+        const posts = await Post.findAll({
+          where: { petId: obj.id },
+          order: [['createdAt', 'DESC']],
+        });
+
+        await redis.set(`postsByPetId:${obj.id}`, JSON.stringify(posts), 'EX', 120);
+
+        return posts;
+      }
     },
 
     followerCount: async (obj: Pet, {}, context) => {
@@ -91,7 +124,7 @@ export const PetResolver = {
           return totalLikes + (post.Likes?.length || 0);
         }, 0);
 
-        await redis.set(`totalLikes:${obj.id}`, cumulativeLikes, 'EX', 60);
+        await redis.set(`totalLikes:${obj.id}`, cumulativeLikes, 'EX', 300);
 
         return cumulativeLikes;
       }

@@ -23,15 +23,31 @@ export const OwnerResolver = {
     },
 
     Following: async (obj: Owner, {}, context) => {
-      const following = (await obj.reload({ include: [{ model: Pet, as: 'FollowedPets' }] })).FollowedPets;
+      const cachedFollowing = await redis.get(`following:${obj.id}`);
 
-      return following;
+      if (cachedFollowing) {
+        return JSON.parse(cachedFollowing);
+      } else {
+        const following = (await Owner.findByPk(obj.id, { include: [{ model: Pet, as: 'FollowedPets' }] })).FollowedPets;
+
+        await redis.set(`following:${obj.id}`, JSON.stringify(following), 'EX', 120);
+
+        return following;
+      }
     },
 
     Pets: async (obj: Owner, {}, context) => {
-      const pets = (await obj.reload({ include: [{ model: Pet, as: 'Pets' }] })).Pets;
+      const cachedPets = await redis.get(`pets:${obj.id}`);
 
-      return pets;
+      if (cachedPets) {
+        return JSON.parse(cachedPets);
+      } else {
+        const pets = (await Owner.findByPk(obj.id, { include: [{ model: Pet, as: 'Pets' }] })).Pets;
+
+        await redis.set(`pets:${obj.id}`, JSON.stringify(pets), 'EX', 120);
+
+        return pets;
+      }
     },
 
     followingCount: async (obj: Owner, {}, context) => {
