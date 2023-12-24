@@ -1,10 +1,8 @@
 import React, { Dispatch, SetStateAction, useCallback, useEffect, useMemo, useState } from 'react';
-import { Modal, Platform, Pressable, View } from 'react-native';
+import { Platform, Pressable, View } from 'react-native';
 import Animated, { useSharedValue, withTiming } from 'react-native-reanimated';
 import { Pet } from '../__generated__/graphql';
-import { PetDAO } from '../redux/reducers/profileReducer';
-import { Entypo, Ionicon, MaterialCommunityIcons } from '../utils/Icons';
-import { themeConfig } from '../utils/theme';
+import { Entypo } from '../utils/Icons';
 import Image from './Image';
 import PetTypeImage from './PetTypeImage';
 import Text from './Text';

@@ -143,7 +143,7 @@ const OwnerProfile = ({ ownerId, navigation }: Props) => {
               isOwner && setEditProfileModalVisible(true);
             }}>
             <View className='bg-themeBtn px-7 py-2 rounded-lg'>
-              <Text className='text-themeText text-base font-semibold text-center'>{isOwner ? 'Edit Profile' : 'Follow'}</Text>
+              <Text className='text-themeText text-base font-semibold text-center'>{isOwner ? 'Edit Profile' : 'Add Friend'}</Text>
             </View>
           </PressableOpacity>
           <PressableOpacity
@@ -157,9 +157,12 @@ const OwnerProfile = ({ ownerId, navigation }: Props) => {
             </View>
           </PressableOpacity>
         </View>
-        <View className='mt-10 flex-col justify-center'>
-          {pets.map((pet) => {
-            return (
+        <View className='flex-col justify-center'>
+          <View className='mt-5 flex-col justify-center'>
+            <View className='mb-5'>
+              <Text className='text-2xl font-bold text-themePrimary'>{pets.length === 0 ? 'No Pets' : isOwner ? 'My Pets' : 'Pet List'}</Text>
+            </View>
+            {pets.map((pet) => (
               <PetCard
                 key={pet.id}
                 pet={pet}
@@ -170,20 +173,22 @@ const OwnerProfile = ({ ownerId, navigation }: Props) => {
                 setIsSelected={setSelectedPetId}
                 isOwner={isOwner}
               />
-            );
-          })}
-          <View className='flex-row items-center'>
-            <Pressable
-              className={'flex-1 rounded-2xl bg-white shadow-sm shadow-themeShadow flex-row items-center p-3'}
-              onPress={() => {
-                navigation.navigate('Pet Creation');
-              }}>
-              <View className='h-14 w-14 flex justify-center items-center mr-5 border-dashed border-2 rounded-2xl'>
-                <Feather name='plus' size={30} />
-              </View>
-              <Text className='text-xl font-medium'>Add Pet</Text>
-            </Pressable>
+            ))}
           </View>
+          {isOwner && (
+            <View className='flex-row items-center mt-4'>
+              <Pressable
+                className='flex-1 rounded-2xl bg-white shadow-sm shadow-themeShadow  flex-row items-center p-3'
+                onPress={() => {
+                  navigation.navigate('Pet Creation');
+                }}>
+                <View className='h-14 w-14 flex justify-center items-center mr-5 bg-themeActive rounded-full'>
+                  <Feather name='plus' size={30} color='#8f5f43' />
+                </View>
+                <Text className='text-xl font-medium'>Add Pet</Text>
+              </Pressable>
+            </View>
+          )}
         </View>
       </ScrollView>
     </SafeAreaView>
