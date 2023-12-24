@@ -35,7 +35,7 @@ export const PetTypeDef = `#graphql
     }
 
     type PetsResponse {
-        pets: [Pet!]!
+        pets: [Pet!]
     }
 
     type PetUpdatedResponse {
