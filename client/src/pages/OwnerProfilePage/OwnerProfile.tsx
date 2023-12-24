@@ -143,7 +143,7 @@ const OwnerProfile = ({ ownerId, navigation }: Props) => {
               isOwner && setEditProfileModalVisible(true);
             }}>
             <View className='bg-themeBtn px-7 py-2 rounded-lg'>
-              <Text className='text-themeText text-base font-semibold text-center'>{isOwner ? 'Edit Profile' : 'Follow'}</Text>
+              <Text className='text-themeText text-base font-semibold text-center'>{isOwner ? 'Edit Profile' : 'Add Friend'}</Text>
             </View>
           </PressableOpacity>
           <PressableOpacity
@@ -172,15 +172,15 @@ const OwnerProfile = ({ ownerId, navigation }: Props) => {
               />
             );
           })}
-          {isOwner ?? (
-            <View className='flex-row items-center'>
+          {isOwner && (
+            <View className='flex-row items-center mt-4'>
               <Pressable
-                className={'flex-1 rounded-2xl bg-white shadow-sm shadow-themeShadow flex-row items-center p-3'}
+                className='flex-1 rounded-2xl bg-white shadow-sm shadow-themeShadow  flex-row items-center p-3'
                 onPress={() => {
                   navigation.navigate('Pet Creation');
                 }}>
-                <View className='h-14 w-14 flex justify-center items-center mr-5 border-dashed border-2 rounded-2xl'>
-                  <Feather name='plus' size={30} />
+                <View className='h-14 w-14 flex justify-center items-center mr-5 bg-themeActive rounded-full'>
+                  <Feather name='plus' size={30} color='#8f5f43' />
                 </View>
                 <Text className='text-xl font-medium'>Add Pet</Text>
               </Pressable>
