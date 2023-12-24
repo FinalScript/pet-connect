@@ -17,7 +17,7 @@ export const PetResolver = {
       if (cachedProfilePicture) {
         return JSON.parse(cachedProfilePicture);
       } else {
-        const profilePicture = (await obj.reload({ include: [{ model: ProfilePicture, as: 'ProfilePicture' }] })).ProfilePicture;
+        const profilePicture = (await Pet.findByPk(obj.id, { include: [{ model: ProfilePicture, as: 'ProfilePicture' }] })).ProfilePicture;
 
         await redis.set(`profilePictureByPetId:${obj.id}`, JSON.stringify(profilePicture), 'EX', 120);
 

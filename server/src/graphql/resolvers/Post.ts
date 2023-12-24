@@ -19,7 +19,7 @@ export const PostResolver = {
       if (cachedMedia) {
         return JSON.parse(cachedMedia);
       } else {
-        const media = (await obj.reload({ include: [{ model: Media, as: 'Media' }] })).Media;
+        const media = (await Post.findByPk(obj.id, { include: [{ model: Media, as: 'Media' }] })).Media;
 
         await redis.set(`mediaByPostId:${obj.id}`, JSON.stringify(media), 'EX', 300);
 
@@ -61,7 +61,7 @@ export const PostResolver = {
       if (cachedLikesCount) {
         return cachedLikesCount;
       } else {
-        const likesCount = (await obj.reload({ include: [{ association: 'Likes' }] })).Likes.length;
+        const likesCount = (await Post.findByPk(obj.id, { include: [{ association: 'Likes' }] })).Likes.length;
 
         await redis.set(`likesCount:${obj.id}`, likesCount, 'EX', 120);
 
@@ -375,7 +375,7 @@ export const PostResolver = {
         await redis.set(`isLikingPost:${jwtResult.id}:${id}`, JSON.stringify(true), 'EX', 120);
 
         const cachedTotalLikes = await redis.get(`totalLikes:${post.Author.id}`);
-      
+
         if (cachedTotalLikes) {
           await redis.set(`totalLikes:${post.Author.id}`, Number(cachedTotalLikes) + 1, 'EX', 300);
         }

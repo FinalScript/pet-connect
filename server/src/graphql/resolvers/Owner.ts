@@ -14,7 +14,7 @@ export const OwnerResolver = {
       if (cachedProfilePicture) {
         return JSON.parse(cachedProfilePicture);
       } else {
-        const profilePicture = (await obj.reload({ include: [{ model: ProfilePicture, as: 'ProfilePicture' }] })).ProfilePicture;
+        const profilePicture = (await Owner.findByPk(obj.id, { include: [{ model: ProfilePicture, as: 'ProfilePicture' }] })).ProfilePicture;
 
         await redis.set(`profilePictureByOwnerId:${obj.id}`, JSON.stringify(profilePicture), 'EX', 120);
 
@@ -56,7 +56,7 @@ export const OwnerResolver = {
       if (cachedFollowingCount) {
         return cachedFollowingCount;
       } else {
-        const followingCount = (await obj.reload({ include: [{ model: Pet, as: 'FollowedPets' }] }))?.FollowedPets?.length;
+        const followingCount = (await Owner.findByPk(obj.id, { include: [{ model: Pet, as: 'FollowedPets' }] }))?.FollowedPets?.length;
 
         await redis.set(`followingCount:${obj.id}`, followingCount, 'EX', 120);
 

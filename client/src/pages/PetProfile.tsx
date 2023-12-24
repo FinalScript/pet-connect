@@ -57,6 +57,10 @@ const PetProfile = ({
   const [modals, setModals] = useState({ accountSwitcher: false, settings: false, editProfile: false });
 
   useEffect(() => {
+   console.log(petId)
+  }, [petId])
+
+  useEffect(() => {
     navigation.setOptions({ title: pet?.username });
   }, [pet]);
 
