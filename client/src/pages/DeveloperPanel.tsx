@@ -1,21 +1,37 @@
 import React, { Dispatch, SetStateAction, useCallback, useEffect, useMemo, useState } from 'react';
-import { ActivityIndicator, Modal, Pressable, TextInput, View } from 'react-native';
+import { ActivityIndicator, Modal, Pressable, TextInput, View, FlatList, TouchableOpacity } from 'react-native';
 import Text from '../components/Text';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useDispatch, useSelector } from 'react-redux';
 import { GeneralReducer } from '../redux/reducers/generalReducer';
 import { DEVELOPER_PANEL_OPEN } from '../redux/constants';
-import { throttle } from 'lodash';
 
 interface Props {
   apiUrl: { set: Dispatch<SetStateAction<string | undefined>>; value?: string };
+}
+
+interface ApiUrlItem {
+  id: string;
+  apiUrl: string;
 }
 
 export default function DeveloperPanel({ apiUrl }: Props) {
   const dispatch = useDispatch();
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({ apiUrl: { protocol: '', url: '', port: '' } });
+  const [apiUrlList, setApiUrlList] = useState<ApiUrlItem[]>([]);
   const developerPanelOpen = useSelector((state: GeneralReducer) => state.general.developerPanelOpen);
+
+  useEffect(() => {
+    const fetchApiUrlList = async () => {
+      const storedApiUrlList = await AsyncStorage.getItem('@API_URL_LIST');
+      if (storedApiUrlList) {
+        setApiUrlList(JSON.parse(storedApiUrlList));
+      }
+    };
+
+    fetchApiUrlList();
+  }, []);
 
   useEffect(() => {
     const protocol = apiUrl.value?.split(':')[0].toString() || 'http';
@@ -47,6 +63,36 @@ export default function DeveloperPanel({ apiUrl }: Props) {
     apiUrl.set(apiUrlValue);
     dispatch({ type: DEVELOPER_PANEL_OPEN, payload: false });
   }, [formData, apiUrl]);
+
+  const onAddApiUrl = useCallback(async () => {
+    const newApiUrlItem: ApiUrlItem = {
+      id: Date.now().toString(),
+      apiUrl: apiUrlValue,
+    };
+
+    const updatedApiUrlList = [...apiUrlList, newApiUrlItem];
+    setApiUrlList(updatedApiUrlList);
+    await AsyncStorage.setItem('@API_URL_LIST', JSON.stringify(updatedApiUrlList));
+  }, [apiUrlValue, apiUrlList]);
+
+  const onRemoveApiUrl = useCallback(
+    async (id: string) => {
+      const updatedApiUrlList = apiUrlList.filter((item) => item.id !== id);
+      setApiUrlList(updatedApiUrlList);
+      await AsyncStorage.setItem('@API_URL_LIST', JSON.stringify(updatedApiUrlList));
+    },
+    [apiUrlList]
+  );
+
+  const onApiUrlItemPress = useCallback(
+    (apiUrl: string) => {
+      const [protocol, url, port] = apiUrl.split(/:\/\/|:/);
+      setFormData((prev) => {
+        return { ...prev, apiUrl: { protocol, url, port } };
+      });
+    },
+    [setFormData]
+  );
 
   return (
     <Modal
@@ -135,6 +181,27 @@ export default function DeveloperPanel({ apiUrl }: Props) {
               editable={!loading}
             />
           </View>
+        </View>
+
+        <View className='mt-5'>
+          <Text className='mb-2 pl-4 text-lg font-bold text-themeText'>API_URL List</Text>
+          <FlatList
+            data={apiUrlList}
+            keyExtractor={(item) => item.id}
+            renderItem={({ item }) => (
+              <TouchableOpacity
+                onPress={() => onApiUrlItemPress(item.apiUrl)}
+                style={{ flexDirection: 'row', alignItems: 'center', paddingVertical: 8 }}>
+                <Text style={{ paddingHorizontal: 16 }}>{item.apiUrl}</Text>
+                <TouchableOpacity onPress={() => onRemoveApiUrl(item.id)} style={{ paddingHorizontal: 8 }}>
+                  <Text style={{ color: 'red' }}>Remove</Text>
+                </TouchableOpacity>
+              </TouchableOpacity>
+            )}
+          />
+          <TouchableOpacity onPress={onAddApiUrl} style={{ flexDirection: 'row', alignItems: 'center', paddingVertical: 8 }}>
+            <Text style={{ paddingHorizontal: 16 }}>Add API_URL</Text>
+          </TouchableOpacity>
         </View>
       </View>
     </Modal>
