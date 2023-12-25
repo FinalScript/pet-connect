@@ -32,6 +32,7 @@ import { LOADING, OWNER_DATA, PET_DATA } from './src/redux/constants';
 import { ProfileReducer } from './src/redux/reducers/profileReducer';
 import { navigationRef } from './src/services/navigator';
 import { options } from './src/utils/hapticFeedbackOptions';
+import Messages from './src/pages/Messages';
 
 export type RootStackParamList = {
   Loading: undefined;
@@ -46,6 +47,7 @@ export type RootStackParamList = {
   'New Post': undefined;
   'Settings': undefined;
   'Friend List': undefined;
+  Messages: { ownerId: string };
   'Profile Picture': { profilePicture?: ProfilePictureType | null };
   'Profile Feed': { petUsername: string; initialPostIndex: number };
   Following: { ownerId: string };
@@ -279,6 +281,18 @@ const App = () => {
             <Stack.Screen
               name='Friend List'
               component={MessageFriendsListPage}
+              options={{
+                headerShown: true,
+                headerBackVisible: true,
+                animation: 'slide_from_right',
+                animationTypeForReplace: 'push',
+                contentStyle: { backgroundColor: '#f6f6f6f' },
+                headerTransparent: true,
+              }}
+            />
+            <Stack.Screen
+              name='Messages'
+              component={Messages}
               options={{
                 headerShown: true,
                 headerBackVisible: true,
