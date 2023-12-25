@@ -1,8 +1,8 @@
 import { useMutation, useQuery } from '@apollo/client';
 import { MenuAction, MenuView } from '@react-native-menu/menu';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { Animated, Platform, Pressable, TouchableWithoutFeedback, View } from 'react-native';
+import React, { useCallback, useMemo, useRef, useState } from 'react';
+import { Animated, Dimensions, Platform, Pressable, TextInput, TouchableWithoutFeedback, View } from 'react-native';
 import { TapGestureHandler } from 'react-native-gesture-handler';
 import { HapticFeedbackTypes, trigger } from 'react-native-haptic-feedback';
 import { Modalize } from 'react-native-modalize';
@@ -13,17 +13,17 @@ import { useSelector } from 'react-redux';
 import { RootStackParamList } from '../../App';
 import { Comment, Post as PostType } from '../__generated__/graphql';
 import { deleteFromFirebase } from '../firebase/firebaseStorage';
-import { GET_COMMENTS_BY_POST_ID } from '../graphql/Comment';
+import { CREATE_COMMENT, GET_COMMENTS_BY_POST_ID } from '../graphql/Comment';
 import { DELETE_POST, GET_LIKES_COUNT_OF_POST, IS_LIKING_POST, LIKE_POST, UNLIKE_POST } from '../graphql/Post';
 import { ProfileReducer } from '../redux/reducers/profileReducer';
 import { getRelativeTime } from '../utils/Date';
-import { Entypo } from '../utils/Icons';
+import { Entypo, Feather } from '../utils/Icons';
+import { formatNumberWithSuffix } from '../utils/Number';
 import { options } from '../utils/hapticFeedbackOptions';
 import { themeConfig } from '../utils/theme';
 import Image from './Image';
 import PetTypeImage from './PetTypeImage';
 import Text from './Text';
-import CommentsModel from './modals/CommentsModal';
 
 interface Props {
   post: PostType;
@@ -35,6 +35,7 @@ interface Props {
 const CAPTION_LINES = 2;
 
 export default function Post({ post, goToProfile, onLayoutChange, navigation }: Props) {
+  const owner = useSelector((state: ProfileReducer) => state.profile.owner);
   const [moreCaption, setMoreCaption] = useState(false);
   const [showHeartIcon, setShowHeartIcon] = useState(false);
   const modalizeRef = useRef<Modalize>(null);
@@ -58,6 +59,10 @@ export default function Post({ post, goToProfile, onLayoutChange, navigation }: 
 
   const { data: commentsData, refetch: refetchCommentData } = useQuery(GET_COMMENTS_BY_POST_ID, { variables: { postId: post.id }, pollInterval: 5000 });
   const comments: Comment[] = useMemo(() => commentsData?.getCommentsByPostId || [], [commentsData]);
+
+  const [createComment] = useMutation(CREATE_COMMENT);
+  const [commentInputValue, setCommentInputValue] = useState('');
+  const commentInputRef = useRef<TextInput>(null);
 
   const menuActions: MenuAction[] = useMemo(() => {
     const actions: MenuAction[] = [
@@ -153,6 +158,97 @@ export default function Post({ post, goToProfile, onLayoutChange, navigation }: 
     setMoreCaption(true);
   };
 
+  const renderCommentItem = useCallback(({ item, key }) => {
+    return (
+      <View key={key} className='mb-4 pl-3 pr-5'>
+        <View className='flex-row rounded-lg'>
+          <Pressable
+            onPress={() => {
+              closeCommentsModal();
+              navigation.push('Owner Profile', { ownerId: item.Author.id });
+            }}>
+            <Image className='w-9 h-9 rounded-full mr-3' source={{ uri: item.Author.ProfilePicture?.url }} />
+          </Pressable>
+          <View className='flex-1 rounded-2xl'>
+            <Pressable
+              onPress={() => {
+                closeCommentsModal();
+                navigation.push('Owner Profile', { ownerId: item.Author.id });
+              }}>
+              <Text className='text-xs text-gray-700'>{item.Author.name}</Text>
+            </Pressable>
+            <Text className='text-sm font-medium text-themeText' numberOfLines={4}>
+              {item.text}
+            </Text>
+            <View className='flex-row items-end justify-between'>
+              <Text className='mt-2 text-xs text-[#9c9c9c]'>{getRelativeTime(item.createdAt)}</Text>
+              <View className='flex-row items-center gap-1'>
+                <Text className='text-xs text-[#6d6d6d]'>{formatNumberWithSuffix(0)}</Text>
+                <AntDesign name='hearto' size={10} color={'#6d6d6d'} />
+              </View>
+            </View>
+          </View>
+        </View>
+      </View>
+    );
+  }, []);
+
+  const commentsModal = useMemo(() => {
+    return (
+      <Modalize
+        ref={modalizeRef}
+        handlePosition='inside'
+        handleStyle={{ backgroundColor: themeConfig.customColors.themeText }}
+        useNativeDriver
+        modalStyle={{ backgroundColor: themeConfig.customColors.themeInput }}
+        modalHeight={Dimensions.get('screen').height * 0.85}
+        HeaderComponent={
+          <View className='pt-3'>
+            <Text className='text-md font-bold text-center my-3'> {comments.length} Comments</Text>
+          </View>
+        }
+        FooterComponent={
+          <View className={'bg-themeInput mb-3 flex-row items-center px-5 pt-3  pb-3'}>
+            <Image className='w-10 h-10 rounded-full mr-3' source={{ uri: owner?.ProfilePicture?.url }} />
+            <View className='relative flex-1 flex justify-center'>
+              <TextInput
+                ref={commentInputRef}
+                onSubmitEditing={async (e) => {
+                  if (e.nativeEvent.text && e.nativeEvent.text.trim().length > 0) {
+                    await createComment({ variables: { postId: post.id, text: e.nativeEvent.text.trim() } });
+                    commentInputRef.current?.clear();
+                    await refetchCommentData();
+                  }
+                }}
+                value={commentInputValue}
+                onChangeText={setCommentInputValue}
+                returnKeyType='send'
+                returnKeyLabel='Send'
+                className='flex-1 h-12 rounded-3xl px-5 pr-10 text-themeText bg-zinc-300'
+                placeholderTextColor='#444444bb'
+                placeholder='Add a comment...'
+                style={{ fontFamily: 'BalooChettan2-Regular' }}
+              />
+              {commentInputValue && (
+                <Pressable
+                  onPress={() => {
+                    setCommentInputValue('');
+                  }}
+                  className='pr-5 absolute right-0'>
+                  <Feather name='x' size={15} color={themeConfig.customColors.themeText} />
+                </Pressable>
+              )}
+            </View>
+          </View>
+        }
+        keyboardAvoidingBehavior='padding'>
+        {comments.map((comment) => {
+          return renderCommentItem({ item: comment, key: comment.id });
+        })}
+      </Modalize>
+    );
+  }, [comments, commentInputRef, commentInputValue, createComment, modalizeRef, owner, post.id, renderCommentItem, refetchCommentData]);
+
   if (!post.Author) {
     return <View></View>;
   }
@@ -162,26 +258,7 @@ export default function Post({ post, goToProfile, onLayoutChange, navigation }: 
       style={{ shadowColor: themeConfig.customColors.themeText, shadowOpacity: 0.25, shadowRadius: 10, shadowOffset: { height: 3, width: 0 } }}
       className='bg-themeInput mb-5 pb-5 pt-2 w-full rounded-[30px]'
       onLayout={onLayout}>
-      <Portal>
-        <Modalize
-          ref={modalizeRef}
-          handlePosition='inside'
-          handleStyle={{ backgroundColor: themeConfig.customColors.themeText }}
-          scrollViewProps={{ scrollEnabled: false }}
-          adjustToContentHeight
-          //@ts-expect-error
-          keyboardAvoidingBehavior=''
-          propagateSwipe={true}
-          useNativeDriver>
-          <CommentsModel
-            postId={post.id}
-            comments={comments}
-            closeModal={() => closeCommentsModal()}
-            refetchComments={refetchCommentData}
-            navigation={navigation}
-          />
-        </Modalize>
-      </Portal>
+      <Portal>{commentsModal}</Portal>
       <View className='flex-row justify-between px-5 py-2'>
         <Pressable className='flex-row items-center' onPress={() => goToProfile()}>
           <View className='w-14 h-14 mr-3 aspect-square'>

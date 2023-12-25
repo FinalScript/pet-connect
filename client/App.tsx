@@ -172,6 +172,7 @@ const App = () => {
               animationTypeForReplace: 'push',
               animation: 'fade',
               contentStyle: { backgroundColor: '#f6f6f6f' },
+              headerTitleStyle: { fontFamily: 'BalooChettan2-Regular', fontWeight: 'bold' },
             }}>
             <Stack.Screen name='Loading' component={Loading} />
             <Stack.Screen name='Home' component={HomeNavigator} />
