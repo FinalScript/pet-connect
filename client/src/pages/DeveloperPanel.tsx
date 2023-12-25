@@ -35,18 +35,6 @@ export default function DeveloperPanel({ apiUrl }: Props) {
   }, []);
 
   useEffect(() => {
-    const onNotificationReceivedForeground = (
-      notification: { payload: any },
-      completion: (response: { alert: boolean; sound: boolean; badge: boolean }) => void
-    ) => {
-      console.log('Notification Received - Foreground', notification.payload);
-      completion({ alert: true, sound: true, badge: false });
-    };
-
-    Notifications.events().registerNotificationReceivedForeground(onNotificationReceivedForeground);
-  }, []);
-
-  useEffect(() => {
     const protocol = apiUrl.value?.split(':')[0].toString() || 'http';
     const url = apiUrl.value?.split(':')[1].toString().replace('//', '') || 'localhost';
     const port = apiUrl.value?.split(':')[2].toString() || '3000';
