@@ -209,7 +209,7 @@ const App = () => {
               options={{
                 headerShown: true,
                 headerBackVisible: true,
-                animation: 'slide_from_bottom',
+                animation: 'fade_from_bottom',
                 animationTypeForReplace: 'push',
                 contentStyle: { backgroundColor: '#f6f6f6f' },
                 headerTransparent: true,

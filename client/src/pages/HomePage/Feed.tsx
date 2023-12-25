@@ -112,8 +112,9 @@ const ExploreTab = ({ innerRef, posts, refreshing, onRefresh, navigation }: TabP
     <View className='flex-1 h-full bg-themeBg'>
       <ScrollView
         ref={isFocused ? innerRef : null}
-        scrollEventThrottle={16}
-        className='w-full pt-10'
+        scrollEventThrottle={1}
+        className='w-full pt-5'
+        contentInset={{ top: 30 }}
         refreshControl={<RefreshControl tintColor={'black'} refreshing={refreshing} onRefresh={onRefresh} />}>
         <View className='flex justify-center items-center h-full pb-[100px]'>
           {posts.map((post, i) => {
@@ -146,8 +147,9 @@ const FollowingTab = ({ innerRef, posts, refreshing, onRefresh, navigation }: Ta
     <View className='flex-1 h-full bg-themeBg'>
       <ScrollView
         ref={isFocused ? innerRef : null}
-        scrollEventThrottle={16}
-        className='w-full pt-10'
+        scrollEventThrottle={1}
+        className='w-full pt-5'
+        contentInset={{ top: 30 }}
         refreshControl={<RefreshControl tintColor={'black'} refreshing={refreshing} onRefresh={onRefresh} />}>
         <View className='flex justify-center items-center h-full pb-[100px]'>
           {posts.map((post, i) => {

@@ -10,6 +10,8 @@ import Explore from './Explore';
 import Feed from './Feed';
 import Inbox from './Inbox';
 import MyProfile from './MyProfile';
+import { useSelector } from 'react-redux';
+import { ProfileReducer } from '../../redux/reducers/profileReducer';
 
 export type HomeStackParamList = {
   Feed: undefined;
@@ -23,6 +25,7 @@ export type HomeRouteProps<RouteName extends keyof HomeStackParamList> = RoutePr
 type HomeScreenProps = NativeStackScreenProps<RootStackParamList, 'Home'>;
 
 const HomeNavigator = ({ navigation }: HomeScreenProps) => {
+  const pets = useSelector((state: ProfileReducer) => state.profile.pets);
   const feedScrollViewRef = useRef<ScrollView>(null);
 
   const _renderIcon = (routeName: string, selectedTab: string) => {
@@ -73,7 +76,15 @@ const HomeNavigator = ({ navigation }: HomeScreenProps) => {
           initialRouteName='Feed'
           borderTopLeftRight
           renderCircle={({ selectedTab, navigate }) => (
-            <TouchableOpacity onPress={() => navigation.navigate('New Post')}>
+            <TouchableOpacity
+              onPress={() => {
+                if (pets.length === 0) {
+                  navigation.navigate('Pet Creation');
+                  return;
+                }
+
+                navigation.navigate('New Post');
+              }}>
               <View style={styles.btnCircleUp}>
                 <Ionicon name={'paw'} color={themeConfig.customColors.themeText} size={25} />
               </View>
@@ -82,7 +93,7 @@ const HomeNavigator = ({ navigation }: HomeScreenProps) => {
           tabBar={renderTabBar}>
           <CurvedBottomBar.Screen name='Feed' position='LEFT' component={() => <Feed navigation={navigation} scrollViewRef={feedScrollViewRef} />} />
           <CurvedBottomBar.Screen name='Explore' component={() => <Explore navigation={navigation} />} position='LEFT' />
-          <CurvedBottomBar.Screen name='Inbox' component={() => <Inbox navigation={navigation}/>} position='RIGHT' />
+          <CurvedBottomBar.Screen name='Inbox' component={() => <Inbox navigation={navigation} />} position='RIGHT' />
           <CurvedBottomBar.Screen name='Profile' component={() => <MyProfile navigation={navigation} />} position='RIGHT' />
         </CurvedBottomBar.Navigator>
       </NavigationContainer>

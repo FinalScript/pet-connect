@@ -255,7 +255,7 @@ export default function Post({ post, goToProfile, onLayoutChange, navigation }: 
 
   return (
     <View
-      style={{ shadowColor: themeConfig.customColors.themeText, shadowOpacity: 0.25, shadowRadius: 10, shadowOffset: { height: 3, width: 0 } }}
+      style={{ shadowColor: themeConfig.customColors.themeText, shadowOpacity: 0.2, shadowRadius: 8, shadowOffset: { height: 0, width: 0 } }}
       className='bg-themeInput mb-5 pb-5 pt-2 w-full rounded-[30px]'
       onLayout={onLayout}>
       <Portal>{commentsModal}</Portal>
