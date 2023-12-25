@@ -1,7 +1,7 @@
 import React from 'react';
 import { FlatList, Pressable, SafeAreaView, View } from 'react-native';
 import { TouchableOpacity } from 'react-native';
-import { Feather, Ionicon } from '../utils/Icons';
+import { Feather, Ionicon, Entypo } from '../utils/Icons';
 import Text from '../components/Text';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../../App';
@@ -11,7 +11,7 @@ import { TextInput } from 'react-native';
 import { themeConfig } from '../utils/theme';
 
 interface Friend {
-  id: number;
+  id: string;
   name: string;
   username: string;
   image?: string;
@@ -19,32 +19,32 @@ interface Friend {
 
 const friends: Friend[] = [
   {
-    id: 1,
+    id: "1",
     name: 'John',
     username: 'john123',
   },
   {
-    id: 2,
+    id: "2",
     name: 'Jane',
     username: 'jane456',
   },
   {
-    id: 3,
+    id: "3",
     name: 'Alice',
     username: 'alice789',
   },
   {
-    id: 4,
+    id: "4",
     name: 'Bob',
     username: 'bob321',
   },
   {
-    id: 5,
+    id: "5",
     name: 'Sarah',
     username: 'sarah654',
   },
   {
-    id: 6,
+    id: "6",
     name: 'Michael',
     username: 'michael987',
   },
@@ -107,17 +107,27 @@ const MessageFriendsList = ({ navigation }: Props) => {
           keyExtractor={(item) => item.id.toString()}
           ItemSeparatorComponent={() => <View className='h-2' />}
           renderItem={({ item }) => (
-            <TouchableOpacity onPress={() => {}} className='flex-row items-center p-3 bg-white rounded-lg shadow mb-2'>
-              <Image
-                source={{
-                  uri: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?q=80&w=3000&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
-                }}
-                className='w-14 h-14 rounded-full mr-4'
-              />
-              <View>
-                <Text className='text-lg font-semibold text-gray-800'>{item.name}</Text>
-                <Text className='text-sm text-gray-500'>@{item.username}</Text>
+            <TouchableOpacity 
+              onPress={() => {
+                navigation.navigate('Messages', { ownerId: item.id });
+
+                console.log('Item pressed');
+              }} 
+              className='flex-row items-center justify-between p-3 bg-white rounded-lg shadow mb-2'
+            >
+              <View className='flex-row items-center'>
+                <Image
+                  source={{
+                    uri: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?q=80&w=3000&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
+                  }}
+                  className='w-14 h-14 rounded-full mr-4'
+                />
+                <View>
+                  <Text className='text-lg font-semibold text-gray-800'>{item.name}</Text>
+                  <Text className='text-sm text-gray-500'>@{item.username}</Text>
+                </View>
               </View>
+              <Entypo name='new-message' size={25} color={themeConfig.customColors.themeText} />
             </TouchableOpacity>
           )}
         />
