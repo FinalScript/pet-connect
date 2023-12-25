@@ -1,24 +1,25 @@
 import { useQuery } from '@apollo/client';
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
+import { useIsFocused } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import React, { RefObject, useCallback, useMemo, useState } from 'react';
-import { Animated, RefreshControl, SafeAreaView, ScrollView, View } from 'react-native';
+import { Dimensions, FlatList, RefreshControl, View } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { RootStackParamList } from '../../../App';
+import { Post as PostType } from '../../__generated__/graphql';
 import Post from '../../components/Post';
-import Text from '../../components/Text';
 import { GET_FOLLOWING, GET_FOR_YOU } from '../../graphql/Post';
 import { themeConfig } from '../../utils/theme';
-import { useIsFocused } from '@react-navigation/native';
-import { Post as PostType } from '../../__generated__/graphql';
 
 const Tab = createMaterialTopTabNavigator();
 
 interface Props {
   navigation: NativeStackNavigationProp<RootStackParamList, 'Home', undefined>;
-  scrollViewRef: RefObject<ScrollView>;
+  followingFlatListRef: RefObject<FlatList>;
+  forYouFlatListRef: RefObject<FlatList>;
 }
 
-const Feed = ({ navigation, scrollViewRef }: Props) => {
+const Feed = ({ navigation, followingFlatListRef, forYouFlatListRef }: Props) => {
   const [refreshing, setRefreshing] = useState(false);
   const { data: followingData, refetch: refetchFollowing } = useQuery(GET_FOLLOWING);
   const { data: forYouData, refetch: refetchForYou } = useQuery(GET_FOR_YOU);
@@ -28,6 +29,7 @@ const Feed = ({ navigation, scrollViewRef }: Props) => {
   const forYou: PostType[] = useMemo(() => {
     return forYouData?.getForYou || [];
   }, [forYouData]);
+  const insets = useSafeAreaInsets();
 
   const onRefreshForYou = useCallback(async () => {
     setRefreshing(true);
@@ -47,7 +49,7 @@ const Feed = ({ navigation, scrollViewRef }: Props) => {
     }, 600);
   }, [setRefreshing, refetchFollowing]);
   return (
-    <SafeAreaView className={'flex-1 h-full bg-themeBg'}>
+    <View className={'flex-1 h-full bg-themeInput'} style={{ marginBottom: 80 }}>
       <Tab.Navigator
         initialRouteName='Following'
         screenOptions={{
@@ -78,27 +80,30 @@ const Feed = ({ navigation, scrollViewRef }: Props) => {
             left: 50,
             right: 50,
             height: 20,
+            marginTop: insets.top,
           },
         }}>
         <Tab.Screen
           name='Explore'
           children={() => {
-            return <ExploreTab innerRef={scrollViewRef} posts={forYou} refreshing={refreshing} onRefresh={onRefreshForYou} navigation={navigation} />;
+            return <ExploreTab innerRef={forYouFlatListRef} posts={forYou} refreshing={refreshing} onRefresh={onRefreshForYou} navigation={navigation} />;
           }}
         />
         <Tab.Screen
           name='Following'
           children={() => {
-            return <FollowingTab innerRef={scrollViewRef} posts={following} refreshing={refreshing} onRefresh={onRefreshFollowing} navigation={navigation} />;
+            return (
+              <FollowingTab innerRef={followingFlatListRef} posts={following} refreshing={refreshing} onRefresh={onRefreshFollowing} navigation={navigation} />
+            );
           }}
         />
       </Tab.Navigator>
-    </SafeAreaView>
+    </View>
   );
 };
 
 interface TabProps {
-  innerRef: RefObject<ScrollView>;
+  innerRef: RefObject<FlatList>;
   posts: PostType[];
   refreshing: boolean;
   onRefresh: () => Promise<void>;
@@ -107,70 +112,62 @@ interface TabProps {
 
 const ExploreTab = ({ innerRef, posts, refreshing, onRefresh, navigation }: TabProps) => {
   const isFocused = useIsFocused();
+  const insets = useSafeAreaInsets();
 
   return (
-    <View className='flex-1 h-full bg-themeBg'>
-      <ScrollView
-        ref={isFocused ? innerRef : null}
-        scrollEventThrottle={1}
-        className='w-full pt-5'
-        contentInset={{ top: 30 }}
-        refreshControl={<RefreshControl tintColor={'black'} refreshing={refreshing} onRefresh={onRefresh} />}>
-        <View className='flex justify-center items-center h-full pb-[100px]'>
-          {posts.map((post, i) => {
-            return (
-              <Post
-                key={i}
-                post={post}
-                goToProfile={() => {
-                  navigation.push('Pet Profile', { petId: post.Author.id });
-                }}
-                navigation={navigation}
-              />
-            );
-          })}
-          {posts.length === 0 && (
-            <>
-              <Text>Nothing to see here...</Text>
-            </>
-          )}
-        </View>
-      </ScrollView>
+    <View className='flex-1 h-full bg-transparent'>
+      <FlatList
+        ref={innerRef}
+        data={posts}
+        snapToInterval={Dimensions.get('window').height}
+        snapToAlignment={'start'}
+        decelerationRate={'fast'}
+        showsHorizontalScrollIndicator={false}
+        keyExtractor={(item) => item.id}
+        renderItem={({ item }) => (
+          <View style={{ height: Dimensions.get('screen').height, paddingTop: insets.top + 30 }}>
+            <Post
+              post={item}
+              goToProfile={() => {
+                navigation.push('Pet Profile', { petId: item.Author.id });
+              }}
+              navigation={navigation}
+            />
+          </View>
+        )}
+        refreshControl={<RefreshControl tintColor={'black'} refreshing={refreshing} onRefresh={onRefresh} />}
+      />
     </View>
   );
 };
 
 const FollowingTab = ({ innerRef, posts, refreshing, onRefresh, navigation }: TabProps) => {
   const isFocused = useIsFocused();
+  const insets = useSafeAreaInsets();
 
   return (
-    <View className='flex-1 h-full bg-themeBg'>
-      <ScrollView
-        ref={isFocused ? innerRef : null}
-        scrollEventThrottle={1}
-        className='w-full pt-5'
-        contentInset={{ top: 30 }}
-        refreshControl={<RefreshControl tintColor={'black'} refreshing={refreshing} onRefresh={onRefresh} />}>
-        <View className='flex justify-center items-center h-full pb-[100px]'>
-          {posts.map((post, i) => {
-            return (
-              <Post
-                key={i}
-                post={post}
-                goToProfile={() => {
-                  navigation.push('Pet Profile', { petId: post.Author.id });
-                }}
-                navigation={navigation}
-              />
-            );
-          })}
-          {posts.length === 0 && (
-            <>
-              <Text>Nothing to see here...</Text>
-            </>
-          )}
-        </View>
-      </ScrollView>
+    <View className='flex-1 h-full bg-transparent'>
+      <FlatList
+        ref={innerRef}
+        data={posts}
+        snapToInterval={Dimensions.get('window').height}
+        snapToAlignment={'start'}
+        decelerationRate={'fast'}
+        showsHorizontalScrollIndicator={false}
+        keyExtractor={(item) => item.id}
+        renderItem={({ item }) => (
+          <View style={{ height: Dimensions.get('screen').height, paddingTop: insets.top + 30 }}>
+            <Post
+              post={item}
+              goToProfile={() => {
+                navigation.push('Pet Profile', { petId: item.Author.id });
+              }}
+              navigation={navigation}
+            />
+          </View>
+        )}
+        refreshControl={<RefreshControl tintColor={'black'} refreshing={refreshing} onRefresh={onRefresh} />}
+      />
     </View>
   );
 };

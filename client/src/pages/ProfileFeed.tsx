@@ -1,62 +1,42 @@
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
-import React, { useEffect, useRef, useState } from 'react';
-import { Animated, SafeAreaView, ScrollView, View } from 'react-native';
+import React, { useEffect } from 'react';
+import { Dimensions, FlatList, SafeAreaView, View } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { RootStackParamList } from '../../App';
 import Post from '../components/Post';
-import Text from '../components/Text';
-import { useSelector } from 'react-redux';
-import { ProfileReducer } from '../redux/reducers/profileReducer';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Profile Feed'>;
 
 const ProfileFeed = ({
   navigation,
   route: {
-    params: { petUsername, initialPostIndex },
+    params: { petUsername, initialPostIndex, posts },
   },
 }: Props) => {
-  const [postHeights, setPostHeights] = useState<number[]>([]);
-  const scrollViewRef = useRef<ScrollView>(null);
-  const posts = useSelector((state: ProfileReducer) => state.profile.posts);
-
-  useEffect(() => {
-    if (initialPostIndex !== undefined && postHeights.length > initialPostIndex) {
-      const yOffset = postHeights.slice(0, initialPostIndex).reduce((acc, h) => acc + h, 0);
-      scrollViewRef.current?.scrollTo({ y: yOffset, animated: false });
-    }
-  }, [postHeights, initialPostIndex]);
+  const insets = useSafeAreaInsets();
 
   useEffect(() => {
     navigation.setOptions({ title: `${petUsername}'s posts` });
   }, [petUsername]);
 
-  const handlePostHeight = (index: number, height: number) => {
-    setPostHeights((currentHeights) => {
-      const newHeights = currentHeights.length >= (posts?.length || 0) ? [...currentHeights] : Array(posts?.length || 0).fill(0);
-
-      newHeights[index] = height;
-      return newHeights;
-    });
-  };
-
   return (
     <SafeAreaView className={'flex-1 h-full bg-themeBg'}>
-      <View className='flex-1 h-full bg-themeBg'>
-        <Animated.ScrollView scrollEventThrottle={16} ref={scrollViewRef} className='w-full pt-10'>
-          <View className='flex justify-center items-center h-full pb-[100px]'>
-            {posts?.map((post, index) => (
-              <Post
-                key={index}
-                post={post}
-                goToProfile={() => navigation.push('Pet Profile', { petId: post.Author.id })}
-                onLayoutChange={(height) => handlePostHeight(index, height)}
-                navigation={navigation as any}
-              />
-            ))}
-            {posts?.length === 0 && <Text>Nothing to see here...</Text>}
-          </View>
-        </Animated.ScrollView>
-      </View>
+      {posts && (
+        <FlatList
+          data={posts}
+          initialScrollIndex={initialPostIndex}
+          snapToInterval={Dimensions.get('window').height - insets.top + 25}
+          snapToAlignment={'start'}
+          decelerationRate={'fast'}
+          showsHorizontalScrollIndicator={false}
+          keyExtractor={(item) => item.id}
+          renderItem={({ item, index }) => (
+            <View style={{ height: Dimensions.get('screen').height - insets.top + 25 }}>
+              <Post post={item} goToProfile={() => navigation.push('Pet Profile', { petId: item.Author.id })} navigation={navigation as any} />
+            </View>
+          )}
+        />
+      )}
     </SafeAreaView>
   );
 };

@@ -57,8 +57,8 @@ const PetProfile = ({
   const [modals, setModals] = useState({ accountSwitcher: false, settings: false, editProfile: false });
 
   useEffect(() => {
-   console.log(petId)
-  }, [petId])
+    console.log(petId);
+  }, [petId]);
 
   useEffect(() => {
     navigation.setOptions({ title: pet?.username });
@@ -120,7 +120,7 @@ const PetProfile = ({
             <View key={index} className='w-1/3 p-[1px]'>
               <Pressable
                 onPress={() => {
-                  if (pet) navigation.push('Profile Feed', { petUsername: pet.username, initialPostIndex: index });
+                  if (pet) navigation.push('Profile Feed', { petUsername: pet.username, initialPostIndex: index, posts: gridPosts });
                 }}>
                 <Image className='w-full h-auto aspect-square' source={{ uri: post.Media.url }} resizeMode='cover' />
               </Pressable>

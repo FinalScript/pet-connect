@@ -149,7 +149,7 @@ const PostPage = ({ navigation }: Props) => {
                 style={{ fontFamily: 'BalooChettan2-Regular' }}
                 placeholderTextColor={'#444444bb'}
                 value={formData.description}
-                maxLength={100}
+                maxLength={200}
                 numberOfLines={3}
                 multiline={true}
                 returnKeyType={'done'}

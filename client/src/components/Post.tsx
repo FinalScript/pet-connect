@@ -17,24 +17,24 @@ import { CREATE_COMMENT, GET_COMMENTS_BY_POST_ID } from '../graphql/Comment';
 import { DELETE_POST, GET_LIKES_COUNT_OF_POST, IS_LIKING_POST, LIKE_POST, UNLIKE_POST } from '../graphql/Post';
 import { ProfileReducer } from '../redux/reducers/profileReducer';
 import { getRelativeTime } from '../utils/Date';
-import { Entypo, Feather } from '../utils/Icons';
+import { Entypo, Feather, FontAwesome } from '../utils/Icons';
 import { formatNumberWithSuffix } from '../utils/Number';
 import { options } from '../utils/hapticFeedbackOptions';
 import { themeConfig } from '../utils/theme';
 import Image from './Image';
 import PetTypeImage from './PetTypeImage';
 import Text from './Text';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 interface Props {
   post: PostType;
   goToProfile: () => void;
-  onLayoutChange?: (height: number) => void;
   navigation: NativeStackNavigationProp<RootStackParamList, 'Home', undefined>;
 }
 
 const CAPTION_LINES = 2;
 
-export default function Post({ post, goToProfile, onLayoutChange, navigation }: Props) {
+export default function Post({ post, goToProfile, navigation }: Props) {
   const owner = useSelector((state: ProfileReducer) => state.profile.owner);
   const [moreCaption, setMoreCaption] = useState(false);
   const [showHeartIcon, setShowHeartIcon] = useState(false);
@@ -63,6 +63,8 @@ export default function Post({ post, goToProfile, onLayoutChange, navigation }: 
   const [createComment] = useMutation(CREATE_COMMENT);
   const [commentInputValue, setCommentInputValue] = useState('');
   const commentInputRef = useRef<TextInput>(null);
+
+  const insets = useSafeAreaInsets();
 
   const menuActions: MenuAction[] = useMemo(() => {
     const actions: MenuAction[] = [
@@ -94,13 +96,6 @@ export default function Post({ post, goToProfile, onLayoutChange, navigation }: 
 
     return actions;
   }, [isOwner, ownerId]);
-
-  const onLayout = (event: { nativeEvent: { layout: { height: number } } }) => {
-    const height = event.nativeEvent.layout.height;
-    if (onLayoutChange) {
-      onLayoutChange(height);
-    }
-  };
 
   const openCommentsModal = () => {
     modalizeRef.current?.open();
@@ -253,15 +248,117 @@ export default function Post({ post, goToProfile, onLayoutChange, navigation }: 
     );
   }, [comments, commentInputRef, commentInputValue, createComment, modalizeRef, owner, post.id, renderCommentItem, refetchCommentData]);
 
+  const [imageContainerDimensions, setImageContainerDimensions] = useState({ width: 0, height: 0 });
+
+  const onLayoutImageContainer = (event) => {
+    const { width, height } = event.nativeEvent.layout;
+
+    if (width && height) {
+      console.log(width / height);
+      setImageContainerDimensions({ width, height });
+    }
+  };
+
   if (!post.Author) {
     return <View></View>;
   }
 
   return (
+    <View className='bg-themeBg relative w-full h-full flex justify-end'>
+      <Portal>{commentsModal}</Portal>
+
+      <View className='flex-1 flex justify-end'>
+        <TapGestureHandler
+          onEnded={() => {
+            animateHeart();
+            handleLike();
+          }}
+          numberOfTaps={2}>
+          <View className='w-full h-full relative flex items-center justify-center' onLayout={onLayoutImageContainer}>
+            {imageContainerDimensions.width > 0 && imageContainerDimensions.height > 0 && (
+              <Image
+                style={{
+                  height: imageContainerDimensions.height,
+                  width: imageContainerDimensions.width,
+                  aspectRatio: imageContainerDimensions.width / imageContainerDimensions.height,
+                }}
+                resizeMode='cover'
+                source={{ uri: post.Media.url }}
+              />
+            )}
+            {showHeartIcon && (
+              <Animated.View
+                style={{
+                  position: 'absolute',
+                  transform: [{ scale: heartScale }],
+                }}>
+                <AntDesign name='heart' size={100} color={'red'} />
+              </Animated.View>
+            )}
+          </View>
+        </TapGestureHandler>
+      </View>
+
+      <View className='w-full' style={{ paddingBottom: 80 }}>
+        <View className='px-3 pb-5 pt-3 w-full'>
+          <View className='flex-row items-center w-full'>
+            <View className='flex-1'>
+              <View>
+                <Pressable className='flex-row items-center' onPress={() => goToProfile()}>
+                  <View className='w-10 h-10 mr-2 aspect-square'>
+                    <Image className='flex w-full h-full rounded-full border-[1px] border-themeActive' source={{ uri: post.Author.ProfilePicture?.url }} />
+                  </View>
+                  <View className='flex justify-center'>
+                    <View className='flex-row'>
+                      <Text className='text-lg font-bold text-[#694531] -mb-2'>{post.Author.name}</Text>
+                      <PetTypeImage type={post.Author.type} style={{ width: 20, height: 20, marginLeft: 8, marginTop: 5 }} />
+                    </View>
+                  </View>
+                </Pressable>
+
+                {post.description && (
+                  <View className='mt-1'>
+                    <View className='flex flex-row min-h-[7rem]'>
+                      <Text className='text-sm font-medium' numberOfLines={moreCaption ? 0 : CAPTION_LINES}>
+                        <Text className='text-themeText' onPress={handleMoreCaption} suppressHighlighting>
+                          {post.description}
+                        </Text>
+                      </Text>
+                    </View>
+                  </View>
+                )}
+              </View>
+              <Text className='mt-2 text-xs text-[#838383]'>{getRelativeTime(post.createdAt)}</Text>
+            </View>
+
+            <View className='flex items-center ml-3'>
+              <View className='flex items-center mb-2'>
+                <Pressable onPress={postLiked ? handleUnlike : handleLike}>
+                  <AntDesign name={postLiked ? 'heart' : 'hearto'} size={25} color={postLiked ? 'red' : 'rgba(0, 0, 0, 0.9)'} />
+                </Pressable>
+                <Text className='text-themeText text-base' onPress={handleMoreCaption} suppressHighlighting>
+                  {likesCount.toLocaleString()}
+                </Text>
+              </View>
+              <View className='flex items-center'>
+                <Pressable className='' onPress={openCommentsModal}>
+                  <Ionicon name={'chatbubble-ellipses-outline'} size={25} color={'rgba(0, 0, 0, 0.9)'} />
+                </Pressable>
+                <Text className='text-themeText text-base' onPress={handleMoreCaption} suppressHighlighting>
+                  {comments.length.toLocaleString()}
+                </Text>
+              </View>
+            </View>
+          </View>
+        </View>
+      </View>
+    </View>
+  );
+
+  return (
     <View
       style={{ shadowColor: themeConfig.customColors.themeText, shadowOpacity: 0.2, shadowRadius: 8, shadowOffset: { height: 0, width: 0 } }}
-      className='bg-themeInput mb-5 pb-5 pt-2 w-full rounded-[30px]'
-      onLayout={onLayout}>
+      className='bg-themeInput mb-5 pb-5 pt-2 w-full flex-1 rounded-[30px]'>
       <Portal>{commentsModal}</Portal>
       <View className='flex-row justify-between px-5 py-2'>
         <Pressable className='flex-row items-center' onPress={() => goToProfile()}>
@@ -291,26 +388,6 @@ export default function Post({ post, goToProfile, onLayoutChange, navigation }: 
         </View>
       </View>
 
-      <TapGestureHandler
-        onEnded={() => {
-          animateHeart();
-          handleLike();
-        }}
-        numberOfTaps={2}>
-        <View className='h-[400px] w-full relative flex items-center justify-center'>
-          <Image className='w-full h-full object-contain' source={{ uri: post.Media.url }} />
-          {showHeartIcon && (
-            <Animated.View
-              style={{
-                position: 'absolute',
-                transform: [{ scale: heartScale }],
-              }}>
-              <AntDesign name='heart' size={100} color={'red'} />
-            </Animated.View>
-          )}
-        </View>
-      </TapGestureHandler>
-
       <View className='flex-row items-center gap-x-4 px-5 py-1'>
         <View className='mt-1'>
           {postLiked ? (
@@ -333,21 +410,6 @@ export default function Post({ post, goToProfile, onLayoutChange, navigation }: 
           {likesCount.toLocaleString()} like{likesCount !== 1 && 's'}
         </Text>
       </View>
-
-      {post.description && (
-        <View className='px-5'>
-          <View className='flex flex-row min-h-[7rem]'>
-            <Text className='text-base' numberOfLines={moreCaption ? 0 : CAPTION_LINES}>
-              <TouchableWithoutFeedback onPress={() => goToProfile()}>
-                <Text className='text-base font-semibold text-[#694531]'>{post.Author.name} </Text>
-              </TouchableWithoutFeedback>
-              <Text className='text-themeText' onPress={handleMoreCaption} suppressHighlighting>
-                {post.description}
-              </Text>
-            </Text>
-          </View>
-        </View>
-      )}
 
       {comments.length > 0 && (
         <Pressable onPress={openCommentsModal}>

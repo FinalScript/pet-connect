@@ -1,7 +1,7 @@
 import { NavigationContainer, RouteProp } from '@react-navigation/native';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import React, { useRef } from 'react';
-import { Animated, ScrollView, StyleSheet, TouchableOpacity, View } from 'react-native';
+import { Animated, FlatList, ScrollView, StyleSheet, TouchableOpacity, View } from 'react-native';
 import { CurvedBottomBar } from 'react-native-curved-bottom-bar';
 import { RootStackParamList } from '../../../App';
 import { Ionicon } from '../../utils/Icons';
@@ -26,7 +26,8 @@ type HomeScreenProps = NativeStackScreenProps<RootStackParamList, 'Home'>;
 
 const HomeNavigator = ({ navigation }: HomeScreenProps) => {
   const pets = useSelector((state: ProfileReducer) => state.profile.pets);
-  const feedScrollViewRef = useRef<ScrollView>(null);
+  const forYouFlatListRef = useRef<FlatList>(null);
+  const followingFlatListRef = useRef<FlatList>(null);
 
   const _renderIcon = (routeName: string, selectedTab: string) => {
     let icon = '';
@@ -50,7 +51,8 @@ const HomeNavigator = ({ navigation }: HomeScreenProps) => {
       <TouchableOpacity
         onPress={() => {
           if (routeName === 'Feed') {
-            feedScrollViewRef.current?.scrollTo({ y: 0 });
+            forYouFlatListRef.current?.scrollToIndex({ index: 0 });
+            followingFlatListRef.current?.scrollToIndex({ index: 0 });
           }
           navigate(routeName);
         }}
@@ -91,7 +93,11 @@ const HomeNavigator = ({ navigation }: HomeScreenProps) => {
             </TouchableOpacity>
           )}
           tabBar={renderTabBar}>
-          <CurvedBottomBar.Screen name='Feed' position='LEFT' component={() => <Feed navigation={navigation} scrollViewRef={feedScrollViewRef} />} />
+          <CurvedBottomBar.Screen
+            name='Feed'
+            position='LEFT'
+            component={() => <Feed navigation={navigation} forYouFlatListRef={forYouFlatListRef} followingFlatListRef={followingFlatListRef} />}
+          />
           <CurvedBottomBar.Screen name='Explore' component={() => <Explore navigation={navigation} />} position='LEFT' />
           <CurvedBottomBar.Screen name='Inbox' component={() => <Inbox navigation={navigation} />} position='RIGHT' />
           <CurvedBottomBar.Screen name='Profile' component={() => <MyProfile navigation={navigation} />} position='RIGHT' />
