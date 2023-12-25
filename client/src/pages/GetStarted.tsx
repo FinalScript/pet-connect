@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { View, Image } from 'react-native';
+import { View, Image, Pressable } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../../App';
@@ -30,7 +30,7 @@ export default function GetStarted() {
       setTimeout(() => {
         offset.value = withSpring(15);
       }, 200);
-    }, 2000);
+    }, 3000);
 
     return () => {
       clearInterval(interval);
@@ -49,25 +49,23 @@ export default function GetStarted() {
   return (
     <GestureDetector gesture={flingGestureLeft}>
       <SafeAreaView className='bg-themeBg h-full'>
-        <View className='absolute -z-10 bottom-0 w-full h-full shadow-lg shadow-red-600'>
-          <Image className='flex w-full h-full' source={require('../../assets/img/wave-haikei.png')} />
-        </View>
         <View className='h-full p-5 flex flex-col justify-between'>
-          <View className='mt-16 flex flex-col items-center justify-center'>
-            <View className='w-[180px] h-[180px] shadow-md shadow-themeShadowLight'>
-              <Image className='flex w-full h-full aspect-square' source={require('../../assets/img/cat-logo.png')} />
+          <View className='mt-5 flex flex-col items-center justify-center'>
+            <View className='w-[200px] h-[200px]'>
+              <Image className='flex w-full h-full aspect-square' source={require('../../assets/img/app-logo.png')} />
             </View>
-            <Text className='mt-5 text-themeText font-semibold text-4xl'>Pet Connect</Text>
+
+            <Text className='pt-6 text-themeText font-semibold text-5xl'>Pet Connect</Text>
           </View>
 
-          <View className='mx-10'>
-            <TouchableWithoutFeedback className='bg-transparent' onPress={login}>
-              <View className='p-10 flex flex-row justify-center items-center'>
-                <Animated.View style={[animatedStyles]}>
-                  <Text className='text-3xl font-semibold text-themeText'>Get Started</Text>
-                </Animated.View>
-              </View>
-            </TouchableWithoutFeedback>
+          <View className='flex items-center mb-5'>
+            <Animated.View style={[animatedStyles]}>
+              <Pressable className='bg-themeBtn px-10 py-3 rounded-full' onPress={login}>
+                <View className='flex flex-row justify-center items-center'>
+                  <Text className='text-2xl font-semibold text-themeText -mb-1'>Get Started</Text>
+                </View>
+              </Pressable>
+            </Animated.View>
           </View>
         </View>
       </SafeAreaView>
