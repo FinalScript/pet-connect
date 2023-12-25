@@ -254,7 +254,6 @@ export default function Post({ post, goToProfile, navigation }: Props) {
     const { width, height } = event.nativeEvent.layout;
 
     if (width && height) {
-      console.log(width / height);
       setImageContainerDimensions({ width, height });
     }
   };

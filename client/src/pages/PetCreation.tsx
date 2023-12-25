@@ -20,6 +20,7 @@ import { GeneralReducer } from '../redux/reducers/generalReducer';
 import { PetType, ProfileReducer } from '../redux/reducers/profileReducer';
 import { options } from '../utils/hapticFeedbackOptions';
 import React from 'react';
+import ImageCropPicker, { Image as ImageCropperType } from 'react-native-image-crop-picker';
 
 const petTypes = [
   { type: PetType.Dog, img: require('../../assets/img/dog.png') },
@@ -39,7 +40,7 @@ interface FormData {
   type: PetType;
   name: string;
   description: string;
-  profilePicture?: Asset | null | undefined;
+  profilePicture?: ImageCropperType | null | undefined;
 }
 
 export default function PetCreation() {
@@ -127,17 +128,35 @@ export default function PetCreation() {
   }, [optionsShuffle]);
 
   const pickProfilePicture = useCallback(async () => {
-    launchImageLibrary({
+    const selectedImage = await launchImageLibrary({
       mediaType: 'photo',
-    })
-      .then((res) => {
-        setFormData((prev) => {
-          return { ...prev, profilePicture: res.assets?.[0] };
-        });
+      selectionLimit: 1,
+    });
+
+    if (!selectedImage.assets?.[0].uri) {
+      return;
+    }
+
+    setTimeout(() => {
+      ImageCropPicker.openCropper({
+        path: selectedImage.assets?.[0].uri,
+        mediaType: 'photo',
+        width: 500,
+        height: 500,
+        cropping: true,
+        writeTempFile: false,
       })
-      .catch((err) => {
-        console.log(err);
-      });
+        .then((croppedImage) => {
+          console.log(croppedImage); // Log the cropped image details
+
+          setFormData((prev) => {
+            return { ...prev, profilePicture: croppedImage };
+          });
+        })
+        .catch((cropError) => {
+          console.log(cropError); // Log any errors that occur when trying to open the cropper
+        });
+    }, 600);
   }, []);
 
   const secondaryOnPress = useCallback(() => {
@@ -227,7 +246,7 @@ export default function PetCreation() {
                 disabled={loading}>
                 <View className=''>
                   {formData.profilePicture ? (
-                    <Image className='flex w-full h-full rounded-3xl' source={{ uri: formData.profilePicture?.uri }} />
+                    <Image className='flex w-full h-full rounded-3xl' source={{ uri: formData.profilePicture?.path }} />
                   ) : (
                     <View className='flex flex-row justify-center items-center h-full'>
                       <Icon name='plus-square-o' size={50} color={'#362013'} />
