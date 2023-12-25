@@ -158,40 +158,43 @@ export default function Post({ post, goToProfile, onLayoutChange, navigation }: 
     setMoreCaption(true);
   };
 
-  const renderCommentItem = useCallback(({ item, key }) => {
-    return (
-      <View key={key} className='mb-4 pl-3 pr-5'>
-        <View className='flex-row rounded-lg'>
-          <Pressable
-            onPress={() => {
-              closeCommentsModal();
-              navigation.push('Owner Profile', { ownerId: item.Author.id });
-            }}>
-            <Image className='w-9 h-9 rounded-full mr-3' source={{ uri: item.Author.ProfilePicture?.url }} />
-          </Pressable>
-          <View className='flex-1 rounded-2xl'>
+  const renderCommentItem = useCallback(
+    ({ item, key }) => {
+      return (
+        <View key={key} className='mb-4 pl-3 pr-5'>
+          <View className='flex-row rounded-lg'>
             <Pressable
               onPress={() => {
                 closeCommentsModal();
                 navigation.push('Owner Profile', { ownerId: item.Author.id });
               }}>
-              <Text className='text-xs text-gray-700'>{item.Author.name}</Text>
+              <Image className='w-9 h-9 rounded-full mr-3' source={{ uri: item.Author.ProfilePicture?.url }} />
             </Pressable>
-            <Text className='text-sm font-medium text-themeText' numberOfLines={4}>
-              {item.text}
-            </Text>
-            <View className='flex-row items-end justify-between'>
-              <Text className='mt-2 text-xs text-[#9c9c9c]'>{getRelativeTime(item.createdAt)}</Text>
-              <View className='flex-row items-center gap-1'>
-                <Text className='text-xs text-[#6d6d6d]'>{formatNumberWithSuffix(0)}</Text>
-                <AntDesign name='hearto' size={10} color={'#6d6d6d'} />
+            <View className='flex-1 rounded-2xl'>
+              <Pressable
+                onPress={() => {
+                  closeCommentsModal();
+                  navigation.push('Owner Profile', { ownerId: item.Author.id });
+                }}>
+                <Text className='text-xs text-gray-700'>{item.Author.name}</Text>
+              </Pressable>
+              <Text className='text-sm font-medium text-themeText' numberOfLines={4}>
+                {item.text}
+              </Text>
+              <View className='flex-row items-end justify-between'>
+                <Text className='mt-2 text-xs text-[#9c9c9c]'>{getRelativeTime(item.createdAt)}</Text>
+                <View className='flex-row items-center gap-1'>
+                  <Text className='text-xs text-[#6d6d6d]'>{formatNumberWithSuffix(0)}</Text>
+                  <AntDesign name='hearto' size={10} color={'#6d6d6d'} />
+                </View>
               </View>
             </View>
           </View>
         </View>
-      </View>
-    );
-  }, []);
+      );
+    },
+    [closeCommentsModal, navigation]
+  );
 
   const commentsModal = useMemo(() => {
     return (
@@ -217,6 +220,7 @@ export default function Post({ post, goToProfile, onLayoutChange, navigation }: 
                   if (e.nativeEvent.text && e.nativeEvent.text.trim().length > 0) {
                     await createComment({ variables: { postId: post.id, text: e.nativeEvent.text.trim() } });
                     commentInputRef.current?.clear();
+                    setCommentInputValue('');
                     await refetchCommentData();
                   }
                 }}
