@@ -82,7 +82,7 @@ const HomeNavigator = ({ navigation }: HomeScreenProps) => {
           tabBar={renderTabBar}>
           <CurvedBottomBar.Screen name='Feed' position='LEFT' component={() => <Feed navigation={navigation} scrollViewRef={feedScrollViewRef} />} />
           <CurvedBottomBar.Screen name='Explore' component={() => <Explore navigation={navigation} />} position='LEFT' />
-          <CurvedBottomBar.Screen name='Inbox' component={() => <Inbox />} position='RIGHT' />
+          <CurvedBottomBar.Screen name='Inbox' component={() => <Inbox navigation={navigation}/>} position='RIGHT' />
           <CurvedBottomBar.Screen name='Profile' component={() => <MyProfile navigation={navigation} />} position='RIGHT' />
         </CurvedBottomBar.Navigator>
       </NavigationContainer>

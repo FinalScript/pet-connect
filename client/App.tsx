@@ -26,6 +26,7 @@ import SettingsPage from './src/pages/Settings';
 import PetCreation from './src/pages/PetCreation';
 import PetProfile from './src/pages/PetProfile';
 import ProfileFeed from './src/pages/ProfileFeed';
+import MessageFriendsListPage from './src/pages/MessageFriendsList';
 import ProfilePicturePage from './src/pages/ProfilePicture';
 import { LOADING, OWNER_DATA, PET_DATA } from './src/redux/constants';
 import { ProfileReducer } from './src/redux/reducers/profileReducer';
@@ -44,6 +45,7 @@ export type RootStackParamList = {
   'Owner Profile': { ownerId: string };
   'New Post': undefined;
   'Settings Page': undefined;
+  'Friend List': undefined;
   'Profile Picture': { profilePicture?: ProfilePictureType | null };
   'Profile Feed': { petUsername: string; initialPostIndex: number };
   Following: { ownerId: string };
@@ -264,6 +266,18 @@ const App = () => {
             <Stack.Screen
               name='Settings Page'
               component={SettingsPage}
+              options={{
+                headerShown: true,
+                headerBackVisible: true,
+                animation: 'slide_from_right',
+                animationTypeForReplace: 'push',
+                contentStyle: { backgroundColor: '#f6f6f6f' },
+                headerTransparent: true,
+              }}
+            />
+            <Stack.Screen
+              name='Friend List'
+              component={MessageFriendsListPage}
               options={{
                 headerShown: true,
                 headerBackVisible: true,
