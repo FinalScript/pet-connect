@@ -264,6 +264,20 @@ export const PostResolver = {
         await post.setMedia(mediaDAO);
         await post.save();
         await post.reload();
+
+        await redis.set(`post:${post.id}`, JSON.stringify(post), 'EX', 300);
+
+        const cachedPosts = await redis.get(`postsByPetId:${petId}`);
+
+        if (cachedPosts) {
+          const posts: Post[] = JSON.parse(cachedPosts).map((post) => {
+            return Post.build(post);
+          });
+
+          posts.push(post);
+
+          await redis.set(`postsByPetId:${petId}`, JSON.stringify(posts), 'EX', 300);
+        }
       } catch (e) {
         console.error(e);
 

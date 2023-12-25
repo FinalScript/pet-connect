@@ -37,14 +37,18 @@ export const OwnerResolver = {
     },
 
     Pets: async (obj: Owner, {}, context) => {
-      const cachedPets = await redis.get(`pets:${obj.id}`);
+      const cachedPets = await redis.get(`petsByOwnerId:${obj.id}`);
 
       if (cachedPets) {
-        return JSON.parse(cachedPets);
+        const pets: Pet[] = JSON.parse(cachedPets).map((pet: Pet) => {
+          return Pet.build(pet);
+        });
+
+        return pets;
       } else {
         const pets = (await Owner.findByPk(obj.id, { include: [{ model: Pet, as: 'Pets' }] })).Pets;
 
-        await redis.set(`pets:${obj.id}`, JSON.stringify(pets), 'EX', 120);
+        await redis.set(`petsByOwnerId:${obj.id}`, JSON.stringify(pets), 'EX', 120);
 
         return pets;
       }

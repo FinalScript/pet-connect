@@ -197,7 +197,7 @@ export const PetResolver = {
         const pets = JSON.parse(cachedPets).map((pet) => {
           return Pet.build(pet);
         });
-        return pets;
+        return { pets };
       } else {
         const pets = await getPetsByOwnerId(id);
 
@@ -342,6 +342,19 @@ export const PetResolver = {
           await newPet.setProfilePicture(profilePictureDAO);
           await newPet.save();
           await newPet.reload({});
+
+          await redis.set(`profilePictureByPetId:${newPet.id}`, JSON.stringify(profilePictureDAO), 'EX', 300);
+        }
+
+        await redis.set(`pet:${newPet.id}`, JSON.stringify(newPet), 'EX', 300);
+        const cachedPets = await redis.get(`petsByOwnerId:${owner.id}`);
+
+        if (cachedPets) {
+          const pets: Pet[] = JSON.parse(cachedPets).map((pet) => {
+            return Pet.build(pet);
+          });
+          pets.push(newPet);
+          await redis.set(`petsByOwnerId:${owner.id}`, JSON.stringify(pets), 'EX', 300);
         }
       } catch (e) {
         console.error(e);
