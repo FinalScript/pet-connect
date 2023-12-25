@@ -21,7 +21,7 @@ const Inbox = ({ navigation }: Props) => {
         <TouchableOpacity
           className='rounded-full bg-themeActive p-2 mr-4' 
           onPress={() => {
-            navigation.navigate('Friend List');
+            navigation.push('Friend List');
           }}
         >
           <Ionicon name="add" size={24} color="#8f5f43" />

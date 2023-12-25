@@ -48,7 +48,7 @@ const ProfileFeed = ({
               <Post
                 key={index}
                 post={post}
-                goToProfile={() => navigation.navigate('Pet Profile', { petId: post.Author.id })}
+                goToProfile={() => navigation.push('Pet Profile', { petId: post.Author.id })}
                 onLayoutChange={(height) => handlePostHeight(index, height)}
                 navigation={navigation as any}
               />

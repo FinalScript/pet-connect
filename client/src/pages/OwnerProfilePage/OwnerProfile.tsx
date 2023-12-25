@@ -14,6 +14,7 @@ import { GET_OWNER_BY_ID } from '../../graphql/Owner';
 import { GET_PETS_BY_OWNER_ID } from '../../graphql/Pet';
 import { OwnerDAO, ProfileReducer } from '../../redux/reducers/profileReducer';
 import { Feather, Ionicon } from '../../utils/Icons';
+import { themeConfig } from '../../utils/theme';
 
 interface Props {
   ownerId: string;
@@ -159,36 +160,37 @@ const OwnerProfile = ({ ownerId, navigation }: Props) => {
         </View>
         <View className='flex-col justify-center'>
           <View className='mt-5 flex-col justify-center'>
-            <View className='mb-5'>
-              <Text className='text-2xl font-bold text-themePrimary'>{pets.length === 0 ? 'No Pets' : isOwner ? 'My Pets' : 'Pet List'}</Text>
+            <View className='mb-2'>
+              <Text className='text-xl font-bold text-themeText'>{pets.length === 0 ? 'No Pets' : isOwner ? 'My Pets' : 'Pet List'}</Text>
             </View>
             {pets.map((pet) => (
               <PetCard
                 key={pet.id}
                 pet={pet}
                 goToProfile={() => {
-                  navigation.navigate('Pet Profile', { petId: pet.id });
+                  navigation.push('Pet Profile', { petId: pet.id });
                 }}
                 isSelected={selectedPetId === pet.id}
                 setIsSelected={setSelectedPetId}
                 isOwner={isOwner}
               />
             ))}
-          </View>
-          {isOwner && (
-            <View className='flex-row items-center mt-4'>
+
+            {isOwner && (
               <Pressable
-                className='flex-1 rounded-2xl bg-white shadow-sm shadow-themeShadow  flex-row items-center p-3'
+                className='mt-4 rounded-2xl bg-white shadow-sm shadow-themeShadow flex-row items-center p-3'
                 onPress={() => {
-                  navigation.navigate('Pet Creation');
+                  navigation.push('Pet Creation');
                 }}>
-                <View className='h-14 w-14 flex justify-center items-center mr-5 bg-themeActive rounded-full'>
-                  <Feather name='plus' size={30} color='#8f5f43' />
+                <View className='h-14 w-14 p-1 flex justify-center items-center mr-5'>
+                  <View className='bg-themeActive rounded-full w-full h-full flex justify-center items-center'>
+                    <Feather name='plus' size={25} color={themeConfig.customColors.themeText} />
+                  </View>
                 </View>
-                <Text className='text-xl font-medium'>Add Pet</Text>
+                <Text className='text-xl font-medium text-themeText'>Create new pet</Text>
               </Pressable>
-            </View>
-          )}
+            )}
+          </View>
         </View>
       </ScrollView>
     </SafeAreaView>

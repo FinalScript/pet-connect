@@ -26,7 +26,7 @@ const MyProfile = ({ navigation }: Props) => {
 
         <Pressable
           onPress={() => {
-            navigation.navigate('Settings Page');
+            navigation.push('Settings');
           }}>
           <Ionicon name='menu-outline' size={30} />
         </Pressable>

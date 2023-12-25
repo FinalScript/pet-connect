@@ -44,7 +44,7 @@ export type RootStackParamList = {
   'Pet Profile': { petId: string };
   'Owner Profile': { ownerId: string };
   'New Post': undefined;
-  'Settings Page': undefined;
+  'Settings': undefined;
   'Friend List': undefined;
   'Profile Picture': { profilePicture?: ProfilePictureType | null };
   'Profile Feed': { petUsername: string; initialPostIndex: number };
@@ -265,7 +265,7 @@ const App = () => {
               }}
             />
             <Stack.Screen
-              name='Settings Page'
+              name='Settings'
               component={SettingsPage}
               options={{
                 headerShown: true,

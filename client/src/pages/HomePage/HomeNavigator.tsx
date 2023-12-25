@@ -79,11 +79,11 @@ const HomeNavigator = ({ navigation }: HomeScreenProps) => {
             <TouchableOpacity
               onPress={() => {
                 if (pets.length === 0) {
-                  navigation.navigate('Pet Creation');
+                  navigation.push('Pet Creation');
                   return;
                 }
 
-                navigation.navigate('New Post');
+                navigation.push('New Post');
               }}>
               <View style={styles.btnCircleUp}>
                 <Ionicon name={'paw'} color={themeConfig.customColors.themeText} size={25} />
