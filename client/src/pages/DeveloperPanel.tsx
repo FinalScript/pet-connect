@@ -70,6 +70,8 @@ export default function DeveloperPanel({ apiUrl }: Props) {
       apiUrl: apiUrlValue,
     };
 
+    if(apiUrlList.find(item => item.apiUrl === apiUrlValue)) return;
+
     const updatedApiUrlList = [...apiUrlList, newApiUrlItem];
     setApiUrlList(updatedApiUrlList);
     await AsyncStorage.setItem('@API_URL_LIST', JSON.stringify(updatedApiUrlList));
