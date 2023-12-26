@@ -73,6 +73,7 @@
     "react-native-svg": "^13.14.0",
     "react-native-tab-view": "^3.5.2",
     "react-native-tcp": "github:gajjartejas/react-native-tcp",
+    "react-native-toast-message": "^2.2.0",
     "react-native-vector-icons": "^9.2.0",
     "react-native-version-check": "^3.4.7",
     "react-native-vision-camera": "^3.6.4",
