@@ -8,6 +8,7 @@ import { useAuth0 } from 'react-native-auth0';
 import { HapticFeedbackTypes, trigger } from 'react-native-haptic-feedback';
 import { Host } from 'react-native-portalize';
 import SplashScreen from 'react-native-splash-screen';
+import Toast from 'react-native-toast-message';
 import { useDispatch, useSelector } from 'react-redux';
 import { Post, ProfilePicture as ProfilePictureType } from './src/__generated__/graphql';
 import { VERIFY_TOKEN } from './src/graphql/Auth';
@@ -21,18 +22,18 @@ import GetStarted from './src/pages/GetStarted';
 import HomeNavigator from './src/pages/HomePage/HomeNavigator';
 import PostPage from './src/pages/HomePage/PostPage';
 import Loading from './src/pages/Loading';
+import MessageFriendsListPage from './src/pages/MessageFriendsList';
+import Messages from './src/pages/Messages';
 import OwnerProfilePage from './src/pages/OwnerProfilePage/OwnerProfilePage';
-import SettingsPage from './src/pages/Settings';
 import PetCreation from './src/pages/PetCreation';
 import PetProfile from './src/pages/PetProfile';
 import ProfileFeed from './src/pages/ProfileFeed';
-import MessageFriendsListPage from './src/pages/MessageFriendsList';
 import ProfilePicturePage from './src/pages/ProfilePicture';
+import SettingsPage from './src/pages/Settings';
 import { LOADING, OWNER_DATA, PET_DATA } from './src/redux/constants';
 import { ProfileReducer } from './src/redux/reducers/profileReducer';
 import { navigationRef } from './src/services/navigator';
 import { options } from './src/utils/hapticFeedbackOptions';
-import Messages from './src/pages/Messages';
 
 export type RootStackParamList = {
   Loading: undefined;
@@ -305,6 +306,8 @@ const App = () => {
           </Stack.Navigator>
         </NavigationContainer>
       </Host>
+
+      <Toast />
     </View>
   );
 };
