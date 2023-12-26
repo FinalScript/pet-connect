@@ -25,7 +25,7 @@ import Text from '../../components/Text';
 import { UploadToFirebaseResult, storageFolders, uploadToFirebase } from '../../firebase/firebaseStorage';
 import { CREATE_POST } from '../../graphql/Post';
 import { ProfileReducer } from '../../redux/reducers/profileReducer';
-import { AntDesign, MaterialIcons } from '../../utils/Icons';
+import { AntDesign, Ionicon, MaterialIcons } from '../../utils/Icons';
 import { options } from '../../utils/hapticFeedbackOptions';
 import { themeConfig } from '../../utils/theme';
 import ImageCropPicker, { Image as ImageCropperType } from 'react-native-image-crop-picker';
@@ -99,63 +99,64 @@ const PostPage = ({ navigation }: Props) => {
     setFormData({ ...formData, description: text });
   };
 
-  const handleMediaContextOnPress = useCallback(async (e: NativeSyntheticEvent<ContextMenuOnPressNativeEvent>) => {
-    if (e.nativeEvent.index === 0) {
-      const selectedImage = await launchImageLibrary({
-        mediaType: 'photo',
-        selectionLimit: 1,
-      });
+  const selectFromLibrary = useCallback(async () => {
+    const selectedImage = await launchImageLibrary({
+      mediaType: 'photo',
+      selectionLimit: 1,
+    });
 
-      if (!selectedImage.assets?.[0].uri) {
-        return;
-      }
-
-      setTimeout(() => {
-        ImageCropPicker.openCropper({
-          path: selectedImage.assets?.[0].uri,
-          mediaType: 'photo',
-          width: 430,
-          height: 623,
-          cropping: true,
-          writeTempFile: false,
-        })
-          .then((croppedImage) => {
-            console.log(croppedImage); // Log the cropped image details
-            setFormData((prev) => {
-              return { ...prev, media: croppedImage };
-            });
-          })
-          .catch((cropError) => {
-            console.log(cropError); // Log any errors that occur when trying to open the cropper
-          });
-      }, 600);
-    } else {
-      const capturedImage = await launchCamera({ mediaType: 'photo' });
-
-      if (!capturedImage.assets?.[0].uri) {
-        return;
-      }
-
-      setTimeout(() => {
-        ImageCropPicker.openCropper({
-          path: capturedImage.assets?.[0].uri,
-          mediaType: 'photo',
-          width: 430,
-          height: 623,
-          cropping: true,
-          writeTempFile: false,
-        })
-          .then((croppedImage) => {
-            console.log(croppedImage); // Log the cropped image details
-            setFormData((prev) => {
-              return { ...prev, media: croppedImage };
-            });
-          })
-          .catch((cropError) => {
-            console.log(cropError); // Log any errors that occur when trying to open the cropper
-          });
-      }, 600);
+    if (!selectedImage.assets?.[0].uri) {
+      return;
     }
+
+    setTimeout(() => {
+      ImageCropPicker.openCropper({
+        path: selectedImage.assets?.[0].uri,
+        mediaType: 'photo',
+        width: 430,
+        height: 623,
+        cropping: true,
+        writeTempFile: false,
+      })
+        .then((croppedImage) => {
+          console.log(croppedImage); // Log the cropped image details
+          setFormData((prev) => {
+            return { ...prev, media: croppedImage };
+          });
+        })
+        .catch((cropError) => {
+          console.log(cropError); // Log any errors that occur when trying to open the cropper
+        });
+    }, 600);
+  }, []);
+
+  const selectFromCamera = useCallback(async () => {
+    const capturedImage = await launchCamera({ mediaType: 'photo' });
+
+    if (!capturedImage.assets?.[0].uri) {
+      return;
+    }
+
+    setTimeout(() => {
+      ImageCropPicker.openCropper({
+        path: capturedImage.assets?.[0].uri,
+        mediaType: 'photo',
+        width: 430,
+        height: 623,
+        cropping: true,
+
+        writeTempFile: false,
+      })
+        .then((croppedImage) => {
+          console.log(croppedImage); // Log the cropped image details
+          setFormData((prev) => {
+            return { ...prev, media: croppedImage };
+          });
+        })
+        .catch((cropError) => {
+          console.log(cropError); // Log any errors that occur when trying to open the cropper
+        });
+    }, 600);
   }, []);
 
   const secondaryOnPress = useCallback(() => {
@@ -191,27 +192,34 @@ const PostPage = ({ navigation }: Props) => {
   const stepOne = useCallback(() => {
     return (
       <View className='mx-5'>
-        <ContextMenu
-          dropdownMenuMode={true}
-          actions={[
-            { title: 'Photo Library', systemIcon: 'photo' },
-            { title: 'Take Photo', systemIcon: 'camera' },
-          ]}
-          onPress={handleMediaContextOnPress}>
-          <View className='bg-themeInput flex items-center justify-center rounded-3xl shadow-sm shadow-themeShadow aspect-[.69]'>
-            {formData.media ? (
-              <Image className='w-full h-full rounded-3xl' source={{ uri: formData.media?.path }} />
-            ) : (
-              <View className=' flex justify-center items-center p-10 rounded-3xl'>
-                <MaterialIcons name='photo-library' size={50} color={'#362013'} />
-                <Text className='text-themeText text-3xl mt-3'>Select</Text>
-              </View>
-            )}
-          </View>
-        </ContextMenu>
+        <View
+          className={
+            'flex items-center justify-center rounded-3xl border-2 border-dashed aspect-[.69] ' + (formData.media ? 'border-transparent' : 'border-themeText')
+          }>
+          {formData.media ? (
+            <Image className='w-full h-full rounded-3xl' source={{ uri: formData.media?.path }} />
+          ) : (
+            <View className=' flex justify-center items-center p-10 rounded-3xl'>
+              <MaterialIcons name='photo-library' size={50} color={'#362013'} />
+              <Text className='text-themeText text-3xl mt-3'>Preview</Text>
+            </View>
+          )}
+        </View>
+
+        <View className='flex items-center mt-10'>
+          <Pressable onPress={selectFromLibrary} className='mb-2 flex-row items-center border-2 border-themeText rounded-full px-4'>
+            <Ionicon name='image' size={20} />
+            <Text className='text-themeText text-lg ml-2'>Select from Photos</Text>
+          </Pressable>
+          <Text>or</Text>
+          <Pressable onPress={selectFromCamera} className='mt-2 flex-row items-center border-2 border-themeText rounded-full px-4'>
+            <Ionicon name='camera' size={20} />
+            <Text className='text-themeText text-lg ml-2'>Open Camera</Text>
+          </Pressable>
+        </View>
       </View>
     );
-  }, [formData.media, handleMediaContextOnPress]);
+  }, [formData.media]);
 
   const stepTwo = useCallback(() => {
     return (
@@ -252,7 +260,7 @@ const PostPage = ({ navigation }: Props) => {
         </View>
       </KeyboardAwareScrollView>
     );
-  }, [focus, formData, petsListData, handleDescriptionChange, handleMediaContextOnPress, handlePost, PetsDropdown]);
+  }, [focus, formData, petsListData, handleDescriptionChange, handlePost, PetsDropdown]);
 
   const getStep = useCallback(() => {
     switch (step) {
@@ -275,11 +283,15 @@ const PostPage = ({ navigation }: Props) => {
 
       <View className='mb-10 absolute bottom-0 w-full pr-5'>
         <View className='flex-row justify-between items-center w-full'>
-          <TouchableOpacity onPress={secondaryOnPress} activeOpacity={0.6} disabled={loading}>
-            <View className='px-6 py-2 rounded-3xl'>
-              <Text className='text-xl text-[#c07c4e]'>{step === 0 ? 'Cancel' : 'Go Back'}</Text>
-            </View>
-          </TouchableOpacity>
+          {step > 0 ? (
+            <TouchableOpacity onPress={secondaryOnPress} activeOpacity={0.6} disabled={loading}>
+              <View className='px-6 py-2 rounded-3xl'>
+                <Text className='text-xl text-[#c07c4e]'>{'Go Back'}</Text>
+              </View>
+            </TouchableOpacity>
+          ) : (
+            <View></View>
+          )}
 
           <TouchableHighlight
             className='bg-themeBtn rounded-3xl shadow-sm shadow-themeShadow'

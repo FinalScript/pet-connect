@@ -241,6 +241,7 @@ export default function Post({ post, goToProfile, navigation }: Props) {
           </View>
         }
         keyboardAvoidingBehavior='padding'>
+        {comments.length === 0 && <Text className='text-center text-lg text-themeText'>Be the first to comment!</Text>}
         {comments.map((comment) => {
           return renderCommentItem({ item: comment, key: comment.id });
         })}

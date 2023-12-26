@@ -205,7 +205,7 @@ export default function DeveloperPanel({ apiUrl }: Props) {
           </TouchableOpacity>
         </View>
         <View>
-        <Text className='mb-2 pl-4 mt-2 text-lg font-bold text-themeText'>API_URL</Text>
+        <Text className='mb-2 pl-4 mt-2 text-lg font-bold text-themeText'>Notifications</Text>
           <View className='flex-row mt-2 justify-center items-center'>
               <TouchableOpacity
                 className='py-2 px-4 bg-blue-500 rounded-md mr-2'
