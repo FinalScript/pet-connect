@@ -373,7 +373,7 @@ export default function Post({ post, goToProfile, navigation }: Props) {
   }
 
   const longPress = Gesture.LongPress().onStart(() => {
-    trigger(HapticFeedbackTypes.impactHeavy, options);
+    trigger(HapticFeedbackTypes.rigid, options);
     openContextModal();
   });
 
