@@ -19,6 +19,7 @@ import { GeneralReducer } from '../redux/reducers/generalReducer';
 import { FontAwesome } from '../utils/Icons';
 import { options } from '../utils/hapticFeedbackOptions';
 import Image from '../components/Image';
+import ImageCropPicker, { Image as ImageCropperType } from 'react-native-image-crop-picker';
 
 type NavigationProp = NativeStackNavigationProp<RootStackParamList, 'Account Creation'>;
 
@@ -30,7 +31,7 @@ export default function AccountCreation() {
   const [username, setUsername] = useState<string>();
   const [isUsernameValid, setIsUsernameValid] = useState(false);
   const [name, setName] = useState<string>();
-  const [profilePicture, setProfilePicture] = useState<Asset>();
+  const [profilePicture, setProfilePicture] = useState<ImageCropperType>();
   const nameRef = useRef<TextInput>(null);
   const usernameRef = useRef<TextInput>(null);
   const [focus, setFocus] = useState({ username: false, name: false });
@@ -40,15 +41,33 @@ export default function AccountCreation() {
   }, []);
 
   const pickProfilePicture = useCallback(async () => {
-    launchImageLibrary({
+    const selectedImage = await launchImageLibrary({
       mediaType: 'photo',
-    })
-      .then((image) => {
-        setProfilePicture(image.assets?.[0]);
+      selectionLimit: 1,
+    });
+
+    if (!selectedImage.assets?.[0].uri) {
+      return;
+    }
+
+    setTimeout(() => {
+      ImageCropPicker.openCropper({
+        path: selectedImage.assets?.[0].uri,
+        mediaType: 'photo',
+        width: 500,
+        height: 500,
+        cropping: true,
+        writeTempFile: false,
       })
-      .catch((err) => {
-        console.log(err);
-      });
+        .then((croppedImage) => {
+          console.log(croppedImage); // Log the cropped image details
+
+          setProfilePicture(croppedImage);
+        })
+        .catch((cropError) => {
+          console.log(cropError); // Log any errors that occur when trying to open the cropper
+        });
+    }, 600);
   }, []);
 
   const nextOnPress = useCallback(async () => {
@@ -107,7 +126,7 @@ export default function AccountCreation() {
                   disabled={loading}>
                   <View className=''>
                     {profilePicture ? (
-                      <Image className='flex w-full h-full rounded-3xl' source={{ uri: profilePicture?.uri }} />
+                      <Image className='flex w-full h-full rounded-3xl' source={{ uri: profilePicture?.path }} />
                     ) : (
                       <View className='flex flex-row justify-center items-center h-full'>
                         <FontAwesome name='plus-square-o' size={50} color={'#362013'} />
