@@ -77,6 +77,7 @@ export default function Post({ post, goToProfile, navigation }: Props) {
   }, [commentsModalRef]);
 
   const openContextModal = useCallback(() => {
+    trigger(HapticFeedbackTypes.rigid, options);
     contextModalRef.current?.open();
   }, [contextModalRef]);
 
@@ -372,13 +373,11 @@ export default function Post({ post, goToProfile, navigation }: Props) {
     return <View></View>;
   }
 
-  const longPress = Gesture.LongPress().onStart(() => {
-    trigger(HapticFeedbackTypes.rigid, options);
-    openContextModal();
-  });
-
   return (
-    <GestureDetector gesture={longPress}>
+    <Pressable
+      onLongPress={() => {
+        openContextModal();
+      }}>
       <View className='bg-themeBg relative w-full h-full flex justify-end'>
         <Portal>
           {commentsModal}
@@ -471,6 +470,6 @@ export default function Post({ post, goToProfile, navigation }: Props) {
           </View>
         </View>
       </View>
-    </GestureDetector>
+    </Pressable>
   );
 }
