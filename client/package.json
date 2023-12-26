@@ -12,6 +12,7 @@
     "lint": "eslint .",
     "start": "react-native start",
     "test": "jest",
+    "pod-update": "cd ios && pod update && cd ..",
     "pod": "cd ios && pod install && cd ..",
     "compile-graphql": "graphql-codegen",
     "watch-graphql": "graphql-codegen -w"

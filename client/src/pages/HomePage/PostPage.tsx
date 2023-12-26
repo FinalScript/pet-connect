@@ -277,9 +277,7 @@ const PostPage = ({ navigation }: Props) => {
 
   return (
     <SafeAreaView className='bg-themeBg h-full p-5 flex-col relative'>
-      <KeyboardAwareScrollView enableAutomaticScroll enableOnAndroid extraHeight={100}>
-        {getStep()}
-      </KeyboardAwareScrollView>
+      {getStep()}
 
       <View className='mb-10 absolute bottom-0 w-full pr-5'>
         <View className='flex-row justify-between items-center w-full'>
