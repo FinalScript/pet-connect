@@ -11,7 +11,7 @@ import { useAuth0 } from 'react-native-auth0';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 interface Props {
-  navigation: NativeStackNavigationProp<RootStackParamList, 'Settings Page', undefined>;
+  navigation: NativeStackNavigationProp<RootStackParamList, 'Settings', undefined>;
 }
 
 const SettingsPage = ({ navigation }: Props) => {

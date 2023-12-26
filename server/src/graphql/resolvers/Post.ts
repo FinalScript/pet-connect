@@ -264,6 +264,20 @@ export const PostResolver = {
         await post.setMedia(mediaDAO);
         await post.save();
         await post.reload();
+
+        await redis.set(`post:${post.id}`, JSON.stringify(post), 'EX', 300);
+
+        const cachedPosts = await redis.get(`postsByPetId:${petId}`);
+
+        if (cachedPosts) {
+          const posts: Post[] = JSON.parse(cachedPosts).map((post) => {
+            return Post.build(post);
+          });
+
+          posts.push(post);
+
+          await redis.set(`postsByPetId:${petId}`, JSON.stringify(posts), 'EX', 300);
+        }
       } catch (e) {
         console.error(e);
 
@@ -368,8 +382,18 @@ export const PostResolver = {
       }
 
       try {
-        await post.addLike(owner);
         await post.reload({ include: [{ association: 'Likes' }, { model: Pet, as: 'Author' }] });
+
+        if (post.Likes.findIndex((like) => like.id === owner.id) !== -1) {
+          throw new GraphQLError('You are already liking this post', {
+            extensions: {
+              code: 'BAD_USER_INPUT',
+            },
+          });
+        }
+
+        await post.addLike(owner);
+        await post.reload();
 
         await redis.set(`likesCount:${post.id}`, post.Likes.length, 'EX', 120);
         await redis.set(`isLikingPost:${jwtResult.id}:${id}`, JSON.stringify(true), 'EX', 120);
@@ -426,9 +450,18 @@ export const PostResolver = {
       }
 
       try {
-        await post.removeLike(owner);
-
         await post.reload({ include: [{ association: 'Likes' }, { model: Pet, as: 'Author' }] });
+
+        if (post.Likes.findIndex((like) => like.id === owner.id) === -1) {
+          throw new GraphQLError('You are not liking this post', {
+            extensions: {
+              code: 'BAD_USER_INPUT',
+            },
+          });
+        }
+
+        await post.removeLike(owner);
+        await post.reload();
 
         await redis.set(`likesCount:${post.id}`, post.Likes.length, 'EX', 120);
         await redis.set(`isLikingPost:${jwtResult.id}:${id}`, JSON.stringify(false), 'EX', 120);

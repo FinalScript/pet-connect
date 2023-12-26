@@ -1,6 +1,7 @@
 import { ref, uploadBytesResumable, getDownloadURL, deleteObject } from 'firebase/storage';
 import { storage } from './firebaseConfig';
 import { Asset } from 'react-native-image-picker';
+import { Image } from 'react-native-image-crop-picker';
 
 export enum storageFolders {
   PROFILE_PICTURES,
@@ -15,14 +16,14 @@ export interface UploadToFirebaseResult {
   aspectRatio: number;
 }
 
-export const updateFileInFirebase = (file: Asset, path: string) => {
+export const updateFileInFirebase = (file: Image, path: string) => {
   return new Promise<UploadToFirebaseResult>(async (resolve, reject) => {
-    if (!file.uri) {
+    if (!file.path) {
       reject('File uri not found');
       return;
     }
 
-    const response = await fetch(file.uri);
+    const response = await fetch(file.path);
 
     const blob = await response.blob();
 
@@ -59,18 +60,18 @@ export const updateFileInFirebase = (file: Asset, path: string) => {
   });
 };
 
-export const uploadToFirebase = (file: Asset, folder: storageFolders) => {
+export const uploadToFirebase = (file: Image, folder: storageFolders) => {
   return new Promise<UploadToFirebaseResult>(async (resolve, reject) => {
-    if (!file.uri) {
+    if (!file.path) {
       reject('File uri not found');
       return;
     }
 
-    const response = await fetch(file.uri);
+    const response = await fetch(file.path);
 
     const blob = await response.blob();
 
-    const storageRef = ref(storage, `/${folder.toString()}/${file.fileName}`);
+    const storageRef = ref(storage, `/${folder.toString()}/${file.filename}`);
     const uploadTask = uploadBytesResumable(storageRef, blob);
 
     uploadTask.on(

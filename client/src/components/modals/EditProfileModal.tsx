@@ -15,6 +15,7 @@ import { Ionicon } from '../../utils/Icons';
 import Text from '../Text';
 import UsernameInput from '../UsernameInput';
 import Image from '../Image';
+import ImageCropPicker from 'react-native-image-crop-picker';
 
 interface Props extends ModalProps {
   closeModal: () => void;
@@ -46,24 +47,40 @@ const EditProfileModal = ({ closeModal, profile, forPet = false }: Props) => {
   });
 
   const pickProfilePicture = useCallback(async () => {
-    launchImageLibrary({
+    const selectedImage = await launchImageLibrary({
       mediaType: 'photo',
-    })
-      .then((image) => {
-        console.log(image);
-        if (!forPet) {
-          setOwnerFormData((prev) => {
-            return { ...prev, profilePicture: image.assets?.[0] };
-          });
-        } else {
-          setPetFormData((prev) => {
-            return { ...prev, profilePicture: image.assets?.[0] };
-          });
-        }
+      selectionLimit: 1,
+    });
+
+    if (!selectedImage.assets?.[0].uri) {
+      return;
+    }
+
+    setTimeout(() => {
+      ImageCropPicker.openCropper({
+        path: selectedImage.assets?.[0].uri,
+        mediaType: 'photo',
+        width: 500,
+        height: 500,
+        cropping: true,
+        writeTempFile: false,
       })
-      .catch((err) => {
-        console.log(err);
-      });
+        .then((croppedImage) => {
+          console.log(croppedImage); // Log the cropped image details
+          if (forPet) {
+            setPetFormData((prev) => {
+              return { ...prev, profilePicture: croppedImage };
+            });
+          } else {
+            setOwnerFormData((prev) => {
+              return { ...prev, profilePicture: croppedImage };
+            });
+          }
+        })
+        .catch((cropError) => {
+          console.log(cropError); // Log any errors that occur when trying to open the cropper
+        });
+    }, 600);
   }, [forPet, setPetFormData, setOwnerFormData]);
 
   const hasChanged = useMemo(() => {
@@ -163,7 +180,7 @@ const EditProfileModal = ({ closeModal, profile, forPet = false }: Props) => {
                 <Image
                   className='w-full h-full rounded-3xl'
                   source={{
-                    uri: ownerFormData.profilePicture.width ? ownerFormData.profilePicture.uri : ownerFormData.profilePicture.url,
+                    uri: ownerFormData.profilePicture.width ? ownerFormData.profilePicture.path : ownerFormData.profilePicture.url,
                   }}
                 />
               ) : (

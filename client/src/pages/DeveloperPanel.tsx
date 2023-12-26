@@ -5,6 +5,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useDispatch, useSelector } from 'react-redux';
 import { GeneralReducer } from '../redux/reducers/generalReducer';
 import { DEVELOPER_PANEL_OPEN } from '../redux/constants';
+import { Notifications } from 'react-native-notifications';
 
 interface Props {
   apiUrl: { set: Dispatch<SetStateAction<string | undefined>>; value?: string };
@@ -69,6 +70,8 @@ export default function DeveloperPanel({ apiUrl }: Props) {
       id: Date.now().toString(),
       apiUrl: apiUrlValue,
     };
+
+    if (apiUrlList.find((item) => item.apiUrl === apiUrlValue)) return;
 
     const updatedApiUrlList = [...apiUrlList, newApiUrlItem];
     setApiUrlList(updatedApiUrlList);
@@ -189,21 +192,56 @@ export default function DeveloperPanel({ apiUrl }: Props) {
             data={apiUrlList}
             keyExtractor={(item) => item.id}
             renderItem={({ item }) => (
-              <TouchableOpacity
-                onPress={() => onApiUrlItemPress(item.apiUrl)}
-                style={{ flexDirection: 'row', alignItems: 'center', paddingVertical: 8 }}>
-                <Text style={{ paddingHorizontal: 16 }}>{item.apiUrl}</Text>
-                <TouchableOpacity onPress={() => onRemoveApiUrl(item.id)} style={{ paddingHorizontal: 8 }}>
-                  <Text style={{ color: 'red' }}>Remove</Text>
+              <TouchableOpacity onPress={() => onApiUrlItemPress(item.apiUrl)} className='flex-row items-center py-2 px-4 border-b border-gray-300'>
+                <Text className='flex-grow px-4'>{item.apiUrl}</Text>
+                <TouchableOpacity onPress={() => onRemoveApiUrl(item.id)} className='px-2'>
+                  <Text className='text-red-500'>Remove</Text>
                 </TouchableOpacity>
               </TouchableOpacity>
             )}
           />
-          <TouchableOpacity onPress={onAddApiUrl} style={{ flexDirection: 'row', alignItems: 'center', paddingVertical: 8 }}>
-            <Text style={{ paddingHorizontal: 16 }}>Add API_URL</Text>
+          <TouchableOpacity onPress={onAddApiUrl} className='flex-row items-center py-2 px-4 border-b border-gray-300'>
+            <Text className='px-4 text-blue-500'>+ Add API_URL</Text>
           </TouchableOpacity>
         </View>
-      </View>
+        <View>
+        <Text className='mb-2 pl-4 mt-2 text-lg font-bold text-themeText'>Notifications</Text>
+          <View className='flex-row mt-2 justify-center items-center'>
+              <TouchableOpacity
+                className='py-2 px-4 bg-blue-500 rounded-md mr-2'
+                onPress={() =>
+                  Notifications.ios.checkPermissions().then((currentPermissions) => {
+                    console.log('Badges enabled: ' + !!currentPermissions.badge);
+                    console.log('Sounds enabled: ' + !!currentPermissions.sound);
+                    console.log('Alerts enabled: ' + !!currentPermissions.alert);
+                    console.log('Car Play enabled: ' + !!currentPermissions.carPlay);
+                    console.log('Critical Alerts enabled: ' + !!currentPermissions.criticalAlert);
+                    console.log('Provisional enabled: ' + !!currentPermissions.provisional);
+                    console.log('Provides App Notification Settings enabled: ' + !!currentPermissions.providesAppNotificationSettings);
+                    console.log('Announcement enabled: ' + !!currentPermissions.announcement);
+                  })
+                }>
+                <Text className='text-white'>Get notification permission</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                className='py-2 px-4 bg-blue-500 rounded-md'
+                onPress={() =>
+                  Notifications.postLocalNotification({
+                    title: 'Test Notification',
+                    body: 'This is a test notification',
+                    identifier: '',
+                    payload: undefined,
+                    sound: '',
+                    badge: 0,
+                    type: '',
+                    thread: '',
+                  })
+                }>
+                <Text className='text-white'>Send notification</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View>
     </Modal>
   );
 }

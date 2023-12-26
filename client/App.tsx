@@ -9,7 +9,7 @@ import { HapticFeedbackTypes, trigger } from 'react-native-haptic-feedback';
 import { Host } from 'react-native-portalize';
 import SplashScreen from 'react-native-splash-screen';
 import { useDispatch, useSelector } from 'react-redux';
-import { ProfilePicture as ProfilePictureType } from './src/__generated__/graphql';
+import { Post, ProfilePicture as ProfilePictureType } from './src/__generated__/graphql';
 import { VERIFY_TOKEN } from './src/graphql/Auth';
 import { GET_OWNER } from './src/graphql/Owner';
 import { GET_PETS_BY_OWNER_ID } from './src/graphql/Pet';
@@ -26,11 +26,13 @@ import SettingsPage from './src/pages/Settings';
 import PetCreation from './src/pages/PetCreation';
 import PetProfile from './src/pages/PetProfile';
 import ProfileFeed from './src/pages/ProfileFeed';
+import MessageFriendsListPage from './src/pages/MessageFriendsList';
 import ProfilePicturePage from './src/pages/ProfilePicture';
 import { LOADING, OWNER_DATA, PET_DATA } from './src/redux/constants';
 import { ProfileReducer } from './src/redux/reducers/profileReducer';
 import { navigationRef } from './src/services/navigator';
 import { options } from './src/utils/hapticFeedbackOptions';
+import Messages from './src/pages/Messages';
 
 export type RootStackParamList = {
   Loading: undefined;
@@ -43,9 +45,11 @@ export type RootStackParamList = {
   'Pet Profile': { petId: string };
   'Owner Profile': { ownerId: string };
   'New Post': undefined;
-  'Settings Page': undefined;
+  Settings: undefined;
+  'Friend List': undefined;
+  Messages: { ownerId: string };
   'Profile Picture': { profilePicture?: ProfilePictureType | null };
-  'Profile Feed': { petUsername: string; initialPostIndex: number };
+  'Profile Feed': { petUsername: string; initialPostIndex: number; posts: Post[] };
   Following: { ownerId: string };
   Followers: { petId: string };
 };
@@ -170,6 +174,7 @@ const App = () => {
               animationTypeForReplace: 'push',
               animation: 'fade',
               contentStyle: { backgroundColor: '#f6f6f6f' },
+              headerTitleStyle: { fontFamily: 'BalooChettan2-Regular', fontWeight: 'bold' },
             }}>
             <Stack.Screen name='Loading' component={Loading} />
             <Stack.Screen name='Home' component={HomeNavigator} />
@@ -206,7 +211,7 @@ const App = () => {
               options={{
                 headerShown: true,
                 headerBackVisible: true,
-                animation: 'slide_from_bottom',
+                animation: 'fade_from_bottom',
                 animationTypeForReplace: 'push',
                 contentStyle: { backgroundColor: '#f6f6f6f' },
                 headerTransparent: true,
@@ -262,8 +267,32 @@ const App = () => {
               }}
             />
             <Stack.Screen
-              name='Settings Page'
+              name='Settings'
               component={SettingsPage}
+              options={{
+                headerShown: true,
+                headerBackVisible: true,
+                animation: 'slide_from_right',
+                animationTypeForReplace: 'push',
+                contentStyle: { backgroundColor: '#f6f6f6f' },
+                headerTransparent: true,
+              }}
+            />
+            <Stack.Screen
+              name='Friend List'
+              component={MessageFriendsListPage}
+              options={{
+                headerShown: true,
+                headerBackVisible: true,
+                animation: 'slide_from_right',
+                animationTypeForReplace: 'push',
+                contentStyle: { backgroundColor: '#f6f6f6f' },
+                headerTransparent: true,
+              }}
+            />
+            <Stack.Screen
+              name='Messages'
+              component={Messages}
               options={{
                 headerShown: true,
                 headerBackVisible: true,
