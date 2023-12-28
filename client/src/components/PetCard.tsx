@@ -1,8 +1,8 @@
-import React, { Dispatch, SetStateAction, useCallback, useEffect, useMemo, useState } from 'react';
+import React, { Dispatch, SetStateAction, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Platform, Pressable, View, Alert } from 'react-native';
 import Animated, { useSharedValue, withTiming } from 'react-native-reanimated';
 import { Pet } from '../__generated__/graphql';
-import { Entypo } from '../utils/Icons';
+import { Entypo, Ionicon } from '../utils/Icons';
 import Image from './Image';
 import PetTypeImage from './PetTypeImage';
 import Text from './Text';
@@ -11,6 +11,13 @@ import { useDispatch } from 'react-redux';
 import { useMutation } from '@apollo/client';
 import { DELETE_PET } from '../graphql/Pet';
 import { REMOVE_PET } from '../redux/constants';
+import { Modalize } from 'react-native-modalize';
+import { HapticFeedbackTypes, trigger } from 'react-native-haptic-feedback';
+import { options } from '../utils/hapticFeedbackOptions';
+import { themeConfig } from '../utils/theme';
+import Toast from 'react-native-toast-message';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { Portal } from 'react-native-portalize';
 
 interface Props {
   pet: Pet;
@@ -23,6 +30,18 @@ const PetCard = ({ pet, goToProfile, isSelected = false, setIsSelected, isOwner 
   const height = useSharedValue(80);
   const dispatch = useDispatch();
   const [deletePet] = useMutation(DELETE_PET);
+  const insets = useSafeAreaInsets();
+
+  const contextModalRef = useRef<Modalize>(null);
+
+  const openContextModal = useCallback(() => {
+    trigger(HapticFeedbackTypes.rigid, options);
+    contextModalRef.current?.open();
+  }, [contextModalRef]);
+
+  const closeContextModal = useCallback(() => {
+    contextModalRef.current?.close();
+  }, [contextModalRef]);
 
   useEffect(() => {
     if (isSelected) {
@@ -31,24 +50,6 @@ const PetCard = ({ pet, goToProfile, isSelected = false, setIsSelected, isOwner 
       height.value = withTiming(80);
     }
   }, [isSelected]);
-
-  const menuActions: MenuAction[] = useMemo(() => {
-    const actions: MenuAction[] = [];
-
-    actions.push({
-      id: 'delete',
-      title: 'Delete',
-      attributes: {
-        destructive: true,
-      },
-      image: Platform.select({
-        ios: 'trash',
-        android: 'ic_menu_delete',
-      }),
-    });
-
-    return actions;
-  }, []);
 
   const deleteAlert = () =>
     Alert.alert('Delete Pet', 'Are you sure you want to delete your pet?', [
@@ -68,14 +69,97 @@ const PetCard = ({ pet, goToProfile, isSelected = false, setIsSelected, isOwner 
         if (data?.deletePet) {
           dispatch({ type: REMOVE_PET, payload: pet.id });
         }
+
+        trigger(HapticFeedbackTypes.notificationSuccess, options);
+        Toast.show({
+          type: 'success',
+          text1: 'Pet deleted.',
+          position: 'top',
+          topOffset: 10 + insets.top,
+          text1Style: { fontFamily: 'BalooChettan2-Regular' },
+        });
       })
       .catch((err) => {
         console.log(JSON.stringify(err, null, 2));
+        trigger(HapticFeedbackTypes.notificationError, options);
+        Toast.show({
+          type: 'error',
+          text1: 'An error occured when deleting pet.',
+          position: 'top',
+          topOffset: 10 + insets.top,
+          text1Style: { fontFamily: 'BalooChettan2-Regular' },
+        });
       });
-  }, []);
+  }, [pet.id, deletePet, dispatch, insets.top]);
+
+  const contextModal = useMemo(() => {
+    return (
+      <Modalize
+        ref={contextModalRef}
+        handlePosition='inside'
+        handleStyle={{ backgroundColor: themeConfig.customColors.themeText }}
+        useNativeDriver
+        modalStyle={{ backgroundColor: themeConfig.customColors.themeInput }}
+        adjustToContentHeight
+        withHandle={false}
+        HeaderComponent={
+          <View className='flex-row justify-center gap-x-5 pb-14 pt-5 px-5'>
+            <Pressable
+              className='flex items-center'
+              onPress={() => {
+                // TODO
+              }}>
+              <View className='rounded-full p-2 aspect-square bg-themeBtn'>
+                <Ionicon name='share-social' size={20} color={themeConfig.customColors.themeText} />
+              </View>
+              <Text className='mt-1'>Share</Text>
+            </Pressable>
+
+            {!isOwner && (
+              <Pressable
+                className='flex items-center'
+                onPress={() => {
+                  closeContextModal();
+
+                  setTimeout(() => {
+                    trigger(HapticFeedbackTypes.notificationSuccess, options);
+                    Toast.show({
+                      type: 'info',
+                      text1: 'Your report has been sent!',
+                      position: 'top',
+                      topOffset: 10 + insets.top,
+                      text1Style: { fontFamily: 'BalooChettan2-Regular' },
+                    });
+                  }, 500);
+                }}>
+                <View className='rounded-full p-2 aspect-square bg-themeBtn'>
+                  <Ionicon name='flag' size={20} color={themeConfig.customColors.themeText} />
+                </View>
+                <Text className='mt-1'>Report</Text>
+              </Pressable>
+            )}
+
+            {isOwner && (
+              <Pressable
+                className='flex items-center'
+                onPress={() => {
+                  deleteAlert();
+                  closeContextModal();
+                }}>
+                <View className='rounded-full p-2 aspect-square bg-themeBtn'>
+                  <Ionicon name='trash-outline' size={20} color={themeConfig.customColors.themeText} />
+                </View>
+                <Text className='mt-1'>Delete</Text>
+              </Pressable>
+            )}
+          </View>
+        }></Modalize>
+    );
+  }, [contextModalRef, isOwner, closeContextModal, insets.top]);
 
   return (
     <Animated.View style={{ height }} className={'flex-1 rounded-2xl bg-white shadow-sm shadow-themeShadow ' + (isSelected ? 'mb-6' : 'mb-3')}>
+      <Portal>{contextModal}</Portal>
       <Pressable
         className={'flex flex-row flex-1'}
         onPress={() => {
@@ -149,7 +233,7 @@ const PetCard = ({ pet, goToProfile, isSelected = false, setIsSelected, isOwner 
               <Entypo name='dots-three-horizontal' size={24} color={'#8f5f43'} />
             </View>
           </MenuView> */}
-          <Pressable onPress={deleteAlert}>
+          <Pressable onPress={openContextModal}>
             <View className=''>
               <Entypo name='dots-three-horizontal' size={24} color={'#8f5f43'} />
             </View>
