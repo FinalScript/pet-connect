@@ -51,8 +51,12 @@ const HomeNavigator = ({ navigation }: HomeScreenProps) => {
       <TouchableOpacity
         onPress={() => {
           if (routeName === 'Feed') {
-            forYouFlatListRef.current?.scrollToIndex({ index: 0 });
-            followingFlatListRef.current?.scrollToIndex({ index: 0 });
+            try {
+              forYouFlatListRef.current?.scrollToIndex({ index: 0 });
+              followingFlatListRef.current?.scrollToIndex({ index: 0 });
+            } catch (error) {
+              console.log(error);
+            }
           }
           navigate(routeName);
         }}
