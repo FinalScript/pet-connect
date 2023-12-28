@@ -1,5 +1,5 @@
 import React, { Dispatch, SetStateAction, useCallback, useEffect, useMemo, useState } from 'react';
-import { Platform, Pressable, View } from 'react-native';
+import { Platform, Pressable, View, Alert } from 'react-native';
 import Animated, { useSharedValue, withTiming } from 'react-native-reanimated';
 import { Pet } from '../__generated__/graphql';
 import { Entypo } from '../utils/Icons';
@@ -49,6 +49,16 @@ const PetCard = ({ pet, goToProfile, isSelected = false, setIsSelected, isOwner 
 
     return actions;
   }, []);
+
+  const deleteAlert = () =>
+    Alert.alert('Delete Pet', 'Are you sure you want to delete your pet?', [
+      {
+        text: 'Delete',
+        onPress: () => handleDeletePet(),
+        style: 'destructive',
+      },
+      { text: 'Cancel' },
+    ]);
 
   const handleDeletePet = useCallback(() => {
     if (!pet.id) return;
@@ -122,27 +132,28 @@ const PetCard = ({ pet, goToProfile, isSelected = false, setIsSelected, isOwner 
                 }
               });
             }}>
-            {isSelected ? (
-              <Entypo name='chevron-up' size={28} color={'#8f5f43'} />
-            ) : (
-              <Entypo name='chevron-down' size={28} color={'#8f5f43'} />
-            )}
+            {isSelected ? <Entypo name='chevron-up' size={28} color={'#8f5f43'} /> : <Entypo name='chevron-down' size={28} color={'#8f5f43'} />}
           </Pressable>
         </View>
       </Pressable>
       {isSelected && isOwner && (
         <View className='absolute bottom-0 right-0 pr-5 pb-5'>
-          <MenuView
+          {/* <MenuView
             onPressAction={({ nativeEvent }) => {
               if (nativeEvent.event === 'delete') {
-                handleDeletePet();
+                deleteAlert
               }
             }}
             actions={menuActions}>
             <View className=''>
               <Entypo name='dots-three-horizontal' size={24} color={'#8f5f43'} />
             </View>
-          </MenuView>
+          </MenuView> */}
+          <Pressable onPress={deleteAlert}>
+            <View className=''>
+              <Entypo name='dots-three-horizontal' size={24} color={'#8f5f43'} />
+            </View>
+          </Pressable>
         </View>
       )}
     </Animated.View>
