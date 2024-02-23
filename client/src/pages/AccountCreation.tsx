@@ -82,6 +82,8 @@ export default function AccountCreation() {
 
         if (uploadRes) {
           profilePictureData = uploadRes;
+        } else {
+          throw new Error('Error uploading profile picture');
         }
       }
 

@@ -2,6 +2,7 @@ import { ref, uploadBytesResumable, getDownloadURL, deleteObject } from 'firebas
 import { storage } from './firebaseConfig';
 import { Asset } from 'react-native-image-picker';
 import { Image } from 'react-native-image-crop-picker';
+import { uniqueId } from 'lodash';
 
 export enum storageFolders {
   PROFILE_PICTURES,
@@ -71,7 +72,8 @@ export const uploadToFirebase = (file: Image, folder: storageFolders) => {
 
     const blob = await response.blob();
 
-    const storageRef = ref(storage, `/${folder.toString()}/${file.filename}`);
+    const filename = file.filename || file.path.split('/').pop();
+    const storageRef = ref(storage, `/${folder.toString()}/${filename}`);
     const uploadTask = uploadBytesResumable(storageRef, blob);
 
     uploadTask.on(

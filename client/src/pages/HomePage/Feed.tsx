@@ -3,13 +3,14 @@ import { createMaterialTopTabNavigator } from '@react-navigation/material-top-ta
 import { useIsFocused } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import React, { RefObject, useCallback, useMemo, useState } from 'react';
-import { Dimensions, FlatList, RefreshControl, View } from 'react-native';
+import { Dimensions, FlatList, RefreshControl, SafeAreaView, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { RootStackParamList } from '../../../App';
 import { Post as PostType } from '../../__generated__/graphql';
 import Post from '../../components/Post';
 import { GET_FOLLOWING, GET_FOR_YOU } from '../../graphql/Post';
 import { themeConfig } from '../../utils/theme';
+import Text from '../../components/Text';
 
 const Tab = createMaterialTopTabNavigator();
 
@@ -49,7 +50,7 @@ const Feed = ({ navigation, followingFlatListRef, forYouFlatListRef }: Props) =>
     }, 600);
   }, [setRefreshing, refetchFollowing]);
   return (
-    <View className={'flex-1 h-full bg-themeInput'} style={{ marginBottom: 80 }}>
+    <SafeAreaView className={'flex-1 h-full bg-themeBg'} style={{ marginBottom: 80 }}>
       <Tab.Navigator
         initialRouteName='Following'
         screenOptions={{
@@ -80,7 +81,6 @@ const Feed = ({ navigation, followingFlatListRef, forYouFlatListRef }: Props) =>
             left: 50,
             right: 50,
             height: 20,
-            marginTop: insets.top,
           },
         }}>
         <Tab.Screen
@@ -98,7 +98,7 @@ const Feed = ({ navigation, followingFlatListRef, forYouFlatListRef }: Props) =>
           }}
         />
       </Tab.Navigator>
-    </View>
+    </SafeAreaView>
   );
 };
 
@@ -115,7 +115,7 @@ const ExploreTab = ({ innerRef, posts, refreshing, onRefresh, navigation }: TabP
   const insets = useSafeAreaInsets();
 
   return (
-    <View className='flex-1 h-full bg-transparent'>
+    <View className='pt-[35px] flex-1 h-full bg-themeBg'>
       <FlatList
         ref={innerRef}
         data={posts}
@@ -146,7 +146,7 @@ const FollowingTab = ({ innerRef, posts, refreshing, onRefresh, navigation }: Ta
   const insets = useSafeAreaInsets();
 
   return (
-    <View className='flex-1 h-full bg-transparent'>
+    <View className='pt-[35px] flex-1 h-full bg-themeBg'>
       <FlatList
         ref={innerRef}
         data={posts}
@@ -155,6 +155,12 @@ const FollowingTab = ({ innerRef, posts, refreshing, onRefresh, navigation }: Ta
         decelerationRate={'fast'}
         showsHorizontalScrollIndicator={false}
         keyExtractor={(item) => item.id}
+        ListEmptyComponent={
+          <View className='pt-5 flex-1 justify-center items-center'>
+            <Text className='text-themeText text-xl font-bold'>You aren't following anyone yet!</Text>
+            <Text className='text-themeText text-base font-semibold'>Go to the explore tab to find some pets to follow!</Text>
+          </View>
+        }
         renderItem={({ item }) => (
           <View style={{ height: Dimensions.get('screen').height, paddingTop: insets.top + 30 }}>
             <Post

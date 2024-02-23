@@ -503,7 +503,22 @@ export const PetResolver = {
       }
 
       try {
+        await pet.reload({ include: [{ model: Owner, as: 'Owner' }] });
         await deletePet(pet.id);
+        await redis.del(`pet:${pet.id}`);
+
+        const cachedPets = await redis.get(`petsByOwnerId:${pet.Owner.id}`);
+
+        if (cachedPets) {
+          const pets: Pet[] = JSON.parse(cachedPets).map((pet) => {
+            return Pet.build(pet);
+          });
+
+          const filteredPets = pets.filter((i) => i.id !== pet.id);
+
+          await redis.set(`petsByOwnerId:${pet.Owner.id}`, JSON.stringify(filteredPets), 'EX', 300);
+        }
+
         return { message: 'Pet successfully deleted' };
       } catch (e) {
         console.error(e);
